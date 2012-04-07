@@ -1,0 +1,56 @@
+<h1>Administer Departments</h1>
+
+<p>Below is the list of the departments available for use in this catalogue.</p>
+
+
+<div class="grid_row">
+
+	<div class="grid_8col">
+		<?php
+		if ($this->depts->count()==0) {
+			?>
+			<p class="warning">No departments have been setup yet.</p>
+			<?php
+		} else {
+			?>
+			<ul>
+				<?php
+				foreach($this->depts as $i => $dept) {
+					$edit_url = $this->router()->makeAbsoluteUri("/admin/departments/edit/{$dept->id}");
+					printf('<li><a href="%2$s">%1$s <span class="count">(%3$s)</span></a></li>', Ecl_Helper_Html::escape($dept->name), $edit_url, $dept->item_count_internal);
+				}
+				?>
+			</ul>
+			<?php
+		}
+		?>
+	</div>
+
+	<div class="grid_4col grid_lastcol">
+		<div class="boxed">
+			<p class="title">Add a new department</p>
+			<?php
+			Ecl_Helper_Html::form('deptform', $this->router()->makeAbsoluteUri('/admin/departments/create/'));
+			Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+			Ecl_Helper_Html::formInput('new_dept', 30, 250);
+			Ecl_Helper_Html::formSubmit('submitadd', 'Add Department');
+			Ecl_Helper_Html::formClose();
+			?>
+		</div>
+
+		<div class="boxed" style="margin-top: 1em;">
+			<p class="title">Rebuild Department Item Counts</p>
+			<p>If you need to manually rebuild the item counts cached for each department, use the button below.</p>
+			<div style="text-align: right;">
+				<?php
+				Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/departments/rebuildcounts/') );
+				Ecl_Helper_Html::formSubmit('submitrebuild', 'Rebuild Item Counts');
+				Ecl_Helper_Html::formClose();
+				?>
+			</div>
+		</div>
+
+	</div>
+
+
+</div>

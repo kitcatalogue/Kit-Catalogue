@@ -1,0 +1,63 @@
+<h1>Import Items from CSV</h1>
+
+
+<p>Step 1 : Upload files to import</p>
+
+<div class="grid_container">
+
+	<div class="grid_row">
+
+		<div class="grid_8col">
+
+			<?php
+			Ecl_Helper_Html::form('importform', $this->router()->makeAbsoluteUri('/admin/items/import/?step=2'), 'post', 'UTF-8', 'enctype="multipart/form-data"');
+			?>
+
+			<dl>
+				<dt><?php Ecl_Helper_Html::formLabel('datafile', 'Select the file to import');?></dt>
+				<dd><?php Ecl_Helper_Html::formFile('datafile'); ?></dd>
+
+				<dt style="display: none; margin-top: 1.5em;">Import images</dt>
+				<dd style="display: none;">
+					<div class="dev_todo">
+						<p>The spreadsheet import above is functional.</p>
+						<p>In future, you will also be able to match images already copied to your web server to the items being imported.</p>
+					</div>
+					<?php
+					$cboxes[] = array (
+						'id'        => 'import_images' ,
+						'name'      => 'import_images' ,
+						'label'     => 'Match item images with this import data' ,
+						'value'     => 1 ,
+						'selected'  => false ,
+					);
+					Ecl_Helper_Html::formCheckboxTable($cboxes);
+					?>
+					<p>If you have images for the equipment you are importing, copy them to the <em>writable/images</em> folder on the catalogue website before uploading your CSV data.</p>
+					<p>During the import, Kit-Catalogue will use the CSV's <em>image</em> field to locate the correct image file, and will associate it with the corresponding item.</p>
+					<p>Once the import is complete, you can delete the images from <em>writable/images</em>, as those in use will have been copied to the appropriate item folder.</p>
+				</dd>
+			</dl>
+
+			<div style="margin-top: 2em; margin-left: 8em;">
+				<?php
+				Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+				Ecl_Helper_Html::formSubmit('submitfile', 'Next >');
+				?>
+			</div>
+
+			<?php Ecl_Helper_Html::formClose(); ?>
+
+		</div>
+
+		<div class="grid_4col grid_lastcol">
+			<div class="boxed">
+				<p class="title">Download CSV Template</p>
+				<p>Download the CSV template file, and fill it in with your equipment information.</p>
+				<p><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/csvtemplate'); ?>">CSV Template</a>
+			</div>
+		</div>
+
+	</div>
+
+</div>

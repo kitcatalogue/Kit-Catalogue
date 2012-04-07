@@ -1,0 +1,52 @@
+<h1>Administer Sites</h1>
+
+<p>Below is the list of the campus sites available for use in this catalogue.</p>
+
+<div class="grid_container">
+
+	<div class="grid_row">
+
+		<div class="grid_8col">
+			<?php
+			if ($this->sites->count()==0) {
+				?>
+				<p class="warning">No site have been setup yet.</p>
+				<?php
+			} else {
+				?>
+				<ul>
+					<?php
+					foreach($this->sites as $i => $site) {
+						$edit_url = $this->router()->makeAbsoluteUri("/admin/sites/edit/{$site->id}");
+						printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($site->name), $edit_url, ( !empty($site->code) ? " &nbsp;({$site->code})" : '' ) );
+					}
+					?>
+				</ul>
+				<?php
+			}
+			?>
+		</div>
+
+		<div class="grid_4col grid_last">
+			<div class="boxed">
+				<p class="title">Add a new site</p>
+				<?php
+				Ecl_Helper_Html::form('siteform', $this->router()->makeAbsoluteUri('/admin/sites/create/'));
+				Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+				?>
+				<dl>
+					<dt><?php Ecl_Helper_Html::formLabel('name', 'Campus/Site Name'); ?></dt>
+					<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
+				</dl>
+
+				<div style="text-align: right;">
+					<?php
+					Ecl_Helper_Html::formSubmit('submitadd', 'Add Site');
+					?>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>

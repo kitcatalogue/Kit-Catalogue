@@ -1,0 +1,83 @@
+<?php
+
+
+
+$www_root = $this->model('app.www');
+
+
+
+$this->layout()->appendSection('layout.head', '
+	<style type="text/css">
+
+		#signonform { margin-bottom: 1em; }
+
+	</style>
+	<script type="text/javascript">
+
+		window.onload = function() {
+			var uname = document.getElementById("username");
+			uname.focus();
+		}
+
+	</script>
+');
+
+
+$this->layout()->addBreadcrumb('Sign In', $this->router()->makeAbsoluteUri('/signin/'));
+
+
+
+switch (strtolower($this->request()->get('msg'))) {
+	case 'failed':
+		$this->layout()->addFeedback(KC__FEEDBACK_ERROR , 'Your username and password were rejected.' ,	'Please check your username and password and try again.');
+		break;
+	case 'signedout':
+		$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS ,	'You have signed out.');
+		break;
+	default:
+		break;
+}
+
+
+
+?>
+<h1>Welcome to <?php $this->out($this->model('app.title')); ?>.</h1>
+
+<div class="grid_row" style="margin-top: 1em;">
+
+	<div class="grid_8col">
+		<img style="width: 100%;" src="<?php echo $this->router()->makeAbsoluteUri('/images/system/welcome.gif'); ?>" alt="Welcome" />
+
+		<p>Signing on allows you to..</p>
+		<ul>
+			<li>Browse and search the full equipment database.</li>
+			<li>Check an item's location.</li>
+			<li>Access manuals, case studies and other supporting documentation.</li>
+			<li>Make comments and rate equipment.</li>
+		</ul>
+	</div>
+
+	<div class="grid_4col grid_lastcol">
+		<p class="intro">A catalogue of all the equipment and facilities available for research and teaching use at <?php $this->out($this->model('org.title')); ?>.</p>
+
+		<div class="boxed">
+			<h2>Sign In</h2>
+
+			<div style="margin: auto 0 auto 2em;">
+				<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
+
+				<label for="username">Username</label>
+				<input type="text" name="username" id="username" size="12" maxlength="10" value="" />
+
+				<label for="password" style="margin-top: 1em;">Password</label>
+				<input type="password" name="password" id="password" size="12" maxlength="32" value="" />
+
+				<div style="margin-top: 6px; margin-left: 8em;"><input type="submit" name="signin" value="Sign in" /></div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+

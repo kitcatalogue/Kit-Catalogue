@@ -1,0 +1,65 @@
+
+* * * * * * * * * * * * * * * * * * * * * * * * * *
+Using Local Configuration Settings, CSS and Plugins
+* * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+
+
+**** Local Configuration ****
+
+
+We advise making all your local configuration changes in local/local_config.php
+
+The settings in local_config.php will override the defaults in app/config.php,
+and when installing upgrades and system updates to Kit-Catalogue, settings defined
+in your local folder will not be overwritten by any new file versions.  
+
+
+
+**** Custom CSS ****
+
+
+Put custom stylesheet changes in local/local.css
+This stylesheet will be called automatically by the application, and your
+changes will override the default styles.
+
+
+
+**** Custom Layouts ****
+
+CSS styling can only take you so far.  If you want to change large parts of
+the HTML structure of your Kit-Catalogue, you can define your own HTML layout.
+There are some restrictions on what you can change with a layout template, but
+it offers far greater control that CSS alone.
+
+To create a new layout, create an HTML template file in your local/layouts folder.
+e.g.  local/layouts/myuniversity.phtml
+
+You also need to activate your new plugin in your local configuration, by pointing
+the $config['layout.template_file'] setting to your new layout template.
+
+PLEASE NOTE : When developing a new layout, you *must* maintain all the method
+calls that pull data in from other parts of the system or Kit-Catalogue's
+operation will be severely affected, and possibly break completely.
+
+The easiest way to develop a new template is to copy the default template from
+app/layouts/default.phtml and create a new version in your local/layouts folder.
+
+
+
+**** Using Plugins ****
+
+
+Any .php file in the local/plugins/ folder will be read in automatically.
+
+Define any functions you wish to add to the 'hook-points' within the system
+here, and register them with the model plugin system using:
+
+$plugins->add('<hook-name>', function ($args) {
+	<your code here>
+});
+
+
+See plugins.txt for more information.
+
+

@@ -1,6 +1,7 @@
 
 Kit-Catalogue 
 
+
 An open source equipment and facilities database.
 
 
@@ -11,4 +12,7 @@ requires descriptive information to be recorded, the item located and then
 used to its full potential. Kit-Catalogue can contain a wealth of 
 information on each item including its; specification, custodian, 
 location, handbook, access requirements, usage data and photos.
+
+
+For more information and installation instructions, please read the help files in the /docs/ folder.
 

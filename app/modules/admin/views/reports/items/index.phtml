@@ -1,0 +1,98 @@
+<?php
+
+$all_buildings = $this->model('buildingstore')->findAllUsed(KC__VISIBILITY_INTERNAL)->toAssoc('id', 'name');
+
+
+$staff_contacts = $this->model('itemstore')->findAllContacts(KC__VISIBILITY_INTERNAL);
+$staff_contacts = Ecl_Helper_Array::duplicateValueAsKey($staff_contacts);
+
+
+$all_departments = $this->model('departmentstore')->findAll(KC__VISIBILITY_INTERNAL)->toAssoc('id', 'name');
+
+
+
+function submitbuttons() {
+	echo('<div class="reportsubmit">');
+	Ecl_Helper_Html::formSubmit('viewreport', 'View');
+	Ecl_Helper_Html::formSubmit('downloadreport', 'Download');
+	echo('</div>');
+}
+?>
+
+<h1>Item Reports</h1>
+
+<p></p>
+
+<div class="grid_container">
+
+	<div class="grid_row">
+
+		<div class="grid_12col grid_last">
+
+
+			<div class="report">
+				<h2>Items by Building</h2>
+				<p>Show all the items of equipment listed within the given building.</p>
+
+				<form action="./itemsbybuilding" method="get">
+				<dl>
+
+					<dt>Choose Building</dt>
+					<dd>
+						<?php
+						Ecl_Helper_Html::formSelect('building', $all_buildings);
+						?>
+					</dd>
+
+				</dl>
+				<?php submitbuttons(); ?>
+				</form>
+			</div>
+
+
+			<div class="report">
+				<h2>Items by Department</h2>
+				<p>Show all the items of equipment associated with the given department.</p>
+
+				<form action="./itemsbydept" method="get">
+				<dl>
+
+					<dt>Choose Department</dt>
+					<dd>
+						<?php
+						Ecl_Helper_Html::formSelect('department', $all_departments);
+						?>
+					</dd>
+
+				</dl>
+				<?php submitbuttons(); ?>
+				</form>
+			</div>
+
+
+			<div class="report">
+				<h2>Items by Staff Contact</h2>
+				<p>Show all the items of equipment associated with the given staff contact.</p>
+
+				<form action="./itemsbystaff" method="get">
+				<dl>
+
+					<dt>Choose Staff Contact</dt>
+					<dd>
+						<?php
+						Ecl_Helper_Html::formSelect('contact', $staff_contacts);
+						?>
+					</dd>
+
+				</dl>
+				<?php submitbuttons(); ?>
+				</form>
+			</div>
+
+
+		</div>
+
+	</div>
+
+</div>
+

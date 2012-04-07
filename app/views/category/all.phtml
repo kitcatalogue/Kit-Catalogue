@@ -1,0 +1,35 @@
+<?php
+
+$user = $this->model('user');
+
+?>
+
+<h1>Available Categories</h1>
+
+<?php
+if ($this->categories->count()==0) {
+	if ($this->model('user')->isAnonymous()) {
+		?>
+		<p class="intro">There are no publically available categories listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
+		<?php
+	} else {
+		?>
+		<p class="intro">There are no categories available, so it is likely this catalogue is empty.</p>
+		<?php
+	}
+} else {
+	?>
+	<p class="intro">The following is a list of all the categories of equipment used in this catalogue.</p>
+	<ul class="mainmenu_ul">
+		<?php
+		foreach($this->categories as $i => $category) {
+			?>
+			<li><a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+			<?php
+		}
+		?>
+	</ul>
+	<?php
+}
+
+?>

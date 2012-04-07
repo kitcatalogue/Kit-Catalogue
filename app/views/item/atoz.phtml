@@ -1,0 +1,87 @@
+<?php
+$this->layout()->appendSection('layout.head', '
+<style type="text/css">
+
+	ul.atoz { list-style: none; margin: 0; }
+	ul.atoz li { float: left; margin-left: 3px; }
+
+	ul.atoz li a,
+	ul.atoz li span { min-width: 1em; display: block; padding: 0.4em; text-align: center; }
+
+	ul.atoz li a { background-color: #D4EDB5; font-weight: bold; }
+	ul.atoz li span { background-color: #ffd; border: 1px solid #dd9; font-weight: bold; }
+
+	ul.atoz li.noitems a { background-color: #eee; color: #aaa; font-weight: normal; }
+
+</style>
+');
+?>
+<h1>Items A-Z</h1>
+
+<div class="noprint">
+	<?php
+	$full_alphabet = range('A', 'Z');
+	$full_alphabet[] = 'Other';
+
+	echo('<ul class="atoz">');
+	foreach($full_alphabet as $i => $letter) {
+		if ($letter == $this->letter) {
+			echo "<li><span>{$letter}</span></li>";
+		} else {
+			if (in_array($letter, $this->alphabet)) {
+				echo "<li><a href=\"./?letter={$letter}\">{$letter}</a></li>";
+			} else {
+				echo "<li class=\"noitems\"><a href=\"./?letter={$letter}\" title=\"No items found\">{$letter}</a></li>";
+			}
+		}
+	}
+	echo('</ul>');
+
+	echo('<br style="clear: both;" />');
+	?>
+</div>
+
+<?php
+if ($this->model('security')->checkAuth(array(KC__AUTH_CANADMIN, KC__AUTH_CANEDIT) )) {
+	?>
+	<div style="float: right;">
+		<?php
+		$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+		$back_url = base64_encode($this->request()->relativeUri());
+		printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">new item</a></div>', $edit_url, $back_url);
+		?>
+	</div>
+	<?php
+}
+?>
+
+<div class="grid_row" style="margin-top: 1em;">
+
+	<div class="grid_8col">
+
+		<?php
+		if ($this->items->count()==0) {
+			?>
+			<p class="intro">There are no items of equipment or facilities listed, please try a different letter.</p>
+			<?php
+		} else {
+			?>
+			<p class="intro">The following equipment and facilities are listed under "<?php $this->out($this->letter); ?>".</p>
+
+			<div class="item_list">
+				<?php
+				$url_stub = $this->router()->makeAbsoluteUri('/item/');
+				foreach($this->items as $item) {
+					$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
+				}
+				?>
+			</div>
+			<?php
+		}
+		?>
+	</div>
+
+	<div class="grid_4col grid_lastcol">
+	</div>
+
+</div>

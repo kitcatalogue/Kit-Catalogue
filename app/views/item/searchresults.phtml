@@ -1,0 +1,52 @@
+
+<h1>Search Results</h1>
+
+
+<div class="grid_row" style="margin-top: 1em;">
+
+	<div class="grid_8col">
+
+		<?php
+		if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+			?>
+			<div style="float: right;">
+				<?php
+				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+				$back_url = base64_encode($this->request()->relativeUri());
+				printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">new item</a></div>', $edit_url, $back_url);
+				?>
+			</div>
+			<?php
+		}
+
+		if ($this->items->count()==0) {
+			?>
+			<p class="intro">No items found matching "<?php $this->out($this->query); ?>".</p>
+			<?php
+		} else {
+			$count_str = $this->items->count();
+			if ($this->items->count()==1) {
+				$count_str .= ' item';
+			} else {
+				$count_str .= ' items';
+			}
+			?>
+			<p class="intro"><strong><?php $this->out($count_str); ?> found</strong> matching "<?php $this->out($this->query); ?>".</p>
+
+			<div class="item_list">
+				<?php
+				$url_stub = $this->router()->makeAbsoluteUri('/item/');
+				foreach($this->items as $item) {
+					$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
+				}
+				?>
+			</div>
+			<?php
+		}
+		?>
+	</div>
+
+	<div class="grid_4col grid_lastcol">
+	</div>
+
+</div>

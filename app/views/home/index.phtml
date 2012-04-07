@@ -1,0 +1,104 @@
+<?php
+
+
+
+$user = $this->model('user');
+
+
+
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/homepage.css', 'all'));
+
+
+
+?>
+<h1><?php $this->out($this->model('app.title')); ?>.</h1>
+
+<?php
+if (!Ecl::isEmpty($this->model('app.intro'))) {
+	?>
+	<p class="intro"><?php $this->out($this->model('app.intro')); ?></p>
+	<?php
+}
+?>
+
+<div class="grid_row" style="display: none;">
+
+	<div class="grid_12col grid_lastcol">
+		<div class="fp_section fp_feature">
+			<p>Featured item in here</p>
+			<p>A nice photo and a description?</p>
+		</div>
+	</div>
+
+</div>
+
+
+<div class="grid_row">
+
+	<div class="grid_4col">
+
+		<div class="fp_section">
+			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">Browse by category</a></h2>
+			<?php
+			$categories = $this->model('categorystore')->findUsedRanked(5, $user->param('visibility'));
+			if ($categories) {
+				?>
+				<ul>
+					<?php
+					foreach($categories as $category) {
+						$url = $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}");
+						$count = $category->getItemCount($user->param('visibility'));
+						?>
+						<li><a href="<?php echo $url; ?>"><?php $this->out($category->name) ?> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<?php
+					}
+					?>
+				</ul>
+				<?php
+			}
+			?>
+			<div class="morelink"><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">more..</a></div>
+		</div>
+
+	</div>
+
+
+	<div class="grid_4col">
+
+		<div class="fp_section">
+			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/department/'); ?>">Browse by department</a></h2>
+			<?php
+			$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
+			if ($departments) {
+				?>
+				<ul>
+				<?php
+				foreach($departments as $department) {
+					$url = $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}");
+					$count = $department->getItemCount($user->param('visibility'));
+					?>
+					<li><a href="<?php echo $url; ?>"><?php $this->out($department->name) ?> <span class="count">(<?php $this->out($count) ?>)</span></a></li>
+					<?php
+				}
+				?>
+				</ul>
+				<?php
+			}
+			?>
+			<div class="morelink"><a href="<?php echo $this->router()->makeAbsoluteUri('/department/'); ?>">more..</a></div>
+		</div>
+
+	</div>
+
+
+	<div class="grid_4col grid_last">
+
+		<div class="fp_section">
+			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/item/'); ?>">Browse A-Z</a></h2>
+		</div>
+
+	</div>
+
+</div>
+
+

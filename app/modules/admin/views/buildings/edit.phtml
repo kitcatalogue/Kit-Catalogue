@@ -1,0 +1,133 @@
+<?php
+$building = $this->building;
+
+
+$this->layout()->addGlobalJavascript();
+
+$this->layout()->appendSection('layout.head', '
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Building\" />");
+		del_button.click(function () {
+			return confirm("Please confirm that this building will be deleted.\n\nAny Items associated with this building will remain, but no longer be registered with the building.\n\nThis operation cannot be undone.");
+		});
+		$("#delete_button_container").append(del_button);
+
+	});
+
+</script>
+');
+?>
+
+
+<h1>Edit Building: <?php $this->out($building->name); ?></h1>
+
+<p>Here you can edit this building, or transfer its items to another.</p>
+
+<?php
+Ecl_Helper_Html::form('buildingform', $this->request()->uri());
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+?>
+
+<div class="grid_row">
+
+	<div class="grid_7col">
+
+		<dl>
+			<dt>Building Code</dt>
+			<dd><?php Ecl_Helper_Html::formInput('code', 20, 250, $building->code); ?></dd>
+
+			<dt>Name</dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $building->name); ?></dd>
+
+			<dt>Campus Site</dt>
+			<dd>
+				<?php
+				$sites = $this->model('sitestore')->findAll()->toAssoc('id', 'name');
+
+				if (empty($sites)) {
+					?>
+					<p class="warning">
+						No campus sites have been setup yet.
+						<br /><br />
+						Campus sites are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
+					</p>
+					<?php
+				} else {
+					Ecl_Helper_Html::formSelect('site_id', $sites, $building->site_id);
+				}
+				?>
+			</dd>
+		</dl>
+
+		<div style="text-align: center;">
+			<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
+		</div>
+
+	</div>
+
+	<div class="grid_5col grid_lastcol">
+
+		<div id="delete_button_container"></div>
+
+		<br style="clear: both;" />
+
+		<div class="boxed" style="margin-top: 1em;">
+			<p class="title">Items</p>
+			<?php
+			$items = $this->model('itemstore')->findForBuilding($building->id, KC__VISIBILITY_INTERNAL);
+
+			if (0 < $items->count()) {
+				?>
+				<p>This department contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
+
+				<?php
+				/*
+				 * @todo : When browse by building is available, uncomment this
+				 * <p><a href="<?php echo $this->router()->makeAbsoluteUri("/building/{$building->url_suffix}"); ?>">View items in catalogue</a></p>
+				 */
+				?>
+
+				<p class="title">Transfer Items</p>
+				<p>Select a destination to transfer all items to.</p>
+				<?php
+				$options = array('' => '') + $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
+				unset($options[$building->id]);
+
+				Ecl_Helper_Html::formSelect('destination', $options);
+				?>
+				<br /><br />
+				<?php
+				$cboxes = array();
+				$cboxes[] = array (
+					'name'      => 'delete_on_transfer' ,
+					'id'        => 'delete_on_transfer' ,
+					'label'     => 'Delete current department after transfer' ,
+					'value'     => '1' ,
+					'selected'  => false ,
+				);
+				Ecl_Helper_Html::formCheckboxTable($cboxes);
+				?>
+				<div style="text-align: right;">
+					<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
+				</div>
+				<?php
+			} else {
+				?>
+				<p>This building is not associated with any items.</p>
+				<?php
+			}
+			?>
+
+		</div>
+
+	</div>
+
+
+</div>
+
+<?php
+Ecl_Helper_Html::formClose();
+?>
