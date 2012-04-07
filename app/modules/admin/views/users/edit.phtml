@@ -1,0 +1,171 @@
+<?php
+
+
+$user = $this->user;
+$new_user = $this->new_user;
+
+
+$this->layout()->addGlobalJavascript();
+
+
+if ($this->model('user')->username != $user->username) {
+	$this->layout()->appendSection('layout.head', '
+	<script type="text/javascript">
+
+		$(document).ready(function() {
+
+			var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete User\" />");
+			del_button.click(function () {
+				return confirm("Please confirm that this user will be deleted.This operation cannot be undone.");
+			});
+			$("#delete_button_container").append(del_button);
+
+		});
+
+	</script>
+	');
+}
+?>
+<h1>Editing: <?php $this->out("{$user->name} ({$user->username})"); ?></h1>
+
+<?php
+Ecl_Helper_Html::form('userform', $this->request()->uri(), 'post', 'UTF-8');
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+
+if (!$new_user) {
+	Ecl_Helper_Html::formHidden('username', $user->username);
+}
+?>
+
+
+<p class="note">* Denotes a required field.</p>
+
+<div class="grid_row">
+
+	<div class="grid_8col">
+
+		<?php
+		$this->render('users_snippets_editsubform');
+		?>
+
+		<div style="text-align: center;">
+			<?php Ecl_Helper_Html::formSubmit('submitsave1', 'Save Changes'); ?>
+		</div>
+
+		<h2>Permissions</h2>
+		<div class="form_section">
+			<h3>System-wide Permissions</h3>
+			<div class="form_section">
+				<?php
+				$available_perms = array (
+					KC__AUTH_CANADMIN  => 'System Administrator' ,
+				);
+
+				$current_perms = $this->model('sysauth')->FindAuthsForAgentItem($user->username, 'system');
+
+				// Users cannot edit their own System Authorisations
+				if ($this->model('user')->username != $user->username) {
+					Ecl_Helper_Html::formCheckboxGrid('auth_system', $available_perms, 1, $current_perms);
+				} else {
+					?>
+					<div class="feedback feedback_info" style="margin: 0;">
+						<p class="title">You cannot edit your own System-Wide Permissions.</p>
+						<?php
+						if (empty($current_perms)) {
+							// If a user ever sees this message, we have security problems!
+							echo('<p>You have no current system permissions.</p>');
+						} else {
+							echo('<p>Your current system permissions are:</p>');
+							echo('<ul>');
+							foreach($current_perms as $perm) {
+								if (isset($available_perms[$perm])) {
+									echo("<li>{$available_perms[$perm]}</li>");
+								}
+							}
+							echo('</ul>');
+						}
+						?>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+
+			<h3>Department Specific Permissions</h3>
+			<div class="form_section">
+				<?php
+				$departments = $this->model('departmentstore')->findAll();
+				if (0 == $departments->count()) {
+					?>
+					<p class="warning">
+						No departments have been created.
+					</p>
+					<?php
+				} else {
+					$available_depts = $departments->toAssoc('id', 'name');
+					$available_auths = array();
+					foreach($available_depts as $id => $name) {
+						$available_auths["dept_{$id}"] = $name;
+					}
+
+					$user_auths = $this->model('sysauth')->findForAgent($user->username);
+					$curr_auths = Ecl_Helper_Array::extractColumn($user_auths, 'item');
+
+					Ecl_Helper_Html::formCheckboxGrid('auth_dept', $available_auths, 1, $curr_auths);
+				}
+				?>
+			</div>
+		</div>
+
+
+		<div style="text-align: center;">
+			<?php Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel'); ?>
+			<?php Ecl_Helper_Html::formSubmit('submitsave2', 'Save Changes'); ?>
+		</div>
+
+	</div>
+
+
+	<div class="grid_4col grid_lastcol">
+
+		<div id="delete_button_container">
+		</div>
+
+		<div style="clear: both;"></div>
+
+		<div class="boxed" style="margin-top: 1em;">
+
+			<h2>Password</h2>
+			<?php
+			if ($this->model('signin.use_ldap')) {
+				?>
+				<p>Kit-Catalogue is currently using LDAP authentication, and the user's LDAP username/password will take precedence.</p>
+				<p>Changing a password here will only be useful if the username and/or password <em>cannot be found</em> in your local Active Directory.</p>
+				<p>The predefined Kit-Catalogue admin account would be an example.</p>
+				<?php
+			}
+
+			if (!$this->model('signin.use_database')) {
+				?>
+				<p>Kit-Catalogue is NOT using database authentication, so any password changes here will be irrelevant to the current sign-in setup.</p>
+				<?php
+			}
+			?>
+			<dl>
+				<dt><?php Ecl_Helper_Html::formLabel('password', 'New Password'); ?></dt>
+				<dd><?php Ecl_Helper_Html::formPassword('password', 20, 50, ''); ?></dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('confirm_password', 'Confirm New Password'); ?></dt>
+				<dd><?php Ecl_Helper_Html::formPassword('confirm_password', 20, 50, ''); ?></dd>
+			</dl>
+		</div>
+
+	</div>
+
+</div>
+
+<?php
+Ecl_Helper_Html::formClose();
+?>
+
+

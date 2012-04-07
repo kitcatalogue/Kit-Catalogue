@@ -1,0 +1,57 @@
+<h1>Administration Options</h1>
+
+
+<div class="grid_row">
+
+	<div class="grid_4col">
+		<div class="admin_section">
+			<p>To edit individual items of equipment, browse the site normally and look for <a class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/customise/'); ?>">Item Field Customisation</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="grid_4col">
+		<div class="admin_section">
+			<h2>Categorisation</h2>
+			<p style="margin-top: 2em;">Catalogue metadata</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/categories/index/'); ?>">Categories</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'); ?>">Equipment Access Levels</a></li>
+			</ul>
+			<p style="margin-top: 2em;">Locations</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/sites/index/'); ?>">Campus Sites</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/buildings/index/'); ?>">Buildings</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/departments/index/'); ?>">Departments</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="grid_4col grid_last">
+		<div class="admin_section">
+			<h2>Users</h2>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/users/index/'); ?>">Users</a></li>
+			</ul>
+		</div>
+
+		<div class="admin_section">
+			<h2>Reports</h2>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/reports/index/'); ?>">Reports</a></li>
+			</ul>
+		</div>
+
+
+		<div class="admin_section">
+			<p>Kit-Catalogue version <?php echo $this->model('app.version'); ?></p>
+		</div>
+
+
+	</div>
+
+</div>

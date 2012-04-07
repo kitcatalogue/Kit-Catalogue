@@ -1,0 +1,12 @@
+<?php
+$this->router()->layout(null);
+
+$basename = basename($this->filename);
+
+header("Cache-Control: public");
+header("Content-Description: File Transfer");
+header("Content-Disposition: attachment; filename={$basename}");
+header('Content-Type: application/octet-stream');
+
+readfile($this->filename);
+?>

@@ -1,0 +1,25 @@
+<?php
+
+?>
+<h1><?php $this->outParam('error_title'); ?></h1>
+
+<p><?php $this->outParam('error_desc'); ?></p>
+
+
+<?php
+$whatnext = $this->error_whatnext;
+if (!empty($whatnext)) {
+	$whatnext = (array) $whatnext;
+	?>
+	<h2>What Next?</h2>
+	<ul class="spaced">
+		<?php
+		foreach($whatnext as $i => $item) {
+			?>
+			<li><?php $this->out($item); ?></li>
+			<?php
+		}
+		?>
+	</ul>
+	<?php
+}

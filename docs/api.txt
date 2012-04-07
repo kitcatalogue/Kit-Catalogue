@@ -1,0 +1,10 @@
+
+* * * * * * * * * * * * * * *
+Kit-Catalogue API (open data)
+* * * * * * * * * * * * * * *
+
+
+
+Due to time constraints, we have dropped the API and open data features for now.
+It's something we're very keen to add in a future release, however.  We'll announce
+more news on this when we have it. 

@@ -1,0 +1,32 @@
+/**
+ * Kit-Catalogue Homepage Stylesheet.
+ *
+ * @version 1.1.0
+ */
+
+
+
+#main .grid_row { margin-top: 1.8em; }
+
+
+
+.fp_section {  background-color: #efefef; border: 1px solid #ccc; border-bottom: 2px solid #999; border-right: 2px solid #999; border-radius: 10px; color: #566776; }
+
+.fp_section h2 { margin-top: 0.5em;padding:0.3em 0 0 0.5em; }
+
+.fp_section h2 a {color:#566776;}
+
+.fp_section ul { border-top:1px solid #FFF;margin:0; padding-left:0.5em;list-style:none; font-size:0.85em; background: #EFEFEF url(../images/system/menu_ul_bkg.jpg) repeat-x;}
+
+.fp_section ul li { background: transparent url(../images/system/ul_arrow.gif) no-repeat 0 0.3em; padding-left: 1em; }
+
+.fp_section ul li a {color:#000;}
+
+
+.fp_section div.morelink { margin-top:1em; padding:0 0 0.5em 0.5em;}
+
+.fp_section div.morelink a { color: #566776; font-size: 0.85em; }
+
+.fp_feature { background-color: transparent; }
+
+

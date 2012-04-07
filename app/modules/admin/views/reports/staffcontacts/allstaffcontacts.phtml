@@ -1,0 +1,64 @@
+<?php
+
+$this->model('db')->query("
+	SELECT contact_email AS staff_contact, count(item_id) AS item_count
+	FROM item
+	GROUP BY staff_contact
+	ORDER BY staff_contact
+");
+
+$all_contacts = $this->model('db')->getResult('staff_contact', 'item_count');
+
+if ($this->is_download) {
+	header("Cache-Control: public");
+	header("Content-Description: File Transfer");
+	header("Content-Disposition: attachment; filename=all_staff_contacts.csv");
+	header('Content-Type: text/csv');
+
+	echo('"staff contact","number of items"'."\n");
+	$csv_parser = Ecl::factory('Ecl_Parser_Csv');
+	echo $csv_parser->generate($all_contacts);
+	return;
+}
+
+
+
+?>
+
+<h1>All Staff Contacts Report</h1>
+<p class="note">Generated on <?php $this->out(date('H:i d-m-Y')); ?>.</p>
+
+<?php
+if (empty($all_contacts)) {
+	?>
+	<p>No staff contacts were found.</p>
+	<?php
+	return;
+}
+?>
+
+<br />
+<p><?php echo(count($all_contacts)); ?> contact(s) found.</p>
+
+<table class="grid">
+<tr>
+	<th>staff contact</th>
+	<th>number of<br />items</th>
+	<th>&nbsp;</th>
+</tr>
+<?php
+foreach($all_contacts as $row) {
+	$url__contact = urlencode($row['staff_contact']);
+	$name = (!empty($row['staff_contact'])) ? $row['staff_contact'] : '<none contact defined>' ;
+	?>
+	<tr>
+		<td class="name"><?php $this->out($name); ?></td>
+		<td class="number"><?php $this->out($row['item_count']); ?></td>
+		<td class="link"><a class="noprint" href="<?php echo $this->router()->makeAbsoluteUri("/admin/reports/items/itemsbystaff?viewreport&contact={$url__contact}"); ?>">View items</a></td>
+	</tr>
+	<?php
+}
+?>
+</table>
+
+

@@ -1,0 +1,62 @@
+<?php
+$accesslevel = $this->accesslevel;
+
+
+$this->layout()->addGlobalJavascript();
+
+$this->layout()->appendSection('layout.head', '
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Access Level\" />");
+		del_button.click(function () {
+			return confirm("Please confirm that this access level will be deleted.\n\nAny Items associated with this access level will remain, but no longer be registered with the access level.\n\nThis operation cannot be undone.");
+		});
+		$("#delete_button_container").append(del_button);
+
+	});
+
+</script>
+');
+?>
+
+
+<h1>Edit Access Level: <?php $this->out($accesslevel->name); ?></h1>
+
+<p>Here you can edit this access level.</p>
+
+<?php
+Ecl_Helper_Html::form('accesslevelform', $this->request()->uri());
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+?>
+
+<div class="grid_row">
+
+	<div class="grid_9col">
+
+		<dl>
+			<dt>Name</dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $accesslevel->name); ?></dd>
+		</dl>
+
+		<div style="text-align: center;">
+			<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
+		</div>
+
+	</div>
+
+	<div class="grid_3col grid_lastcol">
+
+		<div id="delete_button_container"></div>
+
+		<br style="clear: both;" />
+
+	</div>
+
+
+</div>
+
+<?php
+Ecl_Helper_Html::formClose();
+?>

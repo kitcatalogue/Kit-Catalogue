@@ -1,0 +1,451 @@
+<?php
+
+
+$item = $this->item;
+$new_item = empty($item->id);
+
+
+$this->layout()->addGlobalJavascript();
+
+$this->layout()->appendSection('layout.head', '
+<style type="text/css">
+
+	div.section { margin: 0.5em 0 1.5em 1.5em; }
+
+	#delete_button_container { float: right; }
+
+</style>
+<script type="text/javascript">
+
+	var file_element_count = 1;
+
+
+	$(document).ready(function() {
+
+		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Item\" />");
+		del_button.click(function () {
+			return confirm("Please confirm that this item and its associated files will be deleted.\n\nThis operation cannot be undone.");
+		});
+		$("#delete_button_container").append(del_button);
+
+
+		var uploadmore_button = $("<input type=\"button\" name=\"uploadmore\" value=\"More Files..\" />");
+		uploadmore_button.click(function() {
+			file_element_count++;
+			new_upload_block = $("<dt><label for=\"file_"+ file_element_count +"\">File "+ file_element_count +"</label></dt><dd><input type=\"file\" name=\"file_"+ file_element_count +"\" id\"file_"+ file_element_count +"\" /></dd>");
+			$("#upload dl").append(new_upload_block);
+		});
+		$("#uploadmore_button_container").append(uploadmore_button);
+
+
+	});
+
+
+
+</script>
+');
+?>
+<h1>Editing: <?php $this->out($item->manufacturer.' '.$item->model); ?></h1>
+
+<div style="margin-bottom: 1em;"><a href="<?php echo $this->backlink; ?>">&laquo; Back to Catalogue</a></div>
+
+<?php
+Ecl_Helper_Html::form('itemform', $this->request()->uri(), 'post', 'UTF-8', 'enctype="multipart/form-data"');
+Ecl_Helper_Html::formHidden('item_id', $item->id);
+?>
+
+
+
+<p class="note">* Denotes a required field.</p>
+
+<div class="grid_row">
+
+	<div class="grid_9col">
+
+		<h2>Main Details</h2>
+		<div class="section">
+			<dl>
+				<dt><?php Ecl_Helper_Html::formLabel('manufacturer', 'Manufacturer *'); ?></dt>
+				<dd><?php Ecl_Helper_Html::formInput('manufacturer', 50, 100, $item->manufacturer); ?></dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('model', 'Model *'); ?></dt>
+				<dd><?php Ecl_Helper_Html::formInput('model', 50, 100, $item->model); ?></dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('short_description', 'Short Description'); ?></dt>
+				<dd>
+					<p class="note">A short description to show on listings pages or in search results.</p>
+					<?php Ecl_Helper_Html::formTextarea('short_description', 80, 4, $item->short_description); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('full_description', 'Full Description'); ?></dt>
+				<dd>
+					<p class="note">The full description to show on the detail page.</p>
+					<?php Ecl_Helper_Html::formTextarea('full_description', 80, 8, $item->full_description); ?>
+					<p class="note" style="text-align: center;">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('specification', 'Specification'); ?></dt>
+				<dd>
+					<p class="note">Description of the technical specification or operational limits of the equipment. (e.g. Operating temperatures or sample-size restrictions)</p>
+					<?php Ecl_Helper_Html::formTextarea('specification', 80, 4, $item->specification); ?>
+					<p class="note" style="text-align: center;">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('technique', 'Technique'); ?></dt>
+				<dd>
+					<p class="note">What kind of scientific principle, technique or methodology the item uses. (if applicable)</p>
+					<?php Ecl_Helper_Html::formInput('technique', 50, 100, $item->technique); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('acronym', 'Acronym'); ?></dt>
+				<dd>
+					<p class="note">Any short-hand acronym or abbreviation used to identify the item.</p>
+					<?php Ecl_Helper_Html::formInput('acronym', 10, 15, $item->acronym); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('keywords', 'Keywords'); ?></dt>
+				<dd>
+					<p class="note">Any keywords not mentioned in any of the fields above, but which should include this item in search results.</p>
+					<p class="note">This could also include variations in spelling or terminology (e.g. "multiaxis, multi-axis, multi axis")</p>
+					<?php Ecl_Helper_Html::formInput('keywords', 80, 250, $item->keywords); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('tags', 'Tags'); ?></dt>
+				<dd>
+					<p class="note">Use tags to group different equipment by particular research areas or activity. e.g. graphene</p>
+					<p class="note">Tags should be separated by a comma.</p>
+					<?php
+					$tags = $this->model('itemstore')->getItemTags($item->id);
+					$tags = implode(', ', $tags);
+					Ecl_Helper_Html::formInput('tags', 80, 2048, $tags);
+					?>
+					<div class="dev_todo">
+						<p>Currently, tags are not visible to end users. This functionality will come in a later verison.</p>
+					</div>
+				</dd>
+
+			</dl>
+
+			<div style="text-align: center;">
+				<?php Ecl_Helper_Html::formSubmit('submitsave1', 'Save Changes'); ?>
+			</div>
+		</div>
+
+
+		<h2>Categorisation</h2>
+		<div class="section">
+			<dl>
+
+				<dt><?php Ecl_Helper_Html::formLabel('department', 'Department *'); ?></dt>
+				<dd>
+					<p>Choose a home department from the list</p>
+					<?php
+
+					// Check what departments the user has authorisation to set items to.
+					// If in doubt, lock the department to the current one.
+
+					$options = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
+					if (empty($options)) {
+						$options = array ('' => '');
+					} elseif ($new_item) {
+						$options = array ('' => '') + $options;
+					}
+					Ecl_Helper_Html::formSelect('department', $options, $item->department);
+					?>
+					&nbsp; &nbsp;
+					<p>or use a new department</p>
+					<?php
+					Ecl_Helper_Html::formInput('other_department', 30, 250, '');
+					?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('category', 'Categories'); ?></dt>
+				<dd>
+					<p class="note">Select one or more categories that this item is associated with.</p>
+					<?php
+					$selected = $this->model('categorystore')->findForItem($item->id)->toColumn('id');
+					Ecl_Helper_Html::formCheckboxGrid('category', $this->model('categorystore')->findAll()->toAssoc('id', 'name'), 3, $selected);
+					?>
+					&nbsp; &nbsp;
+					<p>or use a new category</p>
+					<?php
+					Ecl_Helper_Html::formInput('other_category', 40, 250, '');
+					?>
+				</dd>
+
+			</dl>
+
+			<div style="text-align: center;">
+				<?php Ecl_Helper_Html::formSubmit('submitsave2', 'Save Changes'); ?>
+			</div>
+		</div>
+
+
+		<h2>Access</h2>
+		<div class="section">
+			<dl>
+
+				<dt id="changevis"><?php Ecl_Helper_Html::formLabel('visibility', 'Visibility'); ?></dt>
+				<dd>
+					<p class="note">Is the catalogue entry available for public view (if enabled) or just internally.</p>
+					<?php
+					$options = array(
+						KC__VISIBILITY_INTERNAL  => 'Internal Only' ,
+						KC__VISIBILITY_PUBLIC    => 'Public' ,
+					);
+
+					Ecl_Helper_Html::formSelect('visibility', $options, $item->visibility);
+					?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('access', 'Access Level'); ?></dt>
+				<dd>
+					<p class="note">What kind of access is usually permitted to this item?</p>
+					<?php
+					$options = (array) $this->model('accesslevelstore')->findAll()->toAssoc('id', 'name');
+					$options = array('0' => '-- None Selected --') + $options;
+
+					Ecl_Helper_Html::formSelect('access', $options, $item->access);
+					?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('usergroup', 'User Group'); ?></dt>
+				<dd>
+					<p class="note">Short description of the typical user group.  (e.g. "Department" or "Renewable Energy Research Group")</p>
+					<?php Ecl_Helper_Html::formInput('usergroup', 30, 250, $item->usergroup); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('availability', 'Availability'); ?></dt>
+				<dd>
+					<p class="note">An indication of when the equipment might be available for use. (e.g. "Wednesday afternoons")</p>
+					<?php Ecl_Helper_Html::formInput('availability', 30, 250, $item->availability); ?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('contact_email', 'Contact Email *'); ?></dt>
+				<dd>
+					<p class="note">The email address of the item's custodian or primary staff contact.</p>
+					<?php
+					$options = $this->model('itemstore')->findAllContacts(KC__VISIBILITY_INTERNAL);
+					$options = Ecl_Helper_Array::duplicateValueAsKey($options);
+					$options = array('' => '-- None Selected --') + $options;
+
+					Ecl_Helper_Html::formSelect('contact_email', $options, $item->contact_email);
+					$options = null;
+					?>
+					<p>or use a new email address</p>
+					<?php
+					Ecl_Helper_Html::formInput('new_contact_email', 40, 250);
+					?>
+				</dd>
+
+			</dl>
+
+		</div>
+
+
+		<h2>Location</h2>
+		<div class="section">
+			<dl>
+
+				<dt><?php Ecl_Helper_Html::formLabel('site', 'Site / Campus'); ?></dt>
+				<dd>
+					<?php
+					$options = array('0' => '-- None --') + $this->model('sitestore')->findAll()->toAssoc('id', 'name');
+					Ecl_Helper_Html::formSelect('site', $options, $item->site);
+					?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('building', 'Building'); ?></dt>
+				<dd>
+					<?php
+					$options = array('0' => '-- None --') + $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
+					Ecl_Helper_Html::formSelect('building', $options, $item->building);
+					?>
+				</dd>
+
+				<dt><?php Ecl_Helper_Html::formLabel('room', 'Room'); ?></dt>
+				<dd>
+					<?php
+					Ecl_Helper_Html::formInput('room', 15, 20, $item->room);
+					?>
+				</dd>
+
+			</dl>
+
+			<div style="text-align: center;">
+				<?php Ecl_Helper_Html::formSubmit('submitsave4', 'Save Changes'); ?>
+			</div>
+		</div>
+
+
+		<?php
+		$fields = $this->model('itemstore')->getCustomFields();
+		if (!empty($fields)) {
+			$item_custom = $this->model('itemstore')->getItemCustomFields($item->id);
+			?>
+			<h2>Extra Fields</h2>
+			<div class="section">
+				<dl>
+					<?php
+					foreach($fields as $field_id => $field_name) {
+						$value = (isset($item_custom[$field_id])) ? $item_custom[$field_id] : null ;
+						?>
+						<dt><?php Ecl_Helper_Html::formLabel('custom_field_'. $field_id, $field_name); ?></dt>
+						<dd><?php Ecl_Helper_Html::formInput('custom_field_'. $field_id, 80, 250, $value); ?></dd>
+						<?php
+					}
+					?>
+				</dl>
+			</div>
+			<?php
+		}
+		?>
+
+
+		<?php
+		if (!$new_item) {
+			$files = $this->model('itemstore')->findFilesForItem($item);
+
+			$image_files = array();
+			$other_files = array();
+
+			if (!empty($files)) {
+				$image_ext = array ('jpg', 'jpeg', 'gif', 'png');
+				foreach($files as $file) {
+					$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
+					if (in_array($extension, $image_ext)) {
+						$image_files[] = $file;
+					} else {
+						$other_files[] = $file;
+					}
+				}
+			}
+			?>
+
+			<h2>Images</h2>
+			<div class="section">
+				<?php
+				if (empty($image_files)) {
+					echo('<p>None uploaded.</p>');
+				} else {
+					?>
+					<p>The following files have been uploaded and attached to this item.</p>
+					<p>Select which one will be the main image for the item.  The other images will only appear on the item's detail page.</p>
+					<table class="grid striped" style="margin: 0;">
+					<tr>
+						<th>Image</th>
+						<th>Main Image</th>
+						<th>Delete</th>
+					</tr>
+					<?php
+					foreach($image_files as $i => $file) {
+						$selected = ($file->filename == $item->image) || (1 == count($image_files));
+						$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
+						?>
+						<tr class="<?php echo($tr_class); ?>">
+							<td class="name"><?php $this->out($file->filename); ?></td>
+							<td class="checkbox"><?php Ecl_Helper_Html::formRadio('use_image', "use_image_{$i}", $file->filename, $selected); ?></td>
+							<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete[]', "delete_image_{$i}", $file->filename); ?></td>
+						</tr>
+						<?php
+					}
+					?>
+					</table>
+					<?php
+				}
+				?>
+			</div>
+
+
+			<h2>Other Files</h2>
+			<div class="section">
+				<?php
+				if (empty($other_files)) {
+					echo('<p>None uploaded.</p>');
+				} else {
+					?>
+					<p>The following files have been uploaded and attached to this item.</p>
+					<p>Organise how they will appear on the details page by giving each file a display name and type.</p>
+					<table class="grid striped" style="margin: 0;">
+					<tr>
+						<th>File</th>
+						<th>Type</th>
+						<th>Display Name</th>
+						<th>Delete</th>
+					</tr>
+					<?php
+					$types = $this->model('itemstore')->findAllFileTypes();
+
+					foreach($other_files as $i => $file) {
+						$b64_filename = base64_encode($file->filename);
+						$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
+						?>
+						<tr class="<?php echo($tr_class); ?>">
+							<td class="name"><?php $this->out($file->filename); ?></td>
+							<td><?php Ecl_Helper_Html::formSelect("file_type_{$b64_filename}", $types, $file->type); ?></td>
+							<td><?php Ecl_Helper_Html::formInput("file_name_{$b64_filename}", 50, 250, $file->name) ?></td>
+							<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete[]', "delete_image_{$i}", $file->filename); ?></td>
+						</tr>
+						<?php
+					}
+					?>
+					</table>
+					<?php
+				}
+				?>
+			</div>
+
+			<?php
+		}
+		?>
+
+		<h2>Upload Files</h2>
+		<div class="section">
+			<p>Upload files and images associated with this piece of equipment.</p>
+			<p>If you upload a file with a name that already exists, it will overwrite the existing file.</p>
+			<p>Image uploads will be automatically resized so they are a maximum of 400 pixels wide.</p>
+
+			<div id="upload">
+				<dl>
+					<dt><?php Ecl_Helper_Html::formLabel('file_1', 'File 1'); ?></dt>
+					<dd><?php Ecl_Helper_Html::formFile('file_1')?></dd>
+				</dl>
+			</div>
+
+			<div id="uploadmore_button_container"></div>
+
+			<div style="text-align: center;">
+				<?php Ecl_Helper_Html::formSubmit('submitsave5', 'Save Changes'); ?>
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="grid_3col grid_lastcol">
+
+		<div id="delete_button_container"></div>
+
+		<br style="clear: both;" />
+
+		<?php
+		if ($item->visibility == KC__VISIBILITY_PUBLIC) {
+			?>
+			<div class="feedback feedback_warning" style="margin: 2em 0; padding: 0.5em; text-align: center; ">
+				<p class="title">Visible Publically</p>
+				<p style="font-size: 0.875em;"><a href="#changevis">change</a></p>
+			</div>
+			<?php
+		}
+		?>
+
+	</div>
+
+</div>
+
+
+<?php
+Ecl_Helper_Html::formClose();
+?>
+
+
