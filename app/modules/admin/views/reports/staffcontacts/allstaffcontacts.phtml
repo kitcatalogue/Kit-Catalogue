@@ -1,13 +1,37 @@
 <?php
 
 $this->model('db')->query("
-	SELECT contact_email AS staff_contact, count(item_id) AS item_count
+	SELECT LOWER(contact_1_email) AS staff_contact, count(item_id) AS item_count
 	FROM item
 	GROUP BY staff_contact
 	ORDER BY staff_contact
 ");
 
 $all_contacts = $this->model('db')->getResult('staff_contact', 'item_count');
+
+
+
+$this->model('db')->query("
+	SELECT LOWER(contact_2_email) AS staff_contact, count(item_id) AS item_count
+	FROM item
+	GROUP BY staff_contact
+	ORDER BY staff_contact
+");
+
+$all_contacts_2 = $this->model('db')->getResult('staff_contact', 'item_count');
+
+
+// Add contact_2_email people to the all contacts list
+
+foreach($all_contacts_2 as $contact => $count) {
+	if (array_key_exists($contact, $all_contacts)) {
+		$all_contacts[$contact] += $count;
+	} else {
+		$all_contacts[$contact] = $count;
+	}
+}
+$all_contacts_2 = null;
+
 
 if ($this->is_download) {
 	header("Cache-Control: public");
@@ -40,7 +64,7 @@ if (empty($all_contacts)) {
 <br />
 <p><?php echo(count($all_contacts)); ?> contact(s) found.</p>
 
-<table class="grid">
+<table class="grid report">
 <tr>
 	<th>staff contact</th>
 	<th>number of<br />items</th>
@@ -49,7 +73,7 @@ if (empty($all_contacts)) {
 <?php
 foreach($all_contacts as $row) {
 	$url__contact = urlencode($row['staff_contact']);
-	$name = (!empty($row['staff_contact'])) ? $row['staff_contact'] : '<none contact defined>' ;
+	$name = (!empty($row['staff_contact'])) ? $row['staff_contact'] : '<no contact defined>' ;
 	?>
 	<tr>
 		<td class="name"><?php $this->out($name); ?></td>

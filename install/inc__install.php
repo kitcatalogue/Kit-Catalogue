@@ -18,6 +18,14 @@ define('WRITABLE_PATH', ROOT_PATH . '/writable');
 
 
 
+// Setup LDAP basics if extension not installed (This stops errors appearing in the config files, etc)
+if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
+	define('LDAP_OPT_PROTOCOL_VERSION', 17);
+	define('LDAP_OPT_REFERRALS', 8);
+}
+
+
+
 // Check for installation lock
 $path = LOCAL_PATH.'/local_config.php';
 if (file_exists($path)) {

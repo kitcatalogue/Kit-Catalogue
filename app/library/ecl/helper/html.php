@@ -7,7 +7,7 @@
  *
  * @package  Ecl
  * @static
- * @version  6.3.0
+ * @version  6.4.0
  */
 class Ecl_Helper_Html {
 
@@ -411,10 +411,11 @@ class Ecl_Helper_Html {
 	 * @return  boolean  The operation was successful.
 	 */
 	public static function formOptionsDay($selected = null) {
+
 		if (!is_null($selected)) { $selected = date('j', $selected); }
 
 		$days = range(1, 31);
-		$days = array_key_on_value($days);
+		$days = Ecl_Helper_Array::duplicateValueAsKey($days);
 
 		return self::formOptions($days, $selected);
 	}// /method
@@ -738,7 +739,7 @@ class Ecl_Helper_Html {
 	public static function formSelectsDmyt($name_stub, $start_year = null, $end_year = null, $time_increment = 15, $selected = null, $attr = null) {
 		$attr = self::convertAttrToHtml($attr);
 		?>
-<table class="dmyt_grid">
+	<table class="dmyt_grid">
 	<tr>
 		<td><select name="<?php echo($name_stub); ?>_day"
 			id="<?php echo($name_stub); ?>_day" <?php echo($attr); ?>>
@@ -758,9 +759,92 @@ class Ecl_Helper_Html {
 			<?php self::formOptionsTime($time_increment, $selected); ?>
 		</select></td>
 	</tr>
-</table>
-			<?php
-			return true;
+	</table>
+		<?php
+		return true;
+	}// /method
+
+
+
+	/**
+	 * Draw a full set of Day-Month-Year select boxes.
+	 *
+	 * Each select tag will be suffixed with the name of the date-element being used, e.g.
+	 * open_date_day, open_date_month, open_date_year.
+	 *
+	 * @param  string  $name_stub  The name each HTML select tag will begin with (e.g.  "open_date" ).
+	 * @param  integer  $start_year  (optional) The year to start the options from. Can be overridden by the $selected date. (Default: this year).
+	 * @param  integer  $end_year  (optional) The year to end the options on. (Default: this year).
+	 * @param  date  $selected  (optional) The selected datetime. The day, month and year (and time) will be selected automatically. (Default: null).
+	 * @param  array  $attr  (optional) Other HTML attributes to use on every select box.  (default: null)
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public static function formSelectsDmy($name_stub, $start_year = null, $end_year = null, $selected = null, $attr = null) {
+		$attr = self::convertAttrToHtml($attr);
+		?>
+	<table class="dmyt_grid">
+	<tr>
+		<td><select name="<?php echo($name_stub); ?>_day"
+			id="<?php echo($name_stub); ?>_day" <?php echo($attr); ?>>
+			<?php self::formOptionsDay($selected); ?>
+		</select></td>
+		<td><select name="<?php echo($name_stub); ?>_month"
+			id="<?php echo($name_stub); ?>_month" <?php echo($attr); ?>>
+			<?php self::formOptionsMonth($selected); ?>
+		</select></td>
+		<td><select name="<?php echo($name_stub); ?>_year"
+			id="<?php echo($name_stub); ?>_year" <?php echo($attr); ?>>
+			<?php self::formOptionsYear($start_year, $end_year, $selected); ?>
+		</select></td>
+	</tr>
+	</table>
+		<?php
+		return true;
+	}// /method
+
+
+
+	/**
+	 * Draw a full set of Day-Month-Year select boxes, but allow null-entries (no day/month/year info).
+	 *
+	 * Each select tag's name and ID  will be suffixed with the date-element being used, e.g.
+	 * open_date_day, open_date_month, open_date_year, open_date_time.
+	 *
+	 * @param  string  $name_stub  The text each select tag's name and ID will begin with (e.g.  "open_date" )
+	 * @param  integer  $start_year  (optional) The year to start the options from. Can be overridden by the $selected date. (Default: this year).
+	 * @param  integer  $end_year  (optional) The year to end the options on. (Default: this year).
+	 * @param  datetime  $selected  (optional) The selected datetime. The day, month, year and (nearest) time will be selected automatically. (Default: null).
+	 * @param  array  $attr  (optional) Other HTML attributes to use on every select box.  (default: null)
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public static function formSelectsDmyNullable($name_stub, $start_year = null, $end_year = null, $selected = null, $attr = null) {
+		if (empty($selected)) { $selected = null; }
+
+		$attr = self::convertAttrToHtml($attr);
+		?>
+	<table class="dmyt_grid">
+	<tr>
+		<td><select name="<?php echo($name_stub); ?>_day"
+			id="<?php echo($name_stub); ?>_day" <?php echo($attr); ?>>
+			<option value=""></option>
+			<?php self::formOptionsDay($selected); ?>
+		</select></td>
+		<td><select name="<?php echo($name_stub); ?>_month"
+			id="<?php echo($name_stub); ?>_month" <?php echo($attr); ?>>
+			<option value=""></option>
+			<?php self::formOptionsMonth($selected); ?>
+		</select></td>
+		<td><select name="<?php echo($name_stub); ?>_year"
+			id="<?php echo($name_stub); ?>_year" <?php echo($attr); ?>>
+			<option value=""></option>
+			<?php self::formOptionsYear($start_year, $end_year, $selected); ?>
+		</select></td>
+	</tr>
+	</table>
+		<?php
+		return true;
 	}// /method
 
 
@@ -785,7 +869,7 @@ class Ecl_Helper_Html {
 
 		$attr = self::convertAttrToHtml($attr);
 		?>
-<table>
+	<table class="dmyt_grid">
 	<tr>
 		<td><select name="<?php echo($name_stub); ?>_day"
 			id="<?php echo($name_stub); ?>_day" <?php echo($attr); ?>>
@@ -800,7 +884,7 @@ class Ecl_Helper_Html {
 		<td><select name="<?php echo($name_stub); ?>_year"
 			id="<?php echo($name_stub); ?>_year" <?php echo($attr); ?>>
 			<option value=""></option>
-			<?php self::formOptionsYear($start, $end, $selected); ?>
+			<?php self::formOptionsYear($start_year, $end_year, $selected); ?>
 		</select></td>
 		<th style="padding: 0.3em 0.5em 0.2em 0.5em;">at</th>
 		<td><select name="<?php echo($name_stub); ?>_time"
@@ -809,9 +893,9 @@ class Ecl_Helper_Html {
 			<?php self::formOptionsTime($time_increment, $selected); ?>
 		</select></td>
 	</tr>
-</table>
-			<?php
-			return true;
+	</table>
+		<?php
+		return true;
 	}// /method
 
 

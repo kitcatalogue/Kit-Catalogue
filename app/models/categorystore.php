@@ -257,6 +257,7 @@ class Categorystore {
 
 	/**
 	 * Get the vocabulary codes associated with the given category
+	 *
 	 * @param  integer  $category_id
 	 * @param  string  $vocabulary
 	 *
@@ -355,7 +356,6 @@ class Categorystore {
 		unset($binds['category_id']);   // Don't insert the id, we want a new one
 
 		$new_id = $this->_db->insert('category', $binds);
-
 
 		return ($new_id>0) ? $new_id : null ;
 	}// /method

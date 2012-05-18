@@ -21,7 +21,7 @@ We hope to see this list of names grow along with the project..
 
 Chris Gutteridge @ Southampton Univesity
 - For some useful pointers on supporting customisation in open source systems,
-and advice on linked data.
+  and advice on linked data.
 
 
 Luke Taylor @ Bristol University
@@ -32,3 +32,8 @@ Bruce Rodger @ University of Strathclyde
 - Help improving the install wizard and documentation.
 
 
+Dhru Shah and Michael Clark @ University of Nottingham
+- Numerous suggestions for improvements, plenty of additional testing, and
+  patiently waiting while we put everything into place.
+
+  

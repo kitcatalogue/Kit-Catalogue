@@ -48,11 +48,10 @@ $no_next = false;
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Kit-Catalogue : Upgrade</title>
-	<link href="../css/basic.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="../css/common.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="../css/kitcatalogue.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="../css/print.css" media="print" rel="stylesheet" type="text/css" />
+	<link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
 	<style type="text/css">
+
+	body { padding: 1.5em 1.5em 2em 1.5em; background-color: #fff; font-size: 14px; }
 
 	h2, h3, h4, h5, h6 { margin-left: -1em; color: #000; }
 	h2 { margin-top: 2em; }
@@ -91,8 +90,8 @@ $no_next = false;
 	</div>
 
 
-	<div style="float: right; margin: 0; padding: 0.3em 0.5em; background-color: #eee; border: 1px solid #999;">
-		<p><a href="<?php echo $url; ?>">Refresh</a></p>
+	<div style="float: right; margin: 0; background-color: #eee; border: 1px solid #999;">
+		<div><a style="display: inline-block; padding: 1em;" href="<?php echo $url; ?>">Refresh</a></div>
 	</div>
 
 

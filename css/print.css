@@ -8,12 +8,20 @@
 
 body { width: 100%; }
 
-#header { display: none; }
 
+.noprint { display: none !important; }
+
+
+#header,
+#top,
+#userbar,
 #footer { display: none; }
 
 
+#enquire-container { display: none; }
 
-.noprint { display: none !important; }
+#back-arrow-link { display: none; }
+
+.admin_link { display: none; }
 
 

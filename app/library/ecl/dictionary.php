@@ -5,7 +5,7 @@
  * @package  Ecl
  * @version  1.0.0
  */
-Class Ecl_Dictionary {
+Class Ecl_Dictionary implements ArrayAccess {
 
 	// Public properties
 
@@ -22,6 +22,19 @@ Class Ecl_Dictionary {
 			$this->load($config['dictionary']);
 		}
 	}// /->__construct()
+
+
+
+	public function __get($name) {
+		return $this->get($name);
+	}
+
+
+
+	public function __set($name, $value) {
+		$this->set($name, $value);
+		return $value;
+	}
 
 
 
@@ -69,6 +82,30 @@ Class Ecl_Dictionary {
 		$this->_registry = array_merge($this->_registry, $assoc);
 		return true;
 	}// /method
+
+
+
+	public function offsetExists($offset) {
+		return $this->exists($offset);
+	}
+
+
+
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
+
+
+
+	public function offsetSet($offset, $value) {
+		$this->set($offset, $value);
+	}
+
+
+
+	public function offsetUnset($offset) {
+		remove($offset);
+	}
 
 
 

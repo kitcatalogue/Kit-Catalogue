@@ -9,28 +9,15 @@ function submitbuttons() {
 
 ?>
 
-<h1>Staff Contact Reports</h1>
-
-<p></p>
-
-<div class="grid_container">
-
-	<div class="grid_row">
-
-		<div class="grid_12col grid_last">
-
-			<div class="report">
-				<h2>All Staff Contacts</h2>
-				<p>Show all the staff contacts defined in the catalogue and the number of items they are responsible for.</p>
-
-				<form action="./allstaffcontacts" method="get">
-				<?php submitbuttons(); ?>
-				</form>
-			</div>
-
-		</div>
-
-	</div>
-
+<div class="page-intro white-box">
+	<h1 class="green-bar">Staff Contact Reports</h1>
+</div>
+<div id="categories" class="white-box">
+	<h2>All Staff Contacts</h2>
+	<p>Show all the staff contacts defined in the catalogue and the number of items they are responsible for.</p>
+	
+	<form action="./allstaffcontacts" method="get">
+	<?php submitbuttons(); ?>
+	</form>
 </div>
 

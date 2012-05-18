@@ -1,34 +1,35 @@
 --
--- Kit-Catalogue Database Install Script
---
-
+-- Kit-Catalogue Database Installation Script 
+-- 
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
 
 --
--- Definition of table `access`
+-- Table structure for table `access`
 --
 
 DROP TABLE IF EXISTS `access`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `access` (
-  `access_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`access_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `access_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`access_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `access`
---
 
 /*!40000 ALTER TABLE `access` DISABLE KEYS */;
 INSERT INTO `access` (`access_id`,`name`) VALUES 
@@ -41,115 +42,130 @@ INSERT INTO `access` (`access_id`,`name`) VALUES
 
 
 --
--- Definition of table `building`
+-- Table structure for table `building`
 --
 
 DROP TABLE IF EXISTS `building`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `building` (
-  `building_id` int(10) unsigned NOT NULL auto_increment,
-  `code` varchar(10) NOT NULL default '',
-  `name` varchar(250) NOT NULL default '',
-  `site_id` int(10) unsigned default NULL,
-  PRIMARY KEY  (`building_id`),
+  `building_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `site_id` int(10) unsigned DEFAULT NULL,
+  `latitude` varchar(15) DEFAULT NULL,
+  `longitude` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`building_id`),
   KEY `site` (`site_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `category`
+-- Table structure for table `category`
 --
 
 DROP TABLE IF EXISTS `category`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `category` (
-  `category_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(250) NOT NULL default '',
-  `item_count_internal` int(10) unsigned NOT NULL default '0',
-  `item_count_public` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`category_id`),
+  `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `item_count_internal` int(10) unsigned NOT NULL DEFAULT '0',
+  `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `category_code`
+-- Table structure for table `category_code`
 --
 
 DROP TABLE IF EXISTS `category_code`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `category_code` (
-  `category_id` int(10) unsigned NOT NULL default '0',
-  `vocabulary` varchar(20) NOT NULL default '',
-  `code` varchar(100) NOT NULL default '',
-  PRIMARY KEY  USING BTREE (`category_id`,`vocabulary`,`code`),
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `vocabulary` varchar(20) NOT NULL DEFAULT '',
+  `code` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`category_id`,`vocabulary`,`code`),
   KEY `vocabulary` (`vocabulary`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `cpv_code`
+-- Table structure for table `cpv_code`
 --
 
 DROP TABLE IF EXISTS `cpv_code`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cpv_code` (
-  `cpv_id` varchar(10) NOT NULL default '',
-  `name` varchar(250) default NULL,
-  `jumpable` tinyint(3) unsigned default '0',
-  `visible` tinyint(3) unsigned default '1',
-  PRIMARY KEY  (`cpv_id`),
+  `cpv_id` varchar(10) NOT NULL DEFAULT '',
+  `name` varchar(250) DEFAULT NULL,
+  `jumpable` tinyint(3) unsigned DEFAULT '0',
+  `visible` tinyint(3) unsigned DEFAULT '1',
+  PRIMARY KEY (`cpv_id`),
   FULLTEXT KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
---
--- Insert statements for the cpv_code table can be found at the end of this SQL script.
---
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `custom_field`
+-- Table structure for table `custom_field`
 --
 
 DROP TABLE IF EXISTS `custom_field`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `custom_field` (
-  `field_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(50) NOT NULL default '',
-  PRIMARY KEY  USING BTREE (`field_id`),
+  `field_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`field_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `department`
+-- Table structure for table `department`
 --
 
 DROP TABLE IF EXISTS `department`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `department` (
-  `department_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(250) NOT NULL default '',
-  `item_count_internal` int(10) unsigned NOT NULL default '0',
-  `item_count_public` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`department_id`)
+  `department_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `item_count_internal` int(10) unsigned NOT NULL DEFAULT '0',
+  `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`department_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `file_type`
+-- Table structure for table `file_type`
 --
 
 DROP TABLE IF EXISTS `file_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `file_type` (
-  `file_type_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`file_type_id`)
+  `file_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`file_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `file_type`
---
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `file_type` DISABLE KEYS */;
 INSERT INTO `file_type` (`file_type_id`,`name`) VALUES 
@@ -164,170 +180,244 @@ INSERT INTO `file_type` (`file_type_id`,`name`) VALUES
 
 
 --
--- Definition of table `item`
+-- Table structure for table `homepageblock`
+--
+
+DROP TABLE IF EXISTS `homepageblock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `homepageblock` (
+  `block_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `block_name` varchar(250) NOT NULL DEFAULT '',
+  `block_to_find` varchar(250) NOT NULL DEFAULT '',
+  `block_enabled` tinyint(3) unsigned DEFAULT '1',
+  `visibility` tinyint(3) unsigned DEFAULT '1',
+  PRIMARY KEY (`block_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `item`
 --
 
 DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
-  `item_id` int(10) unsigned NOT NULL auto_increment,
-  `manufacturer` varchar(100) NOT NULL default '',
-  `model` varchar(100) NOT NULL default '',
-  `short_description` varchar(250) NOT NULL default '',
-  `full_description` text NOT NULL,
-  `specification` varchar(250) NOT NULL default '',
-  `acronym` varchar(15) NOT NULL default '',
-  `keywords` varchar(250) NOT NULL default '',
-  `technique` varchar(100) NOT NULL default '',
-  `availability` varchar(250) default NULL,
-  `department_id` int(10) unsigned NOT NULL default '0',
-  `usergroup` varchar(250) default NULL,
-  `access_id` int(10) unsigned default '0',
-  `site_id` int(10) unsigned default NULL,
-  `building_id` int(10) unsigned default NULL,
-  `room` varchar(20) NOT NULL default '',
-  `contact_email` varchar(250) NOT NULL default '',
-  `visibility` tinyint(3) unsigned NOT NULL default '0',
-  `image` varchar(250) NOT NULL default '',
-  `manufacturer_website` varchar(250) default NULL,
-  `copyright_notice` varchar(250) default NULL,
-  `date_added` datetime NOT NULL default '0000-00-00 00:00:00',
-  `date_updated` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`item_id`),
+  `item_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(250) DEFAULT '',
+  `manufacturer` VARCHAR(100) NOT NULL DEFAULT '',
+  `model` VARCHAR(100) DEFAULT '',
+  `short_description` VARCHAR(250) DEFAULT '',
+  `full_description` TEXT DEFAULT '',
+  `specification` TEXT DEFAULT '',
+  `acronym` VARCHAR(15) DEFAULT '',
+  `keywords` VARCHAR(250) DEFAULT '',
+  `technique` VARCHAR(250) DEFAULT '',
+  `availability` VARCHAR(250) DEFAULT '',
+  `department_id` INT(10) UNSIGNED DEFAULT NULL,
+  `usergroup` VARCHAR(250) DEFAULT '',
+  `access_id` INT(10) UNSIGNED DEFAULT NULL,
+  `site_id` INT(10) UNSIGNED DEFAULT NULL,
+  `building_id` INT(10) UNSIGNED DEFAULT NULL,
+  `room` varchar(250) DEFAULT '',
+  `contact_1_name` VARCHAR(250) DEFAULT '',
+  `contact_1_email` VARCHAR(250) DEFAULT '',
+  `contact_2_name` VARCHAR(250) DEFAULT '',
+  `contact_2_email` VARCHAR(250) DEFAULT '',
+  `visibility` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  `image` varchar(250) NOT NULL DEFAULT '',
+  `manufacturer_website` VARCHAR(250) DEFAULT '',
+  `copyright_notice` VARCHAR(250) DEFAULT '',
+  `date_added` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_updated` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `training_required` TINYINT(3) DEFAULT NULL,
+  `training_provided` TINYINT(3) DEFAULT NULL,
+  `quantity` int(5) DEFAULT '1',
+  `quantity_detail` VARCHAR(250) DEFAULT '',
+  `PAT` datetime DEFAULT NULL,
+  `calibrated` VARCHAR(4) DEFAULT '',
+  `last_calibration_date` DATETIME DEFAULT NULL,
+  `next_calibration_date` DATETIME DEFAULT NULL,
+  `asset_no` VARCHAR(50) DEFAULT NULL,
+  `finance_id` VARCHAR(50) DEFAULT NULL,
+  `serial_no` VARCHAR(50) DEFAULT NULL,
+  `year_of_manufacture` VARCHAR(4) DEFAULT NULL,
+  `supplier_id` INT(11) DEFAULT NULL,
+  `date_of_purchase` DATETIME DEFAULT NULL,
+  `archived` TINYINT(3) UNSIGNED DEFAULT '0',
+  PRIMARY KEY (`item_id`),
   KEY `department` (`department_id`),
   KEY `manufacturer` (`manufacturer`),
   KEY `visibility` (`visibility`),
-  KEY `staff_contact` USING BTREE (`contact_email`),
-  FULLTEXT KEY `textsearch` (`manufacturer`,`model`,`acronym`,`keywords`,`technique`,`full_description`)
-) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+  KEY `staff_contact` (`contact_1_email`),
+  KEY `PAT_date` (`PAT`),
+  KEY `archived_items` (`archived`),
+  KEY `asset_no` (`asset_no`),
+  KEY `finance_id` (`finance_id`),
+  KEY `serial_no` (`serial_no`),
+  KEY `supplier_id` (`supplier_id`),
+  FULLTEXT KEY `textsearch` (`title`,`manufacturer`,`model`,`full_description`,`acronym`,`technique`,`keywords`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 
 
 
 --
--- Definition of table `item_category`
+-- Table structure for table `item_category`
 --
 
 DROP TABLE IF EXISTS `item_category`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_category` (
-  `item_id` int(10) unsigned NOT NULL default '0',
-  `category_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`item_id`,`category_id`)
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `category_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`,`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `item_custom`
+-- Table structure for table `item_custom`
 --
 
 DROP TABLE IF EXISTS `item_custom`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_custom` (
-  `item_id` int(10) unsigned NOT NULL default '0',
-  `field_id` int(10) unsigned NOT NULL default '0',
-  `value` varchar(250) NOT NULL default '',
-  PRIMARY KEY  USING BTREE (`item_id`,`field_id`)
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `field_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `value` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`item_id`,`field_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `item_file`
+-- Table structure for table `item_file`
 --
 
 DROP TABLE IF EXISTS `item_file`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_file` (
-  `item_id` int(10) unsigned NOT NULL default '0',
-  `name` varchar(250) NOT NULL default '',
-  `filename` varchar(250) NOT NULL default '',
-  `file_type` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  USING BTREE (`item_id`,`filename`),
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `filename` varchar(250) NOT NULL DEFAULT '',
+  `file_type` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`,`filename`),
   KEY `item` (`item_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `item_tag`
+-- Table structure for table `item_tag`
 --
 
 DROP TABLE IF EXISTS `item_tag`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item_tag` (
-  `item_id` int(10) unsigned NOT NULL default '0',
-  `tag_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`item_id`,`tag_id`)
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `tag_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`,`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `log_signin`
+-- Table structure for table `log_signin`
 --
 
 DROP TABLE IF EXISTS `log_signin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_signin` (
-  `log_signin_id` int(10) unsigned NOT NULL auto_increment,
-  `date_signin` datetime NOT NULL default '0000-00-00 00:00:00',
-  `user_id` varchar(250) default '',
-  `username` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`log_signin_id`)
+  `log_signin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date_signin` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `user_id` varchar(250) DEFAULT '',
+  `username` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`log_signin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `log_view`
+-- Table structure for table `log_view`
 --
 
 DROP TABLE IF EXISTS `log_view`;
-CREATE TABLE  `log_view` (
-  `log_view_id` int(10) unsigned NOT NULL auto_increment,
-  `date_view` datetime NOT NULL default '0000-00-00 00:00:00',
-  `user_id` varchar(250) default NULL,
-  `username` varchar(250) default NULL,
-  `item_id` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`log_view_id`)
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `log_view` (
+  `log_view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date_view` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `user_id` varchar(250) DEFAULT NULL,
+  `username` varchar(250) DEFAULT NULL,
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`log_view_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `site`
+-- Table structure for table `site`
 --
 
 DROP TABLE IF EXISTS `site`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `site` (
-  `site_id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`site_id`),
+  `site_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`site_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `site`
---
-
-/*!40000 ALTER TABLE `site` DISABLE KEYS */;
-INSERT INTO `site` (`site_id`,`name`) VALUES 
- (1,'Main Campus');
-/*!40000 ALTER TABLE `site` ENABLE KEYS */;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `system_authorisation`
+-- Table structure for table `supplier`
+--
+
+DROP TABLE IF EXISTS `supplier`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `supplier` (
+  `supplier_id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `item_count_internal` int(10) unsigned NOT NULL DEFAULT '0',
+  `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`supplier_id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `system_authorisation`
 --
 
 DROP TABLE IF EXISTS `system_authorisation`;
-CREATE TABLE  `system_authorisation` (
-  `agent` varchar(250) NOT NULL default '',
-  `item` varchar(50) NOT NULL default '',
-  `auth` varchar(30) NOT NULL default '',
-  PRIMARY KEY  USING BTREE (`agent`,`item`,`auth`),
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_authorisation` (
+  `agent` varchar(250) NOT NULL DEFAULT '',
+  `item` varchar(50) NOT NULL DEFAULT '',
+  `auth` varchar(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (`agent`,`item`,`auth`),
   KEY `item` (`item`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `system_authorisation`
---
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `system_authorisation` DISABLE KEYS */;
 INSERT INTO `system_authorisation` (`agent`,`item`,`auth`) VALUES 
@@ -337,59 +427,63 @@ INSERT INTO `system_authorisation` (`agent`,`item`,`auth`) VALUES
 
 
 --
--- Definition of table `system_info`
+-- Table structure for table `system_info`
 --
 
 DROP TABLE IF EXISTS `system_info`;
-CREATE TABLE  `system_info` (
-  `name` varchar(25) NOT NULL default '',
-  `value` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`name`)
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_info` (
+  `name` varchar(25) NOT NULL DEFAULT '',
+  `value` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `system_info`
---
 
 INSERT INTO `system_info` (name, value) VALUES
- ('database_version', '0.9.7') ,
+ ('database_version', '0.9.8') ,
  ('database_updated', NOW());
 
 
 
 --
--- Definition of table `tag`
+-- Table structure for table `tag`
 --
 
 DROP TABLE IF EXISTS `tag`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tag` (
-  `tag_id` int(10) unsigned NOT NULL auto_increment,
-  `tag` varchar(200) NOT NULL default '',
-  PRIMARY KEY  (`tag_id`)
+  `tag_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tag` varchar(200) NOT NULL DEFAULT '',
+  PRIMARY KEY (`tag_id`),
+  UNIQUE KEY `tag` (`tag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
 --
--- Definition of table `user`
+-- Table structure for table `user`
 --
 
 DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
-  `user_id` int(10) unsigned NOT NULL auto_increment,
-  `username` varchar(250) NOT NULL default '',
-  `forename` varchar(250) NOT NULL default '',
-  `surname` varchar(250) NOT NULL default '',
-  `email` varchar(250) NOT NULL default '',
-  `salt` varchar(10) NOT NULL default '',
-  `password` varchar(32) NOT NULL default '',
-  PRIMARY KEY  (`user_id`),
+  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(250) NOT NULL DEFAULT '',
+  `forename` varchar(250) NOT NULL DEFAULT '',
+  `surname` varchar(250) NOT NULL DEFAULT '',
+  `email` varchar(250) NOT NULL DEFAULT '',
+  `salt` varchar(10) NOT NULL DEFAULT '',
+  `password` varchar(32) NOT NULL DEFAULT '',
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `user`
---
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`,`username`,`forename`,`surname`,`email`,`salt`,`password`) VALUES 
@@ -399,7 +493,7 @@ INSERT INTO `user` (`user_id`,`username`,`forename`,`surname`,`email`,`salt`,`pa
 
 
 --
--- Dumping data for table `cpv_code`
+-- Insert data for table `cpv_code`
 --
 
 /*!40000 ALTER TABLE `cpv_code` DISABLE KEYS */;
@@ -449,7 +543,7 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('03131000-8','Beverage crops',0),
  ('03131100-9','Coffee beans',0),
  ('03131200-0','Tea bushes',0),
- ('03131300-1','Mat�',0),
+ ('03131300-1','Maté',0),
  ('03131400-2','Cocoa beans',0),
  ('03132000-5','Unprocessed spices',0),
  ('03140000-4','Animal products and related products',0),
@@ -1013,8 +1107,8 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('15331411-1','Baked beans',0),
  ('15331420-7','Preserved tomatoes',0),
  ('15331423-8','Canned tomatoes',0),
- ('15331425-2','Tomato pur�e',0),
- ('15331427-6','Concentrated tomato pur�e',0),
+ ('15331425-2','Tomato purï¿½e',0),
+ ('15331427-6','Concentrated tomato purï¿½e',0),
  ('15331428-3','Tomato sauce',0),
  ('15331430-0','Canned mushrooms',0),
  ('15331450-6','Processed olives',0),
@@ -1035,7 +1129,7 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('15332160-3','Processed bananas',0),
  ('15332170-6','Rhubarb',0),
  ('15332180-9','Melons',0),
- ('15332200-6','Jams and marmalades; fruit jellies; fruit or nut pur�e and pastes',0),
+ ('15332200-6','Jams and marmalades; fruit jellies; fruit or nut purï¿½e and pastes',0),
  ('15332230-5','Marmalades',0),
  ('15332231-2','Orange marmalade',0),
  ('15332232-9','Lemon marmalade',0),
@@ -1043,7 +1137,7 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('15332250-1','Fruit pastes',0),
  ('15332260-4','Nut pastes',0),
  ('15332261-1','Peanut butter',0),
- ('15332270-7','Fruit pur�es',0),
+ ('15332270-7','Fruit purï¿½es',0),
  ('15332290-3','Jams',0),
  ('15332291-0','Apricot jam',0),
  ('15332292-7','Blackberry jam',0),
@@ -1244,7 +1338,7 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('15863000-5','Tea',0),
  ('15863100-6','Green tea',0),
  ('15863200-7','Black tea',0),
- ('15864000-2','Preparations of tea or mat�',0),
+ ('15864000-2','Preparations of tea or matï¿½',0),
  ('15864100-3','Teabags',0),
  ('15865000-9','Herbal infusions',0),
  ('15870000-7','Condiments and seasonings',0),
@@ -2024,6 +2118,8 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('24570000-0','Primary-form urea resins',0),
  ('24580000-3','Primary-form amino-resins',0),
  ('24590000-6','Primary-form silicones',0);
+ 
+ 
 INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
  ('24600000-0','Explosives',0),
  ('24610000-3','Prepared explosives',0),
@@ -3470,9 +3566,10 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('33632000-9','Medicinal products for the musculo-skeletal system',0),
  ('33632100-0','Anti-inflammatory and anti-rheumatic products',0),
  ('33632200-1','Muscle relaxants',0),
- ('33632300-2','Antigout preparations',0),
- ('33640000-8','Medicinal products for the genitourinary system and hormones',0);
-INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
+ ('33632300-2','Antigout preparations',0);
+
+INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
+ ('33640000-8','Medicinal products for the genitourinary system and hormones',0),
  ('33641000-5','Medicinal products for the genitourinary system and sex hormones',0),
  ('33641100-6','Gynaecological anti-infectives and antiseptics',0),
  ('33641200-7','Other gynaecologicals',0),
@@ -4926,6 +5023,9 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('38515100-9','Polarising microscopes',0),
  ('38515200-0','Fluorescent microscopes',0),
  ('38516000-5','Monocular and/or binocular light compound microscopes',0);
+
+
+
 INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
  ('38517000-2','Acoustic and projection microscopes',0),
  ('38517100-3','Acoustic microscopes',0),
@@ -6374,9 +6474,11 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('44192000-2','Other miscellaneous construction materials',0),
  ('44192100-3','PVC foam',0),
  ('44192200-4','Nails',0),
- ('44200000-2','Structural products',0),
- ('44210000-5','Structures and parts of structures',0);
-INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
+ ('44200000-2','Structural products',0);
+
+
+INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
+ ('44210000-5','Structures and parts of structures',0),
  ('44211000-2','Prefabricated buildings',0),
  ('44211100-3','Modular and portable buildings',0),
  ('44211110-6','Cabins',0),
@@ -7666,6 +7768,8 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('48451000-4','Enterprise resource planning software package',0),
  ('48460000-0','Analytical, scientific, mathematical or forecasting software package',0),
  ('48461000-7','Analytical or scientific software package',0);
+
+
 INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
  ('48462000-4','Mathematical or forecasting software package',0),
  ('48463000-1','Statistical software package',0),
@@ -8730,14 +8834,16 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('72212330-1','Scheduling and productivity software development services',0),
  ('72212331-8','Project management software development services',0),
  ('72212332-5','Scheduling software development services',0),
- ('72212333-2','Contact management software development services',0),
+ ('72212333-2','Contact management software development services',0);
+ 
+ 
+INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('72212400-3','Business transaction and personal business software development services',0),
  ('72212410-6','Investment management and tax preparation software development services',0),
  ('72212411-3','Investment management software development services',0),
  ('72212412-0','Tax preparation software development services',0),
  ('72212420-9','Facilities management software development services and software development services suite',0),
- ('72212421-6','Facilities management software development services',0);
-INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES 
+ ('72212421-6','Facilities management software development services',0),
  ('72212422-3','Software development services suites',0),
  ('72212430-2','Inventory management software development services',0),
  ('72212440-5','Financial analysis and accounting software development services',0),
@@ -9778,7 +9884,7 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
  ('92620000-3','Sport-related services',0),
  ('92621000-0','Sports-event promotion services',0),
  ('92622000-7','Sports-event organisation services',0),
- ('92700000-8','Cybercaf� services',0),
+ ('92700000-8','Cybercafï¿½ services',0),
  ('98000000-3','Other community, social and personal services',0),
  ('98100000-4','Membership organisation services',0),
  ('98110000-7','Services furnished by business, professional and specialist organisations',0),
@@ -9875,3 +9981,13 @@ INSERT INTO `cpv_code` (`cpv_id`,`name`,`jumpable`) VALUES
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+

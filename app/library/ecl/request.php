@@ -253,6 +253,16 @@ Class Ecl_Request {
 
 
 	/**
+	 * Fetch all variables/values from the querystring.
+	 *
+	 * @return  array  All the GETed parameters
+	 */
+	public function getAll() {
+		return $_GET;
+	}// /method
+
+
+	/**
 	 * Fetch all the posted parameters.
 	 *
 	 * @return  array  All the POSTed parameters.
@@ -292,6 +302,7 @@ Class Ecl_Request {
 	 * Get the date entered into a form constructed by Html->formSelectsDmyt().
 	 *
 	 * Reads the day/month/year/time fields from $_POST, and converts them to the corresponding datetime.
+	 * The time field is optional, and will default to '12:00'.
 	 *
 	 * @param  string  $name_stub  The name with which all the form-fields began
 	 * @param  datetime  $default  (optional) The default value to return, if part of the date could not be found.
@@ -302,7 +313,7 @@ Class Ecl_Request {
 		$day   = $this->post("{$name_stub}_day", null);
 		$month = $this->post("{$name_stub}_month", null);
 		$year  = $this->post("{$name_stub}_year", null);
-		$time  = $this->post("{$name_stub}_time", null);
+		$time  = $this->post("{$name_stub}_time", '12:00');
 
 		if ( (empty($day)) || (empty($month)) || (empty($year)) || (empty($time)) ) {
 			return $default;

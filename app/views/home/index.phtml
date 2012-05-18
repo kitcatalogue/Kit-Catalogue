@@ -1,104 +1,84 @@
 <?php
 
-
-
 $user = $this->model('user');
-
-
-
-$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/homepage.css', 'all'));
-
-
+$lang = $this->model('lang');
 
 ?>
-<h1><?php $this->out($this->model('app.title')); ?>.</h1>
+<h1><?php $this->out($this->model('app.title')); ?></h1>
 
 <?php
 if (!Ecl::isEmpty($this->model('app.intro'))) {
 	?>
-	<p class="intro"><?php $this->out($this->model('app.intro')); ?></p>
+	<p class="note" style="font-size: 1.1em;"><?php $this->out($this->model('app.intro')); ?></p>
 	<?php
 }
 ?>
 
-<div class="grid_row" style="display: none;">
-
-	<div class="grid_12col grid_lastcol">
-		<div class="fp_section fp_feature">
-			<p>Featured item in here</p>
-			<p>A nice photo and a description?</p>
-		</div>
-	</div>
-
-</div>
-
-
-<div class="grid_row">
-
-	<div class="grid_4col">
-
-		<div class="fp_section">
-			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">Browse by category</a></h2>
-			<?php
-			$categories = $this->model('categorystore')->findUsedRanked(5, $user->param('visibility'));
-			if ($categories) {
+<h2>Quick links</h2>
+<ul id="homepage-list" class="cf">
+	<li id="browse-categories">
+		<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">Browse by <?php $this->out($lang['cat.label']); ?></a></h2>
+		<?php
+		$categories = $this->model('categorystore')->findUsedRanked(5, $user->param('visibility'));
+		if ($categories) {
+			?>
+			<ul class="item-meta"><?php
+				foreach($categories as $category) {
+					$url = $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}");
+					$count = $category->getItemCount($user->param('visibility'));?>
+					<li><a href="<?php echo $url; ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li><?php
+				}
 				?>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">more&hellip;</a></li>
+			</ul>
+			<?php
+		}
+		?>
+	</li>
+	<li id="browse-departments">
+		<h2><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">Browse by <?php $this->out($lang['dept.label']); ?></a></h2>
+		<?php
+		$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
+		if ($departments) {?>
+		<ul class="item-meta"><?php
+			foreach($departments as $department) {
+				$url = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->url_suffix}");
+				$count = $department->getItemCount($user->param('visibility'));
+				?>
+				<li><a href="<?php echo $url; ?>"><strong><?php $this->out($department->name) ?></strong> <span class="count">(<?php $this->out($count) ?>)</span></a></li>
+				<?php
+			}
+		}
+		?>
+			<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">more&hellip;</a></li>
+		</ul>
+	</li>
+
+
+	<?php
+	$blocks = $this->model('homepageblockstore')->findAll($user->param('visibility'));
+	foreach($blocks as $block) {
+		$records = $this->model('customfieldstore')->findUsedCustomFieldValues($block->block_to_find, 5, $user->param('visibility'));
+		if (0 < count($records)) {
+			$url_stub = $this->router()->makeAbsoluteUri('/customfield/'. urlencode($block->block_to_find_name) .'/'. urlencode($block->block_to_find) .'/');
+			?>
+			<li class="browse-customfield">
+				<h2><a href="<?php echo $url_stub; ?>">Browse by <?php $this->out($block->block_to_find_name); ?></a></h2>
 				<ul>
 					<?php
-					foreach($categories as $category) {
-						$url = $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}");
-						$count = $category->getItemCount($user->param('visibility'));
+					foreach($records as $record) {
 						?>
-						<li><a href="<?php echo $url; ?>"><?php $this->out($category->name) ?> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<li><a href="<?php echo($url_stub . urlencode($record['value']) ); ?>"><?php $this->out(ucwords($record['value'])); ?> (<?php $this->out($record['count']); ?>)</a></li>
 						<?php
 					}
 					?>
+					<li><a href="<?php echo $url_stub; ?>">more&hellip;</a></li>
 				</ul>
-				<?php
-			}
-			?>
-			<div class="morelink"><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">more..</a></div>
-		</div>
-
-	</div>
-
-
-	<div class="grid_4col">
-
-		<div class="fp_section">
-			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/department/'); ?>">Browse by department</a></h2>
+			</li>
 			<?php
-			$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
-			if ($departments) {
-				?>
-				<ul>
-				<?php
-				foreach($departments as $department) {
-					$url = $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}");
-					$count = $department->getItemCount($user->param('visibility'));
-					?>
-					<li><a href="<?php echo $url; ?>"><?php $this->out($department->name) ?> <span class="count">(<?php $this->out($count) ?>)</span></a></li>
-					<?php
-				}
-				?>
-				</ul>
-				<?php
-			}
-			?>
-			<div class="morelink"><a href="<?php echo $this->router()->makeAbsoluteUri('/department/'); ?>">more..</a></div>
-		</div>
-
-	</div>
-
-
-	<div class="grid_4col grid_last">
-
-		<div class="fp_section">
-			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/item/'); ?>">Browse A-Z</a></h2>
-		</div>
-
-	</div>
-
-</div>
+		}
+	}
+	?>
+</ul>
 
 

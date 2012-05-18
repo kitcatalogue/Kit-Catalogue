@@ -1,7 +1,7 @@
 --
 -- Kit-Catalogue Database Upgrade Script
 --
--- Patch to v0.9.6
+-- Patch to v0.9.7
 --
 
 

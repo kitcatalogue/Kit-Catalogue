@@ -13,10 +13,11 @@ class Accesslevel {
 
 
 	public function __get($name) {
-		if ('url_suffix' == $name) {
-			$name = strtolower($this->name);
-			$name = str_replace(array (',', '/'), '_', $name);
-			return urlencode($name) ."/{$this->id}";
+		switch ($name) {
+			case 'url_suffix':
+			case 'slug':
+				return preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) ."/{$this->id}";
+				break;
 		}
 	}// /method
 

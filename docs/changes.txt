@@ -11,6 +11,33 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.0.9.8  (released 09-05-2012)
+
+
+== Administration
+
+Improved Item administration.
+Improved the item importer.
+
+Fixed numerous minor errors in the admin pages.
+
+
+== General
+
+Improved styling across the whole application.
+Improved the item search.
+Improved the installation wizard.
+
+Added language support for overriding labels and wording within the application.
+Added more fields to the item records to capture data on calibration, training, asset numbers, etc.
+Added a second staff contact, and associated custodian-level editing access.
+Added tags to the user-facing catalogue.
+
+Fixed errors in the item display pages.
+
+
+
+--------------------------------------------------------------------------------
 v.0.9.7  (released 20-02-2012)
 
 
@@ -80,15 +107,5 @@ Added logging of item views by visitors (new config option, enabled by default).
 
 Improved the installation documentation.
 Improved the config file documentation and fixed typos.
-
-
-
---------------------------------------------------------------------------------
-v.0.9.5  (released 04-01-2012)
-
-
-== Administration
-
-Fixed image bug when creating items.
 
 

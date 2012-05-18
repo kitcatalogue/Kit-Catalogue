@@ -1,48 +1,35 @@
 <?php
+$lang = $this->model('lang');
+
+
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	printf('<a href="%1$s?backlink=%2$s">add an item &raquo;</a>', $edit_url, $back_url);
+}
 ?>
+
+
 <h1><?php $this->out($this->category->name); ?></h1>
 
+<?php
+if (0 == count($this->items)) {
+	?>
+	<p class="note">There are no items listed, please try a different <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<?php
+} else {
+	?>
+	<p class="note">The following equipment and facilities are listed under this <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
 
-<div class="grid_row">
-
-	<div class="grid_8col">
-
+	<ul id="item-list">
 		<?php
-		if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-			?>
-			<div style="float: right;">
-				<?php
-				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
-				$back_url = base64_encode($this->request()->relativeUri());
-				printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">new item</a></div>', $edit_url, $back_url);
-				?>
-			</div>
-			<?php
-		}
-
-
-		if (!$this->items) {
-			?>
-			<p class="intro">There are no items of equipment or facilities associated with this category.</p>
-			<?php
-		} else {
-			?>
-			<p class="intro">The following equipment and facilities are listed under this category.</p>
-
-			<div class="item_list">
-				<?php
-				$url_stub = $this->router()->makeAbsoluteUri("/category/{$this->category->url_suffix}/item/");
-				foreach($this->items as $item) {
-					$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
-				}
-				?>
-			</div>
-			<?php
+		$url_stub = $this->router()->makeAbsoluteUri("/category/{$this->category->url_suffix}/item/");
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
 		}
 		?>
-	</div>
+	</ul>
+	<?php
+	}
 
-	<div class="grid_4col grid_lastcol">
-	</div>
-
-</div>
+?>

@@ -4,7 +4,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.1.0
+ * @version  1.2.0
  */
 class Ecl_Helper_String {
 
@@ -314,6 +314,58 @@ class Ecl_Helper_String {
 
 
 	/**
+	 * Get the boolean representation of the given text.
+	 *
+	 * Checks the string for predefined boolean equivalents, and returns the appropriate boolean value.
+	 * String equivalents include:
+	 * true  => '1', 'yes', 'y', 'on'
+	 * false => '0', 'no', 'n', 'off'
+	 *
+	 * If no matches are found, $default is returned.
+	 *
+	 * @param  string  $string
+	 * @param  mixed  $default  (default: false)
+	 *
+	 * @return  mixed
+	 */
+	public static function parseBoolean($string, $default = false) {
+		$string = strtolower($string);
+		if (in_array($string, array ('1', 'yes', 'y', 'on'))) { return true; }
+		if (in_array($string, array ('0', 'no', 'n', 'off'))) { return false; }
+		return $default;
+	}
+
+
+
+	/**
+	 * Get the datetime representation of the given text.
+	 *
+	 * All dates are assumed to be in european format (d/m/y).
+	 * If $string is not a valid date, $default is returned.
+	 *
+	 * @param  string  $string
+	 * @param  mixed  $default
+	 *
+	 * @return  mixed
+	 */
+	public static function parseDate($string, $default) {
+		// strtotime can't do european dates with slashes, so if we detect
+		// "dd/mm/yyyy" force it to "dd-mm-yyyy" instead
+		if (preg_match('#\d{1,2}/\d{1,2}/(\d{4}|\d{2})#', $string)) {
+			$string = str_replace('/', '-', $string);
+		}
+
+		$date = strtotime($string);
+		if ( ($date === false) || ($date === -1) ) {
+			return $default;
+		} else {
+			return $date;
+		}
+	}
+
+
+
+	/**
 	 * Parse a querystring style string into an assoc-array of key-value pairs.
 	 *
 	 * Similar to PHP's parse_str() but without the annoying key-renaming features.
@@ -375,6 +427,25 @@ class Ecl_Helper_String {
 
 		return $kv_pairs;
 	}// /method
+
+
+
+	/**
+	 * Get a standardised representation of the given string.
+	 *
+	 * The string will be trimmed of whitespace, and limited to $max_length.
+	 * If after trimming the string is empty, $default will be returned.
+	 *
+	 * @param  string  $string
+	 * @param  int  $max_length
+	 * @param  mixed  $default  (default: '')
+	 *
+	 * @return  mixed
+	 */
+	public static function parseString($string, $max_length, $default = '') {
+		$string = substr(trim($string), 0, $max_length);
+		return (empty($string)) ? $default : $string ;
+	}
 
 
 

@@ -41,43 +41,38 @@ switch (strtolower($this->request()->get('msg'))) {
 
 
 ?>
-<h1>Welcome to <?php $this->out($this->model('app.title')); ?>.</h1>
 
-<div class="grid_row" style="margin-top: 1em;">
+<h1>Sign in to <?php $this->out($this->model('app.title')); ?>.</h1>
+<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
+<table class="form" style="margin-left: 5em;">
+<tr>
+	<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>
+	<td><?php Ecl_Helper_Html::formInput('username', '12', '50'); ?></td>
+</tr>
+<tr>
+	<th><?php Ecl_Helper_Html::formLabel('password', 'Password'); ?></th>
+	<td><?php Ecl_Helper_Html::formPassword('password', '12', '50'); ?></td>
+</tr>
+<tr>
+	<td colspan="2" style="padding-top: 1em; text-align: right;">
+		<?php Ecl_Helper_Html::formSubmit('signin', 'Sign in'); ?>
+	</td>
+</tr>
+</table>
 
-	<div class="grid_8col">
-		<img style="width: 100%;" src="<?php echo $this->router()->makeAbsoluteUri('/images/system/welcome.gif'); ?>" alt="Welcome" />
 
-		<p>Signing on allows you to..</p>
-		<ul>
-			<li>Browse and search the full equipment database.</li>
-			<li>Check an item's location.</li>
-			<li>Access manuals, case studies and other supporting documentation.</li>
-			<li>Make comments and rate equipment.</li>
-		</ul>
-	</div>
+</form>
 
-	<div class="grid_4col grid_lastcol">
-		<p class="intro">A catalogue of all the equipment and facilities available for research and teaching use at <?php $this->out($this->model('org.title')); ?>.</p>
+<br />
+<br />
 
-		<div class="boxed">
-			<h2>Sign In</h2>
+<h3>Signing in allows you to..</h3>
+<ul style="margin-left: 2em; list-style: disc;">
+	<li>Browse and search the full equipment database.</li>
+	<li>Check an item's location.</li>
+	<li>Access manuals, case studies and other supporting documentation.</li>
+</ul>
 
-			<div style="margin: auto 0 auto 2em;">
-				<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
 
-				<label for="username">Username</label>
-				<input type="text" name="username" id="username" size="12" maxlength="10" value="" />
-
-				<label for="password" style="margin-top: 1em;">Password</label>
-				<input type="password" name="password" id="password" size="12" maxlength="32" value="" />
-
-				<div style="margin-top: 6px; margin-left: 8em;"><input type="submit" name="signin" value="Sign in" /></div>
-				</form>
-			</div>
-		</div>
-	</div>
-
-</div>
 
 

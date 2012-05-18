@@ -45,34 +45,66 @@ class Itemstore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'item_id'  => $object->id ,
+			'item_id' => $object->id ,
 
-			'manufacturer'       => $object->manufacturer ,
-			'model'              => $object->model ,
-			'short_description'  => $object->short_description ,
-			'full_description'   => $object->full_description ,
-			'specification'      => $object->specification ,
-			'acronym'            => $object->acronym ,
-			'keywords'           => $object->keywords ,
+			'title' => $object->title ,
+			'manufacturer' => $object->manufacturer ,
+			'model' => $object->model ,
 
-			'technique'      => $object->technique ,
+			'short_description' => $object->short_description ,
+			'full_description' => $object->full_description ,
+			'specification' => $object->specification ,
+
+			'acronym' => $object->acronym ,
+			'keywords' => $object->keywords ,
+
+			'technique' => $object->technique ,
+
 			'availability'   => $object->availability ,
+
 			'department_id'  => $object->department ,
 			'usergroup'      => $object->usergroup ,
 			'access_id'      => $object->access ,
-
-			'visibility'  => $object->visibility ,
 
 			'site_id'      => $object->site ,
 			'building_id'  => $object->building ,
 			'room'         => $object->room ,
 
-			'contact_email'  => $object->contact_email ,
+			'contact_1_name'  => $object->contact_1_name ,
+			'contact_1_email'  => $object->contact_1_email ,
+			'contact_2_name'  => $object->contact_2_name ,
+			'contact_2_email'  => $object->contact_2_email ,
 
-			'image'    => $object->image ,
-			'manufacturer_website'  => $object->manufacturer_website ,
+			'visibility'  => $object->visibility ,
 
-			'copyright_notice'   => $object->copyright_notice ,
+			'image' => $object->image ,
+
+			'manufacturer_website' => $object->manufacturer_website ,
+			'copyright_notice' => $object->copyright_notice ,
+
+			'date_added' => $this->_db->formatDate($object->date_added) ,
+			'date_updated' => $this->_db->formatDate($object->date_updated) ,
+
+			'training_required' => $object->training_required ,
+			'training_provided' => $object->training_provided ,
+
+			'quantity' => $object->quantity ,
+			'quantity_detail' => $object->quantity_detail ,
+
+			'PAT' => $this->_db->formatDate($object->PAT, true) ,
+
+			'calibrated' => $object->calibrated ,
+			'last_calibration_date' => $this->_db->formatDate($object->last_calibration_date, true) ,
+			'next_calibration_date' => $this->_db->formatDate($object->next_calibration_date, true) ,
+
+			'asset_no' => $object->asset_no ,
+			'finance_id' => $object->finance_id ,
+			'serial_no' => $object->serial_no ,
+			'year_of_manufacture' => $object->year_of_manufacture ,
+			'supplier_id' => $object->supplier ,
+			'date_of_purchase' => $this->_db->formatDate($object->date_of_purchase, true) ,
+
+			'archived' => (int) $object->archived ,
 		);
 
 		return $row;
@@ -92,33 +124,64 @@ class Itemstore {
 
 		$object->id = $row['item_id'];
 
+		$object->title = $row['title'];
 		$object->manufacturer = $row['manufacturer'];
 		$object->model = $row['model'];
+
 		$object->short_description = $row['short_description'];
 		$object->full_description = $row['full_description'];
 		$object->specification = $row['specification'];
+
 		$object->acronym = $row['acronym'];
 		$object->keywords = $row['keywords'];
 
 		$object->technique = $row['technique'];
+
 		$object->availability = $row['availability'];
 
 		$object->department = $row['department_id'];
 		$object->usergroup = $row['usergroup'];
 		$object->access = $row['access_id'];
 
-		$object->visibility = $row['visibility'];
-
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
 		$object->room = $row['room'];
 
-		$object->contact_email = $row['contact_email'];
+		$object->contact_1_name = $row['contact_1_name'];
+		$object->contact_1_email = $row['contact_1_email'];
+		$object->contact_2_name = $row['contact_2_name'];
+		$object->contact_2_email = $row['contact_2_email'];
+
+		$object->visibility = $row['visibility'];
 
 		$object->image = $row['image'];
-		$object->manufacturer_website = $row['manufacturer_website'];
 
+		$object->manufacturer_website = $row['manufacturer_website'];
 		$object->copyright_notice = $row['copyright_notice'];
+
+		$object->training_required = Ecl_Helper_String::parseBoolean($row['training_required'], null);
+		$object->training_provided = Ecl_Helper_String::parseBoolean($row['training_provided'], null);
+
+		$object->quantity = $row['quantity'];
+		$object->quantity_detail = $row['quantity_detail'];
+
+		$object->PAT = (is_null($row['PAT'])) ? null : strtotime($row['PAT']) ;
+
+		$object->calibrated = $row['calibrated'];
+		$object->last_calibration_date = (is_null($row['last_calibration_date'])) ? null : strtotime($row['last_calibration_date']) ;
+		$object->next_calibration_date = (is_null($row['next_calibration_date'])) ? null : strtotime($row['next_calibration_date']) ;
+
+		$object->date_added = (is_null($row['date_added'])) ? null : strtotime($row['date_added']); ;
+		$object->date_updated = (is_null($row['date_updated'])) ? null : strtotime($row['date_updated']); ;
+
+		$object->asset_no = $row['asset_no'];
+		$object->finance_id = $row['finance_id'];
+		$object->serial_no = $row['serial_no'];
+		$object->year_of_manufacture = $row['year_of_manufacture'];
+		$object->supplier = $row['supplier_id'];
+		$object->date_of_purchase = (is_null($row['date_of_purchase'])) ? null : strtotime($row['date_of_purchase']) ;
+
+		$object->archived = (bool) $row['archived'];
 
 		return $object;
 	}// /method
@@ -255,6 +318,54 @@ class Itemstore {
 
 
 	/**
+	 * Find all the distinct techniques for all equipment.
+	 *
+	 * @param  integer  $visibility
+	 *
+	 * @return  Array  An array of email addresses.
+	 */
+	public function findAllTechniques() {
+		$sql = "
+			SELECT DISTINCT technique
+			FROM `item`
+			WHERE technique<>''
+			ORDER BY technique
+		";
+
+		$this->_db->query($sql);
+		return ($this->_db->hasResult()) ? $this->_db->getColumn() : array() ;
+	}// /method
+
+
+
+	/**
+	 * Find all the distinct manufacturers for all equipment.
+	 *
+	 * @param  integer  $visibility
+	 *
+	 * @return  Array  An array of email addresses.
+	 */
+	public function findAllManufacturers($visibility) {
+
+		// @todo : Move to own model?
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
+
+		$sql = "
+			SELECT DISTINCT manufacturer
+			FROM `item`
+			WHERE manufacturer<>'' $sql__vis_condition
+			ORDER BY manufacturer
+		";
+
+		$this->_db->query($sql);
+		return ($this->_db->hasResult()) ? $this->_db->getColumn() : array() ;
+	}// /method
+
+
+
+	/**
 	 * Find all the distinct contact emails for all equipment.
 	 *
 	 * @param  integer  $visibility
@@ -269,9 +380,13 @@ class Itemstore {
 		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
 
 		$sql = "
-			SELECT DISTINCT contact_email
+			SELECT DISTINCT contact_1_email AS contact_email
 			FROM `item`
-			WHERE contact_email<>'' $sql__vis_condition
+			WHERE contact_1_email<>'' $sql__vis_condition
+			UNION DISTINCT
+			SELECT DISTINCT contact_2_email AS contact_email
+			FROM `item`
+			WHERE contact_2_email<>'' $sql__vis_condition
 			ORDER BY contact_email
 		";
 
@@ -409,7 +524,11 @@ class Itemstore {
 			SELECT *
 			FROM item
 			WHERE $where_clause
-			ORDER BY manufacturer, model, acronym
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
 		", null, array($this, 'convertRowToObject'));
 	}// /method
 
@@ -441,10 +560,124 @@ class Itemstore {
 			FROM item i
 				INNER JOIN item_category ic ON i.item_id=ic.item_id
 			WHERE $where_clause
-			ORDER BY i.manufacturer, i.model, i.acronym
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
 		", null, array($this, 'convertRowToObject'));
 	}// /method
 
+
+
+	/**
+	 * Find any items relating to the custom field specified.
+	 *
+	 * @param  integer  $field_id
+ 	 * @param  integer  $visibility  (default: null)
+	 *
+	 * @return  mixed  The array of objects requested.  On fail, null.
+	 */
+	public function findForCustomField($field_id, $visibility = null) {
+		$binds = array (
+			'field_id'   => $field_id ,
+		);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+				INNER JOIN item_custom ic ON i.item_id=ic.item_id
+			WHERE field_id=:field_id AND ic.value!='' $where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
+	 * Find any items with the given value for the custom field specified.
+	 *
+	 * @param  integer  $field_id
+	 * @param  mixed  $value
+ 	 * @param  integer  $visibility  (default: null)
+	 *
+	 * @return  mixed  The array of objects requested.  On fail, null.
+	 */
+	public function findForCustomFieldValue($field_id, $value, $visibility = null) {
+		$binds = array (
+			'field_id'  => $field_id ,
+			'value'     => $value ,
+		);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+				INNER JOIN item_custom ic ON i.item_id=ic.item_id
+			WHERE field_id=:field_id
+				AND ic.value=:value
+				$where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
+	 * Find any items relating to the custom field specified.
+	 *
+	 * @param  integer  $field_id  The custom field id to find.
+ 	 * @param  integer  $visibility
+	 *
+	 * @return  mixed  The array of objects requested.  On fail, null.
+	 */
+	public function findForTags($tag, $visibility) {
+		$binds = array (
+			'tag'  => $tag ,
+		);
+
+		$this->_db->query('
+			SELECT tag_id
+			FROM tag
+			WHERE tag=:tag
+		', $binds);
+
+		$tag_id = $this->_db->getValue();
+
+		$binds = array (
+			'tag_id'  => $tag_id ,
+		);
+
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+				INNER JOIN item_tag it ON i.item_id=it.item_id
+			WHERE tag_id=:tag_id
+				$where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
 
 
 	/**
@@ -488,8 +721,13 @@ class Itemstore {
 			SELECT i.*
 			FROM item i
 				$join_clause
-			WHERE department_id=:department $where_clause
-			ORDER BY manufacturer, model
+			WHERE department_id=:department
+				$where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
 
@@ -505,7 +743,7 @@ class Itemstore {
 	 */
 	public function findForManufacturerLetter($letter, $visibility) {
 
-		if ( (!empty($letter)) && ('Other' != $letter) ) {
+		if ( (!empty($letter)) && ($letter != 'Other') ) {
 			$binds = array (
 				':letter'      => $letter ,
 			);
@@ -525,7 +763,6 @@ class Itemstore {
 			ORDER BY manufacturer, model, acronym
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
-
 
 
 
@@ -554,58 +791,12 @@ class Itemstore {
 			SELECT *
 			FROM item
 			WHERE $where_clause
-			ORDER BY manufacturer, model, acronym
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
 		", null, array($this, 'convertRowToObject'));
-	}// /method
-
-
-
-	/**
-	 * Find public items in the category specified.
-	 *
-	 * @param  integer  $category_id  The category to find.
-	 *
-	 * @return  mixed  The array of objects requested.  On fail, null.
-	 */
-	public function findPublicForCategory($category_id) {
-		$binds = array (
-			'category_id'  => $category_id ,
-			'visibility'   => KC__VISIBILITY_PUBLIC ,
-		);
-
-		return $this->_db->newRecordset("
-			SELECT i.*
-			FROM item i
-				INNER JOIN item_category ic ON i.item_id=ic.item_id AND ic.category_code=:category_id
-			WHERE visibility=:visibility
-			ORDER BY $order_by
-		", $binds, array($this, 'convertRowToObject'));
-	}// /method
-
-
-
-	/**
-	 * Find public items in the department and category specified.
-	 *
-	 * @param  integer  $department_id  The department to find.
-	 * @param  integer  $category_id  The category to find.
-	 *
-	 * @return  mixed  The array of objects requested.  On fail, null.
-	 */
-	public function findPublicForDepartmentCategory($department_id, $category_id) {
-		$binds = array (
-			'category_id'  => $category_id ,
-			'department'   => $department_id ,
-			'visibility'   => KC__VISIBILITY_PUBLIC ,
-		);
-
-		return $this->_db->newRecordset("
-			SELECT i.*
-			FROM item i
-				INNER JOIN item_category ic ON i.item_id=ic.item_id AND ic.category_code=:category_id
-			WHERE department=$department AND visibility=:visibility
-			ORDER BY $order_by
-		", $binds, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -630,7 +821,6 @@ class Itemstore {
 			$where_clause
 			ORDER BY letter
 		");
-
 
 		if ($row_count>0) {
 			$atoz = $this->_db->getColumn();
@@ -709,37 +899,78 @@ class Itemstore {
 	public function searchItems($keywords, $visibility) {
 		$items = null;
 
-		// @todo : Add category search, and show items with matching categories
+		$keywords = trim($keywords);
+
+		// @todo : Add category and tag searching
+
+		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
+
+		// Split the keywords depending on whether they're too small for MySQL's FULLTEXT search
+		$small_keywords = array();
+		$big_keywords = array();
+		$terms = explode(' ', $keywords);
+
+		foreach($terms as $term) {
+			$term = trim($term);
+			if (strlen($term) <= 3) {
+				$small_keywords[] = "%$term%";
+			} else {
+				$big_keywords[] = $term;
+			}
+		}
+
+
+		$queries = array();
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility, 'i');
 		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
 
-		if (empty($keywords)) {
-			return array();
-		} else {
-			// Strip out any commas
-			$keywords = str_replace(',','', $keywords);
-			$keywords = str_replace('"','', $keywords);
 
-			$keywords = '%'. $keywords .'%';
-
+		if (!empty($big_keywords)) {
 			$sql__keywords = $this->_db->prepareValue($keywords);
+			$sql__matchclause = "MATCH (title, manufacturer, model, technique, acronym, keywords, full_description) AGAINST ($sql__keywords IN BOOLEAN MODE)";
 
-			return $this->_db->newRecordset("
-				SELECT i.*
-				FROM item i
-				WHERE (
-					manufacturer LIKE $sql__keywords
-					OR model LIKE $sql__keywords
-					OR technique LIKE $sql__keywords
-					OR acronym LIKE $sql__keywords
-					OR keywords LIKE $sql__keywords
-					OR full_description LIKE $sql__keywords
-					)
+			$queries[] = "
+				SELECT DISTINCT *
+				FROM item
+				WHERE $sql__matchclause
 					$sql__vis_condition
-				ORDER BY manufacturer, model
-			", null, array($this, 'convertRowToObject'));
+			";
 		}
+
+
+		if (!empty($small_keywords)) {
+
+			$fields = array('title', 'manufacturer', 'model', 'full_description', 'acronym', 'technique', 'keywords');
+			$conditions = array();
+			foreach($fields as $field) {
+				$conditions[] = $this->_db->prepareFilter($field, $small_keywords, 'OR', 'LIKE');
+			}
+			$sql__conditions = implode("\n OR " , $conditions);
+
+			$queries[] = "
+				SELECT DISTINCT *
+				FROM item
+				WHERE $sql__conditions
+					$sql__vis_condition
+			";
+		}
+
+		if (1 >= count($queries)) {
+			$sql = $queries[0];
+		} else {
+			$sql = $this->_db->unionise($queries, 'DISTINCT');
+		}
+
+		$sql .= "
+			ORDER BY
+			CASE
+				WHEN title<>'' THEN title
+				ELSE manufacturer
+			END ASC, model, acronym
+		";
+
+		return $this->_db->newRecordset($sql, null, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -800,9 +1031,12 @@ class Itemstore {
 
 		$binds = null;
 		foreach($tags as $tag) {
-			$binds[] = array (
-				'tag'  => $tag ,
-			);
+			$tag = trim($tag);
+			if (!empty($tag)) {
+				$binds[] = array (
+					'tag'  => $tag ,
+				);
+			}
 		}
 
 		if (!empty($binds)) {
@@ -880,11 +1114,17 @@ class Itemstore {
 	 */
 	public function transferCategoryItems($source, $target) {
 		$source = $this->_db->prepareValue( (int) $source);
-		$binds = array (
-			'category_id'  => (int) $target ,
-		);
-		$count =  $this->_db->update('item_category', $binds, "category_id={$source}");
-		return ($count>0);
+
+		$this->_db->execute("
+			REPLACE INTO item_category (item_id, category_id)
+			SELECT item_id, {$target} AS category_id
+			FROM item_category
+			WHERE category_id={$source}
+		");
+
+		$this->_db->delete('item_category', "category_id={$source}");
+
+		return true;
 	}// /method
 
 
@@ -943,6 +1183,7 @@ class Itemstore {
 
 		$id = $this->_db->prepareValue($item->id);
 
+		unset($binds['date_added']);
 		$binds['date_updated'] = $this->_db->formatDate(time());
 
 		$affected_count = $this->_db->update('item', $binds, "item_id=$id");
@@ -1005,23 +1246,6 @@ class Itemstore {
 		$this->_db->delete('custom_field', "field_id IN $sql_field_set");
 		return true;
 	}
-
-
-
-	/**
-	 * Get the custom fields available.
-	 *
-	 * @return  mixed  The object, or array of objects, requested.  On fail, null.
-	 */
-	public function getCustomFields() {
-		$this->_db->query("
-			SELECT *
-			FROM custom_field
-			ORDER BY field_id
-		");
-
-		return ($this->_db->hasResult()) ? $this->_db->getResultAssoc('field_id', 'name') : array() ;
-	}// /method
 
 
 
@@ -1122,7 +1346,18 @@ class Itemstore {
 	 *
 	 * @return  object  An Ecl_Db_Recordset of objects requested.
 	 */
-	protected function _find($where = '', $order_by = 'manufacturer, model') {
+	protected function _find($where = '', $order_by = null) {
+
+		if (null === $order_by) {
+			$order_by = "
+				ORDER BY
+					CASE
+						WHEN title<>'' THEN title
+						ELSE manufacturer
+					END ASC, model, acronym
+			";
+		}
+
 
 		if (empty($where)) {
 			return $this->_db->newRecordset("

@@ -79,6 +79,20 @@ class Ecl_Mvc_Layout extends Ecl_Mvc {
 
 
 	/**
+	 * Escape the given string for output.
+	 *
+	 * @param  string  $string
+	 * @param  string  $charset  (default: 'UTF-8')
+	 *
+	 * @return  string
+	 */
+	public function escape($string, $charset = 'UTF-8') {
+		return htmlspecialchars($string, ENT_COMPAT | ENT_IGNORE, $charset, false);
+	}// /method
+
+
+
+	/**
 	 * Get the content for the given section.
 	 *
 	 * @param  string  $section
@@ -116,8 +130,25 @@ class Ecl_Mvc_Layout extends Ecl_Mvc {
 	 * return  string  The operation was successful.
 	 */
 	public function out($value) {
-		echo Ecl_Helper_Html::escape($value);
+		echo $this->escape($value);
 	}// /method
+
+
+
+	/**
+	 * Echo out the escaped value, if it is not empty.
+	 *
+	 * @param  mixed  $value
+	 * @param  string  $format  (default: '%s')
+	 *
+ 	 * return  boolean  The operation was successful.
+	 */
+	public function outf($value, $format = '%s') {
+		if (!empty($value)) {
+			printf($format, $this->escape($value));
+		}
+		return true;
+	}
 
 
 

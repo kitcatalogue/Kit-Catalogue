@@ -1,7 +1,8 @@
 <?php
-$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-min.js'));
-$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery.require.js'));
-$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_config.php'));
+$this->layout()->addGlobalJavascript();
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
+
 $this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_categories.js'));
 
 
@@ -39,16 +40,15 @@ $cpv_codes = $this->model('cpvstore')->findAllVisible();
 
 if (!empty($cpv_codes)) {
 	?>
-	<p style="margin-top: 1.5em;">In order to better link equipment in similar categories together, Kit-Catalogue uses the Common Procurement Vocabulary (CPV) to provide a common basis for categories.</p>
-	<p>Please tag your category with any relevant terms from the list below.</p>
+	<p style="margin-top: 1.5em;">In order to better link equipment in similar categories together, Kit-Catalogue uses the Common Procurement Vocabulary (CPV) to provide a common basis for categories. Please tag your category with any relevant terms from the list below.</p>
 
-	<p class="label">Suggested tags</p>
-	<div id="cpv_target" style="margin: 1em 0 0 2em; height: 4em;">
+	<h3>Suggested tags</h3>
+	<div id="cpv_target" style="margin: 1em 0 2em 2em; height: 4em;">
 		<p>Javascript enabled browsers can have relevant CPV suggestions made based on the name of their new category.</p>
 	</div>
 
 
-	<p class="label">Full list of tags</p>
+	<h3>Full list of tags</h3>
 	<?php
 	$jumpable_codes = $this->model('cpvstore')->findAllJumpable();
 
@@ -68,8 +68,8 @@ if (!empty($cpv_codes)) {
 	?>
 
 
-	<div id="cpv_listall" class="scrollable" style="margin: 1em 0 0 2em; padding: 0.5em; width: auto; height: 15em;">
-		<table class="rowhover">
+	<div id="cpv_listall" style="width: 750px; height: 15em; overflow: auto; margin: 1em 0 0 2em; padding: 0.5em; border: 1px solid #666;">
+		<table class="checkbox_grid rowhover">
 		<?php
 
 		// @fix : only show enabled subsections of the CPV codes
@@ -79,8 +79,8 @@ if (!empty($cpv_codes)) {
 			?>
 			<tr data-cpvid="<?php $this->out($cpv_code->id); ?>">
 				<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('cpv_code[]', $html__id, $cpv_code->id); ?></td>
-				<td class="name"><?php Ecl_Helper_Html::formLabel($html__id, $cpv_code->name, 'class="normal"'); ?></td>
-				<td><?php Ecl_Helper_Html::formLabel($html__id, "({$cpv_code->id})", 'class="normal"'); ?></td>
+				<th class="name"><?php Ecl_Helper_Html::formLabel($html__id, $cpv_code->name, 'class="normal"'); ?></td>
+				<th><?php Ecl_Helper_Html::formLabel($html__id, "({$cpv_code->id})", 'class="normal"'); ?></td>
 			</tr>
 			<?php
 		}

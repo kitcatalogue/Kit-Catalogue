@@ -13,7 +13,7 @@ class Controller_Department extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->router()->layout()->addBreadcrumb('Departments', $this->router()->makeAbsoluteUri('/department/'));
+		$this->router()->layout()->addBreadcrumb($this->model()->lang['dept.label.plural'], $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/"));
 	}// /method
 
 
@@ -37,19 +37,19 @@ class Controller_Department extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-		$this->router()->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}"));
+		$this->router()->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/{$department->url_suffix}"));
 
 
 		$category_id = $this->param('catid', null);
 		if (!$category_id) {
 			$category = null;
 			$category_id = null;
-			$this->router()->layout()->addBreadcrumb('All Equipment', $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}"));
+			$this->router()->layout()->addBreadcrumb('All Equipment', $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/{$department->url_suffix}"));
 		} else {
 			$category = $this->model('categorystore')->find($category_id);
 			if ($category) {
 				$category_id = $category->id;
-				$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}/category/{$category->url_suffix}"));
+				$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/{$department->url_suffix}/category/{$category->url_suffix}"));
 			}
 		}
 
@@ -75,13 +75,18 @@ class Controller_Department extends Ecl_Mvc_Controller {
 		}
 
 
+		if ( (KC__VISIBILITY_PUBLIC != $item->visibility) && ($this->model('user')->isAnonymous()) ) {
+			$this->router()->action('404', 'error');
+			return true;
+		}
+
+
 		$url_department = urlencode(strtolower($department->name));
-		$this->router()->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}"));
-		$this->router()->layout()->addBreadcrumb($item->manufacturer.' '.$item->model, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}/item/{$item->url_suffix}"));
+		$this->router()->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/{$department->url_suffix}"));
+		$this->router()->layout()->addBreadcrumb($item->manufacturer.' '.$item->model, $this->router()->makeAbsoluteUri("/{$this->model()->lang['dept.route']}/{$department->url_suffix}/item/{$item->url_suffix}"));
 
 		$this->view()->department = $department;
 		$this->view()->item = $item;
-
 
 		$this->view()->render('department_viewitem');
 	}// /method

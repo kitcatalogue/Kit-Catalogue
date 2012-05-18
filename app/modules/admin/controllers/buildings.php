@@ -46,9 +46,13 @@ class Controller_Admin_Buildings extends Ecl_Mvc_Controller {
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);
 			} else {
 				$new_building = $this->model('buildingstore')->newBuilding();
+
 				$new_building->code = $this->request()->post('code');
 				$new_building->name = $building_name;
 				$new_building->site_id = $this->request()->post('site_id');
+				$new_building->latitude = $this->request()->post('latitude');
+				$new_building->longitude = $this->request()->post('longitude');
+
 				$new_id = $this->model('buildingstore')->insert($new_building);
 
 				if ($new_id) {
@@ -120,7 +124,13 @@ class Controller_Admin_Buildings extends Ecl_Mvc_Controller {
 				if ($this->request()->post('submitsave')) {
 					$errors = false;
 
+					$building->code = $this->request()->post('code');
 					$building->name = $this->request()->post('name');
+					$building->site_id = $this->request()->post('site_id');
+					$building->latitude = $this->request()->post('latitude');
+					$building->longitude = $this->request()->post('longitude');
+
+
 					if (empty($building->name)) {
 						$errors[] = 'You must provide a name for the building.';
 					}

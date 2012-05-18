@@ -50,7 +50,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 	 */
 	public function renderBreadcrumbs() {
 		if (!empty($this->_breadcrumbs)) {
-			echo('<ul>');
 			foreach($this->_breadcrumbs as $i => $breadcrumb) {
 				if (isset($breadcrumb['href'])) {
 					printf('<li><a href="%2$s">%1$s</a></li>', $breadcrumb['title'], $breadcrumb['href']);
@@ -58,7 +57,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					printf('<li>%1$s</li>', $breadcrumb['title']);
 				}
 			}
-			echo('</ul>');
 		}
 		return true;
 	}// /method
@@ -75,47 +73,59 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 	 */
 	public function renderItemInList($item, $item_url) {
 		$user = $this->model('user');
+		$lang = $this->model('lang');
 
 		if (empty($item->image)) {
 			$image_alt = 'No image available';
 			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
 		} else {
-			$image_alt = $item->manufacturer .' '. $item->model;
+			$image_alt = $item->name;
 			$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
 		}
 		?>
+		<li class="item" id="item-<?php $this->out($item->id); ?>">
+			<?php
+			if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
+				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
+				$back_url = base64_encode($this->request()->relativeUri());
+				printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit</a>', $edit_url, $back_url);
+			}
+			?>
 
-		<div class="item">
-			<table>
-				<tr>
-					<td><div class="image"><a href="<?php echo $item_url; ?>"><img src="<?php echo $image; ?>" width="100px" alt="<?php $this->out($image_alt); ?>" /></a></div></td>
-					<td>
-						<?php
-						if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
-							$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
-							$back_url = base64_encode($this->request()->relativeUri());
-							printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">edit</a></div>', $edit_url, $back_url);
+			<a href="<?php echo $item_url; ?>"><img class="item-thumb" src="<?php $this->out($image); ?>" alt="<?php $this->out($image_alt); ?>" /></a>
+
+			<div class="item-content">
+				<h2 class="item-title">
+					<?php
+						$name = $item->name;
+						if (strlen($name)>29) {
+							$name = $this->escape(substr($name, 0, 28)) . '&hellip;';
+						} else {
+							$name = $this->escape($name);
 						}
-						?>
+					?>
+					<a href="<?php echo $item_url; ?>" title="<?php $this->out($item->name); ?>"><?php echo($name); ?></a>
+				</h2>
+				<p class="item-desc"><?php
+					if (!empty($item->short_description)) {
+						$this->out($item->short_description);
+					}
+					?><br /><a href="<?php echo $item_url; ?>">more details &raquo;</a>
+				</p>
 
-						<p class="name"><a href="<?php echo $item_url; ?>"><?php $this->out($item->manufacturer .' '. $item->model); ?></a></p>
-						<div class="maininfo">
-							<?php
-							if (!empty($item->short_description)) { printf('<p class="short_description">%s</p>', $this->escape($item->short_description)); }
-							?>
-						</div>
-						<div class="extrainfo">
-							<?php
-							if (!empty($item->technique)) { printf('<p class="technique"><span class="label">Technique :</span> %s</p>', $this->escape($item->technique)); }
-							if (!empty($item->department)) { printf('<p class="department"><span class="label">Department :</span> %s</p>', $this->model('departmentstore')->lookupName($item->department)); }
-							?>
-						</div>
-						<div class="morelink"><a href="<?php echo $item_url; ?>">more details...</a></div>
-					</td>
-				</tr>
-			</table>
+				<ul class="item-meta">
+					<?php
+					if (!empty($item->technique)) {
+						printf('<li><strong>%1$s</strong> %2$s</li>', $lang['item.label.technique'], $this->escape($item->technique));
+					}
+					if (!empty($item->department)) {
+						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['dept.label'], $this->escape($this->model('departmentstore')->lookupName($item->department)));
+					}
+					?>
+				</ul>
+			</div>
+		</li>
 
-		</div>
 		<?php
 		return true;
 	}
@@ -123,7 +133,13 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 
 	public function renderItemInFull($item, $goto_url) {
+		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/print.css'),'print');
 		$user = $this->model('user');
+		$lang = $this->model('lang');
+
+		// These are being a pain - set them to null here
+		$latude = null;
+		$ldtude = null;
 
 		if (empty($item->image)) {
 			$no_image = true;
@@ -163,9 +179,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			));
 		}
 
-
-
-
 		$wiki_parser = Ecl::factory('Ecl_Parser_Wikicode');
 		?>
 
@@ -173,277 +186,354 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 			$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
 			$back_url = base64_encode($this->request()->relativeUri());
-			printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">edit</a></div>', $edit_url, $back_url );
+			printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit item</a>', $edit_url, $back_url );
+		}
+
+
+		function drawField($header, $detail) {
+			if (!empty($detail)) {
+				$header = strtoupper($header);
+				?>
+				<tr>
+					<th><?php echo $header; ?></th>
+					<td><?php echo $detail; ?></td>
+				</tr>
+				<?
+			}
+		}
+
+
+		function isSensibleDate($date) {
+			return (!empty($date)) && ($date > strtotime('1970-01-02 00:00:00'));
 		}
 		?>
 
-		<div class="item_full">
-			<div class="item">
+		<div class="item">
 
-				<h1><?php $this->out($item->manufacturer .' '. $item->model); ?></h1>
-
-				<div class="grid_row">
+			<h1><?php $this->out($item->name); ?></h1>
 
 
-					<div class="grid_9col">
+			<div style="float: right; width: 690px;">
 
-						<table class="basics">
-						<?php
-						if (!empty($item->manufacturer)) {
-							?>
-							<tr>
-								<th>Manufacturer</th>
-								<td><?php $this->out($item->manufacturer); ?></td>
-							</tr>
+				<div class="white-box">
+
+					<table class="layout">
+					<tr>
+						<td width="50%" style="width: 50%">
+							<table class="fields">
 							<?php
-						}
-						if (!empty($item->model)) {
-							?>
-							<tr>
-								<th>Model</th>
-								<td><?php $this->out($item->model); ?></td>
-							</tr>
-							<?php
-						}
-						if (!empty($item->acronym)) {
-							?>
-							<tr>
-								<th>Acronym</th>
-								<td><?php $this->out($item->acronym); ?></td>
-							</tr>
-							<?php
-						}
-						if (!empty($item->technique)) {
-							?>
-							<tr>
-								<th>Technique</th>
-								<td><?php $this->out($item->technique); ?></td>
-							</tr>
-							<?php
-						}
-						?>
-						</table>
+							$manufacturer_website = '';
 
-						<?php
-						if (!empty($item->full_description)) {
-							?>
-							<div class="description">
-								<div class="label">Description</div>
-								<?php
-								printf('<div class="detail">%s</div>', $wiki_parser->parse($item->full_description));
-								?>
-							</div>
-							<?php
-						}
-
-						if (!empty($item->specification)) {
-							?>
-							<div class="specification">
-								<div class="label">Specification</div>
-								<?php printf('<div class="detail">%s</div>', $wiki_parser->parse($this->escape($item->specification))); ?>
-							</div>
-							<?php
-						}
-
-						if (!empty($item->manufacturer_website)) {
-							?>
-							<div class="specification">
-								<div class="label">Manufacturer's Website</div>
-								<?php printf('<div class="detail"><a href="%1$s" target="_blank">%1$s</a><br /><p style="font-size: 0.8125em;">(opens in a new window)</p></div>', $item->manufacturer_website); ?>
-							</div>
-							<?php
-						}
-
-
-						// Custom fields
-						if ($this->model('security')->checkItemPermission($item, 'item.customfield.view')) {
-							$custom_fields = $this->model('itemstore')->getItemCustomFields($item->id);
-							if (!empty($custom_fields)) {
-								$field_names = $this->model('itemstore')->getCustomFields();
-								if (!empty($field_names)) {
-									?>
-									<div class="customfields">
-										<div class="label">Extra Information</div>
-										<table class="grid" style="margin-left: 1em; font-size: 0.875em;">
-										<?php
-										foreach($field_names as $field_id => $field_name) {
-											if ( (isset($custom_fields[$field_id])) && (!empty($custom_fields[$field_id])) ) {
-												?>
-												<tr>
-													<th><?php echo($this->out($field_name)); ?></th>
-													<td><?php echo($this->out($custom_fields[$field_id])); ?></td>
-												</tr>
-												<?php
-											}
-										}
-										?>
-										</table>
-									</div>
-									<?php
+							if (!empty($item->manufacturer_website)) {
+								$start_url = '';
+								if ( (substr($item->manufacturer_website, 0, 7)!='http://')
+									&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
+										$start_url = 'http://';
 								}
+								$manufacturer_website = sprintf('<br />(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', "{$start_url}{$item->manufacturer_website}");
 							}
-						}
+							drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
 
+							drawField($lang['item.label.model'], $this->escape($item->model));
+							drawField($lang['item.label.acronym'], $this->escape($item->acronym));
 
-						/*
-						 * Show Available Files
-						 */
-						if ( ($this->model('security')->checkItemPermission($item, 'item.files.view')) && (!empty($other_files)) ) {
-							$grouped_files = null;
-
-							foreach($other_files as $file) {
-								$grouped_files[$file->type][] = $file;
-							}
-
-							$types = $this->model('itemstore')->findAllFileTypes();
-							?>
-							<h2>Additional Files</h2>
-							<div class="additional_files">
-								<?php
-								foreach($grouped_files as $file_type => $file_group) {
-									$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Files' ;
-									?>
-									<h3><?php $this->out($type_name); ?></h3>
-									<ul>
-										<?php
-										foreach($file_group as $file) {
-											$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$file->filename}");
-											$display_name = (empty($file->name)) ? $file->filename : $file->name ;
-											?>
-											<li><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
-											<?php
-										}
-										?>
-									</ul>
-								<?php
+							if (!empty($item->department)) {
+								drawField($lang['dept.label'], $this->model('departmentstore')->lookupName($item->department));
 							}
 							?>
-							</div>
+							</table>
+
+							<br />
+
+							<table class="fields">
 							<?php
-						}
-
-						if (!empty($item->copyright_notice)) {
-							printf('<div class="copyright_notice"><div class="detail">%s</div></div>', $item->copyright_notice);
-						}
-						?>
-
-					</div>
-
-
-					<div class="grid_3col grid_lastcol">
-					<div class="image">
-							<?php
-							if ($no_image) {
-								?>
-								<img src="<?php echo $image; ?>" width="150" alt="<?php $this->out($image_alt); ?>" />
-								<?php
-							} else {
-								?>
-								<a href="<?php echo $image; ?>" target="_blank"><img src="<?php echo $image; ?>" width="150" alt="<?php $this->out($image_alt); ?>" /></a>
-								<?php
-							}
-
-							foreach($image_files as $i => $file) {
-								if ($file->filename != $item->image) {
-									$extra_image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $file->filename);
-									?>
-									<div class="extra_image">
-										<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="150" alt="" /></a>
-									</div>
-									<?php
+							if (!empty($item->contact_1_email)) {
+								if (!empty($item->contact_1_name)) {
+									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_1_email, $item->contact_1_name);
+								} else {
+									$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_1_email);
 								}
+								drawField($lang['item.label.contact_1'], $contact_link);
+							}
+
+							if (!empty($item->contact_2_email)) {
+								if (!empty($item->contact_2_name)) {
+									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_2_email, $item->contact_2_name);
+								} else {
+									$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_2_email);
+								}
+								drawField($lang['item.label.contact_2'], $contact_link);
 							}
 							?>
-						</div>
-						<div class="boxed" style="font-size: 0.875em;">
-
-						<?php
-						if (!empty($item->department)) {
-							?>
-							<div class="department">
-								<div class="label">Department</div>
-								<?php printf('<div class="detail">%s</div>', $this->escape($this->model('departmentstore')->lookupName($item->department))); ?>
-							</div>
+							</table>
+						</td>
+						<td width="50%" style="width: 50%; padding-left: 1em;">
+							<table class="fields">
 							<?php
-						}
+							if ($this->model('security')->checkItemPermission($item, 'item.location.view')) {
+								if (!empty($item->site)) {
+									$site = $this->model('sitestore')->find($item->site);
+									if ($site) {
+										drawField($lang['site.label'], $this->escape($site->name));
+									}
+								}
 
-						if ($this->model('security')->checkItemPermission($item, 'item.location.view')) {
-							if ( (!empty($item->site)) || (!empty($item->building)) || (!empty($item->room)) ) {
-								?>
-								<div class="location">
-									<div class="label">Location</div>
-									<div class="detail">
-										<?php
-										if (!empty($item->site)) {
-											$site = $this->model('sitestore')->find($item->site);
-											if ($site) {
-												$this->out($site->name); echo('<br />');
-											}
-										}
+								if (!empty($item->building)) {
+									$building = $this->model('buildingstore')->find($item->building);
+									if ($building) {
+										drawField($lang['building.label'], $this->escape($building->name));
+									}
+								}
 
-										if (!empty($item->building)) {
-											$building = $this->model('buildingstore')->find($item->building);
-											if ($building) {
-												$this->out($building->name); echo('<br />');
-											}
-										}
-										if (!empty($item->room)) { $this->out($item->room); }
-										?>
-									</div>
-								</div>
-								<?php
+								drawField($lang['item.label.room'], $this->escape($item->room));
 							}
-						}
 
-						if (!empty($item->contact_email)) {
+							drawField($lang['item.label.availability'], $this->escape($item->availability));
+
+							if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
+								$access = $this->escape($this->model('accesslevelstore')->lookupName($item->access));
+								drawField($lang['access.label'], $this->escape($access));
+
+								drawField($lang['item.label.usergroup'], $this->escape($item->usergroup));
+							}
 							?>
-							<div class="accesslevel">
-								<div class="label">Contact</div>
-								<?php printf('<div class="detail"><a href="mailto:%1$s">%1$s</a></div>', $item->contact_email); ?>
-							</div>
+							</table>
+
+							<br />
+
+							<table class="fields">
 							<?php
-						}
-
-						if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
-							if (!empty($item->access)) {
-								?>
-								<div class="access">
-									<div class="label">Access Level</div>
-									<?php printf('<div class="detail">%1$s</div>', $this->escape($this->model('accesslevelstore')->lookupName($item->access))); ?>
-								</div>
-								<?php
+							$details = '';
+							if (true === $item->training_required) {
+								if (true === $item->training_provided) {
+									$details = 'Training is required to use this item and we can arrange this if needed.';
+								} elseif (false === $item->training_provided) {
+									$details = 'Although training is required to use this item, we cannot arrange it for you.';
+								} else {
+									$details = 'Training is required to use this item.';
+								}
+							} elseif(false === $item->training_required) {
+								$details = 'No special training required.';
 							}
+							drawField($lang['item.label.training'], $details);
 
-							if (!empty($item->usergroup)) {
-								?>
-								<div class="usergroup">
-									<div class="label">Usergroup</div>
-									<?php printf('<div class="detail">%1$s</div>', $this->escape($item->usergroup)); ?>
-								</div>
-								<?php
+
+							switch($item->calibrated) {
+								case Item::CALIB_YES:
+									$details = 'Yes, this item is calibrated.';
+									if (isSensibleDate($item->last_calibration_date)) {
+										$details .= '<br />Last Calibration: '. date('d-m-Y', $item->last_calibration_date);
+									}
+									if (isSensibleDate($item->next_calibration_date)) {
+										$details .= '<br />Next Calibration: '. date('d-m-Y', $item->next_calibration_date);
+									}
+									break;
+								case Item::CALIB_NO:
+									$details = 'No, this item is not calibrated.';
+								case Item::CALIB_AUTO:
+									$details = 'This item is automatically calibrated.';
+								default:
+									$details = '';
+									break;
 							}
-						}
-
-						if (!empty($item->availability)) {
+							drawField($lang['item.label.calibrated'], $details);
 							?>
-							<div class="availability">
-								<div class="label">Availability</div>
-								<?php printf('<div class="detail">%1$s</div>', $this->escape($item->availability)); ?>
-							</div>
-							<?php
-						}
-						?>
-						</div>
-					</div>
-
+							</table>
+						</td>
+					</tr>
+					</table>
 
 				</div>
+
+
+				<div class="item-body">
+
+					<?php
+					if (!empty($item->full_description)) {
+						$this->outf($lang['item.label.full_description'], '<h3>%s</h3>');
+						?>
+						<div class="item-description">
+							<?php echo $wiki_parser->parse($item->full_description); ?>
+						</div>
+						<?php
+					}
+
+					if (!empty($item->specification)) {
+						$this->outf($lang['item.label.specification'], '<h3>%s</h3>');
+						?>
+						<div class="item-specification">
+							<?php echo $wiki_parser->parse($this->escape($item->specification)); ?>
+						</div>
+						<?php
+					}
+
+
+
+					/*
+					 * Show Available Files
+					 */
+					if ( ($this->model('security')->checkItemPermission($item, 'item.files.view')) && (!empty($other_files)) ) {
+						$grouped_files = null;
+
+						foreach($other_files as $file) {
+							$grouped_files[$file->type][] = $file;
+						}
+
+						$types = $this->model('itemstore')->findAllFileTypes();
+
+						$this->outf($lang['item.label.files'], '<h3>%s</h3>');
+						?>
+						<div class="item-files">
+							<?php
+							foreach($grouped_files as $file_type => $file_group) {
+								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Files' ;
+								?>
+								<h4><?php $this->out($type_name); ?></h4>
+								<ul>
+									<?php
+									foreach($file_group as $file) {
+										$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$file->filename}");
+										$display_name = (empty($file->name)) ? $file->filename : $file->name ;
+										?>
+										<li><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
+										<?php
+									}
+									?>
+								</ul>
+								<?php
+							}
+							?>
+						</div>
+						<?php
+					}
+
+					if (!empty($item->copyright_notice)) {
+						$this->outf($lang['item.label.copyright_notice'], '<h4>%s</h4>');
+						printf('<p>%s</p>', $item->copyright_notice);
+					}
+
+					if (isSensibleDate($item->date_updated)) {
+						printf('<p class="note" style="margin-top: 2em;">%s: %s</p>', $lang['item.label.date_updated'], date('d-m-Y', $item->date_updated));
+					}
+					?>
+
+				</div>
+
+
 			</div>
+
+
+
+			<div style="float: left; width: 250px;">
+
+				<?php
+				if ($no_image) {
+					?>
+					<img src="<?php echo $image; ?>" width="100" alt="<?php $this->out($image_alt); ?>" />
+					<?php
+				} else {
+					?>
+					<a href="<?php echo $image; ?>" target="_blank"><img src="<?php echo $image; ?>" width="250" alt="<?php $this->out($image_alt); ?>" /></a>
+					<?php
+				}
+
+				foreach($image_files as $i => $file) {
+					if ($file->filename != $item->image) {
+						$extra_image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $file->filename);
+						?>
+						<div class="extra_image" style="border: 2px solid #fff;">
+							<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="80" alt="" /></a>
+						</div>
+						<?php
+					}
+				}
+
+
+				$categories = $this->model('categorystore')->findForItem($item->id);
+				if ($categories->count()==0) {
+					if ($this->model('user')->isAnonymous()) {
+						?>
+						<p class="note">There are no publically available categories listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
+						<?php
+					}
+				} else {
+					?>
+					<h6>Related Categories</h6>
+					<ul style="margin-left: 1em;">
+					<?php
+					foreach($categories as $i => $category) {
+						?>
+						<li>
+							<a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"); ?>">
+								<?php $this->out($category->name); ?>
+								<span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span>
+							</a>
+						</li>
+						<?php
+					}
+					?>
+					</ul><?php
+				}
+
+
+				$tags = $this->model('itemstore')->getItemTags($item->id);
+
+				if (0 == count($tags)) {
+					if ($this->model('user')->isAnonymous()) {
+						?>
+						<p class="note">There are no publically available tags listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
+						<?php
+					}
+				} else {
+					?>
+					<h6>Tags</h6>
+					<ul>
+						<?php
+						foreach($tags as $i => $tag) {
+							?>
+							<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tags/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
+							<?php
+						}
+						?>
+					</ul>
+					<?php
+				}
+				?>
+
+				<br />
+
+				<table class="fields">
+				<?php
+				if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
+					if (isSensibleDate($item->PAT)) {
+						drawField($lang['item.label.PAT'], date('d-m-Y', $item->PAT));
+					}
+				}
+
+				// Custom fields
+				if ($this->model('security')->checkItemPermission($item, 'item.customfield.view')) {
+					$custom_fields = $this->model('itemstore')->getItemCustomFields($item->id);
+					if (!empty($custom_fields)) {
+						$fields = $this->model('customfieldstore')->findAll();
+						if (!empty($fields)) {
+							foreach($fields as $field) {
+								if ( (isset($custom_fields[$field->id])) && (!empty($custom_fields[$field->id])) ) {
+									drawField($field->name, $this->escape($custom_fields[$field->id]));
+								}
+							}
+						}
+					}
+				}
+				?>
+				</table>
+
+			</div>
+
 		</div>
+
 		<?php
 		return true;
-	}
-
+   }
 
 
 /* --------------------------------------------------------------------------------

@@ -3,18 +3,38 @@ $site = $this->site;
 
 
 $this->layout()->addGlobalJavascript();
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
 
 $this->layout()->appendSection('layout.head', '
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
-		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Site\" />");
+		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete Site</a></div>");
 		del_button.click(function () {
-			return confirm("Please confirm that this campus site will be deleted.\n\nAny Items associated with this site will remain, but no longer be registered with the site.\n\nThis operation cannot be undone.");
+			$(\'#dialog-site\').html(\'' . $site->name . '\');
+			$(\'#dialog\').dialog(\'open\');
 		});
 		$("#delete_button_container").append(del_button);
 
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$(\'#dialog\').dialog({
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "Delete": function() {
+                	$(\'#submitdelete\').val(\'1\');
+                    $(\'#siteform\').submit();
+                },
+                "Cancel": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
 	});
 
 </script>
@@ -22,92 +42,86 @@ $this->layout()->appendSection('layout.head', '
 ?>
 
 
-<h1>Edit Site: <?php $this->out($site->name); ?></h1>
-
+<h1 class="green-bar">Edit Site: <?php $this->out($site->name); ?></h1>
 <p>Here you can edit this campus site.</p>
+
+<div id="delete_button_container"></div>
+
+
+
+<h3>Site details</h3>
+
 
 <?php
 Ecl_Helper_Html::form('siteform', $this->request()->uri());
 Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+Ecl_Helper_Html::formHidden('submitdelete', '');
 ?>
 
-<div class="grid_row">
+<dl class="form">
 
-	<div class="grid_9col">
+	<dt>Name</dt>
+	<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $site->name); ?></dd>
 
-		<dl>
-			<dt>Name</dt>
-			<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $site->name); ?></dd>
-		</dl>
+</dl>
 
-		<div style="text-align: center;">
-			<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
-		</div>
-
-	</div>
-
-	<div class="grid_3col grid_lastcol">
-
-		<div id="delete_button_container"></div>
-
-		<br style="clear: both;" />
-
-		<div class="boxed" style="margin-top: 1em;">
-			<p class="title">Items</p>
-			<?php
-			$items = $this->model('itemstore')->findForSite($site->id, KC__VISIBILITY_INTERNAL);
-
-			if (0 < $items->count()) {
-				?>
-				<p>This site contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
-
-				<p class="title">Transfer Items</p>
-				<?php
-				$options = $this->model('sitestore')->findAll()->toAssoc('id', 'name');
-				unset($options[$site->id]);
-
-				if (empty($options)) {
-					?>
-					<p>There are no other sites available.</p>
-					<?php
-				} else {
-					?>
-					<p>Select a destination to transfer all items to.</p>
-					<?php
-					$options = array('' => '') + $options;
-					Ecl_Helper_Html::formSelect('destination', $options);
-					?>
-					<br /><br />
-					<?php
-					$cboxes = array();
-					$cboxes[] = array (
-						'name'      => 'delete_on_transfer' ,
-						'id'        => 'delete_on_transfer' ,
-						'label'     => 'Delete current site after transfer' ,
-						'value'     => '1' ,
-						'selected'  => false ,
-					);
-					Ecl_Helper_Html::formCheckboxTable($cboxes);
-					?>
-					<div style="text-align: right;">
-						<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
-					</div>
-					<?php
-				}
-			} else {
-				?>
-				<p>This site is not associated with any items.</p>
-				<?php
-			}
-			?>
-
-		</div>
-
-	</div>
-
-
+<div>
+	<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
 </div>
+
+
+<br />
+<h3>Items Listed</h3>
+<?php
+$items = $this->model('itemstore')->findForSite($site->id, KC__VISIBILITY_INTERNAL);
+
+if (0 < $items->count()) {
+	?>
+	<p>This site contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
+
+	<?php
+	$options = $this->model('sitestore')->findAll()->toAssoc('id', 'name');
+	unset($options[$site->id]);
+
+	if (!empty($options)) {
+		?>
+		<p>If you would like to transfer your items to a different site, please select a destination to transfer all items to.</p>
+		<?php
+		$options = array('' => '') + $options;
+		Ecl_Helper_Html::formSelect('destination', $options);
+		?>
+		<br /><br />
+		<?php
+		$cboxes = array();
+		$cboxes[] = array (
+			'name'      => 'delete_on_transfer' ,
+			'id'        => 'delete_on_transfer' ,
+			'label'     => 'Delete current site after transfer' ,
+			'value'     => '1' ,
+			'selected'  => false ,
+		);
+		Ecl_Helper_Html::formCheckboxTable($cboxes);
+		?>
+		<div style="text-align: right;">
+			<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
+		</div>
+		<?php
+	}
+} else {
+	?>
+	<p>This site is not associated with any items.</p>
+	<?php
+}
+?>
+
 
 <?php
 Ecl_Helper_Html::formClose();
 ?>
+
+<div id="dialog" title="Verify Delete Site">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span> Please confirm that this campus site will be deleted.</p><p>Any Items associated with this site will remain, but no longer be registered with the site.</p><p>This operation cannot be undone.</p>
+	<p id="dialog-site"></p>
+</div>
+
+

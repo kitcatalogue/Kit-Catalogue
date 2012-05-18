@@ -17,7 +17,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
-		$this->layout()->addBreadcrumb('Departments', $this->router()->makeAbsoluteUri('/admin/departments/index/'));
+		$this->layout()->addBreadcrumb($this->model()->lang['dept.label.plural'], $this->router()->makeAbsoluteUri('/admin/departments/index/'));
 		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
 	}// /method
 
@@ -27,6 +27,9 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 	 * Create a new department.
 	 */
 	public function actionCreate() {
+
+
+
 		$this->layout()->clearBreadcrumbs(2);
 		$this->layout()->clearFeedback();
 
@@ -39,7 +42,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 
 			$dept_name = $this->request()->post('new_dept');
 			if (empty($dept_name)) {
-				$errors[] = 'You must provide the name of your new department.';
+				$errors[] = 'You must provide the name of your new '. strtolower($this->model()->lang['dept.label'].'.');
 			}
 
 			if ($errors) {
@@ -50,13 +53,13 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 				$new_id = $this->model('departmentstore')->insert($new_dept);
 
 				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The department '{$new_dept->name} has been added");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($this->model()->lang['dept.label']) ." '{$new_dept->name} has been added");
 				} else {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new department.');
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new '. strtolower($this->model()->lang['dept.label']).'.');
 				}
 			}
 		} else {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create department.  No information posted.');
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create the new '. strtolower($this->model()->lang['dept.label']) .'.  No information posted.');
 		}
 
 		$this->action('index');
@@ -83,7 +86,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 			if ($this->request()->post('submitdelete')) {
 				$this->model('departmentstore')->delete($dept->id);
 				$this->layout()->clearBreadcrumbs(2);
-				$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The department has been deleted');
+				$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($this->model()->lang['dept.label']) .' has been deleted');
 				$this->action('index');
 				return;
 			}
@@ -93,7 +96,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 
 				$target_dept = $this->model('departmentstore')->find($this->request()->post('destination'));
 				if (empty($target_dept)) {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The items could not be transferred.', 'The destination department selected could not be found.');
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The items could not be transferred.', 'The destination'. strtolower($this->model()->lang['dept.label']) .' selected could not be found.');
 				} else {
 					$this->model('itemstore')->transferDepartmentItems($dept->id, $target_dept->id);
 					$this->model('departmentstore')->rebuildItemCounts();
@@ -122,7 +125,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 
 				$dept->name = $this->request()->post('name');
 				if (empty($dept->name)) {
-					$errors[] = 'You must provide a name for the department.';
+					$errors[] = 'You must provide a name for the '. strtolower($this->model()->lang['dept.label']) .'.';
 				}
 
 				if ($errors) {
@@ -163,9 +166,9 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 		$this->layout()->clearFeedback();
 
 		if ($this->model('departmentstore')->rebuildItemCounts()) {
-			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The department item counts have been rebuilt.');
+			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($this->model()->lang['dept.label']) .' item counts have been rebuilt.');
 		} else {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error rebuilding the department item counts.');
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error rebuilding the '. strtolower($this->model()->lang['dept.label']) .' item counts.');
 		}
 
 		$this->action('index');

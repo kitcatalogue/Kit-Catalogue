@@ -33,7 +33,7 @@ var cpv_selected_codes = [];
  * Perform a CPV lookup (if required)
  */
 function cpvLookup() {
-
+	
 	if (cpv_trigger.val() != cpv_old_trigger_val) {
 
 		cpv_old_trigger_val = cpv_trigger.val();
@@ -162,6 +162,7 @@ function cpvScrollListAll(cpv_id) {
 		});
 	}
 }// /function
+
 
 
 

@@ -58,7 +58,7 @@ $config['org.www'] = 'http://www.example.com/';
 // Leave this blank to ignore
 $config['org.logo'] = '';
 
-
+$config['departments'] = 'School';
 
 /*
  * Application Settings
@@ -70,7 +70,7 @@ $config['org.logo'] = '';
 $config['app.debug'] = false;
 
 
-$config['app.version'] = '0.9.7';
+$config['app.version'] = '0.9.8';
 
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
@@ -91,6 +91,11 @@ $config['app.email'] = '';
 // If enabled, anonymous users can still only see items marked "public"
 // If this is disabled, all users must sign on before they can see anything in the catalogue.
 $config['app.allow_anonymous'] = false;
+
+// Use this setting to change the PHP session-key under which authentication user data is stored.
+// You only really need to change this if you are hosting two separate kit-catalogue installations
+// on the same server, and wish to keep the sign-ins entirely separate.
+$config['app.user_session_var'] = '_user_data';
 
 
 

@@ -67,6 +67,25 @@ class Controller_Admin_Reports extends Ecl_Mvc_Controller {
 
 
 
+	public function actionManufacturers() {
+		$this->layout()->addBreadcrumb('Manufacturers', $this->router()->makeAbsoluteUri('/admin/reports/manufacturers/'));
+
+		$report_id = $this->param('id', 'index');
+
+		if ('index' == $report_id) {
+			$this->view()->render('reports_manufacturers_index');
+			return;
+		}
+
+		$is_download = ($this->request()->get('downloadreport', false));
+		if ($is_download) { $this->router()->layout(null); }
+
+		$this->view()->is_download = $is_download;
+		$this->view()->render("reports_manufacturers_{$report_id}");
+	}// /method
+
+
+
 /* --------------------------------------------------------------------------------
  * Private Methods
  */

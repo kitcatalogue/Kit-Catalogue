@@ -760,6 +760,19 @@ class Ecl_Helper_Array {
 
 
 
+	public static function removeEmptyRows($array) {
+		if ( (empty($array)) || (!is_array($array)) ) { return array(); }
+
+		return array_filter($array, function($row) {
+			foreach($row as $k => $v) {
+				if (strlen(trim($v))>0) { return true; }
+			}
+			return false;
+		});
+	}// /method
+
+
+
 	/**
 	 * Remove any elements with the given value from the array.
 	 *

@@ -45,11 +45,10 @@ class Controller_Item extends Ecl_Mvc_Controller {
 		$letter = ucwords( $this->request()->get('letter', 'A') );
 
 		$alphabet = $this->model('itemstore')->findUsedAToZ($user->param('visibility'));
-
 		// If no letter selected, auto-select the first letter with items in
-		//if ( (!in_array($letter, $alphabet)) && (count($alphabet)>0) ) {
-		//	$letter = ucwords($alphabet[0]);
-		//}
+		if ( (!in_array($letter, $alphabet)) && (count($alphabet)>0) ) {
+			$letter = ucwords($alphabet[0]);
+		}
 
 		$this->view()->letter = $letter;
 		$this->view()->alphabet = $alphabet;
@@ -103,6 +102,21 @@ class Controller_Item extends Ecl_Mvc_Controller {
 		$this->view()->render('item_view');
 	}// /method
 
+
+
+	public function actionTags() {
+
+		$query = urldecode($this->param('tag'));
+
+		$this->layout()->addBreadcrumb("Items tagged: {$query}", $this->router()->makeAbsoluteUri("tags/{$query}"));
+
+		$this->view()->query = $query;
+
+		$query = str_replace('%', '\%', $query);
+
+		$this->view()->items = $this->model('itemstore')->findForTags($query, $this->model('user')->param('visibility'),'');
+		$this->view()->render('item_searchresults');
+	}// /method
 
 
 

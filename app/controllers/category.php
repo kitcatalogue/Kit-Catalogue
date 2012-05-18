@@ -14,7 +14,7 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->router()->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/category/'));
+		$this->router()->layout()->addBreadcrumb($this->model()->lang['cat.label.plural'], $this->router()->makeAbsoluteUri('/category/'));
 	}// /method
 
 
@@ -39,7 +39,7 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-		$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri('/category/'.$category->url_name));
+		$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"));
 
 		$this->view()->category = $category;
 		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
@@ -57,8 +57,15 @@ class Controller_Category extends Ecl_Mvc_Controller {
 
 		$item = $this->model('itemstore')->find($item_id);
 
+
 		if ( (empty($category)) || (empty($item)) ) {
 			$this->router()->action('error', '404');
+			return true;
+		}
+
+
+		if ( (KC__VISIBILITY_PUBLIC != $item->visibility) && ($this->model('user')->isAnonymous()) ) {
+			$this->router()->action('404', 'error');
 			return true;
 		}
 

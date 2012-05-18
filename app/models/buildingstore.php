@@ -48,6 +48,8 @@ class Buildingstore {
 			'code'         => $object->code ,
 			'name'         => $object->name ,
 			'site_id'      => $object->site_id ,
+			'latitude'     => $object->latitude ,
+			'longitude'    => $object->longitude ,
 		);
 
 		return $row;
@@ -69,6 +71,8 @@ class Buildingstore {
 		$object->code = $row['code'];
 		$object->name = $row['name'];
 		$object->site_id = $row['site_id'];
+		$object->latitude = $row['latitude'];
+		$object->longitude = $row['longitude'];
 
 		return $object;
 	}// /method
@@ -125,7 +129,6 @@ class Buildingstore {
 				FROM building
 				WHERE building_id=:building_id
 			", $binds);
-
 			return $this->_db->getObject(array($this, 'convertRowToObject') );
 		}
 	}// /method
@@ -224,6 +227,7 @@ class Buildingstore {
 	 * @return  mixed  The new id created.  On fail, null.
 	 */
 	public function insert($object) {
+
 		$binds = $this->convertObjectToRow($object);
 
 		unset($binds['building_id']);   // Don't insert the id, we want a new one

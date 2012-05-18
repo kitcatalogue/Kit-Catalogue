@@ -156,9 +156,9 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * Escape the given string for output.
 	 *
 	 * @param  string  $string
-	 * @param  string  $charset  (optional)
+	 * @param  string  $charset  (default: 'UTF-8')
 	 *
-	 * @return  string  The escaped string.
+	 * @return  string
 	 */
 	public function escape($string, $charset = 'UTF-8') {
 		return htmlspecialchars($string, ENT_COMPAT | ENT_IGNORE, $charset, false);
@@ -191,27 +191,12 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 
 
 	/**
-	 * Echo out the escaped version given value.
-	 *
-	 * The value will be escaped for HTML.
-	 *
-	 * @param  mixed  $value
-	 *
-	 * return  string  The operation was successful.
-	 */
-	public function out($value) {
-		echo $this->escape($value);
-	}// /method
-
-
-
-	/**
 	 * Render any defined breadcrumb links.
 	 *
 	 * @return  boolean  The operation was successful.
 	 */
 	public function renderBreadcrumbs() {
-		if (!empty($this->_breadcrumbs)) {
+		if ($this->hasBreadcrumbs()) {
 			echo('<ul>');
 			foreach($this->_breadcrumbs as $i => $breadcrumb) {
 				if (isset($breadcrumb['href'])) {
@@ -233,7 +218,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function renderFeedback() {
-		if (!empty($this->_feedback)) {
+		if ($this->hasFeedback()) {
 			foreach($this->_feedback as $i => $feedback) {
 				?>
 				<div class="feedback <?php echo($feedback['type']); ?>">
@@ -280,7 +265,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function renderJavascripts() {
-		if (!empty($this->_javascripts)) {
+		if ($this->hasJavascripts()) {
 			foreach($this->_javascripts as $i => $href) {
 				printf("\t".'<script type="text/javascript" src="%s"></script>%s', $href, "\n");
 			}
@@ -296,7 +281,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function renderStylesheets() {
-		if (!empty($this->_stylesheets)) {
+		if ($this->hasStylesheets()) {
 			foreach($this->_stylesheets as $i => $stylesheet) {
 				printf("\t".'<link href="%s" media="%s" rel="stylesheet" type="text/css" />%s', $stylesheet['href'], $stylesheet['media'], "\n");
 			}

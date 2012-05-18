@@ -1,52 +1,48 @@
+<?php
+// is this a search, or a lookup?
+if (is_numeric($this->query)) {
+	// lookup
+	$searchstring = $this->model('homepageblockstore')->lookupReason($this->query);
+} else {
+	$searchstring = $this->query;
+}
+
+
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	printf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
+}
+?>
 
 <h1>Search Results</h1>
+<?php
+$count = $this->items->count();
 
-
-<div class="grid_row" style="margin-top: 1em;">
-
-	<div class="grid_8col">
-
+if (0 == $count) {
+	if (empty($searchstring)) {
+		?>
+		<p class="note">No items found - you must enter the text to search.</p>
 		<?php
-		if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-			?>
-			<div style="float: right;">
-				<?php
-				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
-				$back_url = base64_encode($this->request()->relativeUri());
-				printf('<div class="editlink"><a style="float: right;" class="admin_link" href="%1$s?backlink=%2$s">new item</a></div>', $edit_url, $back_url);
-				?>
-			</div>
-			<?php
-		}
+	} else {
+		?>
+		<p class="note">No items found matching "<?php $this->out($searchstring); ?>".</p>
+		<?php
+	}
+} else {
+	?>
+	<p class="note"><strong><?php $this->out($count); ?> found</strong> matching "<?php $this->out($searchstring); ?>".</p>
 
-		if ($this->items->count()==0) {
-			?>
-			<p class="intro">No items found matching "<?php $this->out($this->query); ?>".</p>
-			<?php
-		} else {
-			$count_str = $this->items->count();
-			if ($this->items->count()==1) {
-				$count_str .= ' item';
-			} else {
-				$count_str .= ' items';
-			}
-			?>
-			<p class="intro"><strong><?php $this->out($count_str); ?> found</strong> matching "<?php $this->out($this->query); ?>".</p>
-
-			<div class="item_list">
-				<?php
-				$url_stub = $this->router()->makeAbsoluteUri('/item/');
-				foreach($this->items as $item) {
-					$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
-				}
-				?>
-			</div>
-			<?php
+	<ul id="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri('/item/');
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
 		}
 		?>
-	</div>
+	</ul>
+	<?php
+}
+?>
 
-	<div class="grid_4col grid_lastcol">
-	</div>
 
-</div>

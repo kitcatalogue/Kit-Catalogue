@@ -7,10 +7,10 @@ require_once('./inc__install.php');
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Kit-Catalogue : Installation</title>
-	<link href="../css/basic.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="../css/common.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="../css/kitcatalogue.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
 	<style type="text/css">
+
+	body { padding: 1.5em 1.5em 2em 1.5em; background-color: #fff; font-size: 14px; }
 
 	h2, h3, h4, h5, h6 { margin-left: -1em; color: #000; }
 	h2 { margin-top: 2em; }

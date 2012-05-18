@@ -131,14 +131,13 @@ class Security {
 
 			// If user has signed in, set the default viewing permissions
 			if (!$this->_user->isAnonymous()) {
-				$perms['item.accesslevel.view']   = true;
-				$perms['item.customfields.view']  = true;
-				$perms['item.files.view']         = true;
-				$perms['item.location.view']      = true;
-
-				// If user is the item custodian (has the same email address)
-				if ($this->_user->email == $item->contact_email) {
-					$perms['site.item.edit']  = true;
+				// Hide items that are 'draft' unless user is
+				// the custodian
+				if ($item->visibility != 3) {
+					$perms['item.accesslevel.view']   = true;
+					$perms['item.customfields.view']  = true;
+					$perms['item.files.view']         = true;
+					$perms['item.location.view']      = true;
 				}
 
 				if ($new_item) {
@@ -147,9 +146,23 @@ class Security {
 						$perms['site.item.edit']  = true;
 					}
 				} else {
-					// If user has editing rights for the item's department
-					if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
-						$perms['site.item.edit']  = true;
+					// If user is the item custodian (has the same email address)
+					if ($this->_user->email == $item->contact_1_email
+						|| $this->_user->email == $item->contact_2_email) {
+							$perms['site.item.edit']  = true;
+
+							$perms['item.accesslevel.view']   = true;
+							$perms['item.customfields.view']  = true;
+							$perms['item.files.view']         = true;
+							$perms['item.location.view']      = true;
+					} else {
+						// If user has editing rights for the item's department
+						// and the item isn't set to draft...
+						if ($item->visibility!=3) {
+							if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
+								$perms['site.item.edit'] = true;
+							}
+						}
 					}
 				}
 

@@ -370,12 +370,15 @@ class Ecl_Db_Mysql {
 	/**
 	 * Combine the given SQL statements using a UNION operator.
 	 *
+	 * Use $order_by to control the ordering.  e.g.  $order_by = 'count DESC, name ASC'
+	 *
 	 * @param  array  $sql_statements  An array of SQL statements.
 	 * @param  string  $union  The union type to use, either 'ALL' or 'DISTINCT'. (default: 'DISTINCT')
+	 * @param  string  $order_by  The SQL order by column list to use for the entire union result.  (default: null)
 	 *
 	 * @return  mixed  The resulting SQL statement. On fail, null.
 	 */
-	public function unionise($sql_statements, $union = 'DISTINCT') {
+	public function unionise($sql_statements, $union = 'DISTINCT', $order_by = null) {
 		$union = strtoupper($union);
 		if (!in_array($union, array('ALL', 'DISTINCT') )) {
 			return null;
@@ -384,6 +387,9 @@ class Ecl_Db_Mysql {
 		}
 
 		$sql = '('. implode($union, $sql_statements) .')';
+		if (!empty($order_by)) {
+			$sql .="ORDER BY $order_by";
+		}
 
 		return $sql;
 	}// /method
@@ -401,8 +407,9 @@ class Ecl_Db_Mysql {
 	 */
 	public function update($table, $bind, $where = null) {
 		$set = array();
+
 		foreach($bind as $field => $value) {
-			$set[] = "$field = ". $this->prepareValue($value);
+			$set[] = "$field = ". $this->prepareValue($value) ."\n";
 		}
 		$set = implode(', ', $set);
 
@@ -769,9 +776,18 @@ class Ecl_Db_Mysql {
 
 	/**
 	 * Convert a PHP timestamp (unix timestamp) to the database's datetime format
+	 *
+	 * @param  integer  $unix_timestamp
+	 * @param  boolean  $nullable  If empty, use a null date. (default: true)
+	 *
+	 * @return  mixed  MySQL date string, or null if empty datetime.
 	 */
-	public function formatDate($unix_timestamp) {
-		return date('Y-m-d H:i:s', $unix_timestamp);	// MySQL datatime format (almost ISO-8601)
+	public function formatDate($unix_timestamp, $nullable = true) {
+		if ($nullable && empty($unix_timestamp)) {
+			return null;
+		} else {
+			return date('Y-m-d H:i:s', $unix_timestamp);	// MySQL datatime format (almost ISO-8601)
+		}
 	}// /method
 
 
@@ -929,18 +945,18 @@ class Ecl_Db_Mysql {
 	 * @param  string  $field_name  The field to check (aaa in example above).
 	 * @param  array  $filter_values  The values to compare against.
 	 * @param  string  $logical_operator  The operator to use to concatenate the filters ('OR', 'XOR', etc).
-	 * @param  string  $type  The datatype of the values being filtered.
+	 * @param  string  $comparison_operator  The operator to use within the filter ('=' OR 'LIKE', etc).
 	 *
 	 * @return  string  The completed filter clause.
 	 */
-	public function prepareFilter($field_name, $filter_values, $logical_operator = 'OR', $type = 's') {
+	public function prepareFilter($field_name, $filter_values, $logical_operator = 'OR', $comparison_operator = '=') {
 		$filter_values = (array) $filter_values;	// cast values to array (in case it was only passed one)
 
 		$filter_clause = '(';
 		$w_count = count($filter_values);
 		$i = 1;
 		foreach($filter_values as $k => $v) {
-			$filter_clause .= "$field_name=". $this->prepareValue($v, $type);
+			$filter_clause .= "{$field_name} {$comparison_operator} ". $this->prepareValue($v);
 			if ($i<$w_count) { $filter_clause .= " $logical_operator "; }
 			$i++;
 		}
@@ -1012,7 +1028,7 @@ class Ecl_Db_Mysql {
 	 */
 	public function prepareValue($value) {
 		// Performs a MySQL enquoting. Every value can be enclosed in quotes except NULL
-		return (is_null($value)) ? 'NULL' : '\''. $this->escapeString($value) .'\'';
+		return (null === $value) ? 'NULL' : '\''. $this->escapeString($value) .'\'';
 	}// /method
 
 

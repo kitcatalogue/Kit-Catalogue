@@ -12,7 +12,7 @@ $binds = array (
 );
 
 $this->model('db')->query("
-	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_email, date_updated
+	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_1_email, contact_2_email, date_updated
 	FROM `item`
 	WHERE department_id=:department
 ", $binds);
@@ -42,7 +42,8 @@ if (!empty($items_temp)) {
 			'building'       => $building ,
 			'room'           => $row['room'] ,
 			'visibility'     => (KC__VISIBILITY_PUBLIC == $row['visibility']) ? 'public' : 'internal' ,
-			'contact_email'  => $row['contact_email'] ,
+			'contact_1_email'  => $row['contact_1_email'] ,
+			'contact_2_email'  => $row['contact_2_email'] ,
 			'date_updated'   => date('d-m-Y', strtotime($row['date_updated'])) ,
 		);
 	}
@@ -56,7 +57,7 @@ if ($this->is_download) {
 	header("Content-Disposition: attachment; filename=items_for_department.csv");
 	header('Content-Type: text/csv');
 
-	echo('"catalogue id","manufacturer","manufacturer","acronym","department","building","room","visibility","staff contact","date updated"'."\n");
+	echo('"catalogue id","manufacturer","model","acronym","department","building","room","visibility","staff contact 1","staff contact 2","date updated"'."\n");
 	$csv_parser = Ecl::factory('Ecl_Parser_Csv');
 	echo $csv_parser->generate($items);
 	return;
@@ -66,8 +67,10 @@ if ($this->is_download) {
 
 ?>
 
-<h1>Items By Department Report</h1>
+
+<h1 class="green-bar">Items By Department Report</h1>
 <p class="note">Generated on <?php $this->out(date('H:i d-m-Y')); ?>.</p>
+
 
 <?php
 if (empty($items)) {
@@ -91,7 +94,8 @@ if (empty($items)) {
 	<th>building</th>
 	<th>room</th>
 	<th>visibility</th>
-	<th>staff contact</th>
+	<th>staff<br />contact 1</th>
+	<th>staff<br />contact 2</th>
 	<th>date updated</th>
 	<th>&nbsp;</th>
 </tr>
@@ -107,7 +111,8 @@ foreach($items as $row) {
 		<td class="str"><?php $this->out($row['building']); ?></td>
 		<td class="str"><?php $this->out($row['room']); ?></td>
 		<td class="str"><?php $this->out($row['visibility']); ?></td>
-		<td class="str small"><?php $this->out($row['contact_email']); ?></td>
+		<td class="str small"><?php $this->out($row['contact_1_email']); ?></td>
+		<td class="str small"><?php $this->out($row['contact_2_email']); ?></td>
 		<td class="str"><?php $this->out($row['date_updated']); ?></td>
 		<td class="link"><a href="<?php echo $this->router()->makeAbsoluteUri("/id/item/{$row['id']}"); ?>">View</a></td>
 	</tr>

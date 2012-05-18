@@ -129,7 +129,7 @@ class Ecl_Mvc_View extends Ecl_Mvc {
 
 
 	/**
-	 * Echo out the escaped version given value.
+	 * Echo out the escaped version of the given value.
 	 *
 	 * The value will be escaped for HTML.
 	 *
@@ -140,6 +140,23 @@ class Ecl_Mvc_View extends Ecl_Mvc {
 	public function out($value) {
 		echo $this->escape($value);
 	}// /method
+
+
+
+	/**
+	 * Echo out the escaped value, if it is not empty.
+	 *
+	 * @param  mixed  $value
+	 * @param  string  $format  (default: '%s')
+	 *
+ 	 * return  boolean  The operation was successful.
+	 */
+	public function outf($value, $format = '%s') {
+		if (!empty($value)) {
+			printf($format, $this->escape($value));
+		}
+		return true;
+	}
 
 
 

@@ -1,0 +1,35 @@
+<?php
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	$editlink = sprintf('&nbsp;<a class="admin_link" href="%1$s?backlink=%2$s">add an item &raquo;</a>', $edit_url, $back_url);
+} else {
+	$editlink = '';
+}
+?>
+
+<h1>Browse by <?php $this->out($this->customfield->name); ?></h1>
+
+<?php
+if (0 == count($this->values)) {
+	?>
+	<p>There are no item entries matching this custom field.</p>
+	<?php
+} else {
+	?>
+	<ul>
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}");
+
+		foreach($this->values as $record) {
+			?>
+			<li><a href="<?php echo($url_stub .'/'. urlencode($record['value']) ); ?>"><?php $this->out(ucwords($record['value'])); ?> (<?php $this->out($record['count']); ?>)</a></li>
+			<?php
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

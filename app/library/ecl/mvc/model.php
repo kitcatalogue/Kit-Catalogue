@@ -86,6 +86,11 @@ Class Ecl_Mvc_Model {
 
 
 
+	public function __get($name) {
+		return $this->get($name);
+	}
+
+
 	/**
 	 * Get the instance of this object.
 	 *

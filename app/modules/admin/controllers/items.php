@@ -4,8 +4,10 @@
  */
 class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
-	const IMPORT_USEIMPORTEDVALUE = '__useimportedvalue__';
 	const IMPORT_USEBLANK = '__useblank__';
+	const IMPORT_USEIMPORTEDVALUE = '__useimportedvalue__';
+	const IMPORT_USEWILLFAIL = '__fail__';
+
 
 
 	// Private Properties
@@ -62,25 +64,27 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$errors[] = 'The form details supplied appear to be forged.';
 			}
 
-			$field_name = $this->request()->post('name');
-			if (empty($field_name)) {
+			$customfield = $this->model('customfieldstore')->newCustomfield();
+
+			$customfield->name = $this->request()->post('name');
+			if (empty($customfield->name)) {
 				$errors[] = 'You must provide a name for your new field.';
 			}
 
 			if ($errors) {
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);
 			} else {
-				$new_id = $this->model('itemstore')->addCustomField($field_name);
+				$new_id = $this->model('customfieldstore')->insert($customfield);
 
 				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The field '{$field_name}' has been added");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The field '{$customfield->name}' has been added");
 				} else {
 					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error adding the field.  Check the field name is unique and try again.');
 				}
 			}
 		}
 
-		$this->view()->custom_fields = $this->model('itemstore')->getCustomFields();
+		$this->view()->custom_fields = $this->model('customfieldstore')->findAll();
 		$this->view()->render('items_customise');
 	}// /method
 
@@ -88,13 +92,14 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 	public function actionEdit() {
 
+		$saved_ok = false;
+
 		$item_id = $this->param('id');
 
 		// We're editing a 'new' item
 		if ('new' == strtolower($item_id)) {
 			$new_item = true;
 			$item = $this->model('itemstore')->newItem();
-			$item->manufacturer = 'New Item';
 
 			// If the item was new, but we've saved it once already..
 			$item_id = $this->request()->post('item_id');
@@ -122,6 +127,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		}
 
 
+		$backlink = $this->router()->makeAbsoluteUri(base64_decode($this->request()->get('backlink')));
+
 
 		if ($this->request()->post('submitdelete')) {
 			if (!$new_item) {
@@ -133,54 +140,45 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			}
 			$this->layout()->clearBreadcrumbs(2);
 			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The item has been deleted');
-			$this->action('index');
+
+			// If the backlink is not item-specific, redirect there.
+			if (!preg_match("#/(item|id)/(.*)/{$item->id}$#", $backlink)) {
+				$this->response()->setRedirect($backlink);
+			} else {
+				$this->response()->setRedirect($this->router()->makeAbsoluteUri('/'));
+			}
+
 			return;
 		}
 
 
 
-		$backlink = $this->router()->makeAbsoluteUri(base64_decode($this->request()->get('backlink')));
-
-
-
 		if ($this->request()->isPost()) {
 			$errors = false;
+			$saved_ok = false;
 
 			// Populate the item with the new form information
 			// Some properties, categories, files and custom fields, are processed after the item record is saved
 
+
 			// Main Details
+			$item->title = $this->request()->post('title');
 			$item->manufacturer = $this->request()->post('manufacturer');
 			$item->model = $this->request()->post('model');
 
 			$item->short_description = $this->request()->post('short_description');
 			$item->full_description = $this->request()->post('full_description');
-
 			$item->specification = $this->request()->post('specification');
 			$item->technique = $this->request()->post('technique');
 			$item->acronym = $this->request()->post('acronym');
 			$item->keywords = $this->request()->post('keywords');
 
-
-			// Categorisation
-			$other_dept = trim($this->request()->post('other_department'));
-			if (empty($other_dept)) {
-				$item->department = $this->request()->post('department');
-			} else {
-				// Create new department, and use it
-				$new_dept = $this->model('departmentstore')->newDepartment();
-				$new_dept->name = $other_dept;
-				$new_id = $this->model('departmentstore')->insert($new_dept);
-				if (!$new_id) {
-					$errors[] = 'Unable to create new department.';
-				} else {
-					$item->department = $new_id;
-				}
-			}
+			$item->manufacturer_website = $this->request()->post('manufacturer_website');
 
 
-			// Access
+			// Access & Usage
 			$vis = $this->request()->post('visibility');
+			//if (in_array($vis, array(KC__VISIBILITY_INTERNAL, KC__VISIBILITY_PUBLIC, KC__VISIBILITY_DRAFT))) {
 			if (in_array($vis, array(KC__VISIBILITY_INTERNAL, KC__VISIBILITY_PUBLIC))) {
 				$item->visibility = $vis;
 			}
@@ -189,36 +187,119 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			$item->availability = $this->request()->post('availability');
 			$item->usergroup = $this->request()->post('usergroup');
 
-			$contact_email = $this->request()->post('new_contact_email');
-			if (empty($contact_email)) {
-				$contact_email = $this->request()->post('contact_email');
+			$item->training_required = Ecl_Helper_String::parseBoolean($this->request()->post('training_required'), null);
+			$item->training_provided = Ecl_Helper_String::parseBoolean($this->request()->post('training_provided'), null);
+
+			$temp = strtolower($this->request()->post('calibrated', Item::CALIB_NOTAPP));
+			switch ($temp) {
+				case Item::CALIB_YES:
+				case Item::CALIB_NO:
+				case Item::CALIB_AUTO:
+					$item->calibrated= $temp;
+					break;
+				default:
+					$item->calibrated = '';
+					break;
 			}
-			$item->contact_email = $contact_email;
+
+			$item->last_calibration_date = $this->request()->postDmyt('last_calibration_date');
+			$item->next_calibration_date = $this->request()->postDmyt('next_calibration_date');
+
+			$item->quantity = (int) $this->request()->post('quantity', 1);
+			$item->quantity_detail = $this->request()->post('quantity_detail');
+
+
+			// Contact Information
+			$item->contact_1_name = $this->request()->post('contact_1_name');
+
+			$email = $this->request()->post('contact_1_email');
+			$item->contact_1_email = (!empty($email)) ? $email : trim($this->request()->post('new_contact_1_email', '')) ;
+
+			$item->contact_2_name = $this->request()->post('contact_2_name');
+
+			$email = $this->request()->post('contact_2_email');
+			$item->contact_2_email = (!empty($email)) ? $email : trim($this->request()->post('new_contact_2_email', '')) ;
 
 
 			// Location
+			$new_dept = trim($this->request()->post('new_department'));
+			if (empty($new_dept)) {
+				$item->department = $this->request()->post('department');
+			} else {
+				$department = $this->model('departmentstore')->findForName($new_dept);
+				if ($department) {
+					$item->department = $department->id;
+				} else {
+					// Create new department, and use it
+					$department = $this->model('departmentstore')->newDepartment();
+					$department->name = $new_dept;
+					$new_id = $this->model('departmentstore')->insert($department);
+					if (!$new_id) {
+						$errors[] = "Unable to create new department: '{$new_dept}'";
+					} else {
+						$item->department = $new_id;
+					}
+				}
+			}
+
 			$item->site = $this->request()->post('site');
 			$item->building = $this->request()->post('building');
 			$item->room = $this->request()->post('room');
 
 
+			// Asset & Finance Information
+			$item->asset_no = $this->request()->post('asset_no');
+			$item->finance_id = $this->request()->post('finance_id');
+			$item->serial_no = $this->request()->post('serial_no');
+			$item->year_of_manufacture = $this->request()->post('year_of_manufacture');
+
+			// Firstly, are we adding a supplier?
+			$new_supplier = trim($this->request()->post('new_supplier'));
+
+			if (empty($new_supplier)) {
+				$item->supplier = $this->request()->post('supplier');
+			} else {
+				$existing_supplier = $this->model('supplierstore')->findForName($new_supplier);
+				if ($existing_supplier) {
+					$item->supplier = $existing_supplier->id;
+				} else {
+					// Create new supplier, and use it
+					$supplier = $this->model('supplierstore')->newSupplier();
+					$supplier->name = $new_supplier;
+					$new_supplier_id = $this->model('supplierstore')->insert($supplier);
+					if (!$new_supplier_id) {
+						$errors[] = "Unable to create new supplier: '{$new_supplier}'";
+					} else {
+						$item->supplier = $new_supplier_id;
+					}
+				}
+			}
+
+			$item->date_of_purchase = $this->request()->postDmyt('date_of_purchase');
+			$item->PAT = $this->request()->postDmyt('PAT');
+
+
+			$item->copyright_notice = $this->request()->post("copyright_notice");
+
+
 			// Validate the new item
 			if (empty($item->manufacturer)) { $errors[] = 'You must supply a manufacturer\'s name.'; }
 			if (empty($item->model)) { $errors[] = 'You must supply a model name or number.'; }
-			if (empty($item->department)) { $errors[] = 'You must select the department in which this item resides.'; }
 			if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this item.'; }
-			if (empty($item->contact_email)) { $errors[] = 'You must enter a contact email address.'; }
+			if (empty($item->contact_1_email)) { $errors[] = 'You must enter at least the first staff contact\'s email address.'; }
+			if (empty($item->department)) { $errors[] = 'You must select the department in which this item resides.'; }
 
 
 			// Save the item information
-
 			if ($errors) {
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found while saving your changes:', '', $errors);
 			} else {
 
 				$continue_saving = false;
+
 				if ($new_item) {
 					$id = $this->model('itemstore')->insert($item);
+
 					if (empty($id)) {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Your new item could not be created.');
 					} else {
@@ -239,31 +320,33 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				// Path to item files
 				$item_path = $this->model()->get('app.upload_root'). '/items'. $item->getFilePath();
 
-
-
 				if ($continue_saving) {
-
 					// Process Categories
 					$categories = $this->request()->post('category');
 
 					$other_category = trim($this->request()->post('other_category'));
 					if (!empty($other_category)) {
-						$category = $this->model('categorystore')->newCategory();
-						$category->name = $other_category;
+						$existing_cat = $this->model('categorystore')->findForName($other_category);
+						if ($existing_cat) {
+							$categories[] = $existing_cat->id;
+						} else {
+							$category = $this->model('categorystore')->newCategory();
+							$category->name = $other_category;
 
-						$new_category_id = $this->model('categorystore')->insert($category);
-						if ($new_category_id) {
-							$categories[] = $new_category_id;
+							$new_category_id = $this->model('categorystore')->insert($category);
+							if ($new_category_id) {
+								$categories[] = $new_category_id;
+							}
 						}
 					}
 					$this->model('itemstore')->setItemCategories($item->id, $categories);
 
 
 					// Process Custom Fields
-					$fields = $this->model('itemstore')->getCustomFields();
+					$fields = $this->model('customfieldstore')->findAll();
 					$custom_fields = array();
-					foreach($fields as $field_id => $field_name) {
-						$custom_fields[$field_id] = $this->request()->post('custom_field_'.$field_id);
+					foreach($fields as $field) {
+						$custom_fields[$field->id] = $this->request()->post('custom_field_'.$field->id);
 					}
 
 					$this->model('itemstore')->setItemCustomFields($item->id, $custom_fields);
@@ -271,10 +354,9 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 					// Process Tags
 					$tags = $this->request()->post('tags');
-					if (!empty($tags)) {
-						$tags = explode(',', $tags);
-						$this->model('itemstore')->setItemTags($item->id, $tags);
-					}
+					$tags = explode(',', $tags);
+					$this->model('itemstore')->setItemTags($item->id, $tags);
+
 
 
 					/*
@@ -330,7 +412,6 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					}
 
 
-
 					// Check selected image settings
 					$files = $this->model('itemstore')->findFilesForItem($item);
 					$image_files = array();
@@ -363,10 +444,13 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					// Rebuild cached item counts
 					$this->model('categorystore')->rebuildItemCounts();
 					$this->model('departmentstore')->rebuildItemCounts();
-
+					$this->model('supplierstore')->rebuildItemCounts();
 
 					//Final update of item
 					$this->model('itemstore')->update($item);
+
+					$saved_ok = true;
+
 				}// /if (continue saving)
 			}// if-else (no errors)
 
@@ -380,6 +464,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		$this->view()->item = $item;
 		$this->view()->item_path = $item_path;
 		$this->view()->backlink = $backlink;
+		$this->view()->saved_ok = $saved_ok;
 		$this->view()->render('items_edit');
 	}
 
@@ -434,11 +519,12 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		// Prepare lookup info for validating incoming data
 		$lookup_models = array (
-			'access'      => 'accesslevelstore' ,
-			'building'    => 'buildingstore' ,
-			'category'    => 'categorystore' ,
-			'department'  => 'departmentstore' ,
-			'site'        => 'sitestore' ,
+			'access'          => 'accesslevelstore' ,
+			'building'        => 'buildingstore' ,
+			'category'        => 'categorystore' ,
+			'department'      => 'departmentstore' ,
+			'site'            => 'sitestore' ,
+			'supplier'        => 'supplierstore' ,
 		);
 
 
@@ -464,7 +550,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						'path'       => $upload_path ,
 						'flags'      => Ecl_Uploader::ALLOW_AUTORENAME + Ecl_Uploader::ALLOW_CREATEPATH ,
 						'filenames'  => array (
-							'datafile'  => 'itemimport_'. date('Ymd_His') .'_'. rand(1, 10000000) .'.csv' ,
+						'datafile'   => 'itemimport_'. date('Ymd_His') .'_'. rand(1, 10000000) .'.csv' ,
 						) ,
 					));
 
@@ -489,10 +575,9 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				// Add proper headers to the CSV data
 				$datacsv = array_merge(array ($this->_getRowHeaders()), $datacsv);
 
-
 				$this->view()->datacsv = $datacsv;
 				$this->view()->filename = basename($datafilename);
-				$this->view()->ignore_rows = $this->request()->post('ignore_rows');
+				$this->view()->ignore_rows = $this->request()->post('ignore_rows', 1);
 				$this->view()->render('items_importwizard2');
 				break;
 			// ----------------------------------------------------------------
@@ -536,48 +621,48 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				// Begin the import.
 				$standard_columns = (array) $this->_getStandardRowHeaders();
 				$standard_columns_count = count($standard_columns);
-				$custom_columns = $this->model('itemstore')->getCustomFields();
 
+				$custom_columns = Ecl_Helper_Array::extractColumn($this->model('customfieldstore')->findAll(), 'name', true);
 
 				$column_count = $standard_columns_count + count($custom_columns);
+
 
 				$items = array();    // Assoc-array of items being imported and their 'issues'
 				$are_issues = false;
 
 				foreach($datacsv as $i => $row) {
 
-					array_walk($row, function(&$v, $k) {
-						$v = trim($v);
-					});
-
-					$try_import = true;
+					// Make sure the rows are of the correct length
+					$row = array_pad($row, $column_count, '');
 
 					$issues = null;
 
 					$item = $this->model('itemstore')->newItem();
 
-					$item->manufacturer = $row[0];
-					$item->model = $row[1];
 
-					// in case of problems, this is how we'll describe the problem item
-					$err_str = " item: {$item->manufacturer} {$item->model}";
+					// Process each column in turn
 
-					// These properties do not need to match a lookup elsewhere
-					$item->short_description = $row[2];
-					$item->full_description = $row[3];
-					$item->specification = $row[4];
-					$item->acronym = $row[5];
-					$item->keywords = $row[6];
-					$item->technique = $row[8];
-					$item->usergroup = $row[10];
-					$item->availability = $row[12];
-					$item->room = $row[16];
-					$item->manufacturer_website = trim($row[18]);
-					$item->copyright_notice = $row[19];
+					$item->title = Ecl_Helper_String::parseString($row[0], 250);
+					$item->manufacturer = Ecl_Helper_String::parseString($row[1], 100);
+					if (empty($item->manufacturer)) {
+						$issues['manufacturer'] = '';
+					}
+
+					$item->model = Ecl_Helper_String::parseString($row[2], 100);
+					if (empty($item->model)) {
+						$issues['model'] = '';
+					}
 
 
-					// Lookup Category
-					$temp = $row[7];
+					$item->short_description = Ecl_Helper_String::parseString($row[3], 250);
+					$item->full_description = Ecl_Helper_String::parseString($row[4], 65535);
+					$item->specification = Ecl_Helper_String::parseString($row[5], 65535);
+
+					$item->acronym = Ecl_Helper_String::parseString($row[6], 15);
+					$item->keywords = Ecl_Helper_String::parseString($row[7], 250);
+
+					// 8 = category
+					$temp = Ecl_Helper_String::parseString($row[8], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['category']));
 					if (false === $temp_id) {
 						$issues['category'] = $temp;
@@ -585,9 +670,17 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->category = $temp_id;
 					}
 
+					// 9 = technique
+					$temp = Ecl_Helper_String::parseString($row[9], 100);
+					if (empty($temp)) {
+						$issues['technique'] = '';
+					} else {
+						$item->technique = $temp;
+					}
 
-					// Lookup Department
-					$temp = $row[9];
+					// 10 = department
+					// We process department here so it is checked first of all
+					$temp = Ecl_Helper_String::parseString($row[10], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['department']));
 					if (false === $temp_id) {
 						$issues['department'] = $temp;
@@ -595,9 +688,10 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->department = $temp_id;
 					}
 
+					$item->usergroup = Ecl_Helper_String::parseString($row[11], 250);
 
-					// Lookup Access
-					$temp = $row[11];
+					// 12 = access
+					$temp = Ecl_Helper_String::parseString($row[12], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['access']));
 					if (false === $temp_id) {
 						$issues['access'] = $temp;
@@ -605,18 +699,18 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->access = $temp_id;
 					}
 
+					$item->availability = Ecl_Helper_String::parseString($row[13], 250);
 
-					// Process Visibility
-					$visibility = $row[13];
+					// 14 = visibility
+					$visibility = Ecl_Helper_String::parseString($row[14], 10);
 					if ('public' == strtolower($visibility)) {
 						$item->visibility = KC__VISIBILITY_PUBLIC;
 					} else {
 						$item->visibility = KC__VISIBILITY_INTERNAL;
 					}
 
-
-					// Lookup Site
-					$temp = $row[14];
+					// 15 = site
+					$temp = Ecl_Helper_String::parseString($row[15], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['site']));
 					if (false === $temp_id) {
 						$issues['site'] = $temp;
@@ -624,9 +718,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->site = $temp_id;
 					}
 
-
-					// Lookup Building
-					$temp = $row[15];
+					// 16 = building
+					$temp = Ecl_Helper_String::parseString($row[16], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['building']));
 					if (false === $temp_id) {
 						$issues['building'] = $temp;
@@ -634,16 +727,68 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->building = $temp_id;
 					}
 
+					$item->room = Ecl_Helper_String::parseString($row[17], 250);
 
-					// Lookup contact email
-					$item->contact_email = $row[17];
+					$item->contact_1_name = Ecl_Helper_String::parseString($row[18], 250);
+
+					$item->contact_1_email = Ecl_Helper_String::parseString($row[19], 250);
+					if (empty($item->contact_1_email)) {
+						$issues['contact_1_email'] = '';
+					}
+
+					$item->contact_2_name = Ecl_Helper_String::parseString($row[20], 250);
+					$item->contact_2_email = Ecl_Helper_String::parseString($row[21], 250);
+
+					$item->manufacturer_website = preg_replace("/^https?:\/\/(.+)$/i","\\1", trim($row[22]));
+					$item->copyright_notice = Ecl_Helper_String::parseString($row[23], 250);
+
+					$item->training_required = Ecl_Helper_String::parseBoolean($row[24], null);
+					$item->training_provided = Ecl_Helper_String::parseBoolean($row[25], null);
+
+					$item->quantity = Ecl_Helper_String::parseString($row[26], 5);
+					$item->quantity_detail = Ecl_Helper_String::parseString($row[27], 250);
+
+					$item->PAT = Ecl_Helper_String::parseDate($row[28], null);
+
+					$item->calibrated = $row[29];
+
+					$temp = strtolower($row[29]);
+					switch ($temp) {
+						case Item::CALIB_YES:
+						case Item::CALIB_NO:
+						case Item::CALIB_AUTO:
+							$item->calibrated= $temp;
+							break;
+						default:
+							$item->calibrated = '';
+							break;
+					}
+
+					$item->last_calibration_date = Ecl_Helper_String::parseDate($row[30], null);
+					$item->next_calibration_date = Ecl_Helper_String::parseDate($row[31], null);
+
+					$item->asset_no = Ecl_Helper_String::parseString($row[32], 50);
+					$item->finance_id = Ecl_Helper_String::parseString($row[33], 50);
+					$item->serial_no = Ecl_Helper_String::parseString($row[34], 50);
+					$item->year_of_manufacture = Ecl_Helper_String::parseString($row[35], 4);
+
+					// 36 = supplier
+					$temp = Ecl_Helper_String::parseString($row[36], 250);
+					$temp_id = (array_search(strtolower($temp), $lookups['supplier']));
+					if (false === $temp_id) {
+						$issues['supplier'] = $temp;
+					} else {
+						$item->supplier_id = $temp_id;
+					}
+
+					$item->date_of_purchase = Ecl_Helper_String::parseDate($row[37], null);
 
 
 					// Process Custom Fields
 					$custom_fields = null;
 					$field_num = $standard_columns_count;
 					foreach($custom_columns as $j => $header) {
-						$custom_fields[$header] = (isset($row[$field_num])) ? $row[$field_num] : null ;
+						$custom_fields[$header] = (isset($row[$field_num])) ? Ecl_Helper_String::parseString($row[$field_num], 250) : null ;
 						$field_num++;
 					}
 
@@ -657,7 +802,6 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				}
 
 				$datacsv = null;
-
 
 				// Save the items and issues to a temporary file
 				if (0 == count($items)) {
@@ -683,7 +827,9 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$list = $this->model($model_name)->findAll()->toAssoc('id', 'name');
 
 						// If the lookup allows blanks for this value, add that as an option
-						if (!in_array($lookup_name, array('department')) ) {
+						if (in_array($lookup_name, array('department')) ) {
+							$list = array(self::IMPORT_USEWILLFAIL => '-- select a value --') + $list;
+						} else {
 							$list = array(self::IMPORT_USEBLANK => '-- leave blank --') + $list;
 						}
 
@@ -722,7 +868,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$inserted_an_item = false;
 
 
-				$custom_fields = $this->model('itemstore')->getCustomFields();
+				$custom_fields = $this->model('customfieldstore')->findAll();
 
 
 				// Prepare lookup info for checking if creation is required
@@ -748,66 +894,96 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					// Process any issues and merge into $item where appropriate
 					if (isset($info['issues'])) {
 						foreach($info['issues'] as $k => $v) {
+
 							// Get the user selected value
-							$value = $this->request()->post("{$k}_{$rownum}", null);
+							$value = $this->request()->post("{$k}_{$rownum}", '');
 
-							if (self::IMPORT_USEBLANK == $value) {
-								$item->$k = '';
-							} elseif (self::IMPORT_USEIMPORTEDVALUE == $value) {
-
-								/* Check if the row already exists in the lookups
-								 * It won't have existed on the previous step, but it might have been already created
-								 * during this import process
-								 */
-
-								$lc_value = strtolower($v);
-
-								if (in_array($lc_value, $lookups[$k])) {
-									$item->$k = array_search($lc_value, $lookups[$k]);
-								} else {
-									// Create a new row in the appropriate lookup table
-									$new_id = $this->_processNewLookupValue($k, $v);
-									if ($new_id) {
-										$lookups[$k][$new_id] = $lc_value;
-										$item->$k = $new_id;
+							switch ($k) {
+								case 'manufacturer':
+								case 'model':
+								case 'technique':
+									$item->$k = $value;
+									break;
+								case 'contact_1_email':
+									$temp = trim($this->request()->post("new_{$k}_{$rownum}", ''));
+									if (!empty($temp)) {
+										$item->contact_1_email = $temp;
 									} else {
-										$item->$k = null;
-										$errors[] = "Failed to create new $k named '$v'.";
+										$item->contact_1_email = $value;
 									}
-								}
-							} elseif (null !== $value) {
-								$item->$k = $value;
+									break;
+								default:
+									if (self::IMPORT_USEBLANK == $value) {
+										$item->$k = '';
+									} elseif (self::IMPORT_USEWILLFAIL == $value) {
+										$item->$k = null;
+										$errors[] = "You did not select a valid value to use for '$k'. (row $rownum).";
+									} elseif (self::IMPORT_USEIMPORTEDVALUE == $value) {
+
+										/* Check if the row already exists in the lookups
+										 * It won't have existed on the previous step, but it might have been already created
+										 * during this import process
+										 */
+
+										$lc_value = strtolower($v);
+
+										if (in_array($lc_value, $lookups[$k])) {
+											$item->$k = array_search($lc_value, $lookups[$k]);
+										} else {
+											if (!empty($v)) {
+												// Create a new row in the appropriate lookup table
+												$new_id = $this->_processNewLookupValue($k, $v);
+												if ($new_id) {
+													$lookups[$k][$new_id] = $lc_value;
+													$item->$k = $new_id;
+												} else {
+													$item->$k = null;
+													$errors[] = "Failed to create new $k named '$v' (row $rownum).";
+												}
+											}
+										}
+									} elseif (null !== $value) {
+										$item->$k = $value;
+									}
+									break;
 							}
+
 						}// /foreach(issue)
 					}
 
+
+
 					// Insert item
+					$validation_errors = null;
+					if (!$item->validate($validation_errors)) {
+						$errors[] = "Unable to create item: \"{$item->name}\" (row $rownum). Reasons for failure were.. ". implode(' ', $validation_errors);
+					} else {
+						$item_id = $this->model('itemstore')->insert($item);
+						if ($item_id) {
+							$inserted_an_item = true;
+							$item->id = $item_id;
 
-					$item_id = $this->model('itemstore')->insert($item);
-					if ($item_id) {
-						$inserted_an_item = true;
-						$item->id = $item_id;
-
-						// Set custom fields
-						$custom = array();
-						if (!empty($custom_fields)) {
-							foreach($custom_fields as $field_id => $field_name) {
-								if ( (isset($info['custom'][$field_name])) && (!empty($info['custom'][$field_name])) ) {
-									$custom[$field_id] = $info['custom'][$field_name];
+							// Set custom fields
+							$custom = array();
+							if (!empty($custom_fields)) {
+								foreach($custom_fields as $field) {
+									if ( (isset($info['custom'][$field->name])) && (!empty($info['custom'][$field->name])) ) {
+										$custom[$field->id] = $info['custom'][$field->name];
+									}
 								}
 							}
+
+
+							if (!empty($custom)) {
+								$this->model('itemstore')->setItemCustomFields($item->id, $custom);
+							}
+
+							// Map item-to-category
+							if ($item->category) {
+								$this->model('itemstore')->setItemCategories($item->id, $item->category);
+							}
+
 						}
-
-
-						if (!empty($custom)) {
-							$this->model('itemstore')->setItemCustomFields($item->id, $custom);
-						}
-
-						// Map item-to-category
-						if ($item->category) {
-							$this->model('itemstore')->setItemCategories($item->id, $item->category);
-						}
-
 					}
 				}// /foreach(item)
 
@@ -815,14 +991,15 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				// Rebuild the item counts
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('departmentstore')->rebuildItemCounts();
+				$this->model('supplierstore')->rebuildItemCounts();
 
 
 				if (!$errors) {
 					Ecl_Helper_Filesystem::deleteFile($procfilename);
-	 				$this->layout()->addFeedback(KC__FEEDBACK_WARNING, 'Import successful', '<p>All the imported items have been created successfully. You should review the latest additions to ensure the details look OK.</p>', $errors);
+	 				$this->layout()->addFeedback(KC__FEEDBACK_WARNING, 'Import successful', '<p>All the imported items have been created successfully. You should review the latest additions to ensure the details look OK.</p><p>To begin browsing your new items, visit your <a href="'. $this->model('app.www') .'">Catalogue Homepage</a>.</p>', $errors);
  				} else {
  					if ($inserted_an_item) {
-						$this->layout()->addFeedback(KC__FEEDBACK_WARNING, 'Some information could not be imported', '', $errors);
+						$this->layout()->addFeedback(KC__FEEDBACK_WARNING, 'Some data could not be imported', '', $errors);
 					} else {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'No items were imported', '', $errors);
 						$this->view()->datacsv = $datacsv;
@@ -860,7 +1037,13 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		$data_csv = file_get_contents($filepath);
 		$data_csv = utf8_encode($data_csv);
 		$data_csv = $csv_parser->parse($data_csv);
-		$data_csv = Ecl_Helper_Array::mergePartialRows($data_csv, 0, "\n");
+
+		$data_csv = Ecl_Helper_array::removeEmptyRows($data_csv);
+
+
+		// The merging-upwards of partial rows (where manufacturer is blank) has been
+		// removed to avoid confusion. Items MUST now exist in a single row of the spread sheet.
+		// $data_csv = Ecl_Helper_Array::mergePartialRows($data_csv, 1, "\n");
 
 		return $data_csv;
 	}// /method
@@ -869,26 +1052,44 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 	protected function _getStandardRowHeaders() {
 		return array (
-			'manufacturer' ,
-			'model' ,
-			'short_description' ,
-			'full_description' ,
-			'specification' ,
-			'acronym' ,
-			'keywords' ,
-			'category' ,
-			'technique' ,
-			'department' ,
-			'usergroup' ,
-			'access' ,
-			'availability' ,
-			'visibility' ,
-			'site' ,
-			'building' ,
-			'room' ,
-			'staff_contact' ,
-			'manufacturer_website' ,
-			'copyright_notice' ,
+			'item_title',
+			'manufacturer',
+			'model',
+			'short_description',
+			'full_description',
+			'specification',
+			'acronym',
+			'keywords',
+			'category',
+			'technique',
+			'department',
+			'usergroup',
+			'access',
+			'availability',
+			'visibility',
+			'site',
+			'building',
+			'room',
+			'contact_1_name',
+			'contact_1_email',
+			'contact_2_name',
+			'contact_2_email',
+			'manufacturer_website',
+			'copyright_notice',
+			'training_required',
+			'training_provided',
+			'quantity',
+			'quantity_detail',
+			'PAT',
+			'calibrated',
+			'last_calibration_date',
+			'next_calibration_date',
+			'asset_no',
+			'finance_id',
+			'serial_no',
+			'year_of_manufacture',
+			'supplier',
+			'date_of_purchase',
 		);
 	}// /method
 
@@ -899,11 +1100,11 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		$this->_row_headers = $this->_getStandardRowHeaders();
 
-		$custom_fields = $this->model('itemstore')->getCustomFields();
+		$custom_fields = $this->model('customfieldstore')->findAll();
 
 		if (count($custom_fields)>0) {
-			foreach($custom_fields as $i => $name) {
-				$this->_row_headers[] = $name;
+			foreach($custom_fields as $i => $field) {
+				$this->_row_headers[] = $field->name;
 			}
 		}
 
@@ -947,7 +1148,15 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$site->name = $value;
 				return $this->model('sitestore')->insert($site);
 				break;
+			// ----------------------------------------
+			case 'supplier':
+				$supplier = $this->model('supplierstore')->newSupplier();
+				$supplier->name = $value;
+				return $this->model('supplierstore')->insert($supplier);
+				break;
+			// ----------------------------------------
 			default:
+				break;
 		}
 
 	}// /method

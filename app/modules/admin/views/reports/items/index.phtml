@@ -9,90 +9,65 @@ $staff_contacts = Ecl_Helper_Array::duplicateValueAsKey($staff_contacts);
 
 $all_departments = $this->model('departmentstore')->findAll(KC__VISIBILITY_INTERNAL)->toAssoc('id', 'name');
 
+$all_manufacturers = $this->model('itemstore')->findAllManufacturers(KC__VISIBILITY_INTERNAL);
+$all_manufacturers = Ecl_Helper_Array::duplicateValueAsKey($all_manufacturers);
 
 
 function submitbuttons() {
-	echo('<div class="reportsubmit">');
+	echo('<div style="margin-top: 1em;">');
 	Ecl_Helper_Html::formSubmit('viewreport', 'View');
 	Ecl_Helper_Html::formSubmit('downloadreport', 'Download');
 	echo('</div>');
 }
 ?>
 
-<h1>Item Reports</h1>
 
-<p></p>
+<h1 class="green-bar">Item Reports</h1>
 
-<div class="grid_container">
-
-	<div class="grid_row">
-
-		<div class="grid_12col grid_last">
-
-
-			<div class="report">
-				<h2>Items by Building</h2>
-				<p>Show all the items of equipment listed within the given building.</p>
-
-				<form action="./itemsbybuilding" method="get">
-				<dl>
-
-					<dt>Choose Building</dt>
-					<dd>
-						<?php
-						Ecl_Helper_Html::formSelect('building', $all_buildings);
-						?>
-					</dd>
-
-				</dl>
-				<?php submitbuttons(); ?>
-				</form>
-			</div>
-
-
-			<div class="report">
-				<h2>Items by Department</h2>
-				<p>Show all the items of equipment associated with the given department.</p>
-
-				<form action="./itemsbydept" method="get">
-				<dl>
-
-					<dt>Choose Department</dt>
-					<dd>
-						<?php
-						Ecl_Helper_Html::formSelect('department', $all_departments);
-						?>
-					</dd>
-
-				</dl>
-				<?php submitbuttons(); ?>
-				</form>
-			</div>
-
-
-			<div class="report">
-				<h2>Items by Staff Contact</h2>
-				<p>Show all the items of equipment associated with the given staff contact.</p>
-
-				<form action="./itemsbystaff" method="get">
-				<dl>
-
-					<dt>Choose Staff Contact</dt>
-					<dd>
-						<?php
-						Ecl_Helper_Html::formSelect('contact', $staff_contacts);
-						?>
-					</dd>
-
-				</dl>
-				<?php submitbuttons(); ?>
-				</form>
-			</div>
-
-
-		</div>
-
-	</div>
-
+<div class="white-box">
+	<h4>Items by Building</h4>
+	<p class="note">Show all the items of equipment listed within the given building.</p>
+	<form action="./itemsbybuilding" method="get">
+	<?php
+		Ecl_Helper_Html::formSelect('building', $all_buildings);
+		submitbuttons();
+	?>
+	</form>
 </div>
+
+<div class="white-box">
+	<h4>Items by Department</h4>
+	<p class="note">Show all the items of equipment associated with the given department.</p>
+	<form action="./itemsbydept" method="get">
+	<?php
+		Ecl_Helper_Html::formSelect('department', $all_departments);
+		submitbuttons();
+	?>
+	</form>
+</div>
+
+<div class="white-box">
+	<h4>Items by Staff Contact</h4>
+	<p class="note">Show all the items of equipment associated with the given staff contact.</p>
+
+	<form action="./itemsbystaff" method="get">
+	<?php
+		Ecl_Helper_Html::formSelect('contact', $staff_contacts);
+		submitbuttons();
+	?>
+	</form>
+</div>
+
+<div class="white-box">
+	<h4>Items by Manufacturer</h4>
+	<p class="note">Show all the items of equipment associated with the given manufacturer.</p>
+
+	<form action="./itemsbymanufacturer" method="get">
+	<?php
+		Ecl_Helper_Html::formSelect('manufacturer', $all_manufacturers);
+		submitbuttons();
+	?>
+	</form>
+</div>
+
 

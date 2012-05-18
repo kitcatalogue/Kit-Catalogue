@@ -10,24 +10,16 @@
 
 
 
-<div class="grid_row">
+<div class="white-box">
 
-	<div class="grid_12col grid_last">
-
-		<div class="boxed">
-
-			<?php $this->render('categories_snippets_editsubform'); ?>
-
-		</div>
-
-		<?php
-		Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
-		Ecl_Helper_Html::formSubmit('submitsave', 'Finish');
-		?>
-
-	</div>
+	<?php $this->render('categories_snippets_editsubform'); ?>
 
 </div>
+
+<?php
+Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+Ecl_Helper_Html::formSubmit('submitsave', 'Finish');
+?>
 
 
 <?php Ecl_Helper_Html::formClose(); ?>

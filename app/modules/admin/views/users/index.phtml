@@ -1,77 +1,72 @@
+
 <h1>Administer Users</h1>
 
-<p>Here you can control which users have access to the catalogue system.</p>
+<div class="cf">
 
-<?php
-if ($this->model('signin.use_ldap')) {
-	?>
-	<div class="feedback feedback_info">
-		<p class="title">You may not need to maintain a full user list.</p>
-		<p>Kit-Catalogue automatically reads user information during the Active Directory/LDAP authentication process.  If you're only using the LDAP authentication, you need only create user accounts for users with extra permissions (e.g. administrators).</p>
-		<p>Standard users should be automatically detected during sign-in, and will have access to the catalogue regardless of whether they exist in the user list of not.</p>
-	</div>
+
 	<?php
-}
-?>
-
-<div class="grid_row">
-
-
-	<div class="grid_8col">
+	if ($this->model('signin.use_ldap')) {
+		?>
+		<div class="admin-box" style="background-color: #eee;">
+			<p style="font-weight: bold;">You may not need to maintain a full user list.</p>
+			<p>Kit-Catalogue automatically reads user information during the Active Directory/LDAP authentication process.  If you're only using the LDAP authentication, you need only create user accounts for users with extra permissions (e.g. administrators).</p>
+			<p>Standard users should be automatically detected during sign-in, and will have access to the catalogue regardless of whether they exist in the user list of not.</p>
+		</div>
 		<?php
-		$users = $this->model('userstore')->findAll();
-		if ($users->count()==0) {
-			?>
-			<p class="warning">No users have been setup yet.</p>
+	}
+	?>
+
+
+	<div class="admin-box">
+		<h3>Add a new user</h3>
+		<?php
+		Ecl_Helper_Html::form('userform', $this->router()->makeAbsoluteUri('/admin/users/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+		<dl class="form">
+			<dt><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('username', 16, 250); ?></dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('forename', 'Forename'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('forename', 25, 250); ?></dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('surname', 'Surname'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('surname', 25, 250); ?></dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('email', 'Email'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('email', 25, 250); ?></dd>
+		</dl>
+
+		<div>
 			<?php
-		} else {
+			Ecl_Helper_Html::formSubmit('submitadd', 'Add User');
 			?>
-			<ul>
-				<?php
-				foreach($users as $i => $user) {
-					printf('<li><a href="%2$s">%1$s</a></li>', $this->escape("{$user->sortname} &nbsp; ({$user->username})"), $this->router()->makeAbsoluteUri("/admin/users/edit/{$user->url_username}"));
-				}
-				?>
-			</ul>
-			<?php
-		}
+		</div>
+		<?php
+		Ecl_Helper_Html::formClose();
 		?>
 	</div>
 
 
-	<div class="grid_4col grid_lastcol">
+	<p>Here you can control which users have access to the catalogue system.</p>
 
-		<div class="boxed">
-			<p class="title">Add a new user</p>
+
+	<?php
+	$users = $this->model('userstore')->findAll();
+	if ($users->count()==0) {
+		?>
+		<p class="warning">No users have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
 			<?php
-			Ecl_Helper_Html::form('userform', $this->router()->makeAbsoluteUri('/admin/users/create/'));
-			Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+			foreach($users as $i => $user) {
+				printf('<li><a href="%2$s">%1$s</a></li>', $this->escape("{$user->sortname} &nbsp; ({$user->username})"), $this->router()->makeAbsoluteUri("/admin/users/edit/{$user->url_username}"));
+			}
 			?>
-			<dl>
-				<dt><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('username', 16, 250); ?></dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('forename', 'Forename'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('forename', 25, 250); ?></dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('surname', 'Surname'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('surname', 25, 250); ?></dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('email', 'Email'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('email', 25, 250); ?></dd>
-			</dl>
-
-			<div style="text-align: right;">
-				<?php
-				Ecl_Helper_Html::formSubmit('submitadd', 'Add User');
-				?>
-			</div>
-			<?php
-			Ecl_Helper_Html::formClose();
-			?>
-		</div>
-
-	</div>
-
-
+		</ul>
+		<?php
+	}
+	?>
 </div>

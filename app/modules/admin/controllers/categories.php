@@ -16,9 +16,9 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 			return false;
 		}
 
-		$this->router()->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
-		$this->router()->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
-		$this->router()->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/admin/categories/index/'));
+		$this->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
+		$this->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/admin/categories/index/'));
+		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
 	}// /method
 
 
@@ -159,7 +159,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The items could not be transferred.', 'The destination category selected could not be found.');
 					} else {
 						$this->model('itemstore')->transferCategoryItems($category->id, $target_category->id);
-						$this->model('departmentstore')->rebuildItemCounts();
+						$this->model('categorystore')->rebuildItemCounts();
 
 						if (1 == $this->request()->post('delete_on_transfer')) {
 							$this->model('categorystore')->delete($category->id);

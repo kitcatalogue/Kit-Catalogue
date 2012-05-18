@@ -1,20 +1,42 @@
 <?php
+$lang = $this->model('lang');
+
+
 $dept = $this->dept;
 
-
 $this->layout()->addGlobalJavascript();
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
 
 $this->layout()->appendSection('layout.head', '
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
-		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Department\" />");
+		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete '. $lang['dept.label'] .'</a></div");
 		del_button.click(function () {
-			return confirm("Please confirm that this department and all its associated items will be deleted.\n\nThis operation cannot be undone.");
+			$(\'#dialog-department\').html(\'' . $dept->name . '\');
+			$(\'#dialog\').dialog(\'open\');
 		});
 		$("#delete_button_container").append(del_button);
 
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$(\'#dialog\').dialog({
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "Delete": function() {
+                	$(\'#submitdelete\').val(\'1\');
+                    $(\'#deptform\').submit();
+                },
+                "Cancel": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
 	});
 
 </script>
@@ -22,82 +44,78 @@ $this->layout()->appendSection('layout.head', '
 ?>
 
 
-<h1>Edit Department : <?php $this->out($dept->name); ?></h1>
 
-<p>Here you can edit this department, or transfer its items to another.</p>
+<h1>Edit <?php $this->out($lang['dept.label']); ?> : <?php $this->out($dept->name); ?></h1>
+<p>Here you can edit this <?php $this->out(strtolower($lang['dept.label'])); ?>, or transfer its items to another.</p>
+
+<div id="delete_button_container"></div>
+
+
 
 <?php
 Ecl_Helper_Html::form('deptform', $this->request()->uri());
 Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+Ecl_Helper_Html::formHidden('submitdelete', '');
 ?>
 
-<div class="grid_row">
+<dl class="form">
+	<dt>Name</dt>
+	<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $dept->name); ?></dd>
+</dl>
 
-	<div class="grid_7col">
-
-		<dl>
-			<dt>Name</dt>
-			<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $dept->name); ?></dd>
-		</dl>
-
-		<div style="text-align: center;">
-			<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
-		</div>
-
-	</div>
-
-	<div class="grid_5col grid_lastcol">
-
-		<div id="delete_button_container"></div>
-
-		<br style="clear: both;" />
-
-		<div class="boxed" style="margin-top: 1em;">
-			<p class="title">Items</p>
-			<?php
-			if (0 < $dept->item_count_internal) {
-				?>
-				<p>This department contains <em><?php $this->out($dept->item_count_internal); ?> item<?php echo ((1 < $dept->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
-				<p><a href="<?php echo $this->router()->makeAbsoluteUri("/department/{$dept->url_suffix}"); ?>">View items in catalogue</a></p>
-
-				<p class="title">Transfer Items</p>
-				<p>Select a destination to transfer all items to.</p>
-				<?php
-				$options = array('' => '') + $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
-				unset($options[$dept->id]);
-
-				Ecl_Helper_Html::formSelect('destination', $options);
-				?>
-				<br /><br />
-				<?php
-				$cboxes = array();
-				$cboxes[] = array (
-					'name'      => 'delete_on_transfer' ,
-					'id'        => 'delete_on_transfer' ,
-					'label'     => 'Delete current department after transfer' ,
-					'value'     => '1' ,
-					'selected'  => false ,
-				);
-				Ecl_Helper_Html::formCheckboxTable($cboxes);
-				?>
-				<div style="text-align: right;">
-					<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
-				</div>
-				<?php
-			} else {
-				?>
-				<p>This department contains no items.</p>
-				<?php
-			}
-			?>
-
-		</div>
-
-	</div>
-
-
+<div>
+	<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
 </div>
+
+
+
+<br />
+<h3>Items Listed</h3>
+<?php
+if (0 < $dept->item_count_internal) {
+	?>
+	<p>This <?php $this->out(strtolower($lang['dept.label'])); ?> contains <em><?php $this->out($dept->item_count_internal); ?> item<?php echo ((1 < $dept->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
+	<p><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$dept->slug}"); ?>">View items in catalogue &raquo;</a></p>
+	<?php
+	$options = array('' => '') + $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
+	unset($options[$dept->id]);
+
+	if (!empty($options)) {
+		?>
+		<p>If you would like to transfer your items to a different <?php $this->out(strtolower($lang['dept.label'])); ?>, please select a destination to transfer all items to.</p>
+		<?php
+		Ecl_Helper_Html::formSelect('destination', $options);
+		?>
+		<br /><br />
+		<?php
+		$cboxes = array();
+		$cboxes[] = array (
+			'name'      => 'delete_on_transfer' ,
+			'id'        => 'delete_on_transfer' ,
+			'label'     => 'Delete current '. strtolower($lang['dept.label']) .' after transfer' ,
+			'value'     => '1' ,
+			'selected'  => false ,
+		);
+		Ecl_Helper_Html::formCheckboxTable($cboxes);
+		?>
+		<div>
+			<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
+		</div>
+		<?php
+	}
+} else {
+	?>
+	<p>This <?php $this->out(strtolower($lang['dept.label'])); ?> contains no items.</p>
+	<?php
+}
+?>
+
+
 
 <?php
 Ecl_Helper_Html::formClose();
 ?>
+<div id="dialog" title="Verify Delete <?php $this->out($lang['dept.label']); ?>">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>Please confirm that you want to delete this <?php $this->out(strtolower($lang['dept.label'])); ?> (all if its associated items will be deleted!)</p><p>This operation cannot be undone.</p>
+	<p id="dialog-department"></p>
+</div>

@@ -1,0 +1,35 @@
+<?php
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	$editlink = sprintf('&nbsp;<a class="admin_link" href="%1$s?backlink=%2$s">add an item &raquo;</a>', $edit_url, $back_url);
+} else {
+	$editlink = '';
+}
+?>
+
+<h1>Items for '<?php $this->out($this->value); ?>'</h1>
+
+<?php
+$count = count($this->items);
+if (0 == $count) {
+	?>
+	<p>There are no item entries for this <?php $this->out($this->customfield->name); ?> value.</p>
+	<?php
+} else {
+	?>
+	<p class="note"><strong><?php $this->out($count); ?> found</strong> matching "<?php $this->out($this->value); ?>".</p>
+
+	<ul id="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri('/item/');
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

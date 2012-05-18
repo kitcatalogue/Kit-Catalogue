@@ -1,0 +1,61 @@
+<?php
+
+$this->model('db')->query("
+	SELECT manufacturer, count(item_id) AS item_count
+	FROM item
+	GROUP BY manufacturer
+	ORDER BY manufacturer
+");
+
+$all_manufacturers = $this->model('db')->getResult('manufacturer', 'item_count');
+
+if ($this->is_download) {
+	header("Cache-Control: public");
+	header("Content-Description: File Transfer");
+	header("Content-Disposition: attachment; filename=all_staff_contacts.csv");
+	header('Content-Type: text/csv');
+
+	echo('"staff contact","number of items"'."\n");
+	$csv_parser = Ecl::factory('Ecl_Parser_Csv');
+	echo $csv_parser->generate($all_manufacturers);
+	return;
+}
+?>
+
+<h1>All Manufacturers Report</h1>
+<p class="note">Generated on <?php $this->out(date('H:i d-m-Y')); ?>.</p>
+
+<?php
+if (empty($all_manufacturers)) {
+	?>
+	<p>No staff contacts were found.</p>
+	<?php
+	return;
+}
+?>
+
+<br />
+<p><?php echo(count($all_manufacturers)); ?> manufacturer(s) found.</p>
+
+<table class="grid">
+<tr>
+	<th>Manufacturer</th>
+	<th>number of<br />items</th>
+	<th>&nbsp;</th>
+</tr>
+<?php
+foreach($all_manufacturers as $row) {
+	$url__manufacturer = urlencode($row['manufacturer']);
+	$name = (!empty($row['manufacturer'])) ? $row['manufacturer'] : '<none manufacturer defined>' ;
+	?>
+	<tr>
+		<td class="name"><?php $this->out($name); ?></td>
+		<td class="number"><?php $this->out($row['item_count']); ?></td>
+		<td class="link"><a class="noprint" href="<?php echo $this->router()->makeAbsoluteUri("/admin/reports/items/itemsbymanufacturer?viewreport&manufacturer={$url__manufacturer}"); ?>">View items</a></td>
+	</tr>
+	<?php
+}
+?>
+</table>
+
+

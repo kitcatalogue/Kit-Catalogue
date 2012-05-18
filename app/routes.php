@@ -51,6 +51,24 @@ $router->addRoute('*', 'search/' , array(
 
 
 
+// Custom field Routes
+
+$router->addRoute('*', 'custom/' , array(
+	'controller'  => 'item' ,
+	'action'      => 'custom' ,
+));
+
+
+
+// Tags
+
+$router->addRoute('*', 'tags/:tag', array(
+	'controller'  => 'item' ,
+	'action'      => 'tags' ,
+));
+
+
+
 // Resource / File Route
 
 $router->addRoute('*', 'resource/:id', array(
@@ -78,21 +96,42 @@ $router->addRoute('*', 'item/:itemname/:itemid/file/:filename', array(
 // Department Routes
 
 
-$router->addRoute('*', 'department/:deptname/:deptid' , array(
+$router->addRoute('*', $model->lang['dept.route'] , array(
+	'controller'  => 'department' ,
+));
+
+
+$router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid' , array(
 	'controller'  => 'department' ,
 	'action'      => 'view' ,
 ));
 
 
-$router->addRoute('*', 'department/:deptname/:deptid/category/:catname/:catid', array(
+$router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/category/:catname/:catid', array(
 	'controller'  => 'department' ,
 	'action'      => 'view' ,
 ));
 
 
-$router->addRoute('*', 'department/:deptname/:deptid/item/:itemname/:itemid', array(
+$router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/item/:itemname/:itemid', array(
 	'controller'  => 'department' ,
 	'action'      => 'viewitem' ,
+));
+
+
+
+// Custom Field Routes
+
+
+$router->addRoute('*', 'customfield/:fieldname/:fieldid/:fieldvalue', array(
+	'controller'  => 'customfield' ,
+	'action'      => 'viewvalue' ,
+));
+
+
+$router->addRoute('*', 'customfield/:fieldname/:fieldid', array(
+	'controller'  => 'customfield' ,
+	'action'      => 'listvalues' ,
 ));
 
 
@@ -128,6 +167,40 @@ $router->addRoute('*', 'id/:action/:id', array (
 	'controller' => 'id' ,
 ));
 
+
+
+// Filter Routes
+
+
+$router->addRoute('*', 'filter/' , array(
+	'controller'  => 'filter' ,
+	'action'      => 'view' ,
+));
+
+
+$router->addRoute('*', 'filter/JSON' , array(
+	'controller'  => 'filter' ,
+	'action'      => 'JSON' ,
+));
+
+
+
+// Calibration Routes
+
+
+$router->addRoute('*', 'calibration/JSON' , array(
+	'controller'  => 'calibration' ,
+	'action'      => 'JSON' ,
+));
+
+
+// Admin homepage
+
+$router->addRoute('*', 'admin', array (
+	'controller'  => 'home' ,
+	'action'      => 'index' ,
+	'module'      => 'admin' ,
+));
 
 
 // Homepage Route

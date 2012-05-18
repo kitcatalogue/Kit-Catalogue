@@ -1,0 +1,61 @@
+<h1>Administration Options</h1>
+
+<table class="layout" style="width: 100%;">
+<tr>
+	<td>
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Item administration</h4>
+			<p class="note">To edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/customise/'); ?>">Item Field Customisation</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+			</ul>
+		</div>
+
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Homepage blocks</h4>
+			<p class="note">Customisation of which blocks appear on the homepage</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/homepageblocks/index/'); ?>">Homepage blocks</a></li>
+			</ul>
+		</div>
+	</td>
+	<td>
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Categorisation</h4>
+			<p class="note">Catalogue metadata</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/categories/index/'); ?>"><?php $this->out($this->model()->lang['cat.label.plural']); ?></a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'); ?>"><?php $this->out($this->model()->lang['access.label.plural']); ?></a></li>
+			</ul>
+			<br />
+			<p class="note">Locations</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/sites/index/'); ?>"><?php $this->out($this->model()->lang['site.label.plural']); ?></a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/buildings/index/'); ?>"><?php $this->out($this->model()->lang['building.label.plural']); ?></a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/departments/index/'); ?>"><?php $this->out($this->model()->lang['dept.label.plural']); ?></a></li>
+			</ul>
+		</div>
+	</td>
+	<td>
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Users</h4>
+			<p class="note">User managment</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/users/index/'); ?>">Users</a></li>
+			</ul>
+		</div>
+
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Reports</h4>
+			<p class="note">Report managment</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/reports/index/'); ?>">Reports</a></li>
+			</ul>
+		</div>
+	</td>
+</tr>
+</table>
+
+

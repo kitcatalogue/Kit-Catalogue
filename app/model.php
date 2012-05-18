@@ -28,7 +28,12 @@ $model->setDefaultFactory(function ($name, $model) {
 });
 
 
+
 $model->load($config);
+
+
+
+$model->setObject('lang', $lang);
 
 
 
@@ -67,24 +72,35 @@ $model->setFunction('sysauth', function ($model) {
 
 
 
+$model->setFunction('customfieldstore', function ($model) {
+	return new CustomfieldStore($model);
+});
+
+
+
 $model->setFunction('itemstore', function ($model) {
 	return new ItemStore($model);
 });
 
 
-
 $model->setFunction('user', function ($model) {
 	$user = Ecl::factory('Ecl_User');
 
-	if (false === $model->get('request')->session('_user_data', false)) {
-		$model->get('userstore')->clearUserSession();
+	if ($model->get('userstore')->isUserSession()) {
+		$user = $model->get('userstore')->newUserFromSession();
 	} else {
-		$user = $model->get('userstore')->newUserFromSession($model->get('request')->session('_user_data'));
+		$model->get('userstore')->clearUserSession();
 	}
 
 	$user->setParam('visibility', ($user->isAnonymous()) ? KC__VISIBILITY_PUBLIC : KC__VISIBILITY_INTERNAL);
 
 	return $user;
+});
+
+
+
+$model->setFunction('userstore', function ($model) {
+	return new Userstore($model->get('db'), $model->get('app.user_session_var'));
 });
 
 

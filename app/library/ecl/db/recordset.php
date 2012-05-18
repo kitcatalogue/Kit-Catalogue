@@ -285,7 +285,7 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 	/**
-	 * Get an array representation of the result.
+	 * Get an array of values for one column in the result.
 	 *
 	 * If the recordset has uses a row callback for object conversion,
 	 * then the 'rows' will be objects NOT database fields.

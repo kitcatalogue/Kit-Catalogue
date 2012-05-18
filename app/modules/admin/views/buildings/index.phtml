@@ -1,72 +1,75 @@
+
 <h1>Administer Buildings</h1>
 
-<p>Below is the list of the buildings available for use in this catalogue.</p>
 
-<div class="grid_container">
+<div class="cf">
+	<div class="admin-box">
+		<h3>Add a new building</h3>
+		<?php
+		Ecl_Helper_Html::form('buildingform', $this->router()->makeAbsoluteUri('/admin/buildings/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+		<dl class="form">
 
-	<div class="grid_row">
+			<dt><?php Ecl_Helper_Html::formLabel('code', 'Building Code'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('code', 10, 10); ?></dd>
 
-		<div class="grid_8col">
-			<?php
-			if ($this->buildings->count()==0) {
-				?>
-				<p class="warning">No buildings have been setup yet.</p>
+			<dt><?php Ecl_Helper_Html::formLabel('name', 'Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('site_id', 'Campus Site'); ?></dt>
+			<dd>
 				<?php
-			} else {
-				?>
-				<ul>
-					<?php
-					foreach($this->buildings as $i => $building) {
-						$edit_url = $this->router()->makeAbsoluteUri("/admin/buildings/edit/{$building->id}");
-						printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($building->name), $edit_url, ( !empty($building->code) ? " &nbsp;({$building->code})" : '' ) );
-					}
+				$sites = $this->model('sitestore')->findAll()->toAssoc('id', 'name');
+
+				if (empty($sites)) {
 					?>
-				</ul>
-				<?php
-			}
-			?>
-		</div>
-
-		<div class="grid_4col grid_last">
-			<div class="boxed">
-				<p class="title">Add a new building</p>
-				<?php
-				Ecl_Helper_Html::form('buildingform', $this->router()->makeAbsoluteUri('/admin/buildings/create/'));
-				Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
-				?>
-				<dl>
-					<dt><?php Ecl_Helper_Html::formLabel('code', 'Building Code'); ?></dt>
-					<dd><?php Ecl_Helper_Html::formInput('code', 10, 10); ?></dd>
-					<dt><?php Ecl_Helper_Html::formLabel('name', 'Name'); ?></dt>
-					<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
-					<dt><?php Ecl_Helper_Html::formLabel('site_id', 'Campus Site'); ?></dt>
-					<dd>
-						<?php
-						$sites = $this->model('sitestore')->findAll()->toAssoc('id', 'name');
-
-						if (empty($sites)) {
-							?>
-							<p class="warning">
-								No campus sites have been setup yet.
-								<br /><br />
-								Campus sites are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
-							</p>
-							<?php
-						} else {
-							Ecl_Helper_Html::formSelect('site_id', $sites);
-						}
-						?>
-					</dd>
-				</dl>
-
-				<div style="text-align: right;">
+					<p class="warning">
+						No campus sites have been setup yet.
+						<br /><br />
+						Campus sites are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
+					</p>
 					<?php
-					Ecl_Helper_Html::formSubmit('submitadd', 'Add Building');
-					?>
-				</div>
-			</div>
+				} else {
+					Ecl_Helper_Html::formSelect('site_id', $sites);
+				}
+				?>
+			</dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('latitude', 'Latitude'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('latitude', 10, 10); ?></dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('longitude', 'Longitude'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('longitude', 10, 10); ?></dd>
+
+		</dl>
+
+		<div>
+			<?php Ecl_Helper_Html::formSubmit('submitadd', 'Add New Building'); ?>
 		</div>
 
 	</div>
+
+
+	<p>Below is the list of the buildings available for use in this catalogue.</p>
+
+	<?php
+	if ($this->buildings->count()==0) {
+		?>
+		<p class="warning">No buildings have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			foreach($this->buildings as $i => $building) {
+				$edit_url = $this->router()->makeAbsoluteUri("/admin/buildings/edit/{$building->id}");
+				printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($building->name), $edit_url, ( !empty($building->code) ? " &nbsp;({$building->code})" : '' ) );
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
 
 </div>

@@ -8,6 +8,7 @@ class Userstore {
 
 	// Private Properties
 	protected $_db = null;
+	protected $_user_session_var = '_user_data';
 
 
 
@@ -15,9 +16,11 @@ class Userstore {
 	 * Constructor
 	 *
 	 * @param  object  $database  An Ecl_Db data access object.
+	 * @param  string  $user_session_var  (optional) The session key to use when storing user data.
 	 */
-	public function __construct($database) {
+	public function __construct($database, $user_session_var = '_user_data') {
 		$this->_db = $database;
+		if (!empty($user_session_var)) { $this->_user_session_var = $user_session_var; }
 	}// /method
 
 
@@ -64,7 +67,7 @@ class Userstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function clearUserSession() {
-		unset($_SESSION['_user_data']);
+		unset($_SESSION[$this->_user_session_var]);
 		return true;
 	}// method
 
@@ -117,7 +120,7 @@ class Userstore {
 	public function delete($username) {
 		$username = $this->_db->prepareValue($username);
 		$affected_count = $this->_db->delete('user', "username=$username");
-		Ecl::dump($this->_db->getSql());
+
 		return ($affected_count>0);
 	}// /method
 
@@ -179,6 +182,12 @@ class Userstore {
 
 
 
+	public function isUserSession() {
+		return (isset($_SESSION[$this->_user_session_var]));
+	}
+
+
+
 	/**
 	 * Get a new instance of a User object.
 	 *
@@ -196,9 +205,9 @@ class Userstore {
 	 * @return  object  The current user. On fail, an empty user instance.
 	 */
 	public function newUserFromSession() {
-		if (isset($_SESSION['_user_data'])) {
+		if (isset($_SESSION[$this->_user_session_var])) {
 			$user = $this->newUser();
-			$user->fromAssoc($_SESSION['_user_data']);
+			$user->fromAssoc($_SESSION[$this->_user_session_var]);
 			return $user;
 		}
 		return $this->newUser();
@@ -264,7 +273,7 @@ class Userstore {
 		}
 
 		// Save the session data
-		$_SESSION['_user_data'] = $user->toAssoc();
+		$_SESSION[$this->_user_session_var] = $user->toAssoc();
 
 		return true;
 	}// /method

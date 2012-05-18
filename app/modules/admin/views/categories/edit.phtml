@@ -8,105 +8,116 @@ $this->layout()->appendSection('layout.head', '
 
 	$(document).ready(function() {
 
-		var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete Category\" />");
+		cpv_trigger = $("input#cpv_trigger");
+		cpv_target = $("#cpv_target");
+
+		$(\'#cpv_target input:checkbox\').live(\'click\', function() {
+			cpvChangeSelection($(this).val(), $(this).prop(\'checked\'));
+		});
+
+		$(\'#cpv_listall input:checkbox\').live(\'click\', function() {
+			cpvChangeSelection($(this).val(), $(this).prop(\'checked\'));
+		});
+
+		cpvLookup();
+		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete category</a></div>");
 		del_button.click(function () {
-			return confirm("Please confirm that this category will be deleted.\n\nAny Items associated with this category will remain, but no longer be registered with the category.\n\nThis operation cannot be undone.");
+			$(\'#dialog-category\').html(\'Category: ' . $category->name . '\');
+			$(\'#dialog\').dialog(\'open\');
 		});
 		$("#delete_button_container").append(del_button);
 
+		//$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$(\'#dialog\').dialog({
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "Delete": function() {
+                	$(\'#submitdelete\').val(\'1\');
+                    $(\'#categoryform\').submit();
+                },
+                "Cancel": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
 	});
 
 </script>
 ');
 ?>
 
+
 <h1>Edit Category : <?php $this->out($this->category->name); ?></h1>
-
-
 <p>Categories are used to group together items of equipment with a similar purpose or functionality.</p>
+
+<div id="delete_button_container"></div>
 
 
 <?php
 Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/categories/edit/?id='. $this->category->id) );
 Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+Ecl_Helper_Html::formHidden('submitdelete', '');
+
+$this->render('categories_snippets_editsubform');
+
 ?>
-
-
-
-<div id="delete_button_container" style="text-align: right;"></div>
-
-
-<div class="grid_row">
-
-	<div class="grid_12col grid_last">
-
-		<div class="boxed">
-
-			<?php $this->render('categories_snippets_editsubform'); ?>
-
-		</div>
-
-		<div style="text-align: center;">
-			<?php
-			Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
-			Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes');
-			?>
-		</div>
-
-
-		<div class="boxed" style="margin-top: 1em;">
-			<p class="title">Items</p>
-			<?php
-			if (0 < $category->item_count_internal) {
-				?>
-				<p>This category contains <em><?php $this->out($category->item_count_internal); ?> item<?php echo ((1 < $category->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
-
-				<?php
-				/*
-				 * @todo : When browse by building is available, uncomment this
-				 * <p><a href="<?php echo $this->router()->makeAbsoluteUri("/building/{$building->url_suffix}"); ?>">View items in catalogue</a></p>
-				 */
-				?>
-
-				<p class="title">Transfer Items</p>
-				<p>Select a destination to transfer all items to.</p>
-				<?php
-				$options = array('' => '') + $this->model('categorystore')->findAll()->toAssoc('id', 'name');
-				unset($options[$category->id]);
-
-				Ecl_Helper_Html::formSelect('destination', $options);
-				?>
-				<br /><br />
-				<?php
-				$cboxes = array();
-				$cboxes[] = array (
-					'name'      => 'delete_on_transfer' ,
-					'id'        => 'delete_on_transfer' ,
-					'label'     => 'Delete current category after transfer' ,
-					'value'     => '1' ,
-					'selected'  => false ,
-				);
-				Ecl_Helper_Html::formCheckboxTable($cboxes);
-				?>
-				<div style="text-align: center;">
-					<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
-				</div>
-				<?php
-			} else {
-				?>
-				<p>This category is not associated with any items.</p>
-				<?php
-			}
-			?>
-
-		</div>
-
-
-	</div>
-
+<div style="margin: 1em 0 2em 0;">
+	<?php
+	Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+	Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes');
+	?>
 </div>
 
 
-<?php Ecl_Helper_Html::formClose(); ?>
+<h3>Items Listed</h3>
+<?php
+if (0 < $category->item_count_internal) {
+	?>
+	<p>This category contains <em><?php $this->out($category->item_count_internal); ?> item<?php echo ((1 < $category->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
 
 
+	<p><a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->slug}"); ?>">View items in catalogue</a></p>
+
+	<p>If you would like to transfer your items to a different category, please select a destination to transfer all items to.</p>
+	<?php
+	$options = array('' => '') + $this->model('categorystore')->findAll()->toAssoc('id', 'name');
+	unset($options[$category->id]);
+
+	Ecl_Helper_Html::formSelect('destination', $options);
+	?>
+	<br /><br />
+	<?php
+	$cboxes = array();
+	$cboxes[] = array (
+		'name'      => 'delete_on_transfer' ,
+		'id'        => 'delete_on_transfer' ,
+		'label'     => 'Delete current category after transfer' ,
+		'value'     => '1' ,
+		'selected'  => false ,
+	);
+	Ecl_Helper_Html::formCheckboxTable($cboxes);
+	?>
+	<div>
+		<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
+	</div>
+	<?php
+} else {
+	?>
+	<p>This category is not associated with any items.</p>
+	<?php
+}
+?>
+
+
+<?php
+Ecl_Helper_Html::formClose();
+?>
+
+<div id="dialog" title="Verify Delete Category">
+<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>Please confirm that you want to delete this category.</p><p>Any Items associated with this category will remain, but no longer be registered with the category.</p><p>This operation cannot be undone.</p>
+<p id="dialog-category"></p>
+</div>

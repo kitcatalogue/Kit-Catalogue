@@ -1,120 +1,114 @@
 <?php
-
+error_reporting(E_ALL);
 $www_root = $this->model('app.www');
 
-?><!doctype html>
+$lang = $this->model('lang');
+
+
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title><?php echo (!empty($this->_title)) ? "{$this->_title} : " : '' ; ?> <?php echo $this->model('app.title'); ?></title>
-	<link href="<?php echo $www_root; ?>/css/basic.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="<?php echo $www_root; ?>/css/common.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="<?php echo $www_root; ?>/css/kitcatalogue.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="<?php echo $www_root; ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
 	<link href="<?php echo $www_root; ?>/css/print.css" media="print" rel="stylesheet" type="text/css" />
 	<?php
 	$this->renderStylesheets();
 	$this->renderJavascripts();
-	?>
+
+	if ($this->model('layout.use_local_css')) {
+		?>
 	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
-	<?php
+		<?php
+	}
 	$this->renderSection('layout.head');
 	?>
 </head>
+<?php echo $this->getSection('layout.pre-body'); ?>
 <body>
 
+<div id="wrapper">
 
-<?php echo $this->getSection('layout.pre-body'); ?>
+	<div id="header">
+		<div class="header-wrapper">
+			<a class="logo" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.jpg" alt="Kit-Catalogue" /></a>
 
+			<?php
+		$org_logo = $this->model()->get('org.logo');
+		if (!empty($org_logo)) {
+			?>
+			<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+			<?php
+		}
+		$this->renderSection('layout.header');
 
-<div id="header">
-	<div class="kclogo"><img src="<?php echo $www_root; ?>/images/system/kitcatalogue_logo.gif" alt="Kit-Catalogue" /></div>
-	<?php
-	$org_logo = $this->model()->get('org.logo');
-	if (!empty($org_logo)) {
+		$user = $this->model('user');
 		?>
-		<div class="institutionlogo"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></div>
+		</div>
+	</div>
+
+
+	<?php
+	if (!$user->isAnonymous()) {
+		?>
+	<div id="userbar" class="cf">
+		<ul id="usernav">
+			<li><a href="<?php echo $www_root; ?>/signin/signout">Sign Out</a></li>
+			<?php
+			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/admin">Administration</a></li>
+				<?php
+			}
+			?>
+			<li>Welcome <strong><?php $this->out("{$user->forename} {$user->surname}"); ?></strong></li>
+		</ul>
+	</div>
 		<?php
 	}
 	?>
 
-	<?php
-	$this->renderSection('layout.header');
-
-	$user = $this->model('user');
-	?>
-	<div id="userbar">
-		<?php
-		if ($user->isAnonymous()) {
-			?>
-			<div style="float: right;">
-				<a href="<?php echo $www_root; ?>/signin/">Sign In</a>
-			</div>
-			<span class="username">&nbsp;</span>
-			<?php
-		} else {
-			?>
-			<div style="float: right;">
-				<span class="username">Welcome <strong><?php $this->out($user->forename.' '.$user->surname); ?></strong></span>
-				<?php
-				if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-					?>
-
-					<a href="<?php echo $www_root; ?>/admin">Administration</a>
-					<?php
-				}
-				?>
-				<a href="<?php echo $www_root; ?>/signin/signout">Sign Out</a>
-			</div>
-			<span>An open source system to help catalogue your kit</span>
-			<?php
-		}
-		?>
-	</div>
-
-	<div id="header_menu">
-		<ul>
+	<div id="top">
+		<ul id="nav" class="cf">
 			<li><a href="<?php echo $www_root; ?>/">Home</a></li>
 			<?php
 			if ( !$this->model('user')->isAnonymous() || $this->model('app.allow_anonymous') ) {
+			?>
+			<li><a href="<?php echo $www_root; ?>/category/"><?php $this->out($lang['cat.label.plural']); ?></a></li>
+			<li><a href="<?php echo $www_root; ?>/<?php echo $lang['dept.route'] ?>/"><?php $this->out($lang['dept.label.plural']); ?></a></li>
+			<li><a href="<?php echo $www_root; ?>/item/">Items A - Z</a></li>
+			<?php
+			}
+			if ($user->isAnonymous()) {
 				?>
-				<li><a href="<?php echo $www_root; ?>/item/">Items A-Z</a></li>
-				<li><a href="<?php echo $www_root; ?>/category/">Categories</a></li>
-				<li><a href="<?php echo $www_root; ?>/department/">Departments</a></li>
-				<li style="display: none;"><a href="<?php echo $www_root; ?>/search/">Communities</a></li>
+				<li class="user" style="float: right;"><a href="<?php echo $www_root; ?>/signin/">Sign In</a></li>
 				<?php
 			}
 			?>
 		</ul>
-	</div>
-
-	<?php
-	if ( (!$this->model('user')->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
-		?>
-		<div id="header_search">
-			<form action="<?php echo $www_root; ?>/search/" method="get">
-			<label for="q">Search</label>
-			<input type="text" name="q" value="" size="20" />
-			<input type="submit" name="gobutton" value="Go" />
-			</form>
-		</div>
 		<?php
-	}
+		if ($this->hasBreadcrumbs()) {?>
+		<ul id="breadcrumbs"><?php
+			$this->renderBreadcrumbs();?>
+		</ul><?php
+		}
+		if ( (!$this->model('user')->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {?>
+		<form id="search-form" action="<?php echo $www_root; ?>/search/" method="get">
+			<div id="search-box">
+				<input type="text" name="q" id="search" class="hint" value="Search..." onfocus="if (this.value=='Search...') { this.className = ''; this.value = ''; }" onblur="if (this.value == '') { this.className = 'hint'; this.value = 'Search...'; }" />
+				<input type="image" name="searchsubmit" id="search-image" src="<?php echo $www_root; ?>/images/bg-search.png" />
+			</div>
+		</form><?php
+		}
 
-	if ($this->hasBreadcrumbs()) {
-		?>
-		<div id="breadcrumbs">
-			<?php
-			$this->renderBreadcrumbs();
+		if ($this->model('user')->isAnonymous()) {
 			?>
-		</div>
-		<?php
-	}
-	?>
-</div>
-
-
-
-<div id="main" class="grid_container">
+			<p class="signin_warning"><strong>Please <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">sign in</a> to view the full catalogue.</strong> Only some items of equipment may be visible to the public.</p>
+			<?php
+		}
+		?>
+	</div>
 	<?php
 	$this->renderFeedback();
 
@@ -122,60 +116,22 @@ $www_root = $this->model('app.www');
 
 	echo $this->content();
 
-
-	if ($this->model('user')->isAnonymous()) {
-		?>
-		<div class="warning" style="margin-top: 2em; margin-bottom: 0;">
-			<p><strong>You are not logged in - only some items of equipment are visible to the public.</strong></p>
-			<p>Please <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">sign in</a> to view the full catalogue of equipment.</p>
-		</div>
-		<?php
-	}
-
-
 	$this->renderSection('layout.post-content');
 	?>
-</div>
+	<div id="footer">
 
+		<?php $this->renderSection('layout.footer'); ?>
 
+		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
 
-<div id="footer" class="grid_container">
-	<?php $this->renderSection('layout.footer'); ?>
-
-	<div class="footermenu grid_row">
-
-		<div class="grid_4col">
-			<a class="kitcatlink" href="http://kit-catalogue.lboro.ac.uk/project/">The Kit-Catalogue Project</a>
-		</div>
-
-		<div class="grid_4col">
-			&nbsp;
-		</div>
-
-		<div class="grid_4col grid_lastcol">
-			<a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact</a>
-		</div>
-
+		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v.<?php $this->out($this->model('app.version')); ?>).<br />
+		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>
 	</div>
-
-	<p class="footer_note">
-		This equipment database is powered by the Kit-Catalogue system.
-		<br />Kit-Catalogue has been developed by Loughborough University and is licensed
-		under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.
-	</p>
-
 </div>
-
-
-
 
 <?php $this->renderSection('layout.post-body'); ?>
 
-
-
 <iframe src="<?php echo $www_root; ?>/keep_alive.php" height="1" width="1" style="display: none;">keep alive</iframe>
-
-
 
 </body>
 </html>

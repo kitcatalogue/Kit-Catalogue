@@ -53,6 +53,7 @@ define('KC__OBJECT_SYSTEM', 'system');
 // Different item visibilities
 define('KC__VISIBILITY_PUBLIC', 1);
 define('KC__VISIBILITY_INTERNAL', 2);
+define('KC__VISIBILITY_DRAFT', 3);
 
 
 
@@ -77,17 +78,7 @@ if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
 // Load Application Default Config
 
 
-include(dirname(__FILE__). '/config.php');
-
-
-
-// --------------------------------------------------------------------------------
-// Load Local Config
-
-
-if (file_exists($config['app.local_root'].'/local_config.php')) {
-	include($config['app.local_root'].'/local_config.php');
-}
+require(dirname(__FILE__). '/config.php');
 
 
 
@@ -95,7 +86,44 @@ if (file_exists($config['app.local_root'].'/local_config.php')) {
 // Initialise the ECL framework
 
 
-include($config['app.include_root'] . '/library/ecl.php');
+require($config['app.include_root'] .'/library/ecl.php');
+
+
+
+// --------------------------------------------------------------------------------
+// Load Application Default Language
+
+
+$lang = Ecl::factory('Ecl_Dictionary');
+require(dirname(__FILE__). '/language.php');
+
+
+
+// --------------------------------------------------------------------------------
+// Load Local Config
+
+
+$path = $config['app.local_root'].'/local_config.php';
+if (file_exists($path)) { include($path); }
+
+
+
+// --------------------------------------------------------------------------------
+// Load Local Language File
+
+
+$path = $config['app.local_root'].'/local_language.php';
+if (file_exists($path)) { include($path); }
+
+
+
+// Some of the language definitions MUST obey certain rules.
+
+// Ensure the 'dept.route' is valid
+//Ecl::dump($lang['dept.route']);
+if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
+	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
+}
 
 
 

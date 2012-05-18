@@ -7,7 +7,6 @@ Using Local Configuration Settings, CSS and Plugins
 
 **** Local Configuration ****
 
-
 We advise making all your local configuration changes in local/local_config.php
 
 The settings in local_config.php will override the defaults in app/config.php,
@@ -18,7 +17,6 @@ in your local folder will not be overwritten by any new file versions.
 
 **** Custom CSS ****
 
-
 Put custom stylesheet changes in local/local.css
 This stylesheet will be called automatically by the application, and your
 changes will override the default styles.
@@ -27,32 +25,33 @@ changes will override the default styles.
 
 **** Custom Layouts ****
 
-CSS styling can only take you so far.  If you want to change large parts of
+CSS styling can only take you so far.  If you want to change large parts of 
 the HTML structure of your Kit-Catalogue, you can define your own HTML layout.
-There are some restrictions on what you can change with a layout template, but
+There are some restrictions on what you can change with a layout template, but 
 it offers far greater control that CSS alone.
 
-To create a new layout, create an HTML template file in your local/layouts folder.
-e.g.  local/layouts/myuniversity.phtml
+To create a new layout, create an HTML template file in your local/layouts 
+folder. e.g.  local/layouts/myuniversity.phtml
 
-You also need to activate your new plugin in your local configuration, by pointing
-the $config['layout.template_file'] setting to your new layout template.
+You also need to activate your new plugin in your local configuration, by 
+pointing the $config['layout.template_file'] setting to your new layout 
+template.
 
-PLEASE NOTE : When developing a new layout, you *must* maintain all the method
-calls that pull data in from other parts of the system or Kit-Catalogue's
-operation will be severely affected, and possibly break completely.
+PLEASE NOTE : When developing a new layout, you *must* maintain all the method 
+calls that pull data in from other parts of the system or Kit-Catalogue's 
+operation will be severely affected, and probably break completely.
 
-The easiest way to develop a new template is to copy the default template from
-app/layouts/default.phtml and create a new version in your local/layouts folder.
+The easiest way to develop a new template is to copy the default template from 
+app/layouts/default.phtml and create a new version in your local/layouts 
+folder.
 
 
 
 **** Using Plugins ****
 
-
 Any .php file in the local/plugins/ folder will be read in automatically.
 
-Define any functions you wish to add to the 'hook-points' within the system
+Define any functions you wish to add to the 'hook-points' within the system 
 here, and register them with the model plugin system using:
 
 $plugins->add('<hook-name>', function ($args) {
@@ -63,3 +62,30 @@ $plugins->add('<hook-name>', function ($args) {
 See plugins.txt for more information.
 
 
+
+**** Changing Terms and Wordings ****
+
+Kit-Catalogue now supports the renaming of some of the labels and words used 
+to describe entities and fields within the system.  Using the local language 
+file, you can override the default labels and supply ones of your own.
+
+For example, to change "department" to "school", edit local/local_language.php
+(or create it, if it does not exist) and add the lines:
+
+$lang['dept.label'] = 'School';
+$lang['dept.label.plural'] = 'Schools'; 
+ 
+If you want to alter the URL of the department pages, you can do that by 
+adding a third line:
+
+$lang['dept.route'] = 'school';
+
+ 
+See app/language.php for all the different language overrides available.  This 
+is very much a work in progress, so not every occurance of a word may be 
+replaced at the moment, but we are working towards 100% coverage.
+
+Please report to us any labels you find that are not overridden somewhere.
+
+
+ 
