@@ -58,7 +58,7 @@ $config['org.www'] = 'http://www.example.com/';
 // Leave this blank to ignore
 $config['org.logo'] = '';
 
-$config['departments'] = 'School';
+
 
 /*
  * Application Settings
