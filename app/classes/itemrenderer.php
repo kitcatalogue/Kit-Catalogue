@@ -63,7 +63,7 @@ class ItemRenderer {
 		<dl>
 
 			<dt data-key="id">ID</dt>
-			<dd data-key="id"><?php echo $this->html($link); ?></dd>
+			<dd data-key="id"><?php echo $this->html($this->_router->makeAbsoluteUri("/id/item/{$item->id}")); ?></dd>
 
 			<dt data-key="name">Name</dt>
 			<dd data-key="name"><?php echo $this->html($item->name); ?></dd>
@@ -105,7 +105,7 @@ class ItemRenderer {
 
 		$obj = new StdClass();
 
-		$obj->id = $link;
+		$obj->id = $this->_router->makeAbsoluteUri("/id/item/{$item->id}");
 		$obj->name = $item->name;
 		$obj->manufacturer = $item->manufacturer;
 		$obj->model = $item->model;

@@ -1539,6 +1539,15 @@ class Itemstore {
 		$sql__item_id = $this->_db->prepareValue($item_id);
 		$this->_db->delete('item_tag', "item_id=$sql__item_id");
 
+		// Remove all blank tags
+		$temp = $tags;
+		$tags = array();
+		foreach($temp as $temp_tag) {
+			if (!empty($temp_tag)) {
+				$tags[] = $temp_tag;
+			}
+		}
+
 		if (empty($tags)) { return true; }
 
 
