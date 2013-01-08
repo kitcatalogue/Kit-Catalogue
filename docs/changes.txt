@@ -11,6 +11,16 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.1.1  (released 13-09-2012)
+
+
+== Administration
+
+Fixed a syntax error in the user administration area (on systems with PHP short-tags disabled).
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.0  (released 12-09-2012)
 
 
