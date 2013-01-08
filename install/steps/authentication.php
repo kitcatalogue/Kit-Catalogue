@@ -252,7 +252,6 @@ $model->get('db')->query("
 
 $is_admin_account = ($model->get('db')->hasResult());
 
-
 if (!$is_admin_account) {
 	?>
 	<div class="warn">
@@ -260,6 +259,29 @@ if (!$is_admin_account) {
 	</div>
 	<?php
 } else {
+
+	// Handle change admin password post
+	$change_admin_password = null;
+	if (isset($_POST['submitpassword'])) {
+		$change_admin_password = 'bad';
+
+		$curr_pass = (isset($_POST['current_password'])) ? $_POST['current_password'] : '' ;
+		$new_pass = (isset($_POST['new_password'])) ? $_POST['new_password'] : '' ;
+		$confirm_pass = (isset($_POST['confirm_password'])) ? $_POST['confirm_password'] : '' ;
+
+		$errors = array();
+
+		if (!$model->get('userstore')->authenticateDb('admin', $curr_pass)) { $errors[] = 'The current password was incorrect.'; }
+		if (empty($new_pass)) { $errors[] = 'You cannot have an empty password.'; }
+		if ($new_pass != $confirm_pass) { $errors[] = 'Your new password did not match the confirmation password.'; }
+
+		if (empty($errors)) {
+			$model->get('userstore')->setPassword('admin', $new_pass);
+			$change_admin_password = 'good';
+		}
+	}
+
+	// Check if admin password is default
 	if ($model->get('userstore')->authenticateDb('admin', 'admin')) {
 		?>
 		<div class="bad">
@@ -301,20 +323,8 @@ if ($is_admin_account) {
 	<p>To change the <em>admin</em> account password, complete the form below.</p>
 
 	<?php
-	if (isset($_POST['submitpassword'])) {
-
-		$curr_pass = (isset($_POST['current_password'])) ? $_POST['current_password'] : '' ;
-		$new_pass = (isset($_POST['new_password'])) ? $_POST['new_password'] : '' ;
-		$confirm_pass = (isset($_POST['confirm_password'])) ? $_POST['confirm_password'] : '' ;
-
-		$errors = array();
-
-		if (!$model->get('userstore')->authenticateDb('admin', $curr_pass)) { $errors[] = 'The current password was incorrect.'; }
-		if (empty($new_pass)) { $errors[] = 'You cannot have an empty password.'; }
-		if ($new_pass != $confirm_pass) { $errors[] = 'Your new password did not match the confirmation password.'; }
-
-		if (empty($errors)) {
-			$model->get('userstore')->setPassword('admin', $new_pass);
+	if (!empty($change_admin_password)) {
+		if ('good' == $change_admin_password) {
 			?>
 			<div class="good">
 				<p class="title">Saved - The <em>admin</em> account password has been changed.</p>

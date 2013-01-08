@@ -1,0 +1,38 @@
+
+* * * * * * * * * *
+  Data Licensing
+* * * * * * * * * *
+
+
+A data licence explains to your users what they can and cannot do with your
+equipment data.  This applies to both the data available through the API and
+through your catalogue's normal website pages.
+
+You should use your local config to define exactly which licence you wish to
+use. Kit-Catalogue includes settings for the UK's Open Goverment Licence as a
+useful default.
+
+
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+   *  Which ever licence you choose to use, check its terms are suitable *
+   *  for your institution before making it visible on your catalogue.   *
+   * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+By default, the Kit-Catalogue software does not show any data licence
+description or link. You can enable it by setting the appropriate local config
+entry to read:
+
+  $config['data.licence_enabled'] = true;  
+
+To change which data licence information is shown, alter these settings
+accordingly:
+
+  $config['data.licence_name'] = '<name of your licence>';
+
+  $config['data.licence_link'] = '<URL-of-full-licence-information>';
+
+
+If you omit the 'name' setting, only the link will be shown, and vice-versa.
+
+

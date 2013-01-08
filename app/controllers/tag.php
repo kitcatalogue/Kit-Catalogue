@@ -19,6 +19,24 @@ class Controller_Tag extends Ecl_Mvc_Controller {
 
 
 	public function actionIndex() {
+		$tags = $this->view()->tags = $this->model('itemstore')->findAllTags();
+
+		$sort = strtolower($this->request()->get('sort', 'name'));
+
+		if ('count' == $sort) {
+			$this->view()->sort = 'count';
+			$temp = $tags;
+			uksort($temp, function ($a, $b) use ($tags) {
+				if ($tags[$a] == $tags[$b]) { return strnatcasecmp($a, $b); }
+			 	return ($tags[$a] > $tags[$b]) ? -1 : 1 ;
+			});
+			$tags = $temp;
+		} else {
+			$this->view()->sort = 'name';
+			ksort($tags);
+		}
+
+		$this->view()->tags = $tags;
 		$this->view()->render('tag_index');
 	}// /method
 

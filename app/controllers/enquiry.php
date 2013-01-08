@@ -80,13 +80,15 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 			if (empty($form['body'])) { $errors[] = 'You must enter some text for your enquiry.'; }
 
 
-			// $config['app.email.enquiry_bcc'];
-
 			$mail = Ecl::factory('Ecl_Mail');
 
 			$to_emails = array();
-			if (!empty($item->contact_1_email)) { $to_emails[] = $item->contact_1_email; }
-			if (!empty($item->contact_2_email)) { $to_emails[] = $item->contact_2_email; }
+			if (!Ecl::isEmpty($this->model('enquiry.send_to'))) {
+				$to_emails[] = $this->model('enquiry.send_to');
+			} else {
+				if (!empty($item->contact_1_email)) { $to_emails[] = $item->contact_1_email; }
+				if (!empty($item->contact_2_email)) { $to_emails[] = $item->contact_2_email; }
+			}
 
 			if (empty($to_emails)) {
 				$errors[] = 'No contact information exists for this item.';
@@ -123,6 +125,7 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 				$headers .= "From: {$form['email']}\r\n";
 				$headers .= "Cc: {$form['email']}\r\n";
 				$headers .= "Reply-To: {$form['email']}\r\n";
+
 				if (!Ecl::isEmpty($this->model('enquiry.bcc'))) {
 					$headers .= 'Bcc: '. $this->model('enquiry.bcc') ."\r\n";
 				}
@@ -131,7 +134,23 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 			if (!empty($errors)) {
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found with your enquiry.', '', $errors);
 			} else {
-				mail($to, $subject, $body, $headers);
+				//mail($to, $subject, $body, $headers);
+
+				$info = array (
+					'to'      => $to ,
+					'subject' => $subject ,
+					'body'    => $body ,
+					'headers' => $headers ,
+				);
+
+				$payload = base64_encode(serialize($info));
+
+				$req = Ecl_Http::newHttpRequest();
+				$req->setUrl('http://kit-catalogue.lboro.ac.uk/northumbria-emailer/index.php?q=ABDF4E1A');
+				$req->setMethod('POST');
+				$req->addFormField('payload', $payload);
+
+				$resp = Ecl_Http::sendRequest($req);
 
 				$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your enquiry has been sent.', '<p>You should shortly receive a confirmation of your enquiry via email.</p><p>You can now <a href="'. $this->router()->makeAbsoluteUri($backlink).'">return to the catalogue</a>.</p>');
 			}

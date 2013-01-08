@@ -19,6 +19,34 @@ $router->addRoute('*', ':module/:controller/:action/:id');
 
 
 
+// API
+
+$router->addroute('*', 'api', array (
+	'controller'  => 'api' ,
+	'action'      => 'index' ,
+));
+
+
+$router->addroute('*', 'api/public', array (
+	'controller'  => 'apipublic' ,
+));
+
+$router->addroute('*', 'api/public/:action', array (
+	'controller'  => 'apipublic' ,
+));
+
+
+$router->addroute('*', 'api/private', array (
+	'controller'  => 'apiprivate' ,
+));
+
+
+$router->addroute('*', 'api/private/:action', array (
+	'controller'  => 'apiprivate' ,
+));
+
+
+
 // Support
 
 $router->addRoute('*', 'support/help', array(
@@ -151,12 +179,16 @@ $router->addRoute('*', 'contact/:contactid' , array(
 
 // Category
 
-$router->addRoute('*', 'category/:catname/:catid' , array(
+$router->addRoute('*', $model->lang['cat.route'], array(
+	'controller'  => 'category' ,
+));
+
+$router->addRoute('*', $model->lang['cat.route'].'/:catname/:catid' , array(
 	'controller'  => 'category' ,
 	'action'      => 'view' ,
 ));
 
-$router->addRoute('*', 'category/:catname/:catid/item/:itemname/:itemid', array(
+$router->addRoute('*', $model->lang['cat.route'].'/:catname/:catid/item/:itemname/:itemid', array(
 	'controller'  => 'category' ,
 	'action'      => 'viewitem' ,
 ));
@@ -222,6 +254,10 @@ $router->addRoute('*', 'browse/:param1/:param2/:param3/:param4/item/:itemname/:i
 
 
 // ID
+
+$router->addRoute('*', 'id/:action/:id/:name', array (
+	'controller' => 'id' ,
+));
 
 $router->addRoute('*', 'id/:action/:id', array (
 	'controller' => 'id' ,

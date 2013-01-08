@@ -47,6 +47,10 @@ $model->setObject('request', Ecl::factory('Ecl_Request'));
 
 
 
+$model->setObject('router', $router);
+
+
+
 $model->setFunction('db', function ($model) {
 	$db = Ecl::factory('Ecl_Db_Mysql', array (
 		'host'      => $model->get('db.host') ,

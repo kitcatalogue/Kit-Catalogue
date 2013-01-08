@@ -2,12 +2,13 @@
 $lang = $this->model('lang');
 
 
-$this->router()->layout()->addBreadcrumb($this->category->name, $this->router()->makeAbsoluteUri("/category/{$this->category->slug}"));
+$this->router()->layout()->addBreadcrumb($this->category->name, $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}"));
 
+$back_url = base64_encode($this->request()->relativeUri());
+$edit_link = null;
 
 if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
-	$back_url = base64_encode($this->request()->relativeUri());
 	$edit_link = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
 }
 ?>
@@ -27,7 +28,7 @@ if (0 == count($this->items)) {
 
 	<ul class="item-list">
 		<?php
-		$url_stub = $this->router()->makeAbsoluteUri("/category/{$this->category->slug}/item/");
+		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}/item/");
 		foreach($this->items as $item) {
 			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
 		}

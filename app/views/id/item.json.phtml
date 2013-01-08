@@ -1,0 +1,18 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'application/json');
+// @todo : Decide on whether to use custom type - e.g. application/vnd.kit-catalogue-lboro-ac-uk+json; version=1
+
+
+$item = $this->item;
+
+
+$obj = new StdClass();
+$obj->name = $item->name;
+$obj->title = $item->title;
+$obj->manufacturer = $item->manufacturer;
+$obj->model = $item->model;
+
+
+echo json_encode($obj, JSON_FORCE_OBJECT);
+?>

@@ -5,7 +5,7 @@ $lang = $this->model('lang');
 
 ?>
 
-<h1>Categories</h1>
+<h1><?php $this->out($lang['cat.label.plural']); ?></h1>
 
 <?php
 if ($this->categories->count()==0) {
@@ -31,7 +31,7 @@ if ($this->categories->count()>0) {
 	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['cat.label.plural'])); ?> used in this catalogue.</p>
 
 	<div id="categories">
-		<table class="layout" style="width: 900px; margin: 0 auto;">
+		<table class="layout" style="width: 900px; margin: 1em auto;">
 		<tr>
 		<?php
 		foreach($chunks as $chunk) {
@@ -43,11 +43,11 @@ if ($this->categories->count()>0) {
 						foreach($chunk as $i => $category) {
 							if (false) {
 								?>
-								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->slug}"); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->slug}"); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
 								<?php
 							}
 							?>
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri("/browse/category-{$category->id}-".urlencode($category->name)); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".urlencode($category->name)); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
 							<?php
 						}
 						?>

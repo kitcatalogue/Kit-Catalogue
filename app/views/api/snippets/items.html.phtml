@@ -1,0 +1,11 @@
+<ul class="item-list">
+	<?php
+	foreach($this->items as $item) {
+		echo("\n<li>\n");
+		$this->renderer->renderAsHtml($item);
+		echo("\n</li>\n");
+	}
+	?>
+</ul>
+
+

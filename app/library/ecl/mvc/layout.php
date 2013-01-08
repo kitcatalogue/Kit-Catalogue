@@ -212,15 +212,27 @@ class Ecl_Mvc_Layout extends Ecl_Mvc {
 
 
 	/**
-	 * Render a snippet using the given parameters.
+	 * Render and echo out a view.
 	 *
-	 * @param  string  $template
-	 * @param  array  $params  (optional)
+	 * @param  string  $view_name
+	 * @param  string  $module_name  (optional)  If not given, the router's current module will be used.
 	 *
 	 * @return  boolean  The operation was successful.
 	 */
-	public function z_renderSnippet($template, $params = array() ) {
+	public function renderView($view_name, $module_name = null) {
+		if (null === $module_name) { $module_name = $this->router()->getCurrentModule(); }
 
+		$include_path = $this->router()->viewPath($view_name, $module_name);
+
+		if (file_exists($include_path)) {
+			include($include_path);
+		} else {
+			if (null === $module_name) {
+				throw new Ecl_Mvc_Layout_Exception("Unknown view: '$view_name'.", 1);
+			} else {
+				throw new Ecl_Mvc_Layout_Exception("Unknown view: '$view_name' in module '$module_name'.", 1);
+			}
+		}
 	}// /method
 
 

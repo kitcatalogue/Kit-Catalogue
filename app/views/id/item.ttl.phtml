@@ -1,0 +1,24 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'text/turtle');
+
+$item = $this->item;
+
+$categories = $this->model('categorystore')->findForItem($item->id)->toColumn('name');
+?>
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+
+<<?php echo $this->router()->makeAbsoluteUri($item->idslug); ?>>
+	<http://purl.org/dc/terms/identifier>  """<?php echo $item->idslug; ?>"""  ;
+	<http://purl.org/dc/terms/title>  """<?php echo $item->title; ?>"""  ;
+	<http://purl.org/dc/terms/abstract>  """<?php echo $item->short_description; ?>"""  ;
+	<http://purl.org/dc/terms/description>  """<?php echo $item->full_description; ?>"""  ;
+<?php
+	foreach($categories as $category) {
+		echo "\t<http://purl.org/dc/terms/type>  \"\"\"$category\"\"\"  ;\n";
+	}
+?>
+	<http://purl.org/dc/terms/publisher>   <<?php echo $this->model('app.www'); ?>>  ;
+	<http://purl.org/dc/terms/modified> """<?php echo date('d-m-Y', $item->last_update); ?>"""  .
+
+

@@ -15,11 +15,17 @@
 			</ul>
 
 			<ul style="margin-top: 1em;">
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+				<li>
+					<a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a>
+					<p class="note">Import new items from a CSV file.</p>
+				</li>
 			</ul>
 
 			<ul style="margin-top: 1em;">
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/export/'); ?>">Export CSV</a></li>
+				<li>
+					<a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/export/'); ?>">Export CSV</a>
+					<p class="note">Export a back-up of all your item data to a CSV file.</p>
+				</li>
 			</ul>
 		</div>
 
@@ -38,6 +44,7 @@
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/categories/index/'); ?>"><?php $this->out($this->model()->lang['cat.label.plural']); ?></a></li>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'); ?>"><?php $this->out($this->model()->lang['access.label.plural']); ?></a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisations/index/'); ?>"><?php $this->out($this->model()->lang['org.label.plural']); ?></a></li>
 			</ul>
 			<br />
 			<p class="note">Locations</p>

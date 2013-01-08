@@ -27,8 +27,16 @@ if ($this->departments->count()>0) {
 	} else {
 		$chunks = array ( 0 => $this->departments );
 	}
+
+	$item_count = 0;
+	foreach($chunks as $chunk) {
+		foreach($chunk as $i => $department) {
+			$item_count += $department->getItemCount($user->param('visibility'));
+		}
+	}
+	$item_plural = ($this->departments->count()==1) ? 'item' : 'items' ;
 	?>
-	<p class="note">The following <?php $this->out(strtolower($lang['dept.label.plural'])); ?> have equipment listed in this catalogue.</p>
+	<p class="note">The following <?php $this->out(strtolower($lang['dept.label.plural'])); ?> have equipment listed in this catalogue (<?php echo "$item_count $item_plural"; ?>).</p>
 	<div id="categories">
 		<table class="layout" style="width: 900px; margin: 0 1em 0 1em;">
 		<tr>
@@ -46,7 +54,7 @@ if ($this->departments->count()>0) {
 								<?php
 							}
 							?>
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri("/browse/department-{$department->id}-".urlencode($department->name)); ?>"><?php $this->out($department->name); ?> <span class="count">(<?php $this->out($department->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label'])."-{$department->id}-".urlencode($department->name)); ?>"><?php $this->out($department->name); ?> <span class="count">(<?php $this->out($department->getItemCount($user->param('visibility'))); ?>)</span></a></li>
 							<?php
 						}
 						?>

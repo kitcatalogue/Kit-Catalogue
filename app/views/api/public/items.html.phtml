@@ -1,0 +1,36 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'text/html');
+?>
+<html>
+<head>
+<style>
+
+dt { float: left; clear: left; margin-right: 0.5em; font-weight: bold; }
+dd { margin-left: 7em; }
+
+ul.item-list > li { clear: both; margin-bottom: 0.7em; padding: 0.2em; border: 1px solid #ccc; list-style: none; }
+
+ul.item-list > li:before ,
+ul.item-list > li:after { content: ""; display: table; }
+
+ul.item-list > li:after { clear: both; }
+ul.item-list > li { zoom: 1; }
+
+</style>
+</head>
+<body>
+	<h1>All Public Items</h1>
+
+	<?php
+	if ( 0 == count($this->items)) {
+		?>
+		<p class="note">There are no items available publically.</p>
+		<p class="note">Access may be restricted to authorised API users only.</p>
+		<?php
+	} else {
+		$this->render('api_snippets_items.html');
+	}
+	?>
+</body>
+</html>

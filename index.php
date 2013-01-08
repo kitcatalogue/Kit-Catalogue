@@ -42,7 +42,7 @@ $router->layout(new Kc_Layout());
 if (empty($config['layout.template_file'])) {
 	$router->layout()->setTemplate('kitcatalogue');
 } else {
-	$layout_template_file = $config['app.local_root'].DIRECTORY_SEPARATOR.$config['layout.template_file'];
+	$layout_template_file = $config['app.local_root'].DIRECTORY_SEPARATOR.'layouts'.DIRECTORY_SEPARATOR.$config['layout.template_file'];
 	if (!file_exists($layout_template_file)) {
 		die("The configuration file defined a non-existent template in 'layout.template_file'.");
 	} else {

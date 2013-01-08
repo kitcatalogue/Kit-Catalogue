@@ -1,5 +1,59 @@
 <?php
-
-
+$lang = $this->model('lang');
 ?>
 <h1>All Tags</h1>
+
+<?php
+if (count($this->tags) == 0) {
+	?>
+	<p>No <?php $this->out(strtolower($lang['tag.label.plural'])); ?> have been used in this catalogue.</p>
+	<?php
+} else {
+	if (count($this->tags) > 10) {
+		$chunks = Ecl_Helper_Array::split($this->tags, 2);
+	} else {
+		$chunks = array ( 0 => $this->tags );
+	}
+	?>
+	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['tag.label.plural'])); ?> used in this catalogue.
+	<?php
+	if ('name' == $this->view()->sort) {
+		?>
+		You can also sort this list by <a href="<?php echo $this->router()->makeAbsoluteUri('/tag/?sort=count'); ?>">item-count</a>.</p>
+		<?php
+	} else {
+		?>
+		You can also sort this list by <a href="<?php echo $this->router()->makeAbsoluteUri('/tag/?sort=name'); ?>">name</a>.</p>
+		<?php
+	}
+	?>
+
+	<div id="tags">
+		<table class="layout" style="width: 900px; margin: 1em auto;">
+		<tr>
+		<?php
+		foreach($chunks as $chunk) {
+			if (!empty($chunk)) {
+				?>
+				<td>
+					<ul>
+						<?php
+						foreach($chunk as $tag => $item_count) {
+							$url__tag = urlencode($tag);
+							?>
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$url__tag}"); ?>">#<?php $this->out($tag); ?> <span class="count">(<?php $this->out($item_count); ?>)</span></a></li>
+							<?php
+						}
+						?>
+					</ul>
+				</td>
+				<?php
+			}
+		}
+		?>
+		</tr>
+		</table>
+	</div>
+	<?php
+}
+?>

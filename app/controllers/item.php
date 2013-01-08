@@ -13,7 +13,7 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->layout()->addBreadcrumb('Items', $this->router()->makeAbsoluteUri('/item/'));
+		$this->layout()->addBreadcrumb('Items', $this->router()->makeAbsoluteUri('/atoz/'));
 	}// /method
 
 
@@ -59,7 +59,7 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			$this->view()->items = $this->model('itemstore')->findForManufacturerLetter($letter, $user->param('visibility'));
 		}
 
-		$this->view()->render('item_atoz');
+		$this->view()->render('atoz_index');
 	}// /method
 
 
@@ -77,7 +77,7 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-		$this->layout()->addBreadcrumb("{$item->manufacturer} {$item->model}", $this->router()->makeAbsoluteUri("/item/{$item->slug}"));
+		$this->layout()->addBreadcrumb($item->name, $this->router()->makeAbsoluteUri("/item/{$item->slug}"));
 
 		$this->view()->item = $item;
 

@@ -624,7 +624,7 @@ class Ecl_Http {
 		if (!$handle) {
 			return null;
 		} else {
-			// @debug : Ecl::dump($request_string, 'HTTP :: full request');
+			// @debug :	Ecl::dump($request_string, 'HTTP :: full request');
 
 			// Sent the request and get the response
 			fwrite($handle, $request_string);

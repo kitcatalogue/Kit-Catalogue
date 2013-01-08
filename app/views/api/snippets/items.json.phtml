@@ -1,0 +1,16 @@
+<?php
+$last_index = count($this->items) - 1;
+
+echo '[';
+
+foreach($this->items as $i => $item) {
+	$this->renderer->renderAsJson($item);
+	if ($last_index > $i) {
+		echo(',');
+	}
+
+}
+
+echo ']';
+
+

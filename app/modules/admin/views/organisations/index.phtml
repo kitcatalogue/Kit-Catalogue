@@ -1,0 +1,47 @@
+
+<h1>Administer Organisations</h1>
+
+<div class="cf">
+
+
+	<div class="admin-box">
+		<h3>Add a new organisation</h3>
+		<?php
+		Ecl_Helper_Html::form('organisationform', $this->router()->makeAbsoluteUri('/admin/organisations/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+		<dl class="form">
+			<dt><?php Ecl_Helper_Html::formLabel('name', 'Organisation Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
+		</dl>
+
+		<?php Ecl_Helper_Html::formSubmit('submitadd', 'Add Organisation'); ?>
+
+	</div>
+
+
+	<p>Below is the list of the organisations available for use in this catalogue.</p>
+
+	<?php
+	if ($this->organisations->count()==0) {
+		?>
+		<p class="warning">No organisations have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			foreach($this->organisations as $i => $organisation) {
+				$edit_url = $this->router()->makeAbsoluteUri("/admin/organisations/edit/{$organisation->id}");
+				printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($organisation->name), $edit_url, ( !empty($organisation->code) ? " &nbsp;({$organisation->code})" : '' ) );
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
+
+
+</div>
+
+

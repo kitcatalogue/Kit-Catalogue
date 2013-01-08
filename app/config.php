@@ -26,8 +26,8 @@ $config['install.enabled'] = false;
  */
 
 
-$config['app.root'] = realpath(__DIR__ . '/../');   // The basis from which we work out the other paths
-$config['app.include_root'] = __DIR__;
+$config['app.root'] = realpath(dirname(__FILE__) . '/../');   // The basis from which we work out the other paths
+$config['app.include_root'] = dirname(__FILE__);
 
 $config['app.local_root'] = $config['app.root'] . '/local';
 
@@ -73,7 +73,7 @@ $config['org.logo'] = '';
 $config['app.debug'] = false;
 
 
-$config['app.version'] = '1.0.0';
+$config['app.version'] = '1.1.0';
 
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
@@ -85,6 +85,7 @@ $config['app.www'] = 'http://www.example.com/catalogue';
 $config['app.title'] = 'Kit-Catalogue';
 
 // The introductory text to show on the home page.
+// The text will be interpreted as HTML.
 $config['app.intro'] = "A catalogue of all the equipment and facilities available at our institution.";
 
 // The contact email address of the catalogue owner
@@ -181,6 +182,16 @@ $config['layout.default'] = 'default';
 // Should the system automatically include local/css/local.css
 $config['layout.use_local_css'] = true;
 
+// Should the system automatically include local/local_head.html
+// Use this setting and the local_head.html file to include scripts (such as Google Analytics)
+$config['layout.use_local_head'] = true;
+
+// The formatting options to use when outputting dates (e.g. Last updated)
+$config['layout.date_format'] = 'j\<\s\u\p\>S\<\/\s\u\p\> F, Y';
+
+// Show the sign-in prompt to anonymous users on every page
+$config['layout.signin_prompt_enabled'] = true;
+
 
 
 /*
@@ -197,13 +208,44 @@ $config['log.item_view'] = true;
  */
 
 // Enable the enquiry form
-// Regarless of this setting, users can always get an individual custodian's
-// contact information from the item details page.
+// Regardless of this setting, users can always read the custodians' contact
+// information from the item details page.
+// By default, enquiry form submissions are emailed to the custodians' email addresses.
 $config['enquiry.enabled'] = true;
+
+// An email address which will overrides the custodian addresses,
+// and will be the only address that receives enquiry form submissions.
+// Use this setting if you wish all enquiries to go to a central point email address.
+// We suggest this setting uses an email address accessible to numerous staff, so
+// enquiries do not go unanswered.
+$config['enquiry.send_to'] = '';
 
 // An email address to automatically BCC enquiry form submissions to.
 // Use this if you wish to monitor enquiries from users to item custodians.
+// This setting will also work with the $config['enquiry.send_to'] setting.
 $config['enquiry.bcc'] = '';
+
+
+
+/*
+ * Search Settings
+ */
+
+// Include items where search terms match associated categories
+$config['search.include_categories'] = true;
+
+// Include items where search terms match the custodian name or email addresses
+$config['search.include_custodians'] = true;
+
+// Include items where search terms match custom field values
+// You can't limit which custom fields are used, it's all or nothing.
+$config['search.include_custom_fields'] = false;
+
+// Include items where search terms match the associated department
+$config['search.include_departments'] = false;
+
+// Include items where search terms match associated tags
+$config['search.include_tags'] = true;
 
 
 
@@ -218,13 +260,53 @@ $config['socialnetwork.allow_googleplus'] = false;
 $config['socialnetwork.allow_twitter'] = false;
 
 
+
 /*
- * Linked Data and API Settings
+ * API Settings
+ *
+ * see docs/api.txt for more information.
  */
 
-// Enables the API and makes it available to the public (see docs/api.txt for more info)
-// At the moment there is no API, so this is disabled by default.
+// Enables the API.
+// If false, all API calls are disabled.
 $config['api.enabled'] = false;
+
+// Controls access to information about those items you have made public in the catalogue.
+// The public API is not protected by any API key.
+$config['api.public.enabled'] = true;
+
+// NOTE : At the moment this setting has no effect (item collections are not implemented).
+// Controls access to private collections of items (regardless of public/internal visibility).
+// Access to each collection is controlled by its own API key (essentially a password).
+// If using the private API, you should enforce a HTTPS connection to encrypt access.
+$config['api.private.enabled'] = false;
+
+// NOTE : At the moment this setting has no effect.
+// Forces all API calls to go via HTTPS, and therefore be encrypted.
+$config['api.use_https_only'] = false;
+
+
+
+/*
+ * Data Licensing and Settings
+ */
+
+// Show the data licence information.
+// If true, the site/API will show "This data is licensed under the <licence name>"
+// Where <license name> is the text and link given below.
+// If false, no licensing name or link will be shown.
+$config['data.licence_enabled'] = false;
+
+// The name of the data licence being used.
+// If blank, no licensing name or link will be shown.
+// By default, this is the UK's Open Government Licence
+$config['data.licence_name'] = 'Open Government Licence';
+
+// The link URL to the full licence text.
+// If blank, only the licence's name will be shown.
+// By default, this is the URL of the UK's Open Government Licence:
+// http://www.nationalarchives.gov.uk/doc/open-government-licence/
+$config['data.licence_link'] = 'http://www.nationalarchives.gov.uk/doc/open-government-licence/';
 
 
 

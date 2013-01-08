@@ -1,6 +1,5 @@
 
-                              Kit-Catalogue 
-
+Kit-Catalogue 
 
 
 An open source equipment and facilities database.
@@ -15,17 +14,6 @@ information on each item including its; specification, custodian,
 location, handbook, access requirements, usage data and photos.
 
 
-For more information, please read the help files in the /docs/ folder.
-
-
-For full installation or upgrade instructions, please follow the installation
-wizard by browsing to:
-
-	/install/
-
-Alternatively, you can follow the basic installation instructions in the
-readme file:
-
-	/install/readme.txt
-
+For more information and installation instructions, please read the help 
+files in the /docs/ folder.
 

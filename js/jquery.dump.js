@@ -11,7 +11,7 @@
 
 $.fn.dump = function() {
    return $.dump(this);
-}
+};
 
 $.dump = function(object) {
    var recursion = function(obj, level) {
@@ -145,10 +145,10 @@ $.dump = function(object) {
       }
 
       return 'Unknown';
-   }
+   };
 
    return recursion(object);
-}
+};
 
 function trim(str) {
    return ltrim(rtrim(str));

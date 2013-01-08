@@ -37,7 +37,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/category/'));
-		$this->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("category/{$category->url_suffix}"));
+		$this->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("category/{$category->slug}"));
 
 		$this->view()->category = $category;
 		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
@@ -58,7 +58,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Departments', $this->router()->makeAbsoluteUri("/department/"));
-		$this->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}"));
+		$this->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->slug}"));
 
 		$this->view()->department = $department;
 		$this->view()->category = null;
@@ -70,7 +70,9 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 	public function actionItem() {
-		$item = $this->model('itemstore')->find($this->param('id'));
+		$item = $this->model('itemstore')->find((int) $this->param('id'));
+
+		$format = $this->_getFormat();
 
 		if (empty($item)) {
 			$this->router()->action('404', 'error');
@@ -82,11 +84,9 @@ class Controller_Id extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-		$this->layout()->addBreadcrumb("{$item->manufacturer} {$item->model}", $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}"));
-
 		$this->view()->item = $item;
 
-		$this->view()->render('item_view');
+		$this->view()->render("id_item.{$format}");
 	}// /method
 
 
@@ -94,6 +94,17 @@ class Controller_Id extends Ecl_Mvc_Controller {
 /* --------------------------------------------------------------------------------
  * Private Methods
  */
+
+
+
+	public function _getFormat() {
+		$valid_formats = array('html', 'json', 'rdf', 'ttl');
+
+		$format = strtolower($this->request()->extension());
+		if (!in_array($format, $valid_formats)) { $format = 'html'; }
+
+		return $format;
+	}
 
 
 

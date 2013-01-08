@@ -1,7 +1,9 @@
 <?php
 error_reporting(E_ALL);
+$app_root = $this->model('app.root');
 $www_root = $this->model('app.www');
 
+$user = $this->model('user');
 $lang = $this->model('lang');
 
 
@@ -22,7 +24,14 @@ $lang = $this->model('lang');
 	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
 		<?php
 	}
+
 	$this->renderSection('layout.head');
+
+	if ($this->model('layout.use_local_head')) {
+		if (file_exists("{$app_root}/local/local_head.html")) {
+			include("{$app_root}/local/local_head.html");
+		}
+	}
 	?>
 </head>
 <?php echo $this->getSection('layout.pre-body'); ?>
@@ -67,7 +76,13 @@ $lang = $this->model('lang');
 				<?php
 			}
 			?>
-			<li>Welcome <strong><?php $this->out("{$user->forename} {$user->surname}"); ?></strong></li>
+			<li>Welcome <strong><?php
+				$name = $user->name;
+				if (empty($name)) {
+					$name = $user->email;
+				}
+				$this->out($name);
+			?></strong></li>
 		</ul>
 	</div>
 		<?php
@@ -78,7 +93,7 @@ $lang = $this->model('lang');
 
 		<div id="nav" class="cf">
 			<?php
-			if ( (!$this->model('user')->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
+			if ( (!$user->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
 				?>
 				<div id="search-box">
 					<form action="<?php echo $www_root; ?>/search/" method="get">
@@ -93,10 +108,10 @@ $lang = $this->model('lang');
 			<ul id="topnav" class="cf">
 				<li><a href="<?php echo $www_root; ?>/">Home</a></li>
 				<?php
-				if ( !$this->model('user')->isAnonymous() || $this->model('app.allow_anonymous') ) {
+				if ( (!$user->isAnonymous()) || $this->model('app.allow_anonymous') ) {
 				?>
-				<li><a href="<?php echo $www_root; ?>/category/"><?php $this->out($lang['cat.label.plural']); ?></a></li>
-				<li><a href="<?php echo $www_root; ?>/<?php echo $lang['dept.route'] ?>/"><?php $this->out($lang['dept.label.plural']); ?></a></li>
+				<li><a href="<?php echo $www_root; ?>/<?php echo $lang['cat.route']; ?>/"><?php $this->out($lang['cat.label.plural']); ?></a></li>
+				<li><a href="<?php echo $www_root; ?>/<?php echo $lang['dept.route']; ?>/"><?php $this->out($lang['dept.label.plural']); ?></a></li>
 				<li><a href="<?php echo $www_root; ?>/a-z/">Manufacturer A - Z</a></li>
 				<?php
 				}
@@ -119,10 +134,10 @@ $lang = $this->model('lang');
 			<?php
 		}
 
-		if ($this->model('user')->isAnonymous()) {
+		if ( ($user->isAnonymous()) && (true === $this->model('layout.signin_prompt_enabled')) ){
 			?>
 			<p class="signin_warning">
-				You are currently viewing only those items made visible to the public. Please <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">sign in</a> to view the full catalogue.
+				You are currently viewing only those items made visible to the public. <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">Click here to sign in</a> and view the full catalogue.
 			</p>
 			<?php
 		}
@@ -144,6 +159,8 @@ $lang = $this->model('lang');
 		<?php $this->renderSection('layout.footer'); ?>
 
 		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
+
+		<?php $this->renderView('snippets_licenceinfo', ''); ?>
 
 		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v.<?php $this->out($this->model('app.version')); ?>).<br />
 		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>

@@ -64,10 +64,14 @@ $no_next = false;
 
 	.note { font-size: 0.875em; color: #666; }
 
+	a.hilight { color: #07f; }
+
+
 	div.prevnext { margin: 1.5em 2em 0 2em; padding-top: 0.7em; border-top: 1px dotted #ccc; font-size: 1.125em; font-weight: bold; }
 
-
 	table.valigntop td { vertical-align: top; }
+
+	#header { min-height: 80px; }
 
 	</style>
 </head>
@@ -77,7 +81,7 @@ $no_next = false;
 
 <div id="header">
 
-	<div class="kclogo"><img src="../images/system/kitcatalogue_logo.gif" alt="Kit Catalogue" /></div>
+	<div class="kclogo"><img src="../images/logo-kc.jpg" alt="Kit Catalogue" /></div>
 
 </div>
 

@@ -224,7 +224,7 @@ Class Ecl_Request {
 	 */
 	public function extension($default = null) {
 		$ext = pathinfo($this->_pathinfo['path'], PATHINFO_EXTENSION);
-		if (empty($ext)) { return $default; }
+		return (!empty($ext)) ? $ext : $default;
 	}// /method
 
 

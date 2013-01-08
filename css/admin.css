@@ -25,3 +25,7 @@ div.report { margin: 0 2em 1em 2em; padding: 0em 1.5em 0.5em 1.5em; background-c
 div.report h2 { margin-left: -1em;}
 
 
+
+.itemedit_last_updated_info { float: right; padding: 1em; font-size: 0.9em; border: 1px solid #ccc; text-align: center; }
+
+

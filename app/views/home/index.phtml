@@ -9,7 +9,7 @@ $lang = $this->model('lang');
 <?php
 if (!Ecl::isEmpty($this->model('app.intro'))) {
 	?>
-	<p class="note" style="font-size: 1.1em;"><?php $this->out($this->model('app.intro')); ?></p>
+	<p class="note" style="font-size: 1.1em;"><?php echo $this->model('app.intro'); ?></p>
 	<?php
 }
 ?>
@@ -23,7 +23,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 			?>
 			<ul class="item-meta">
 				<?php
-				$url = $this->router()->makeAbsoluteUri("/browse/");
+				$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label']). '-');
 				foreach($categories as $category) {
 					if (false) {
 						$url = $this->router()->makeAbsoluteUri("/category/{$category->slug}");
@@ -34,7 +34,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 					}
 					$count = (!$user->isAnonymous()) ? $category->item_count_internal : $category->item_count_public ;
 					?>
-					<li><a href="<?php echo "{$url}category-{$category->id}-".urlencode($category->name); ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+					<li><a href="<?php echo "{$url}{$category->id}-".urlencode($category->name); ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
 					<?php
 				}
 				?>
@@ -51,7 +51,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 		if ($departments) {?>
 		<ul class="item-meta">
 			<?php
-			$url = $this->router()->makeAbsoluteUri('/browse/');
+			$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label']). '-');
 			foreach($departments as $department) {
 				if (false) {
 					$url = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->slug}");
@@ -62,7 +62,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 				}
 				$count = (!$user->isAnonymous()) ? $department->item_count_internal : $department->item_count_public ;
 				?>
-				<li><a href="<?php echo "{$url}department-{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+				<li><a href="<?php echo "{$url}{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
 				<?php
 			}
 		}

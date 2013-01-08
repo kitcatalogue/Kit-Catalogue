@@ -1,0 +1,8 @@
+<?php
+$item = $this->item;
+
+
+$this->layout()->addBreadcrumb($item->name, $this->router()->makeAbsoluteUri("/item/{$item->slug}"));
+
+$this->layout()->renderItemInFull($item);
+?>

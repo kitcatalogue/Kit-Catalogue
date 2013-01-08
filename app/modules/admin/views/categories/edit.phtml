@@ -1,4 +1,7 @@
 <?php
+$lang = $this->model('lang');
+$lower_cat_label = strtolower($lang['cat.label']);
+
 
 $category = $this->category;
 
@@ -21,9 +24,9 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 
 		cpvLookup();
 
-		var del_button = $('<input type="submit" name="submitdelete" value="Delete Category" />');
+		var del_button = $('<input type="submit" name="submitdelete" value="Delete {$lang['cat.label.plural']}" />');
 		del_button.click(function () {
-			return confirm('Please confirm that you want to delete this category.\\n\\nAny Items associated with this category will remain, but no longer be registered with it.\\n\\nThis operation cannot be undone.');
+			return confirm('Please confirm that you want to delete this {$lower_cat_label}.\\n\\nAny Items associated with this category will remain, but no longer be registered with it.\\n\\nThis operation cannot be undone.');
 		});
 		$('#delete_button_container').append(del_button);
 
@@ -46,8 +49,8 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 <div id="delete_button_container"></div>
 
 
-<h1>Edit Category : <?php $this->out($this->category->name); ?></h1>
-<p>Categories are used to group together items of equipment with a similar purpose or functionality.</p>
+<h1>Edit <?php $this->out($lang['cat.label']); ?> : <?php $this->out($this->category->name); ?></h1>
+<p><?php $this->out($lang['cat.label.plural']); ?> are used to group together items of equipment with a similar purpose or functionality.</p>
 
 
 <?php
@@ -66,12 +69,11 @@ $this->render('categories_snippets_editsubform');
 <?php
 if (0 < $category->item_count_internal) {
 	?>
-	<p>This category contains <em><?php $this->out($category->item_count_internal); ?> item<?php echo ((1 < $category->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
-
+	<p>This <?php $this->out(strtolower($lang['cat.label'])); ?> contains <em><?php $this->out($category->item_count_internal); ?> item<?php echo ((1 < $category->item_count_internal) ? 's' : ''); ?></em> of equipment.</p>
 
 	<p><a href="<?php echo $this->router()->makeAbsoluteUri("/browse/category-{$category->id}-".urlencode($category->name)); ?>">View items in catalogue</a></p>
 
-	<p>If you would like to transfer your items to a different category, please select a destination to transfer all items to.</p>
+	<p>If you would like to transfer your items to a different <?php $this->out(strtolower($lang['cat.label'])); ?>, please select a destination to transfer all items to.</p>
 	<?php
 	$options = array('' => '') + $this->model('categorystore')->findAll()->toAssoc('id', 'name');
 	unset($options[$category->id]);
@@ -84,7 +86,7 @@ if (0 < $category->item_count_internal) {
 	$cboxes[] = array (
 		'name'      => 'delete_on_transfer' ,
 		'id'        => 'delete_on_transfer' ,
-		'label'     => 'Delete current category after transfer' ,
+		'label'     => 'Delete current '. strtolower($lang['cat.label']).' after transfer' ,
 		'value'     => '1' ,
 		'selected'  => false ,
 	);
@@ -96,7 +98,7 @@ if (0 < $category->item_count_internal) {
 	<?php
 } else {
 	?>
-	<p>This category is not associated with any items.</p>
+	<p>This <?php $this->out(strtolower($lang['cat.label'])); ?> is not associated with any items.</p>
 	<?php
 }
 ?>

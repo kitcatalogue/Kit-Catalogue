@@ -3,8 +3,6 @@
  *
  * @author  Paul Newman
  * @version  1.0.0
- * 
- * 
  */
 
 
@@ -75,17 +73,18 @@
 
 		// Process callbacks, if defined
 		if (open_callback) { open_callback(this); }
-		if (close_callback) { this.on('modalwindow_close.modalwindow', function (e) {
-			close_callback(this);
-		}); }
+		if (close_callback) {
+			this.on('modalwindow_close.modalwindow', function (e) {
+				close_callback(this);
+			});
+		}
 
 
 		$('#modalwindow_mask').fadeTo(300, 0.75);
 		this.show();
 
-		// Disallow tabbing through main-page controls during modal window
-		// It's not perfect, as clicking in to the browser chrome will allow
-		// users to start tabbing through controls again, but it's a start.
+		// Stop tab from going through the page controls.
+		// @todo : Clicking on the browser frame lets users tab around again.
 		var first = this.find(':input:visible:enabled:first').focus();
 		var last = this.find(':input:visible:enabled:last');
 
@@ -94,7 +93,7 @@
 		});
 
 		return this;
-	}
+	};
 
 
 
@@ -104,7 +103,7 @@
 		this.off('modalwindow_close.modalwindow');
 		this.hide();
 		return this;
-	}
+	};
 
 
 

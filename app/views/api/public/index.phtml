@@ -1,0 +1,37 @@
+<?php
+
+
+?>
+<h1>Public API</h1>
+
+<p>The public API provides access to information about all the items publically available in this catalogue.</p>
+
+<?php
+$status = (true === $this->model('api.public.enabled')) ? 'available' : 'unavailable' ;
+?>
+<p class="api_status api_<?php echo($status); ?>">The public API for this catalogue is <?php $this->out($status); ?>.</p>
+
+
+
+<h3>Available API Calls</h3>
+
+<dl>
+
+	<?php
+	foreach($this->available_calls as $url => $desc) {
+		?>
+		<dt><?php printf('<a href="%1$s">%1$s</a>', $url); ?></dt>
+		<dd><?php $this->out($desc); ?></dd>
+		<?php
+	}
+	?>
+
+</dl>
+
+
+<h3>Data Licence</h3>
+<?php $this->render('snippets_licenceinfo'); ?>
+
+<?php $this->render('api_snippets_formatinfo'); ?>
+
+

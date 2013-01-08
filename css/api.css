@@ -1,0 +1,34 @@
+
+/*
+ * API Styles
+ */
+
+
+
+h3 { margin-top: 2em; }
+
+p.api_status { width: 25em; margin: 1em; padding: 0.5em; border: 1px solid #ccc; border-radius: 10px; text-align: center; }
+p.api_available { background-color: #cfc; }
+p.api_unavailable { background-color: #fcc; }
+
+
+dl.item { margin: 1em; }
+dl.item dt { font-weight: bold; }
+dl.item dd { margin-left: 1em; }
+dl.item dd + dt { margin-top: 1.5em; }
+
+
+
+table.formats { border: 1px solid #999; }
+
+table.formats tr > th,
+table.formats tr > td { padding: 1em; border: 1px solid #999; vertical-align: top; }
+
+table.formats tr > th { background-color: #ccc; font-weight: bold; text-align: center; vertical-align: middle;  }
+
+table.formats td.fileext { text-align: center; }
+table.formats td.mimetype { }
+table.formats td.desc { }
+
+table.formats tr.default td { background-color: #ffc; }
+

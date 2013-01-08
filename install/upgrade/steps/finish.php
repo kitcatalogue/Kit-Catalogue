@@ -11,7 +11,9 @@ include(APP_PATH .'/bootstrap.php');
 
 <p>The Kit-Catalogue system should now be fully upgraded.</p>
 
-<p>If you want to check your Kit-Catalogue system and its settings, go through the steps in the <a href="installer.php">installation wizard</a>. Otherwise, you should now visit <a href="<?php echo $config['app.www']; ?>">your catalogue homepage</a> and try using the system.</p>
+<p>If you want to check your Kit-Catalogue system and its settings, go through the steps in the <a class="hilight" href="installer.php">installation wizard</a>. Otherwise, you should now visit <a class="hilight" href="<?php echo $config['app.www']; ?>">your catalogue homepage</a> and try using the system.</p>
+
+<p>If you need more information on how Kit-Catalogue operates, check out the <a class="hilight" href="http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/">user manual</a>.</p>
 
 <br />
 <div class="warn">
