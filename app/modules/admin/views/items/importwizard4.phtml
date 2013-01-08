@@ -1,0 +1,23 @@
+
+
+<h1>Import Items from CSV</h1>
+<p>Step 4 : Import Complete</p>
+
+
+<?php
+if (!empty($this->successful_items)) {
+	?>
+	<h2>The following items were imported successfully.</h2>
+	<ul style="margin-left: 2em;">
+		<?php
+		foreach($this->successful_items as $item_id => $item_name) {
+			$item_url = $this->router()->makeAbsoluteUri("/id/item/{$item_id}");
+			printf('<li><a href="%1$s">%2$s</a></li>', $item_url, $item_name);
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

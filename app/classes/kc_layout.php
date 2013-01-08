@@ -1,0 +1,616 @@
+<?php
+
+
+
+Ecl::load('Ecl_Mvc_Layout_Html');
+
+
+
+/**
+ * Kit-Catalogue specific layout class.
+ *
+ * @package  Kit-Catalogue
+ * @version  1.0.0
+ */
+class Kc_Layout extends Ecl_Mvc_Layout_Html {
+
+	// Public Properties
+
+
+	// Private Properties
+
+
+
+/* --------------------------------------------------------------------------------
+ * Public Methods
+ */
+
+
+
+	/**
+	 * Add the global javascripts required for other scripting.
+	 *
+	 * Loads JQuery and the Kit-Catalogue javascript config.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function addGlobalJavascript() {
+		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-min.js'));
+		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery.require.js'));
+		$this->addJavascript($this->router()->makeAbsoluteUri('/js/kc_config.php'));
+		return true;
+	}// /method
+
+
+
+	/**
+	 * Render any defined breadcrumb links.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function renderBreadcrumbs() {
+		if (!empty($this->_breadcrumbs)) {
+			foreach($this->_breadcrumbs as $i => $breadcrumb) {
+				if (isset($breadcrumb['href'])) {
+					printf('<li><a href="%2$s">%1$s</a></li>', $breadcrumb['title'], $breadcrumb['href']);
+				} else {
+					printf('<li>%1$s</li>', $breadcrumb['title']);
+				}
+			}
+		}
+		return true;
+	}// /method
+
+
+
+	/**
+	 * Render an item's list view representation.
+	 *
+	 * @param  object  $item  The Item object to render.
+	 * @param  string  $item_url  The URL to use for clicking through to the item details.
+	 * @param  mixed  $hide_properties  The property name, or array of property names, to hide in the display.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function renderItemInList($item, $item_url, $hide_properties = array() ) {
+		$user = $this->model('user');
+		$lang = $this->model('lang');
+
+		if (!is_array($hide_properties)) {
+			if (empty($hide_properties)) {
+				$hide_properties = array();
+			} else {
+				$hide_properties = array( $hide_properties );
+			}
+		}
+
+		if (empty($item->image)) {
+			$image_alt = 'No image available';
+			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
+		} else {
+			$image_alt = $item->name;
+			$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+		}
+		?>
+		<li class="item" id="item-<?php $this->out($item->id); ?>">
+			<?php
+			if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
+				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
+				$back_url = base64_encode($this->request()->relativeUri());
+				printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit</a>', $edit_url, $back_url);
+			}
+			?>
+
+			<a href="<?php echo $item_url; ?>"><img class="item-thumb" src="<?php $this->out($image); ?>" alt="<?php $this->out($image_alt); ?>" /></a>
+
+			<div class="item-content">
+				<h2 class="item-title">
+					<a href="<?php echo $item_url; ?>" title="<?php $this->out($item->name); ?>"><?php $this->out($item->name); ?></a>
+				</h2>
+				<p class="item-desc"><?php
+					if (!empty($item->short_description)) {
+						$this->out($item->short_description);
+					}
+					?><br /><a href="<?php echo $item_url; ?>">more details &raquo;</a>
+				</p>
+
+				<ul class="item-meta">
+					<?php
+					if ( (!in_array('manufacturer', $hide_properties)) && (!empty($item->manufacturer)) ) {
+						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['item.label.manufacturer'], $this->escape($item->manufacturer));
+					}
+					if ( (!in_array('technique', $hide_properties)) && (!empty($item->technique)) ) {
+						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['item.label.technique'], $this->escape($item->technique));
+					}
+					if ( (!in_array('department', $hide_properties)) && (!empty($item->department)) ) {
+						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['dept.label'], $this->escape($this->model('departmentstore')->lookupName($item->department)));
+					}
+					?>
+				</ul>
+			</div>
+		</li>
+
+		<?php
+		return true;
+	}
+
+
+
+	public function renderItemInFull($item, $goto_url = '') {
+		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/print.css'),'print');
+
+		$user = $this->model('user');
+		$lang = $this->model('lang');
+
+		$back_url = base64_encode($this->request()->relativeUri());
+
+		// These are being a pain - set them to null here
+		$latude = null;
+		$ldtude = null;
+
+		if (empty($item->image)) {
+			$no_image = true;
+			$image_alt = 'No image available';
+			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
+		} else {
+			$no_image = false;
+			$image_alt = $item->manufacturer .' '. $item->model;
+			$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+		}
+
+		$files = $this->model('itemstore')->findFilesForItem($item);
+
+		$image_files = array();
+		$other_files = array();
+
+		if (!empty($files)) {
+			$image_ext = array ('jpg', 'jpeg', 'gif', 'png');
+			foreach($files as $file) {
+				$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
+				if (in_array($extension, $image_ext)) {
+					$image_files[] = $file;
+				} else {
+					$other_files[] = $file;
+				}
+			}
+		}
+
+
+
+		if ($this->model('log.item_view')) {
+			$this->model('db')->insert('log_view', array (
+				'date_view'  => $this->model('db')->formatDate(time()) ,
+				'user_id'    => $this->model('user')->id ,
+				'username'   => $this->model('user')->username ,
+				'item_id'    => $item->id ,
+			));
+		}
+
+		$wiki_parser = Ecl::factory('Ecl_Parser_Wikicode');
+		?>
+
+		<?php
+
+		function drawField($header, $detail) {
+			if (!empty($detail)) {
+				$header = strtoupper($header);
+				?>
+				<tr>
+					<th><?php echo $header; ?></th>
+					<td><?php echo $detail; ?></td>
+				</tr>
+				<?
+			}
+		}
+
+
+		function isSensibleDate($date) {
+			return (!empty($date)) && ($date > strtotime('1970-01-02 00:00:00'));
+		}
+		?>
+
+		<div class="item">
+
+			<div class="item-header">
+
+				<?php
+				if (
+					($this->model('enquiry.enabled'))
+					&& (
+						(!empty($item->contact_1_email))
+						|| (!empty($item->contact_2_email)) )
+						)
+					{
+					?>
+					<a class="enquire-link" href="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>"><img src="<?php echo $this->router()->makeAbsoluteUri('/images/system/enquirebutton.gif'); ?>" alt="Enquire Now" /></a>
+					<?php
+				}
+				?>
+
+				<h1><?php $this->out($item->name); ?></h1>
+
+				<table class="fields">
+				<?php
+
+				$manufacturer_website = '';
+
+				if (!empty($item->manufacturer_website)) {
+					$start_url = '';
+					if ( (substr($item->manufacturer_website, 0, 7)!='http://')
+						&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
+							$start_url = 'http://';
+					}
+					$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', "{$start_url}{$item->manufacturer_website}");
+				}
+				drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
+
+				drawField($lang['item.label.model'], $this->escape($item->model));
+				drawField($lang['item.label.acronym'], $this->escape($item->acronym));
+
+				?>
+				</table>
+
+			</div>
+
+			<div class="item-detail-right">
+
+				<?php
+				if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
+					$edit_url = $this->router()->makeAbsoluteUri("/admin/items/edit/{$item->id}");
+					printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit item</a>', $edit_url, $back_url );
+				}
+				?>
+
+				<div class="item-body">
+
+					<div class="usage">
+						<?php // DISPLAY DEPARTMENT NAME
+							if (!empty($item->department)) {
+							echo "<h2>".$this->model('departmentstore')->lookupName($item->department)."</h2>";
+						}?>
+						<table class="layout fields">
+						<?php
+
+						drawField($lang['item.label.availability'], $this->escape($item->availability));
+
+						if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
+							$access = $this->escape($this->model('accesslevelstore')->lookupName($item->access));
+							drawField($lang['access.label'], $this->escape($access));
+
+							drawField($lang['item.label.usergroup'], $this->escape($item->usergroup));
+						}
+
+
+
+						$details = '';
+						if (true === $item->training_required) {
+							if (true === $item->training_provided) {
+								$details = 'Training is required to use this item and we can arrange this if needed.';
+							} elseif (false === $item->training_provided) {
+								$details = 'Although training is required to use this item, we cannot arrange it for you.';
+							} else {
+								$details = 'Training is required to use this item.';
+							}
+						} elseif(false === $item->training_required) {
+							$details = 'No special training required.';
+						}
+						drawField($lang['item.label.training'], $details);
+
+
+						switch($item->calibrated) {
+							case Item::CALIB_YES:
+								$details = 'Yes, this item is calibrated.';
+								if (isSensibleDate($item->last_calibration_date)) {
+									$details .= '<br />Last Calibration: '. date('d-m-Y', $item->last_calibration_date);
+								}
+								if (isSensibleDate($item->next_calibration_date)) {
+									$details .= '<br />Next Calibration: '. date('d-m-Y', $item->next_calibration_date);
+								}
+								break;
+							case Item::CALIB_NO:
+								$details = 'No, this item is not calibrated.';
+							case Item::CALIB_AUTO:
+								$details = 'This item is automatically calibrated.';
+							default:
+								$details = '';
+								break;
+						}
+						drawField($lang['item.label.calibrated'], $details);
+
+
+						if (isSensibleDate($item->PAT)) {
+							drawField($lang['item.label.PAT'], date('d-m-Y', $item->PAT));
+						}
+						?>
+						</table>
+					</div>
+
+					<div class="contact">
+
+						<table class="layout fields">
+						<?php
+						if (!empty($item->contact_1_email)) {
+							if (!empty($item->contact_1_name)) {
+								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_1_email, $item->contact_1_name);
+							} else {
+								$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_1_email);
+							}
+							drawField($lang['item.label.contact_1'], $contact_link);
+						}
+
+						if (!empty($item->contact_2_email)) {
+							if (!empty($item->contact_2_name)) {
+								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_2_email, $item->contact_2_name);
+							} else {
+								$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_2_email);
+							}
+							drawField($lang['item.label.contact_2'], $contact_link);
+						}
+
+						if ($this->model('security')->checkItemPermission($item, 'item.location.view')) {
+							if (!empty($item->site)) {
+								$site = $this->model('sitestore')->find($item->site);
+								if ($site) {
+									drawField($lang['site.label'], $this->escape($site->name));
+								}
+							}
+
+							if (!empty($item->building)) {
+								$building = $this->model('buildingstore')->find($item->building);
+								if ($building) {
+									drawField($lang['building.label'], $this->escape($building->name));
+								}
+							}
+
+							drawField($lang['item.label.room'], $this->escape($item->room));
+						}
+
+						?>
+						</table>
+
+					</div>
+
+					<?php
+					if (!empty($item->full_description)) {
+						$this->outf($lang['item.label.full_description'], '<h2>%s</h2>');
+						?>
+						<div class="item-description">
+							<?php echo $wiki_parser->parse($item->full_description); ?>
+						</div>
+						<?php
+					}
+
+					if (!empty($item->specification)) {
+						$this->outf($lang['item.label.specification'], '<h2>%s</h2>');
+						?>
+						<div class="item-specification">
+							<?php echo $wiki_parser->parse($this->escape($item->specification)); ?>
+						</div>
+						<?php
+					}
+
+
+
+					/*
+					 * Show Available Files
+					 */
+					if ( ($this->model('security')->checkItemPermission($item, 'item.files.view')) && (!empty($other_files)) ) {
+						$grouped_files = null;
+
+						foreach($other_files as $file) {
+							$grouped_files[$file->type][] = $file;
+						}
+
+						$types = $this->model('itemstore')->findAllFileTypes();
+
+						$this->outf($lang['item.label.files'], '<h2>%s</h2>');
+						?>
+						<div class="item-files">
+							<?php
+							foreach($grouped_files as $file_type => $file_group) {
+								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Files' ;
+								?>
+								<h4><?php $this->out($type_name); ?></h4>
+								<ul>
+									<?php
+									foreach($file_group as $file) {
+										$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$file->filename}");
+										$display_name = (empty($file->name)) ? $file->filename : $file->name ;
+										?>
+										<li><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
+										<?php
+									}
+									?>
+								</ul>
+								<?php
+							}
+							?>
+						</div>
+						<?php
+						if (!empty($item->copyright_notice)) {
+							$this->outf($lang['item.label.copyright_notice'], '<h4>%s</h4>');
+							printf('<p>%s</p>', $item->copyright_notice);
+						}
+					}
+
+
+					// Custom fields
+					if ($this->model('security')->checkItemPermission($item, 'item.customfield.view')) {
+						$custom_fields = $this->model('itemstore')->getItemCustomFields($item->id);
+						if (!empty($custom_fields)) {
+							$fields = $this->model('customfieldstore')->findAll();
+
+							$drawn_field = false;
+							if (!empty($fields)) {
+								foreach($fields as $field) {
+									if ( (isset($custom_fields[$field->id])) && (!empty($custom_fields[$field->id])) ) {
+										if (!$drawn_field) {
+											?>
+											<h2>Additional Fields</h2>
+											<table class="fields">
+											<?php
+										}
+										$drawn_field = true;
+										drawField($field->name, $this->escape($custom_fields[$field->id]));
+									}
+								}
+							}
+
+							if ($drawn_field) {
+								?>
+								</table>
+								<?php
+							}
+						}
+					}
+
+
+					if (isSensibleDate($item->date_updated)) {
+						printf('<p class="note item-date-updated">%s: %s</p>', $lang['item.label.date_updated'], date('d-m-Y', $item->date_updated));
+					}
+					?>
+				</div>
+
+
+			</div>
+
+
+
+			<div class="item-detail-left">
+
+				<div class="images cf">
+					<?php
+					if ($no_image) {
+						?>
+						<img src="<?php echo $image; ?>" width="100" alt="<?php $this->out($image_alt); ?>" />
+						<?php
+					} else {
+						?>
+						<a href="<?php echo $image; ?>" target="_blank"><img src="<?php echo $image; ?>" width="252" alt="<?php $this->out($image_alt); ?>" /></a>
+						<?php
+					}
+
+					foreach($image_files as $i => $file) {
+						if ($file->filename != $item->image) {
+							$extra_image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $file->filename);
+							?>
+							<div class="extra-image">
+								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="80" height="80" alt="" /></a>
+							</div>
+							<?php
+						}
+					}
+					?>
+				</div>
+
+				<?php
+				$categories = $this->model('categorystore')->findForItem($item->id);
+				if ($categories->count()==0) {
+					if ($this->model('user')->isAnonymous()) {
+						?>
+						<p class="note">There are no publically available categories listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
+						<?php
+					}
+				} else {
+					?>
+					<div class="side-bar">
+						<h4>Categories</h4>
+						<ul>
+						<?php
+						foreach($categories as $i => $category) {
+							?>
+							<li>
+								<a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"); ?>">
+									<?php $this->out($category->name); ?>
+									<span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span>
+								</a>
+							</li>
+							<?php
+						}
+						?>
+						</ul>
+					</div>
+					<?php
+				}
+
+
+				$tags = $this->model('itemstore')->getItemTags($item->id);
+				if (count($tags)>0) {
+					?>
+					<div class="side-bar tags">
+						<h4>Tags</h4>
+						<ul>
+							<?php
+							foreach($tags as $i => $tag) {
+								?>
+								<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
+								<?php
+							}
+							?>
+						</ul>
+					</div>
+					<?php
+				}
+
+
+				if ( (!$user->isAnonymous()) && (KC__VISIBILITY_PUBLIC == $item->visibility) ) {
+					?>
+					<div class="side-bar">
+						<h4>Visibility</h4>
+						<div style="padding: 3px;">This item is publically visible.</div>
+					</div>
+					<?php
+				}
+
+
+				if (
+					(KC__VISIBILITY_PUBLIC == $item->visibility)
+					|| ($this->model('socialnetwork.allow_googleplus'))
+					|| ($this->model('socialnetwork.twitter'))
+					) {
+					?>
+					<div class="socialnetworkbuttons">
+						<?php
+						if ($this->model('socialnetwork.allow_googleplus')) {
+							?>
+							<g:plusone annotation="none"></g:plusone>
+							<script type="text/javascript">
+							  (function() {
+							    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+							    po.src = 'https://apis.google.com/js/plusone.js';
+							    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+							  })();
+							</script>
+							<?php
+						}
+
+
+						if ($this->model('socialnetwork.allow_twitter')) {
+							?>
+							<a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-count="none">Tweet</a>
+							<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+							<?php
+						}
+						?>
+					</div>
+					<?php
+				}
+				?>
+
+			</div>
+
+		</div>
+
+		<?php
+		return true;
+   }
+
+
+/* --------------------------------------------------------------------------------
+ * Private Methods
+ */
+
+
+
+}// /class
+?>

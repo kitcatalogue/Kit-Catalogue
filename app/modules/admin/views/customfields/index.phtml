@@ -1,0 +1,60 @@
+<?php
+$this->router()->layout()->addBreadcrumb('Custom Fields', $this->router()->makeAbsoluteUri('/admin/customfields/index/'));
+?>
+
+
+<h1>Customise Item Fields</h1>
+<p class="note">Using additional fields, you can customise the information you keep on each item of equipment.</p>
+<p class="note">Additional fields can be used on any item of equipment in the system, and can be populated using the CSV Import too.</p>
+
+
+<div class="cf">
+	<div class="admin-box">
+		<h3>Add a new custom field</h3>
+		<?php
+		Ecl_Helper_Html::form('customisationform', $this->router()->makeAbsoluteUri('/admin/customfields/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+		<dl class="form">
+
+			<dt><?php Ecl_Helper_Html::formLabel('name', 'Field Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 30, 100); ?></dd>
+
+		</dl>
+
+		<div>
+			<?php Ecl_Helper_Html::formSubmit('submitadd', 'Add New Field'); ?>
+		</div>
+
+		<?php
+		Ecl_Helper_Html::formClose();
+		?>
+	</div>
+
+
+
+<?php
+if (empty($this->custom_fields)) {
+	?>
+	<div class="warning">No custom fields have been setup yet.</div>
+	<?php
+} else {
+	?>
+	<br />
+	<p>Below is the list of the custom fields available in this catalogue.</p>
+	<ul>
+		<?php
+		$edit_stub = $this->router()->makeAbsoluteUri('/admin/customfields/edit/');
+		foreach($this->custom_fields as $field) {
+			$edit_url = $edit_stub . urlencode($field->id);
+			printf('<li><a href="%2$s">%1$s</a></li>', Ecl_Helper_Html::escape($field->name), $edit_url );
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+
+
+</div>

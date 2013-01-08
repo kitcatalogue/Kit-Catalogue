@@ -1,0 +1,40 @@
+<?php
+
+
+$url_tag = urlencode($this->tag);
+
+$this->layout()->addBreadcrumb("#{$this->tag}", $this->router()->makeAbsoluteUri("tag/{$url_tag}"));
+
+
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	printf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
+}
+?>
+
+<h1>Items tagged with #<?php $this->out($this->tag); ?></h1>
+<?php
+$count = $this->items->count();
+
+if (0 == $count) {
+	?>
+	<p class="note">No items found for this tag.</p>
+	<?php
+} else {
+	?>
+	<p class="note"><strong><?php $this->out($count); ?> found</strong>.</p>
+
+	<ul class="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri("/tag/{$url_tag}/item/");
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

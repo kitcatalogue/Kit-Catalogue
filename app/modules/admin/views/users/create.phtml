@@ -1,0 +1,47 @@
+<?php
+
+
+$user = $this->user;
+$new_user = $this->new_user;
+
+
+?>
+<h1>Create New User</h1>
+
+<?php
+Ecl_Helper_Html::form('userform', $this->router()->makeAbsoluteUri('/admin/users/create/'), 'post', 'UTF-8');
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+?>
+
+<div id="delete_button_container">
+</div>
+
+<p class="note">* Denotes a required field.</p>
+
+<div class="grid_row">
+
+	<div class="grid_8col">
+
+		<?php
+		$this->render('users_snippets_editsubform');
+		?>
+
+
+		<div style="text-align: center;">
+		<?php Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel'); ?>
+			<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
+		</div>
+
+	</div>
+
+
+	<div class="grid_4col grid_lastcol">
+	</div>
+
+</div>
+
+<?php
+Ecl_Helper_Html::formClose();
+?>
+
+

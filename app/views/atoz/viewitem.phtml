@@ -1,0 +1,10 @@
+<?php
+
+$this->layout()->addBreadcrumb("Items for {$this->letter}..", $this->router()->makeAbsoluteUri("/a-z/?letter={$this->letter}"));
+$this->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/a-z/{$this->item->slug}"));
+
+
+
+$goto_url = '';
+$this->layout()->renderItemInFull($this->item, $goto_url);
+?>

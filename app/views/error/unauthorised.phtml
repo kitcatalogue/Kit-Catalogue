@@ -1,0 +1,26 @@
+
+<h1>You are not authorised to access the requested resource</h1>
+
+<p>You do not have the right permissions to access this page.</p>
+<?php
+if ($this->model('user')->isAnonymous()) {
+	?>
+	<p>You may not have signed in yet, or your session might have expired.</p>
+	<?php
+}
+?>
+
+
+
+<h2>What Next?</h2>
+<ul>
+	<?php
+	if ($this->model('user')->isAnonymous()) {
+		?>
+		<li>If you have not signed in yet, go to our <a href="<?php echo($this->router()->makeAbsoluteUri()); ?>">homepage</a> and do so.</li>
+		<li>If you have signed it, but have left your machine unattended for a while, it may be that your session has expired.  You will need to <a href="<?php echo($this->router()->makeAbsoluteUri()); ?>">sign in</a> again.</li>
+		<?php
+	}
+	?>
+	<li>If you tried to access a restricted page, then you do not have sufficient permissions to access it. You should report this to the <a href="mailto:<?php echo $this->model('app.email'); ?>">system administrator</a>, who will be able to tell you how to gain access to the required page.</li>
+</ul>

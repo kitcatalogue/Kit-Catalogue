@@ -1,0 +1,35 @@
+<?php
+
+$user = $this->user;
+
+?>
+
+
+<h3>User Details</h3>
+<div class="section">
+	<dl class="form">
+		<?
+		if (!$this->param('existing_user', false)) {
+			?>
+			<dt><?php Ecl_Helper_Html::formLabel('username', 'Username *'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('username', 20, 250, $user->username); ?></dd>
+			<?php
+		} else {
+			?>
+			<dt>Username</dt>
+			<dd><?php $this->out($user->username); ?></dd>
+			<?php
+		}
+		?>
+
+		<dt><?php Ecl_Helper_Html::formLabel('forename', 'Forename *'); ?></dt>
+		<dd><?php Ecl_Helper_Html::formInput('forename', 40, 250, $user->forename); ?></dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('surname', 'Surname *'); ?></dt>
+		<dd><?php Ecl_Helper_Html::formInput('surname', 40, 250, $user->surname); ?></dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('email', 'Email'); ?></dt>
+		<dd><?php Ecl_Helper_Html::formInput('email', 50, 250, $user->email); ?></dd>
+	</dl>
+</div>
+

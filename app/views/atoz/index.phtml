@@ -1,0 +1,82 @@
+<?php
+
+
+$this->layout()->addBreadcrumb("Items for {$this->letter}..", $this->router()->makeAbsoluteUri("/a-z/?letter={$this->letter}"));
+
+
+
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	$editlink = sprintf('&nbsp;<a class="admin_link" href="%1$s?backlink=%2$s">add an item &raquo;</a>', $edit_url, $back_url);
+} else {
+	$editlink = '';
+}
+?>
+
+<h1>Manufacturer A-Z</h1>
+<p class="note">Equipment and facilities are available for manufacturers starting with the following letters.</p>
+
+
+<ul id="atoz" class="cf">
+	<?php
+	$full_alphabet = range('A', 'Z');
+	$full_alphabet[] = 'Other';
+
+	foreach($full_alphabet as $i => $letter) {
+		if ($letter == $this->letter) {
+			echo "<li class=\"active\"><span title=\"Currently selected\">{$letter}</span></li>";
+		} else {
+			if (in_array($letter, $this->alphabet)) {
+				echo "<li><a href=\"./?letter={$letter}\">{$letter}</a></li>";
+			} else {
+				echo "<li class=\"noitems\"><span title=\"No items found\">{$letter}</span></li>";
+			}
+		}
+	}
+	?>
+</ul>
+<div class="atoz-bottom-line"></div>
+
+
+<?php
+if ($this->items->count()==0) {
+	?>
+	<p>There are no items of equipment or facilities listed, please try a different letter.</p>
+	<?php
+} else {
+	?>
+	<div class="atoz-item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri('/a-z/item/');
+
+		$started_list = false;
+		$curr_manufacturer = 1;
+		$last_manufacturer = null;
+
+		foreach($this->items as $item) {
+			$curr_manufacturer = strtolower($item->manufacturer);
+			if ($curr_manufacturer != $last_manufacturer) {
+				$last_manufacturer = $curr_manufacturer;
+				if ($started_list) {
+					echo '</ul>';
+				}
+
+				$started_list = true;
+				?>
+				<h2 class="divider"><?php $this->out($item->manufacturer); ?></h2>
+				<?php
+				echo '<ul class="item-list">';
+			}
+
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}?letter={$this->letter}");
+		}
+
+		if ($started_list) {
+			echo '</ul>';
+		}
+		?>
+	</div>
+	<?php
+}
+?>

@@ -1,0 +1,27 @@
+
+<h1>Administer Items &amp; Equipment</h1>
+<?php
+if (!empty($this->backlink)) {
+	?>
+	<div style="margin-bottom: 1em;"><a href="<?php echo $this->backlink; ?>">&laquo; Back to Catalogue</a></div>
+	<?php
+}
+?>
+
+
+<p>To edit individual items of equipment, browse the site normally and look for <a class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
+<ul>
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/customfields/index/'); ?>">Item Field Customisation</a></li>
+</ul>
+
+<ul style="margin-top: 1em;">
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
+</ul>
+
+<ul style="margin-top: 1em;">
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+</ul>
+
+<ul style="margin-top: 1em;">
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/export/'); ?>">Export CSV</a></li>
+</ul>

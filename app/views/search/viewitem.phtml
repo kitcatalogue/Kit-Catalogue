@@ -1,0 +1,9 @@
+<?php
+$url_query = urlencode($this->query);
+$this->layout()->addBreadcrumb("Searching for \"{$this->query}\"", $this->router()->makeAbsoluteUri("/search/?q={$url_query}"));
+$this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/search/item/{$this->item->slug}?q={$url_query}"));
+
+
+$goto_url = '';
+$this->layout()->renderItemInFull($this->item, $goto_url);
+?>

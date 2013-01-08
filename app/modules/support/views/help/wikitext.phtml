@@ -1,0 +1,115 @@
+<?php
+
+
+$this->layout()->appendSection('layout.head', '
+<style type="text/css">
+
+#wiki_table td { padding: 30px; }
+
+#wiki_table { font-size: 1.1em; }
+
+</style>
+');
+
+
+$wiki_parser = new Ecl_Parser_Wikicode();
+?>
+
+
+<p>The wiki-text system allows you to format your description text, without learning HTML.</p>
+<p>For titles, only use the subheading level (i.e. "=== my title text"), as the title and main headings are included on the page already.</p>
+<p>As well as the formatting options shown below, there are lots of other ways to beautify your text.  However, for the description of equipment, these should suffice.</p>
+
+
+<table id="wiki_table" class="grid">
+<tr>
+	<th>wiki-text</th>
+	<th>HTML</th>
+</tr>
+<?php
+$wiki_text = <<<EndWiki
+= Title-level heading
+== This a main heading
+=== This is a subheading (use this!)
+==== Subsub-heading
+===== Subsubsub-heading
+EndWiki;
+?>
+<tr>
+	<td valign="top">
+		<pre><?php $this->out($wiki_text); ?></pre>
+	</td>
+	<td valign="top">
+		<?php echo $wiki_parser->parse($wiki_text); ?>
+	</td>
+</tr>
+<?php
+$wiki_text = <<<EndWiki
+Leave an empty line to separate paragraphs.
+This would still be paragraph 1.
+
+But this is paragraph 2.
+
+You can make things **bold** or //italic//
+or **//both//** or //**both**//.
+
+You can do ^^superscript^^ and ,,subscript,, too.
+
+Put in a horizontal line..
+----
+EndWiki;
+?>
+<tr>
+	<td valign="top">
+		<pre><?php $this->out($wiki_text); ?></pre>
+	</td>
+	<td valign="top">
+		<?php echo $wiki_parser->parse($wiki_text); ?>
+	</td>
+</tr>
+<?php
+$wiki_text = <<<EndWiki
+To create a list, start the line with a * or a #.
+
+Bulleted lists look like this:
+
+* item a
+* item b
+* **bold item c**
+
+
+Numbered lists look like this:
+
+# item 1
+# item 2
+# // italic item 3 //
+## item 3.1
+## item 3.2
+
+Multiple levels deep
+
+* 1
+** 2
+*** 3
+**** 4
+***** 5
+
+
+* You can also have
+multiline list items
+* This is a second multiline
+list item
+
+EndWiki;
+?>
+<tr>
+	<td width="50%" valign="top">
+		<pre><?php $this->out($wiki_text); ?></pre>
+	</td>
+	<td width="50%" valign="top">
+		<?php echo $wiki_parser->parse($wiki_text); ?>
+	</td>
+</tr>
+</table>
+
+

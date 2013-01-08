@@ -1,0 +1,74 @@
+<h1 class="green-bar">Administer Categories</h1>
+
+<div class="cf">
+
+	<div class="admin-box">
+		<h3>Add a new category</h3>
+
+		<?php
+		Ecl_Helper_Html::form('createcategoryform', $this->router()->makeAbsoluteUri('/admin/categories/create/') );
+		?>
+		<dl class="form">
+
+			<dt><?php Ecl_Helper_Html::formLabel('name', 'Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
+
+		</dl>
+
+		<?php Ecl_Helper_Html::formSubmit('submitadd', 'Next &gt;'); ?>
+
+		<?php Ecl_Helper_Html::formClose(); ?>
+	</div>
+
+
+
+	<div class="admin-box">
+		<h3>Rebuild Category Item Counts</h3>
+		<p>If you need to manually rebuild the item counts cached for each category, use the button below.</p>
+			<?php
+				Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/categories/rebuildcounts/') );
+				Ecl_Helper_Html::formSubmit('submitrebuild', 'Rebuild Item Counts');
+				Ecl_Helper_Html::formClose();
+				?>
+	</div>
+
+
+
+	<div class="admin-box">
+		<h3>Configure CPV Codes</h3>
+		<p>The full CPV list contains almost 9,500 entries and can slow down the category administration pages. You can configure Kit-Catalogue to only use the CPV codes you find relevant by using the button below.</p>
+			<?php
+			Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/categories/cpvcodes') );
+			Ecl_Helper_Html::formSubmit('submitcpvcodes', 'Configure CPV Codes');
+			Ecl_Helper_Html::formClose();
+			?>
+	</div>
+
+	<p>Below is the list of the categories available for use in this catalogue.</p>
+	<p>Categories are used to group together items of equipment with a similar purpose or functionality.</p>
+
+
+	<?php
+	if ($this->categories->count()==0) {
+		?>
+		<p class="warning">No categories have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			$url = $this->router()->makeAbsoluteUri('/admin/categories/edit/?id=');
+			foreach($this->categories as $i => $category) {
+				?>
+				<li><a href="<?php $this->out($url . $category->id); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount()); ?>)</span></a></li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
+
+</div>
+
+

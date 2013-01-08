@@ -1,0 +1,67 @@
+<?php
+$lang = $this->model('lang');
+?>
+
+
+<h1>Administer <?php $this->out($lang['dept.label']); ?></h1>
+
+<div class="cf">
+
+	<div class="admin-box">
+		<h3>Add a new <?php $this->out($lang['dept.label']); ?></h3>
+			<?php
+			Ecl_Helper_Html::form('deptform', $this->router()->makeAbsoluteUri('/admin/departments/create/'));
+			Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+			?>
+			<dl class="form">
+
+				<dt><?php Ecl_Helper_Html::formLabel('new_dept', "{$lang['dept.label']} Name"); ?></dt>
+				<dd><?php Ecl_Helper_Html::formInput('new_dept', 30, 250); ?></dd>
+
+			</dl>
+
+			<div style="margin-top: 30px">
+				<?php Ecl_Helper_Html::formSubmit('submitadd', "Add {$lang['dept.label']}"); ?>
+			</div>
+
+			<?php Ecl_Helper_Html::formClose(); ?>
+	</div>
+
+	<div class="admin-box">
+		<h3>Rebuild <?php $this->out($lang['dept.label']); ?> Item Counts</h3>
+		<p>If you need to manually rebuild the item counts cached for each <?php $this->out(strtolower($lang['dept.label'])); ?>, use the button below.</p>
+		<div>
+			<?php
+			Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/departments/rebuildcounts/') );
+			Ecl_Helper_Html::formSubmit('submitrebuild', 'Rebuild Item Counts');
+			Ecl_Helper_Html::formClose();
+			?>
+		</div>
+	</div>
+
+
+
+	<p>Below is the list of the <?php $this->out(strtolower($lang['dept.label.plural'])); ?> available for use in this catalogue.</p>
+
+
+	<?php
+	if ($this->depts->count()==0) {
+		?>
+		<p class="warning">No <?php $this->out(strtolower($lang['dept.label.plural'])); ?> have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			foreach($this->depts as $i => $dept) {
+				$edit_url = $this->router()->makeAbsoluteUri("/admin/departments/edit/{$dept->id}");
+				printf('<li><a href="%2$s">%1$s <span class="count">(%3$s)</span></a></li>', Ecl_Helper_Html::escape($dept->name), $edit_url, $dept->item_count_internal);
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
+</div>
+
+

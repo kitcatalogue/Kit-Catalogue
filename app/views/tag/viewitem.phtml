@@ -1,0 +1,8 @@
+<?php
+
+$url_tag = urlencode($this->tag);
+$this->layout()->addBreadcrumb("#{$this->tag}", $this->router()->makeAbsoluteUri("/tag/{$url_tag}"));
+$this->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/tag/{$url_tag}/item/{$this->item->slug}"));
+
+$this->layout()->renderItemInFull($this->item);
+?>

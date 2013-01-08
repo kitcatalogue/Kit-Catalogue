@@ -1,0 +1,49 @@
+
+<h1>Administer Homepage Blocks</h1>
+<p>Homepage blocks allow you to add options for browsing custom fields to your catalogue homepage.</p>
+
+<div class="cf">
+	<div class="admin-box">
+		<p>Alternatively, you can add a new homepage block here.</p>
+		<?php
+		Ecl_Helper_Html::form('blockform', $this->router()->makeAbsoluteUri('/admin/homepageblocks/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+
+		<dl class="form">
+
+			<dt><?php Ecl_Helper_Html::formLabel('new_block', 'Block Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('new_block', 30, 250); ?></dd>
+
+		</dl>
+
+		<?php Ecl_Helper_Html::formSubmit('submitadd', 'Add Homepage Block'); ?>
+
+		<?php Ecl_Helper_Html::formClose(); ?>
+
+	</div>
+
+	<?php
+	if ($this->blocks->count()==0) {
+		?>
+		<p>No homepageblocks have been setup yet.</p>
+		<p></p>
+		<?php
+	} else {
+		?>
+		<p>Below is the list of homepage blocks currently available.</p>
+		<ul>
+			<?php
+			foreach($this->blocks as $i => $block) {
+				$edit_url = $this->router()->makeAbsoluteUri("/admin/homepageblocks/edit/{$block->block_id}");
+				printf('<li><a href="%2$s">%1$s</a></li>', Ecl_Helper_Html::escape($block->block_name), $edit_url);
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
+
+</div>
+
+

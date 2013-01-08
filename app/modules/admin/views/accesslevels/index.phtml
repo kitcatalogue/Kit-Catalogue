@@ -1,0 +1,47 @@
+
+<h1>Administer Access Levels</h1>
+
+
+<div class="cf">
+
+	<div class="admin-box">
+		<h3>Add a new access level</h3>
+		<?php
+		Ecl_Helper_Html::form('accesslevelform', $this->router()->makeAbsoluteUri('/admin/accesslevels/create/'));
+		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+		?>
+		<dl>
+			<dt><?php Ecl_Helper_Html::formLabel('name', 'Access Level Name'); ?></dt>
+			<dd><?php Ecl_Helper_Html::formInput('name', 20, 250); ?></dd>
+		</dl>
+
+		<div>
+			<?php
+			Ecl_Helper_Html::formSubmit('submitadd', 'Add Access Level');
+			?>
+		</div>
+	</div>
+
+	<p>Below is the list of access level descriptions available for use in this catalogue.</p>
+
+	<?php
+	if ($this->accesslevels->count()==0) {
+		?>
+		<p class="warning">No access levels have been setup yet.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			foreach($this->accesslevels as $i => $accesslevel) {
+				$edit_url = $this->router()->makeAbsoluteUri("/admin/accesslevels/edit/{$accesslevel->id}");
+				printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($accesslevel->name), $edit_url, ( !empty($accesslevel->code) ? " &nbsp;({$accesslevel->code})" : '' ) );
+			}
+			?>
+		</ul>
+		<?php
+	}
+	?>
+
+
+</div>

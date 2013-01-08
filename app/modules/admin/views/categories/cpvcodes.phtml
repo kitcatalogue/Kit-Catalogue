@@ -1,0 +1,84 @@
+<?php
+
+$this->layout()->appendSection('layout.head', '
+
+<style type="text/css">
+
+tr.cpv_off td { background-color: #fdd; }
+tr.cpv_on td { background-color: #cfc; }
+
+</style>
+
+');
+?>
+
+
+<h1>Configure CPV Codes</h1>
+
+
+<p>Below is the list of high-level CPV codes that can be associated with your categories.</p>
+<p>Unticking the <em>visible</em> box will hide the associated CPV codes from being used with categories.</p>
+<p>If a section of CPV codes is used regularly, you may wish to add a CPV code to the drop-down box of 'jumpable' codes by ticking the appropriate box.</p>
+
+
+<?php
+Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/categories/cpvcodes/') );
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+?>
+
+
+<div class="grid_row">
+
+	<div class="grid_12col">
+
+		<?php
+		$cpv_codes = $this->model('cpvstore')->findTopLevelCodes();
+		if (0 == $cpv_codes->count()) {
+			?>
+			<p class="warning">No high-level CPV codes were found.</p>
+			<?php
+		} else {
+			?>
+			<table class="grid">
+			<tr>
+				<th>CPV Section</th>
+				<th>Name</th>
+				<th>Visible</th>
+				<th>Jumpable</th>
+			</tr>
+			<?php
+			foreach($cpv_codes as $cpv) {
+				$cpv_subcode = substr($cpv->id, 0, 2);
+				$row_class = ($cpv->visible) ? 'cpv_on' : 'cpv_off' ;
+				?>
+				<tr class="<?php echo($row_class); ?>">
+					<td><?php $this->out($cpv_subcode.'xxxxx'); ?></td>
+					<td><?php $this->out($cpv->name); ?></td>
+					<td class="checkbox"><label for="visible_<?php $this->out($cpv_subcode); ?>"><?php Ecl_Helper_Html::formCheckbox('visible[]', 'visible_'.$cpv_subcode, $cpv_subcode, $cpv->visible); ?></label></td>
+					<td class="checkbox"><label for="jumpable_<?php $this->out($cpv->id)?>"><?php Ecl_Helper_Html::formCheckbox('jumpable[]', 'jumpable_'.$cpv->id, $cpv->id, $cpv->jumpable); ?></label></td>
+				</tr>
+				<?php
+			}
+			?>
+			</table>
+			<?php
+		}
+		?>
+
+
+		<div style="text-align: center;">
+			<?php
+			Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+			Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes');
+			?>
+		</div>
+
+	</div>
+
+</div>
+
+
+
+<?php Ecl_Helper_Html::formClose(); ?>
+
+

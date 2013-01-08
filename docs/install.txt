@@ -1,0 +1,17 @@
+
+* * * * * * * * * * * * * *
+Kit-Catalogue Installation
+* * * * * * * * * * * * * *
+
+
+For full installation instructions, please follow the installation wizard
+by browsing to:
+
+	/install/
+
+Alternatively, you can follow the basic installation instructions in the
+readme file:
+
+	/install/readme.txt
+
+

@@ -1,0 +1,78 @@
+<?php
+
+
+
+$www_root = $this->model('app.www');
+
+
+
+$this->layout()->appendSection('layout.head', '
+	<style type="text/css">
+
+		#signonform { margin-bottom: 1em; }
+
+	</style>
+	<script type="text/javascript">
+
+		window.onload = function() {
+			var uname = document.getElementById("username");
+			uname.focus();
+		}
+
+	</script>
+');
+
+
+$this->layout()->addBreadcrumb('Sign In', $this->router()->makeAbsoluteUri('/signin/'));
+
+
+
+switch (strtolower($this->request()->get('msg'))) {
+	case 'failed':
+		$this->layout()->addFeedback(KC__FEEDBACK_ERROR , 'Your username and password were rejected.' ,	'Please check your username and password and try again.');
+		break;
+	case 'signedout':
+		$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS ,	'You have signed out.');
+		break;
+	default:
+		break;
+}
+
+
+
+?>
+
+<h1>Sign in to <?php $this->out($this->model('app.title')); ?>.</h1>
+<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
+<table class="form" style="margin-left: 5em;">
+<tr>
+	<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>
+	<td><?php Ecl_Helper_Html::formInput('username', '12', '50'); ?></td>
+</tr>
+<tr>
+	<th><?php Ecl_Helper_Html::formLabel('password', 'Password'); ?></th>
+	<td><?php Ecl_Helper_Html::formPassword('password', '12', '50'); ?></td>
+</tr>
+<tr>
+	<td colspan="2" style="padding-top: 1em; text-align: right;">
+		<?php Ecl_Helper_Html::formSubmit('signin', 'Sign in'); ?>
+	</td>
+</tr>
+</table>
+
+
+</form>
+
+<br />
+<br />
+
+<h3>Signing in allows you to..</h3>
+<ul style="margin-left: 2em; list-style: disc;">
+	<li>Browse and search the full equipment database.</li>
+	<li>Check an item's location.</li>
+	<li>Access manuals, case studies and other supporting documentation.</li>
+</ul>
+
+
+
+

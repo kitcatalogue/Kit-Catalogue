@@ -1,0 +1,110 @@
+<?php
+$this->layout()->addGlobalJavascript();
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/common.css'));
+$this->layout()->appendSection('layout.head', '
+<style type="text/css">
+
+	#csvtable tr td { vertical-align: top; }
+
+	#csvtable tr.ignored td { height: 1em !important; overflow: none; background-color: #fdd; color: #aaa; }
+
+</style>
+<script type="text/javascript">
+
+	$(document).ready( function() {
+
+		$("#ignore_rows").bind("change", function () {
+			$("#csvtable tr").removeClass("ignored");
+			var val = parseInt($(this).val());
+			if (val>0) {
+				$("#csvtable tr").slice(1, val+1).addClass("ignored");
+			}
+		}).val('. $this->ignore_rows .').trigger("change");
+
+	});
+
+</script>
+');
+?>
+
+
+<h1>Import Items from CSV</h1>
+<p>Step 2 : Check Data</p>
+<p>The following entries will be added to the catalogue.  Please examine them carefully before finalising your import.</p>
+<p>You can change the information for individual items of equipment later, but wholesale data changes may be made more easily in your spreadsheet / CSV file.</p>
+
+
+<?php
+Ecl_Helper_Html::form('importform', $this->router()->makeAbsoluteUri('/admin/items/import/?step=3'));
+Ecl_Helper_Html::formHidden('filename', basename($this->filename));
+?>
+
+<h2>Notes on Importing</h2>
+<ul>
+	<li>Empty rows are ignored.</li>
+	<li>All text is converted to UTF-8.</li>
+	<li>New categories, departments, contacts, etc, will be automatically added, where required.</li>
+	<li>As well as the mandatory information, other important fields will be prompted for if missing from the spreadsheet.</li>
+	<li>Any visibility other than "public" will be reset to "internal".</li>
+</ul>
+
+
+<br />
+<h2>Imported Data</h2>
+<p>The first row (in grey) contains the field names the importer expects.  This will be the standard Item fields, plus any Custom Fields you have defined.</p>
+
+<p>Below that is the data from your spreadsheet.  If your data contains header rows, exclude them here:</p>
+<dl class="form">
+	<dt><?php Ecl_Helper_Html::formLabel('ignore_rows', 'Rows to ignore ', 'style="display: inline; font-weight: bold;"'); ?>
+	<dd>
+		<?php
+		Ecl_Helper_Html::formSelect('ignore_rows', array (
+			0  => '0 (import all rows)' ,
+			1  => 1 ,
+			2  => 2 ,
+			3  => 3 ,
+			4  => 4 ,
+			5  => 5 ,
+			6  => 6 ,
+		), $this->ignore_rows);
+		?>
+	</dd>
+</dl>
+
+<div class="scrollable" style="width: auto; height: 35em; margin-top: 0.5em; padding: 0; overflow:auto; border: 1px solid #666;">
+	<table id="csvtable" class="grid" style="margin: 0;">
+	<?php
+	foreach($this->datacsv as $y => $row) {
+		echo("\n<tr>\n\t");
+		if ($y==0) {
+			foreach($row as $x => $value) {
+				$value = Ecl_Helper_Html::escape($value);
+				echo("<th>$value</th>");
+			}
+		} else {
+			foreach($row as $x => $value) {
+				$value = Ecl_Helper_Html::escape($value);
+				echo("<td>$value</td>");
+			}
+		}
+		echo("\n</tr>");
+	}
+	?>
+	</table>
+</div>
+
+
+<div class="button_bar">
+	<?php
+	Ecl_Helper_Html::formSubmit('submitback', '&lt; Back');
+	Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+	Ecl_Helper_Html::formSubmit('submitnext', 'Next >');
+	?>
+</div>
+
+
+
+
+<?php Ecl_Helper_Html::formClose(); ?>
+
+

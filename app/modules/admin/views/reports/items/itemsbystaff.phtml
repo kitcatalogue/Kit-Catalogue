@@ -1,0 +1,119 @@
+<?php
+
+$contact = urldecode($this->request()->get('contact'));
+
+
+$binds = array (
+	'contact'  => $contact ,
+);
+
+$this->model('db')->query("
+	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_1_email, contact_2_email, date_updated
+	FROM `item`
+	WHERE contact_1_email=:contact OR contact_2_email=:contact
+", $binds);
+
+
+$items_temp = $this->model('db')->getResult();
+
+$items = array();
+
+if (!empty($items_temp)) {
+
+	$buildings = $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
+	$departments = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
+
+	foreach($items_temp as $row) {
+
+		$building = (isset($buildings[$row['building_id']])) ? $buildings[$row['building_id']] : '???' ;
+		$department = (isset($departments[$row['department_id']])) ? $departments[$row['department_id']] : '???' ;
+
+		$items[] = array (
+			'id'             => $row['item_id'] ,
+			'manufacturer'   => $row['manufacturer'] ,
+			'model'          => $row['model'] ,
+			'acronym'        => $row['acronym'] ,
+			'department'     => $department ,
+			'building'       => $building ,
+			'room'           => $row['room'] ,
+			'visibility'     => (KC__VISIBILITY_PUBLIC == $row['visibility']) ? 'public' : 'internal' ,
+			'contact_1_email'  => $row['contact_1_email'] ,
+			'contact_2_email'  => $row['contact_2_email'] ,
+			'date_updated'   => date('d-m-Y', strtotime($row['date_updated'])) ,
+		);
+	}
+
+}
+
+
+if ($this->is_download) {
+	header("Cache-Control: public");
+	header("Content-Description: File Transfer");
+	header("Content-Disposition: attachment; filename=items_for_staff_contact.csv");
+	header('Content-Type: text/csv');
+
+	echo('"catalogue id","manufacturer","model","acronym","department","building","room","visibility","staff contact 1","staff contact 2","date updated"'."\n");
+	$csv_parser = Ecl::factory('Ecl_Parser_Csv');
+	echo $csv_parser->generate($items);
+	return;
+}
+
+
+
+?>
+
+
+<h1 class="green-bar">Items By Staff Contact Report</h1>
+<p class="note">Generated on <?php $this->out(date('H:i d-m-Y')); ?>.</p>
+
+
+<?php
+if (empty($items)) {
+	?>
+	<p>No matching items were found.</p>
+	<?php
+	return;
+}
+?>
+
+<br />
+<p><?php echo(count($items)); ?> item(s) found for "<?php $this->out($contact); ?>".</p>
+
+<table class="grid" style="font-size: 0.9em;">
+<tr>
+	<th>id</th>
+	<th>manufacturer</th>
+	<th>model</th>
+	<th>acronym</th>
+	<th>department</th>
+	<th>building</th>
+	<th>room</th>
+	<th>visibility</th>
+	<th>staff<br />contact 1</th>
+	<th>staff<br />contact 2</th>
+	<th>date updated</th>
+	<th>&nbsp;</th>
+</tr>
+<?php
+foreach($items as $row) {
+	?>
+	<tr>
+		<td class="num"><?php $this->out($row['id']); ?></td>
+		<td class="str"><?php $this->out($row['manufacturer']); ?></td>
+		<td class="str"><?php $this->out($row['model']); ?></td>
+		<td class="str"><?php $this->out($row['acronym']); ?></td>
+		<td class="str small"><?php $this->out($row['department']); ?></td>
+		<td class="str"><?php $this->out($row['building']); ?></td>
+		<td class="str"><?php $this->out($row['room']); ?></td>
+		<td class="str"><?php $this->out($row['visibility']); ?></td>
+		<td class="str small"><?php $this->out($row['contact_1_email']); ?></td>
+		<td class="str small"><?php $this->out($row['contact_2_email']); ?></td>
+		<td class="str"><?php $this->out($row['date_updated']); ?></td>
+		<td class="link"><a href="<?php echo $this->router()->makeAbsoluteUri("/id/item/{$row['id']}"); ?>">View</a></td>
+	</tr>
+	<?php
+}
+?>
+</table>
+
+

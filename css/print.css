@@ -1,0 +1,27 @@
+/**
+ * Kit-Catalogue Print Stylesheet.
+ *
+ * @version 1.0.0
+ */
+
+
+
+body { width: 100%; }
+
+
+.noprint { display: none !important; }
+
+
+#header,
+#top,
+#userbar,
+#footer { display: none; }
+
+
+#enquire-container { display: none; }
+
+#back-arrow-link { display: none; }
+
+.admin_link { display: none; }
+
+

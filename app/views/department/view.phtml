@@ -1,0 +1,87 @@
+<?php
+$lang = $this->model('lang');
+
+if ($this->model('security')->checkAuth(array(KC__AUTH_CANADMIN, KC__AUTH_CANEDIT))) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	$editlink = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
+} else {
+	$editlink = '';
+}
+$selected_category_id = (is_object($this->category)) ? $this->category->id : null ;
+?>
+
+<h1><?php $this->out($this->department->name); ?></h1>
+
+<?php
+echo $editlink;
+
+if (!$this->items) {
+	?>
+	<p class="note">There are no items of equipment or facilities associated with this <?php $this->out(strtolower($lang['dept.label'])); ?> and <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<?php
+} else {
+	?>
+	<p class="note">The following items are listed under this <?php $this->out(strtolower($lang['dept.label'])); ?> and <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<?php
+}
+?>
+
+<div id="categories" class="side-bar">
+	<h4>Available <?php $this->out($lang['cat.label.plural']); ?></h4><?php
+	if (!$this->categories) {
+		?>
+		<p>No <?php $this->out(strtolower($lang['cat.label.plural'])); ?> found for this <?php $this->out(strtolower($lang['dept.label'])); ?>.</p>
+		<?php
+	} else {
+		?>
+		<ul>
+			<?php
+			if ($selected_category_id === null) {
+				printf('<li class="active"><a href="#">%1$s</a></li>', 'Show All Items');
+			} else {
+				printf('<li><a href="%2$s">%1$s</a></li>', 'Show All Items', $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}"));
+			}
+
+			$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}/category/");
+			foreach($this->categories as $category) {
+				if ($selected_category_id == $category->id) {
+					printf('<li class="active"><a href="#">%1$s</a></li>', $this->escape($category->name));
+				} else {
+					printf('<li><a href="%2$s">%1$s</a></li>', $this->escape($category->name), "{$url_stub}{$category->slug}");
+				}
+			}?>
+		</ul>
+		<?php
+	}
+	?>
+</div>
+
+
+<?php
+if (is_object($this->category)) {
+	printf('<h2>Items in %s</h2>', $this->category->name);
+} else {
+	printf('<h2>All Items of Equipment</h2>');
+}
+
+
+if ( 0 == count($this->items)) {
+	?>
+	<p class="note">There are no items listed, please try a different <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<?php
+} else {
+	?>
+	<ul class="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}/item/");
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}", array('department'));
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

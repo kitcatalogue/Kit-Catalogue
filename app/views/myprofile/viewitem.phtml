@@ -1,0 +1,10 @@
+<?php
+
+$this->layout()->addBreadcrumb('My Items', $this->router()->makeAbsoluteUri('/myprofile/items/'));
+$this->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/myprofile/items/{$this->item->slug}"));
+
+
+
+$goto_url = '';
+$this->layout()->renderItemInFull($this->item, $goto_url);
+?>

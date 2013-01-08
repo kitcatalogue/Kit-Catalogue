@@ -1,0 +1,25 @@
+
+
+<h1>Add A Category</h1>
+
+
+<p>Categories are used to group together items of equipment with a similar purpose or functionality.</p>
+
+
+<?php Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/categories/create/?step=2') ); ?>
+
+
+
+<div class="white-box">
+
+	<?php $this->render('categories_snippets_editsubform'); ?>
+
+</div>
+
+<?php
+Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+Ecl_Helper_Html::formSubmit('submitsave', 'Finish');
+?>
+
+
+<?php Ecl_Helper_Html::formClose(); ?>

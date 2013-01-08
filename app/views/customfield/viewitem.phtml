@@ -1,0 +1,9 @@
+<?php
+$url_value = urlencode($this->value);
+$this->layout()->addBreadcrumb("Browse by {$this->customfield->name}", $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}"));
+$this->layout()->addBreadcrumb($this->value, $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}/{$url_value}"));
+$this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}/{$url_value}/item/{$this->item->slug}"));
+
+$goto_url = '';
+$this->layout()->renderItemInFull($this->item, $goto_url);
+?>

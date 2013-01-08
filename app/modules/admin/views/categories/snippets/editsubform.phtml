@@ -1,0 +1,91 @@
+<?php
+$this->layout()->addGlobalJavascript();
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
+
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_categories.js'));
+
+
+
+// Build javascript array of selected codes
+$js__selected_codes = json_encode($this->param('cpv_codes', array()));
+
+$this->layout()->appendSection('layout.head',"
+<script type=\"text/javascript\">
+
+cpv_selected_codes = {$js__selected_codes};
+
+</script>
+");
+?>
+
+
+<dl>
+	<dt><?php Ecl_Helper_Html::formLabel('name', 'Category Name'); ?></dt>
+	<dd>
+		<?php
+		Ecl_Helper_Html::tag('input', null, array (
+			'id'         => 'cpv_trigger' ,
+			'name'       => 'name' ,
+			'size'       => 60 ,
+			'maxlength'  => 250 ,
+			'value'      => $this->category->name ,
+		), true , true);
+		?>
+	</dd>
+</dl>
+
+<?php
+$cpv_codes = $this->model('cpvstore')->findAllVisible();
+
+if (!empty($cpv_codes)) {
+	?>
+	<p style="margin-top: 1.5em;">In order to better link equipment in similar categories together, Kit-Catalogue uses the Common Procurement Vocabulary (CPV) to provide a common basis for categories. Please tag your category with any relevant terms from the list below.</p>
+
+	<h3>Suggested tags</h3>
+	<div id="cpv_target" style="margin: 1em 0 2em 2em; height: 4em;">
+		<p>Javascript enabled browsers can have relevant CPV suggestions made based on the name of their new category.</p>
+	</div>
+
+
+	<h3>Full list of tags</h3>
+	<?php
+	$jumpable_codes = $this->model('cpvstore')->findAllJumpable();
+
+	if (!empty($jumpable_codes)) {
+		?>
+		<div id="cpv_jumplist" style="margin-left: 2em; font-size: 0.9em;">
+			Jump To:
+			<select name="cpv_jumpselect" id="cpv_jumpselect" onchange="cpvScrollListAll($('#cpv_jumpselect option:selected').val());">
+			<?php
+				Ecl_Helper_Html::formOptions($jumpable_codes->toAssoc('id', 'name'));
+			?>
+			</select>
+			<input type="button" name="cpv_jump" value="Show" onclick="cpvScrollListAll($('#cpv_jumpselect option:selected').val());" />
+		</div>
+		<?php
+	}
+	?>
+
+
+	<div id="cpv_listall" style="width: 750px; height: 15em; overflow: auto; margin: 1em 0 0 2em; padding: 0.5em; border: 1px solid #666;">
+		<table class="checkbox_grid rowhover">
+		<?php
+		foreach($cpv_codes as $i => $cpv_code) {
+			$html__id = Ecl_Helper_Html::escape("cpv_{$cpv_code->id}");
+			?>
+			<tr data-cpvid="<?php $this->out($cpv_code->id); ?>">
+				<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('cpv_code[]', $html__id, $cpv_code->id); ?></td>
+				<th class="name"><?php Ecl_Helper_Html::formLabel($html__id, $cpv_code->name, 'class="normal"'); ?></th>
+				<th><?php Ecl_Helper_Html::formLabel($html__id, "({$cpv_code->id})", 'class="normal"'); ?></th>
+			</tr>
+			<?php
+		}
+		?>
+		</table>
+	</div>
+	<?php
+}
+?>
+
+

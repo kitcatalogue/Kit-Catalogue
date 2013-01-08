@@ -1,0 +1,38 @@
+
+<h1>Export Items to CSV</h1>
+<p>Select the items to export</p>
+
+
+
+<div class="item">
+	<div>
+		<?php
+		Ecl_Helper_Html::form('exportform', $this->router()->makeAbsoluteUri('/admin/items/export/?step=2'), 'post', 'UTF-8');
+		?>
+
+		<dl>
+
+			<dt><?php Ecl_Helper_Html::formLabel('department', 'Select which items to export');?></dt>
+			<dd>
+				<?php
+				$options = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
+				$options = array ('' => '--Export Entire Catalogue--') + $options;
+
+				Ecl_Helper_Html::formSelect('department', $options);
+				?>
+			</dd>
+
+		</dl>
+
+		<div style="margin-top: 2em;">
+			<?php
+			Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+			Ecl_Helper_Html::formSubmit('submitdownload', 'Download');
+			?>
+		</div>
+
+		<?php Ecl_Helper_Html::formClose(); ?>
+
+	</div>
+
+</div>
