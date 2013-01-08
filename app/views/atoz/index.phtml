@@ -51,20 +51,21 @@ if ($this->items->count()==0) {
 		$url_stub = $this->router()->makeAbsoluteUri('/a-z/item/');
 
 		$started_list = false;
-		$curr_manufacturer = 1;
+		$curr_manufacturer = null;
 		$last_manufacturer = null;
 
 		foreach($this->items as $item) {
 			$curr_manufacturer = strtolower($item->manufacturer);
-			if ($curr_manufacturer != $last_manufacturer) {
+			if ($curr_manufacturer !== $last_manufacturer) {
 				$last_manufacturer = $curr_manufacturer;
 				if ($started_list) {
 					echo '</ul>';
 				}
 
 				$started_list = true;
+				$manufacturer = (!empty($item->manufacturer)) ? $item->manufacturer : 'No Manufacturer' ;
 				?>
-				<h2 class="divider"><?php $this->out($item->manufacturer); ?></h2>
+				<h2 class="divider"><?php $this->out($manufacturer); ?></h2>
 				<?php
 				echo '<ul class="item-list">';
 			}

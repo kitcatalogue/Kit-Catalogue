@@ -47,6 +47,17 @@ function submitbuttons() {
 </div>
 
 <div class="white-box">
+	<h4>Items With No Image - by Department</h4>
+	<p class="note">Show all the items of equipment associated with the given department.</p>
+	<form action="./itemswithoutimagebydept" method="get">
+	<?php
+		Ecl_Helper_Html::formSelect('department', $all_departments);
+		submitbuttons();
+	?>
+	</form>
+</div>
+
+<div class="white-box">
 	<h4>Items by Staff Contact</h4>
 	<p class="note">Show all the items of equipment associated with the given staff contact.</p>
 

@@ -342,11 +342,13 @@ class Ecl_Http_Request {
 		$content = null;
 
 		if ($this->_method=='POST') {
-			$content .= Ecl_Helper_String::buildQuerystring($this->_form, '&');
+			$form_content = Ecl_Helper_String::buildQuerystring($this->_form, '&');
 			$this->setHeader('Content-Type', 'application/x-www-form-urlencoded');
+			$this->setHeader('Content-Length', strlen($form_content));
+			$content = "\r\n\r\n{$form_content}";
+		} else {
+			$content = "\r\n\r\n{$this->_content}";
 		}
-
-		$content .= "\r\n\r\n" . $this->_content;
 
 
 		// Process basic headers

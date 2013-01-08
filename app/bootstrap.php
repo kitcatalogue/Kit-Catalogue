@@ -123,7 +123,6 @@ if (file_exists($path)) { include($path); }
 // Some of the language definitions MUST obey certain rules.
 
 // Ensure the 'dept.route' is valid
-//Ecl::dump($lang['dept.route']);
 if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
 	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
 }

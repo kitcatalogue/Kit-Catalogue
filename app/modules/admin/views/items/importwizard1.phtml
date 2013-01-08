@@ -18,7 +18,13 @@
 
 		<dl>
 			<dt><?php Ecl_Helper_Html::formLabel('datafile', 'Select the file to import');?></dt>
-			<dd><?php Ecl_Helper_Html::formFile('datafile'); ?></dd>
+			<dd>
+				<?php Ecl_Helper_Html::formFile('datafile'); ?>
+				<p class="note">
+					<strong>Please note</strong> : The file must match the CSV template format (available for download on the right).
+					<br />You cannot yet re-import the full backup produced by the <em>Export CSV</em> function.
+				</p>
+			</dd>
 
 			<dt style="display: none; margin-top: 1.5em;">Import images</dt>
 			<dd style="display: none;">

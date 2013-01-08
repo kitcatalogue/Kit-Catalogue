@@ -970,7 +970,7 @@ class Ecl_Db_Mysql {
 	/**
 	 * Prepare an SQL query by replacing any placeholders using the given binds.
 	 *
-	 * Placeholders should be of the form:  ':name'
+	 * Placeholders should be of the form: ':name'
 	 * The binds array should be of the form:  array ( name1 => value1, name2 => value2, ..)
 	 * Binds are automatically escaped before being replacing the relevant placeholder.
 	 *

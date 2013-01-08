@@ -6,13 +6,19 @@
  */
 class Item {
 
-	const CALIB_YES = 'yes';
-	const CALIB_NO = 'no';
-	const CALIB_AUTO = 'auto';
+	const CALIB_YES    = 'yes';
+	const CALIB_NO     = 'no';
+	const CALIB_AUTO   = 'auto';
 	const CALIB_NOTAPP = '';
+
+	const DISPOSED_NO    = '';
+	const DISPOSED_SOLD  = 'sold';
+	const DISPOSED_SCRAP = 'scrap';
 
 	// Public Properties
 	public $id = null;   // The internal ID (numeric)
+
+	public $is_parent = false;   // Can act as a parent facility to other items
 
     public $title = '';
 	public $manufacturer = '';
@@ -22,17 +28,23 @@ class Item {
 	public $full_description = '';
 	public $specification = '';
 
+	public $upgrades = '';
+	public $future_upgrades = '';
+
 	public $acronym = '';
 	public $keywords = '';
 
 	public $technique = '';
 
 	public $availability = '';
+	public $restrictions = '';
 
 	public $department = '';   // Department ID
 	public $usergroup = '';
 	public $access = '';   // Access ID
+	public $portability = '';
 
+	public $organisation = '';
 	public $site = '';       // Site ID
 	public $building = '';   // Building ID
 	public $room = '';
@@ -51,6 +63,8 @@ class Item {
 
 	public $date_added = null;
 	public $date_updated = null;
+	public $last_updated_username = null;
+	public $last_updated_email = null;
 
 	public $training_required = null;
 	public $training_provided = null;
@@ -71,6 +85,16 @@ class Item {
 	public $supplier = '';     // Who supplied the item (may not be manufacturer)
 	public $date_of_purchase = null;
 
+	public $cost = '';
+	public $replacement_cost = '';
+	public $end_of_life = null;
+	public $maintenance = '';
+
+	public $is_disposed_of = false;
+	public $date_disposed_of = null;
+
+	public $comments = '';
+
 	public $archived = false;
 
 
@@ -86,6 +110,15 @@ class Item {
 	public function __get($name) {
 
 		switch ($name) {
+			case 'idslug':
+				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
+				break;
+			case 'last_update':
+				return (empty($this->date_updated)) ? $this->date_added : $this->date_updated ;
+				break;
+			case 'last_updated_by':
+				return (!empty($this->last_updated_email)) ? $this->last_updated_email : $this->last_updated_username ;
+				break;
 			case 'name':
 				if (!empty($this->title)) {
 					return $this->title;
@@ -105,6 +138,13 @@ class Item {
 		}
 
 	}// /method
+
+
+
+	public function __isset($name) {
+		$x = $this->$name;
+		return isset($x);
+	}
 
 
 

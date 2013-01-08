@@ -1,7 +1,7 @@
 
-* * * * * * * * *
-Credits & Thanks
-* * * * * * * * *
+* * * * * * * * * * *
+  Credits & Thanks
+* * * * * * * * * * *
 
 
 For information on the Kit-Catalogue project team, please see our website:
@@ -36,4 +36,4 @@ Dhru Shah and Michael Clark @ University of Nottingham
 - Numerous suggestions for improvements, plenty of additional testing, and
   patiently waiting while we put everything into place.
 
-
+  

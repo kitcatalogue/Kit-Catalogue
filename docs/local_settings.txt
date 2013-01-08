@@ -1,7 +1,7 @@
 
-* * * * * * * * * * * * * * * * * * * * * * * * * *
-Using Local Configuration Settings, CSS and Plugins
-* * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  Using Local Configuration Settings, CSS and Plugins
+* * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
 

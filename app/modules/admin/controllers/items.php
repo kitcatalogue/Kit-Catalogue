@@ -194,11 +194,18 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			$item->short_description = $this->request()->post('short_description');
 			$item->full_description = $this->request()->post('full_description');
 			$item->specification = $this->request()->post('specification');
+
+			$item->upgrades = $this->request()->post('upgrades');
+			$item->future_upgrades = $this->request()->post('future_upgrades');
+
 			$item->technique = $this->request()->post('technique');
 			$item->acronym = $this->request()->post('acronym');
 			$item->keywords = $this->request()->post('keywords');
 
 			$item->manufacturer_website = $this->request()->post('manufacturer_website');
+
+			// Parent Facility
+			$item->is_parent = (bool) $this->request()->post('is_parent', false);
 
 
 			// Access & Usage
@@ -209,7 +216,9 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			}
 
 			$item->access = $this->request()->post('access');
+			$item->portability = $this->request()->post('portability');
 			$item->availability = $this->request()->post('availability');
+			$item->restrictions = $this->request()->post('restrictions');
 			$item->usergroup = $this->request()->post('usergroup');
 
 			$item->training_required = Ecl_Helper_String::parseBoolean($this->request()->post('training_required'), null);
@@ -279,6 +288,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				}
 			}
 
+			$item->organisation = $this->request()->post('organisation');
+
 			if ($allow_newdept) {
 				$new_dept = trim($this->request()->post('new_department'));
 				if (!empty($new_dept)) {
@@ -332,20 +343,41 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				}
 			}
 
-			$item->date_of_purchase = $this->request()->postDmyt('date_of_purchase');
 			$item->PAT = $this->request()->postDmyt('PAT');
 
+			$item->date_of_purchase = $this->request()->postDmyt('date_of_purchase');
+			$item->cost = $this->request()->post('cost');
+			$item->replacement_cost = $this->request()->post('replacement_cost');
+			$item->end_of_life = $this->request()->postDmyt('end_of_life');
+			$item->maintenance = $this->request()->post('maintenance');
+
+			$item->date_of_purchase = $this->request()->postDmyt('date_of_purchase');
+
+			$item->is_disposed_of = $this->request()->post('is_disposed_of');
+			$item->date_disposed_of = $this->request()->postDmyt('date_disposed_of');
+
+			$item->archived = (bool) $this->request()->post('archived', false);
+			if ($item->archived) {
+				if (is_null($item->date_archived)) { $item->date_archived = time(); }
+			}
+
+			$item->comments = $this->request()->post('comments');
 
 			$item->copyright_notice = $this->request()->post("copyright_notice");
 
 
 			// Validate the new item
-			if (empty($item->manufacturer)) { $errors[] = 'You must supply a manufacturer\'s name.'; }
-			if (empty($item->model)) { $errors[] = 'You must supply a model name or number.'; }
-			if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this item.'; }
-			if (empty($item->contact_1_email)) { $errors[] = 'You must enter at least the first staff contact\'s email address.'; }
-			if (empty($item->department)) { $errors[] = 'You must select the department in which this item resides.'; }
-
+			// Parent/facility items only require a department and visibility.
+			if ($item->is_parent) {
+				if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this facility.'; }
+				if (empty($item->department)) { $errors[] = 'You must select the department in which this facility resides.'; }
+			} else {
+				if (empty($item->manufacturer)) { $errors[] = 'You must supply a manufacturer\'s name.'; }
+				if (empty($item->model)) { $errors[] = 'You must supply a model name or number.'; }
+				if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this item.'; }
+				if (empty($item->contact_1_email)) { $errors[] = 'You must enter at least the first staff contact\'s email address.'; }
+				if (empty($item->department)) { $errors[] = 'You must select the department in which this item resides.'; }
+			}
 
 			// Save the item information
 			if ($errors) {
@@ -414,6 +446,15 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					$tags = explode(',', $tags);
 					$this->model('itemstore')->setItemTags($item->id, $tags);
 
+
+					// Process Children
+					$children = $this->request()->post('children');
+					$this->model('itemstore')->setItemChildren($item->id, $children);
+
+
+					// Process Parents
+					$parents = $this->request()->post('parents');
+					$this->model('itemstore')->setItemParents($item->id, $parents);
 
 
 					/*
@@ -495,7 +536,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->image = $this->request()->post('use_image', '');
 					}
 
-					// If the item's main image is still blank, but there are images, use the first one
+					// If the item's main image is still blank, but there are images available, use the first one
 					if ( ('' == $item->image) && ($image_count > 0) ) {
 						$item->image = $image_files[0]->filename;
 					}

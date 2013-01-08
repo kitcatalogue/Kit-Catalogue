@@ -1,0 +1,13 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'application/rdf+xml');
+
+$item = $this->item;
+?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <rdf:Description rdf:about="<?php echo $this->router()->makeAbsoluteUri("/id/item/{$item->idslug}"); ?>">
+                <dc:title><?php $this->out($item->name); ?></dc:title>
+        </rdf:Description>
+</rdf:RDF>

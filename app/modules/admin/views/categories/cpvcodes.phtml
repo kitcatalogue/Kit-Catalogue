@@ -1,4 +1,6 @@
 <?php
+$lang = $this->model('lang');
+
 
 $this->layout()->appendSection('layout.head', '
 
@@ -16,8 +18,8 @@ tr.cpv_on td { background-color: #cfc; }
 <h1>Configure CPV Codes</h1>
 
 
-<p>Below is the list of high-level CPV codes that can be associated with your categories.</p>
-<p>Unticking the <em>visible</em> box will hide the associated CPV codes from being used with categories.</p>
+<p>Below is the list of high-level CPV codes that can be associated with your <?php $this->out(strtolower($lang['cat.label.plural'])); ?>.</p>
+<p>Unticking the <em>visible</em> box will hide the associated CPV codes from being used with <?php $this->out(strtolower($lang['cat.label.plural'])); ?>.</p>
 <p>If a section of CPV codes is used regularly, you may wish to add a CPV code to the drop-down box of 'jumpable' codes by ticking the appropriate box.</p>
 
 

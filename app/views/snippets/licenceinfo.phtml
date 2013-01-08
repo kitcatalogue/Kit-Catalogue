@@ -1,0 +1,25 @@
+<?php
+
+$lic_name = $this->model('data.licence_name');
+$lic_link = $this->model('data.licence_link');
+
+
+if ( (true === $this->model('data.licence_enabled')) && ( (!empty($lic_name)) || (!empty($lic_link)) ) ) {
+	if (empty($lic_link)) {
+		?>
+		<p>This catalogue's data is licensed under the <em><?php $this->out($lic_name); ?></em>.</p>
+		<?php
+	} else {
+		if (empty($lic_name)) {
+			?>
+			<p>This catalogue's data is licensed under the terms described at <em><a href="<?php echo $lic_link; ?>" target="_blank"><?php $this->out($lic_link); ?></a></em>.</p>
+			<?php
+		} else {
+			?>
+			<p>This catalogue's data is licensed under the <em><a href="<?php echo $lic_link; ?>" target="_blank"><?php $this->out($lic_name); ?></a></em>.</p>
+			<?php
+		}
+	}
+}
+
+

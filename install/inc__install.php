@@ -32,11 +32,10 @@ if (file_exists($path)) {
 	include_once($path);
 	if (isset($config) && (array_key_exists('install.enabled', $config)) && (false == $config['install.enabled'])) {
 		die("<pre>
-
 			Installation wizard disabled.
 
 			The setting <em>\$config['install.enabled'] = false;</em> in <em>local/local_config.php</em>
-			To enable the installer, change the configuration to  \$config['install.enabled'] = true;
+			To enable the installer, change the configuration to  <em>\$config['install.enabled'] = true;</em>
 			</pre>");
 	}
 }

@@ -17,7 +17,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
-		$this->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/admin/categories/index/'));
+		$this->layout()->addBreadcrumb($this->model('lang')->get('cat.label.plural'), $this->router()->makeAbsoluteUri('/admin/categories/index/'));
 		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
 	}// /method
 
@@ -27,6 +27,9 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 	 * Create a new category.
 	 */
 	public function actionCreate() {
+		$lang = $this->model('lang');
+
+
 		if (!$this->request()->isPost()) {
 			$this->router()->action('index', 'categories', 'admin');
 			return false;
@@ -48,7 +51,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 		switch ($step) {
 			case 1:  // Show the category tagging form
 				if (empty($category->name)) {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'You must enter a name for your category');
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'You must enter a name for your '.strtolower($lang['cat.label']));
 				}
 
 				$this->view()->category = $category;
@@ -61,7 +64,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 				$this->view()->cpv_codes  = $cpv_codes;
 
 				if (empty($category->name)) {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'You must enter a name for your category');
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'You must enter a name for your '.strtolower($lang['cat.label']));
 					$this->view()->render('categories_create');
 					break;
 				}
@@ -75,7 +78,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 
 					$this->layout()->clearBreadcrumbs(2);
 					$this->layout()->clearFeedback();
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "Your new category has been saved : '{$category->name}'.");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "Your new ". strtolower($lang['cat.label']) ." has been saved : '{$category->name}'.");
 					$this->action('index');
 				}
 
@@ -93,8 +96,6 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 	 * Configure which CPV codes are visible by default.
 	 */
 	public function actionCpvcodes() {
-
-
 		if ($this->request()->post('submitcancel')) {
 			$this->layout()->clear();
 			$this->action('index');
@@ -121,6 +122,8 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 	 * Edit an existing category.
 	 */
 	public function actionEdit() {
+		$lang = $this->model('lang');
+
 		if ($this->request()->post('submitcancel')) {
 			$this->layout()->clearBreadcrumbs(2);
 			$this->action('index');
@@ -133,7 +136,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 		$category = $this->model('categorystore')->find($id);
 
 		if (!$category) {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The category requested could not be found.');
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The '. strtolower($lang['cat.label']) .' requested could not be found.');
 			$this->layout()->clearBreadcrumbs(2);
 			return $this->action('index');
 		}
@@ -149,7 +152,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 				if ($this->request()->post('submitdelete')) {
 					$this->model('categorystore')->delete($category->id);
 					$this->layout()->clearBreadcrumbs(2);
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The category has been deleted');
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($lang['cat.label']) .' has been deleted');
 					$this->action('index');
 					return;
 				}
@@ -158,7 +161,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 				if ($this->request()->post('submittransfer')) {
 					$target_category = $this->model('categorystore')->find($this->request()->post('destination'));
 					if (empty($target_category)) {
-						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The items could not be transferred.', 'The destination category selected could not be found.');
+						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The items could not be transferred.', 'The destination '. strtolower($lang['cat.label']) .' selected could not be found.');
 					} else {
 						$this->model('itemstore')->transferCategoryItems($category->id, $target_category->id);
 						$this->model('categorystore')->rebuildItemCounts();
@@ -166,7 +169,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 						if (1 == $this->request()->post('delete_on_transfer')) {
 							$this->model('categorystore')->delete($category->id);
 							$this->layout()->clearBreadcrumbs(2);
-							$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "All items have been transfered and the original category deleted.");
+							$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'All items have been transfered and the original '. strtolower($lang['cat.label']) .' deleted.');
 							$this->action('index');
 							return;
 						} else {
@@ -211,15 +214,16 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 	 * Rebuild the item counts for categories.
 	 */
 	public function actionRebuildcounts() {
+		$lang = $this->model('lang');
 
 		$res = $this->model('categorystore')->rebuildItemCounts();
 
 		$this->layout()->clear();
 
 		if (true === $res) {
-			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The category item counts have been rebuilt.');
+			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($lang['cat.label']) .' item counts have been rebuilt.');
 		} else {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error rebuilding the category item counts.');
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error rebuilding the '. strtolower($lang['cat.label']) .' item counts.');
 		}
 
 		$this->action('index');

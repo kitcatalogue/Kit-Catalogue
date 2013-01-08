@@ -11,9 +11,9 @@ include(APP_PATH .'/bootstrap.php');
 
 <p>Kit-Catalogue should now be properly configured and setup to run.</p>
 
-<p>You should now visit <a href="<?php echo $config['app.www']; ?>">your catalogue homepage</a> and try using the system.</p>
+<p>You should now visit <a class="hilight" href="<?php echo $config['app.www']; ?>">your catalogue homepage</a> and try using the system.</p>
 
-<p>If you need more information on how Kit-Catalogue operates, check out the <a href="http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/">user manual</a>.</p>
+<p>If you need more information on how Kit-Catalogue operates, check out the <a class="hilight" href="http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/">user manual</a>.</p>
 
 <br />
 <div class="warn">

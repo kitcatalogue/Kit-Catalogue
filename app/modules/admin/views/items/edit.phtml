@@ -1,6 +1,6 @@
 <?php
 $lang = $this->model('lang');
-
+$user = $this->model('user');
 
 
 $item = $this->item;
@@ -32,6 +32,21 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 			$("#upload dl").append(new_upload_block);
 		});
 		$('#uploadmore_button_container').append(uploadmore_button);
+
+
+		var usemyemail1_button = $('<input type="button" name="usemyemail" value="Use my email" />');
+		usemyemail1_button.click(function() {
+			$("input#new_contact_1_email").val("{$user->email}");
+		});
+		$("#td_contact1email").append(usemyemail1_button);
+
+
+		var usemyemail2_button = $('<input type="button" name="usemyemail" value="Use my email" />');
+		usemyemail2_button.click(function() {
+			$("input#new_contact_2_email").val("{$user->email}");
+		});
+		$("#td_contact2email").append(usemyemail2_button);
+
 
 	});
 
@@ -65,7 +80,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 	?>
 	<div class="feedback_info" style="margin: 0.5em auto; text-align: center;">
-		<p class="title">This item is visible publically <span style="margin-left: 1em; font-size: 0.875em;">(<a href="#changevis">change</a>)</span></p>
+		<p class="title">This item is visible publically <span style="margin-left: 1em; font-size: 0.875em;">(<a href="#changevis">jump to visibility control</a>)</span></p>
 	</div>
 	<?php
 }
@@ -74,6 +89,18 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 <fieldset>
 	<legend><?php $this->out($lang['item.formsection.main']); ?></legend>
+
+	<?php
+	if (!empty($item->date_updated)) {
+		?>
+		<div class="itemedit_last_updated_info">
+			<p>Last update
+				<br /><?php $this->out($item->last_updated_by); ?>
+				<br /><?php echo date($this->model('layout.date_format'), $item->date_updated); ?>.
+		</div>
+		<?php
+	}
+	?>
 
 	<dl class="form">
 		<dt><?php Ecl_Helper_Html::formLabel('title', $lang['item.form.title']); ?></dt>
@@ -106,6 +133,18 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 			<p class="note">Description of the technical specification or operational limits of the equipment. (e.g. Operating temperatures or sample-size restrictions)</p>
 			<?php Ecl_Helper_Html::formTextarea('specification', 80, 3, $item->specification); ?>
 			<p class="note" style="text-align: center;">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('upgrades', $lang['item.form.upgrades']); ?></dt>
+		<dd>
+			<p class="note">Any upgrades that are installed.</p>
+			<?php Ecl_Helper_Html::formTextarea('upgrades', 80, 2, $item->upgrades); ?>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('future_upgrades', $lang['item.form.future_upgrades']); ?></dt>
+		<dd>
+			<p class="note">Any potential upgrades that might be purchased or made available in the future.</p>
+			<?php Ecl_Helper_Html::formTextarea('future_upgrades', 80, 2, $item->future_upgrades); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('manufacturer_website', $lang['item.form.manufacturer_website']); ?></dt>
@@ -166,6 +205,94 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 
 <fieldset>
+	<legend><?php $this->out($lang['item.formsection.parent']); ?></legend>
+
+	<dl class="form">
+
+		<dt><?php $this->out($lang['item.form.is_parent']); ?></dt>
+		<dd>
+			<?php
+			$options = array(
+				'1' => 'Yes, this item is a parent facility.' ,
+				'0' => 'No, this is just a normal item.' ,
+			);
+			$selected = (int) $item->is_parent;
+
+			Ecl_Helper_Html::formRadioGrid('is_parent', $options, 1, $selected);
+			?>
+		</dd>
+
+		<?php
+		if ($item->is_parent) {
+			$temp_children = $this->model('itemstore')->findChildren($item->id);
+			$options = array();
+			$selected = array();
+			foreach($temp_children as $child) {
+				$options[$child->id] = $child->name;
+				$selected[] = $child->id;
+			}
+			$temp_children = null;
+			?>
+			<dt><?php $this->out($lang['item.form.showchildren']); ?></dt>
+			<dd>
+				<?php
+				if (empty($options)) {
+					echo('<p>No child items are associated with this facility.</p>');
+				} else {
+					echo('<p class="note">Untick a child item to remove it from this facility.</p>');
+					Ecl_Helper_Html::formCheckboxGrid('children', $options, 2, $selected);
+				}
+				?>
+				<br />
+				<p class="note">To add items to this facility, edit the child items individually and select this item as their parent.</p>
+			</dd>
+			<?php
+		}
+		?>
+
+	</dl>
+
+	<hr />
+
+	<dl class="form">
+
+		<?php
+		$temp_facilities = $this->model('itemstore')->findAllParents($item->id);
+		if (!empty($temp_facilities)) {
+			$options = array();
+			foreach($temp_facilities as $facility) {
+				$options[$facility->id] = $facility->name;
+			}
+			$temp_facilities = null;
+
+			$selected = $this->model('itemstore')->findParents($item->id)->toColumn('id');
+			?>
+			<dt><?php $this->out($lang['item.form.selectparent']); ?></dt>
+			<dd>
+				<?php
+				if (empty($options)) {
+					echo('<p>No parent facilities have been defined.</p>');
+				} else {
+					echo('<p class="note">Untick a parent facility to remove this item from it.</p>');
+					Ecl_Helper_Html::formCheckboxGrid('parents', $options, 2, $selected);
+				}
+				?>
+			</dd>
+			<?php
+		}
+		?>
+
+	</dl>
+
+</fieldset>
+
+
+<div style="text-align: center;">
+	<?php Ecl_Helper_Html::formSubmit('submitsave2', 'Save Changes'); ?>
+</div>
+
+
+<fieldset>
 	<legend><?php $this->out($lang['item.formsection.categorisation']); ?></legend>
 
 	<dl class="form">
@@ -188,7 +315,7 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmit('submitsave2', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsave3', 'Save Changes'); ?>
 </div>
 
 
@@ -230,8 +357,20 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 		<dt><?php Ecl_Helper_Html::formLabel('availability', $lang['item.form.availability']); ?></dt>
 		<dd>
-			<p class="note">An indication of when the equipment might be available for use. (e.g. "Wednesday afternoons")</p>
-			<?php Ecl_Helper_Html::formInput('availability', 30, 250, $item->availability); ?>
+			<p class="note">An indication of when this item might be available for use. (e.g. "Wednesday afternoons")</p>
+			<?php Ecl_Helper_Html::formInput('availability', 50, 250, $item->availability); ?>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('restrictions', $lang['item.form.restrictions']); ?></dt>
+		<dd>
+			<p class="note">Any restrictions on the use of this item, or specific Health &amp; Safety considerations, etc.</p>
+			<?php Ecl_Helper_Html::formInput('restrictions', 50, 250, $item->restrictions); ?>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('portability', $lang['item.form.portability']); ?></dt>
+		<dd>
+			<p class="note">For most items the portability will be obvious and need not be entered, but for special cases you can enter portability information here.</p>
+			<?php Ecl_Helper_Html::formInput('portability', 30, 250, $item->portability); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('training_required', $lang['item.form.trainingrequired']); ?></dt>
@@ -239,8 +378,8 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 			<p class="note">Is training required before using this item?</p>
 			<?php
 			$options = array (
-				'1' => 'Yes, specialised training is required.' ,
-				'0' => 'No training required.' ,
+				'1'   => 'Yes, specialised training is required.' ,
+				'0'   => 'No training required.' ,
 				'n/s' => 'Not specified (not shown on site).' ,
 			);
 
@@ -323,7 +462,7 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmit('submitsave3', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsave4', 'Save Changes'); ?>
 </div>
 
 
@@ -360,8 +499,8 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 								?>
 							</select>
 						</td>
-						<td style="padding-left: 2em;">
-							<label style="display: block;" for="new_contact_1_email">&hellip;or use a new email address</label>
+						<td id="td_contact1email" style="padding-left: 2em;">
+							<label style="display: block;" for="new_contact_1_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
 							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'));
 							?>
@@ -404,8 +543,8 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 								?>
 							</select>
 						</td>
-						<td style="padding-left: 2em;">
-							<label style="display: block;" for="new_contact_2_email">&hellip;or use a new email address</label>
+						<td id="td_contact2email" style="padding-left: 2em;">
+							<label style="display: block;" for="new_contact_2_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
 							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'));
 							?>
@@ -423,7 +562,7 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmit('submitsave4', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsave5', 'Save Changes'); ?>
 </div>
 
 
@@ -431,6 +570,15 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 	<legend><?php $this->out($lang['item.formsection.location']); ?></legend>
 
 	<dl class="form">
+
+		<dt><?php Ecl_Helper_Html::formLabel('organisation', $lang['org.label']); ?></dt>
+		<dd>
+			<p class="note">If your catalogue contains items from other organisations or companies, use this field to identify them.</p>
+			<?php
+			$options = array('0' => '') + $this->model('organisationstore')->findAll()->toAssoc('id', 'name');
+			Ecl_Helper_Html::formSelect('organisation', $options, $item->organisation);
+			?>
+		</dd>
 
 		<?php
 
@@ -545,7 +693,7 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmit('submitsave5', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsave6', 'Save Changes'); ?>
 </div>
 
 
@@ -605,11 +753,69 @@ if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 
 		</dd>
 
+		<dt><?php Ecl_Helper_Html::formLabel('PAT', $lang['item.form.PAT']); ?></dt>
+		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('PAT', date('Y'), date('Y')+10, empty($item->PAT) ? null : $item->PAT ); ?></dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('cost', $lang['item.form.cost']); ?></dt>
+		<dd><?php Ecl_Helper_Html::formInput('cost', 30, 100, $item->cost); ?></dd>
+
 		<dt><?php Ecl_Helper_Html::formLabel('date_of_purchase', $lang['item.form.date_of_purchase']); ?></dt>
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('date_of_purchase', date('Y')-20, date('Y'), empty($item->date_of_purchase) ? null : $item->date_of_purchase); ?></dd>
 
-		<dt><?php Ecl_Helper_Html::formLabel('PAT', $lang['item.form.PAT']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('PAT', date('Y'), date('Y')+10, empty($item->PAT) ? null : $item->PAT ); ?></dd>
+		<dt><?php Ecl_Helper_Html::formLabel('replacement_cost', $lang['item.form.replacement_cost']); ?></dt>
+		<dd><?php Ecl_Helper_Html::formInput('replacement_cost', 30, 100, $item->replacement_cost); ?></dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('end_of_life', $lang['item.form.end_of_life']); ?></dt>
+		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('end_of_life', date('Y')-5, date('Y')+10, empty($item->end_of_life) ? null : $item->end_of_life); ?></dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('maintenance', $lang['item.form.maintenance']); ?></dt>
+		<dd>
+			<p class="note">Details of any maintenance agreements, contracts or costs.</p>
+			<?php Ecl_Helper_Html::formInput('maintenance', 100, 250, $item->maintenance); ?>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('is_disposed_of', $lang['item.form.is_disposed_of']); ?></dt>
+		<dd>
+			<p class="note">Has this item been disposed of?</p>
+			<!-- Such items will remain on the catalogue until archived (see below) -->
+			<?php
+			$options = array(
+				Item::DISPOSED_NO    => 'No, still in service.' ,
+				Item::DISPOSED_SOLD  => 'Yes, sold on.' ,
+				Item::DISPOSED_SCRAP => 'Yes, scrapped.' ,
+			);
+			Ecl_Helper_Html::formSelect('is_disposed_of', $options, $item->is_disposed_of);
+			?>
+		</dd>
+
+		<dt><?php Ecl_Helper_Html::formLabel('date_disposed_of', $lang['item.form.date_disposed_of']); ?></dt>
+		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('date_disposed_of', date('Y')-5, date('Y'), empty($item->date_disposed_of) ? null : $item->date_disposed_of); ?></dd>
+
+<?php
+// @todo : Enable archive-status items
+if (false) {
+	?>
+		<dt><?php Ecl_Helper_Html::formLabel('archived', $lang['item.form.archived']); ?></dt>
+		<dd>
+			<p class="note">Archive records are hidden on the catalogue, and are only visible in the administration area.</p>
+			<p class="note">They can be removed regularly by administrators.</p>
+			<?php
+			$options = array(
+				'0' => 'No, the record is still active.' ,
+				'1' => 'Yes, this item\'s record is now inactive.' ,
+			);
+			Ecl_Helper_Html::formSelect('disposed_of', $options, $item->disposed_of);
+			?>
+		</dd>
+	<?php
+}
+?>
+
+		<dt><?php Ecl_Helper_Html::formLabel('comments', $lang['item.form.comments']); ?></dt>
+		<dd>
+			<p class="note">Comments or further information about this item.</p>
+			<?php Ecl_Helper_Html::formTextarea('comments', 80, 4, $item->comments); ?>
+		</dd>
 
 	</dl>
 
@@ -643,7 +849,7 @@ if (!empty($fields)) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmit('submitsave6', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsave7', 'Save Changes'); ?>
 </div>
 
 
@@ -770,7 +976,7 @@ if (!$new_item) {
 			<div id="uploadmore_button_container"></div>
 
 			<div style="text-align: center;">
-				<?php Ecl_Helper_Html::formSubmit('submitsave5', 'Save Changes'); ?>
+				<?php Ecl_Helper_Html::formSubmit('submitsave8', 'Save Changes'); ?>
 			</div>
 		</div>
 	</fieldset>

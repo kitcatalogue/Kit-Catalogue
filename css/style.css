@@ -99,8 +99,14 @@ body {
 
 p {	margin-bottom: 1.6em; }
 strong { font-weight: bold; }
-em { font-weight: bold; font-style: normal; }
+em { font-weight: bold; font-style: italic; }
 dfn { font-style: italic; }
+
+
+dl { margin: 1em; }
+dl dt { font-weight: bold; }
+dl dd { margin-left: 1em; }
+dl dd + dt { margin-top: 1.5em; }
 
 
 a:link,
@@ -222,6 +228,8 @@ h4, h5, h6 { font-size: 1em; }
 }
 
 .signin_warning p { margin: 0.5em 0; line-height: 1.1em; }
+
+.signin_warning a { text-decoration: underline; }
 
 
 
@@ -608,7 +616,9 @@ a.admin_link {color:#FFF;padding:0.2em 1.5em 0 1em;}
 #homepage-list ul li:first-child {border-top:none; }
 
 span.count {color:#70767E;}
-                             
+
+
+
 /* ==================================================================================
  * Categories List
  * ==================================================================================
@@ -692,7 +702,7 @@ ul.item-list li .item-title a:visited { color:#58742D; text-decoration: none; }
 ul.item-list li .item-title a:hover,
 ul.item-list li .item-title a:active { color: #8cb23f; text-decoration: none; }
 
-ul.item-list li ul.item-meta li { height: 18px; font-size: 12px; overflow: hidden; }
+ul.item-list li ul.item-meta li { font-size: 0.8125em; overflow: hidden; }
 
 ul.item-list li ul.item-meta li.tags { 
 	margin-top: 13px;
@@ -779,21 +789,21 @@ div.extra-image img:hover {opacity:1;filter:alpha(opacity=100); /* For IE8 and e
 
 
 .item-description h1 ,
-.item-specification h1 { font-size: 1.2em; font-style: italic; }
+.item-specification h1 { margin-top: 2em; font-size: 1.2em; font-style: italic; }
 
 .item-description h2 ,
-.item-specification h2 { font-size: 1.15em; font-style: italic; }
+.item-specification h2 { margin-top: 2em; font-size: 1.15em; font-style: italic; }
 
 .item-description h3 ,
-.item-specification h3 { font-size: 1.1em; font-style: italic; }
+.item-specification h3 { margin-top: 2em; font-size: 1.1em; font-style: italic; }
 
 .item-description h4 ,
-.item-specification h4 { font-size: 1.05em; font-style: italic; }
+.item-specification h4 { margin-top: 1.5em; font-size: 1.05em; font-style: italic; }
 
 .item-description h5 ,
 .item-description h6 ,
 .item-specification h5 ,
-.item-specification h6 { font-size: 1em; font-style: italic; }
+.item-specification h6 { margin-top: 1em; font-size: 1em; font-style: italic; }
 
 .item-description td,
 .item-specification td { padding-right: 1em !important; border-bottom: 1px solid #ccc !important; }
@@ -806,6 +816,10 @@ div.extra-image img:hover {opacity:1;filter:alpha(opacity=100); /* For IE8 and e
 .item-files ul {list-style:none;}
 .item-files ul li {height:2em;background: url(../images/system/file.gif) no-repeat;}
 .item-files a {padding-left:2em;}
+
+
+.item-children ul.item-list { margin: 0; }
+
 
 .item-date-updated { margin-top: 1em; border-top: 1px solid #ccc; }
 
@@ -825,23 +839,14 @@ ul.selected-list { margin-top: -1em; }
 ul.selected-list li { margin-left: 2em; }
 
 .clipped-list {
-	position: relative;
-	overflow: hidden;
-
 	font-size: 0.9em;
 }
 
 .clipped-list ul { margin-bottom: 2em; }
 
 .clipped-toggleinfo {
-
-	position: absolute;
-	width: 100%;
-	bottom: 0;
-	z-index: 999;
+	margin-top: -2em;
 	padding: 0.5em 0 0.2em 0;
-
-	background-color: #fff;
 	color: #485F24;
 	cursor: pointer;
 	font-size: 0.9em;

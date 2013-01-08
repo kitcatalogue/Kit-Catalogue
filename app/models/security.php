@@ -147,8 +147,8 @@ class Security {
 					}
 				} else {
 					// If user is the item custodian (has the same email address)
-					if ($this->_user->email == $item->contact_1_email
-						|| $this->_user->email == $item->contact_2_email) {
+					if ( (strtolower($this->_user->email) == strtolower($item->contact_1_email))
+						|| (strtolower($this->_user->email) == strtolower($item->contact_2_email)) ) {
 							$perms['site.item.edit']  = true;
 
 							$perms['item.accesslevel.view']   = true;

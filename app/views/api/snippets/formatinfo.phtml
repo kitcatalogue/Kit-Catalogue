@@ -1,0 +1,53 @@
+<?php
+
+
+
+?>
+<h3>Available Formats</h3>
+
+<p>
+	To switch output formats, provide an appropriate file extension in the url.
+	<br />e.g. http://kc-dev.lboro.ac.uk/api/public/items/index.json
+</p>
+
+<p>The supported file exensions, and their respective output formats are:</p>
+<table class="formats">
+<tr>
+	<th>File<br />Extension</th>
+	<th>Mime Type</th>
+	<th>Description</th>
+</tr>
+<tr>
+	<td class="fileext">.html</td>
+	<td class="mimetype">text/html</td>
+	<td class="desc">Human readable, basic HTML output.<br />You can use this view for testing the API calls in a browser.</td>
+</tr>
+<tr class="default">
+	<td class="fileext">.json</td>
+	<td class="mimetype">application/json</td>
+	<td class="desc">JSON format.<br /><em>This is the default output format.</em></td>
+</tr>
+<?php
+if (false) {
+	?>
+	<tr>
+		<td class="fileext">.rdf</td>
+		<td class="mimetype">application/rdf+xml</td>
+		<td class="desc">RDF XML output.</td>
+	</tr>
+	<tr>
+		<td class="fileext">.ttl</td>
+		<td class="mimetype">text/turtle</td>
+		<td class="desc">RDF Turtle output.</td>
+	</tr>
+	<tr>
+		<td class="fileext">.xml</td>
+		<td class="mimetype">application/xml</td>
+		<td class="desc">XML output.</td>
+	</tr>
+	<?php
+}
+?>
+</table>
+
+

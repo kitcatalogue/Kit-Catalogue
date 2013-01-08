@@ -103,7 +103,7 @@ class Ecl_Xml_Element {
 
 			// If there's data, ignore any children
 			if (!empty($this->data)) {
-				$temp = $this->data;   //utf8_encode($this->data);   Stopped encoding, as it kept producing 'Â' characters
+				$temp = utf8_encode($this->data);
 
 				// Apply CDATA tags if needed
 				if ( (strpos($temp,'<')!==false)

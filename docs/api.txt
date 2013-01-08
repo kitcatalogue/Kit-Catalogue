@@ -1,13 +1,92 @@
 
-* * * * * * * * * * * * * * *
-Kit-Catalogue API (open data)
-* * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * *
+  Kit-Catalogue API (open data)
+* * * * * * * * * * * * * * * * *
+
+
+The Kit-Catalogue Application Programming Interface (API) allows access to 
+basic information about the items in your catalogue.
+
+The API is split in to two sections, public an private.
+
+At the moment, only a basic form of the public interace is available.
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    *  We will be adding more fields and functionality  *
+    *  to the API in future releases.                   *
+    * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 
 
-Due to time constraints, we have dropped the API and open data features for now.
-It's something we're very keen to add in a future release, however.
+== Enabling the API ==
 
-We'll announce more news on this when we have it. 
+The API is disabled by default. To enable it, edit your local config file and
+change the 'api.enabled' setting to read:
+
+  $config['api.enabled'] = true;
+
+Once enabled, you can access the API pages by browsing to:
+
+  http://<your-site>/api/
+
+This page will show you the current status of the public and private API sections,
+as well as linking to your data licence (if defined).
+
+
+
+== Data Licensing ==
+
+As mentioned above, a data licence shows your users what they can and cannot do with
+your equipment data.  This applies to both the data available through the API and
+through your catalogue's normal website pages.
+
+You should use your local config to define exactly which licence you wish to use.
+Kit-Catalogue includes settings for the UK's Open Goverment Licence as a useful default.
+
+
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    *  Which ever licence you choose to use, check its terms are suitable *
+    *  for your institution before making it visible on your catalogue.   *
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+
+By default, the Kit-Catalogue software does not show any data licence description or
+link. You can enable it by setting the appropriate local config entry to read:
+
+  $config['data.licence_enabled'] = true;  
+
+To change which data licence information is shown, alter these settings accordingly:
+
+  $config['data.licence_name'] = '<name of your licence>';
+
+  $config['data.licence_link'] = '<URL-of-full-licence-information>';
+
+
+
+== Public API ==
+
+The Public API itself is enabled by default. You can control the availability
+of the public API using the local config setting:
+
+  $config['api.public.enabled'] = true; 
+
+
+Once enabled, you can access the public API by browsing to:
+
+  http://<your-site>/api/public/
+
+There you can read more information on how to use 
+
+
+
+== Private API ==
+
+The Private API is currently unavailable and will be added in a future
+Kit-Catalogue release.
+
+Once fully functional, the private API will allow authorised access for adding
+and updating items in the catalogue, as well as providing an entry point for
+external systems to harvest information about specific collections of items, or
+those not marked as fully public.
 
 

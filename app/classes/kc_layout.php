@@ -129,7 +129,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				</ul>
 			</div>
 		</li>
-
 		<?php
 		return true;
 	}
@@ -143,10 +142,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		$lang = $this->model('lang');
 
 		$back_url = base64_encode($this->request()->relativeUri());
-
-		// These are being a pain - set them to null here
-		$latude = null;
-		$ldtude = null;
 
 		if (empty($item->image)) {
 			$no_image = true;
@@ -176,7 +171,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		}
 
 
-
 		if ($this->model('log.item_view')) {
 			$this->model('db')->insert('log_view', array (
 				'date_view'  => $this->model('db')->formatDate(time()) ,
@@ -187,9 +181,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		}
 
 		$wiki_parser = Ecl::factory('Ecl_Parser_Wikicode');
-		?>
 
-		<?php
 
 		function drawField($header, $detail) {
 			if (!empty($detail)) {
@@ -199,7 +191,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					<th><?php echo $header; ?></th>
 					<td><?php echo $detail; ?></td>
 				</tr>
-				<?
+				<?php
 			}
 		}
 
@@ -218,9 +210,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					($this->model('enquiry.enabled'))
 					&& (
 						(!empty($item->contact_1_email))
-						|| (!empty($item->contact_2_email)) )
+						|| (!empty($item->contact_2_email))
+						|| (!Ecl::isEmpty($this->model('enquiry.send_to')))
 						)
-					{
+					) {
 					?>
 					<a class="enquire-link" href="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>"><img src="<?php echo $this->router()->makeAbsoluteUri('/images/system/enquirebutton.gif'); ?>" alt="Enquire Now" /></a>
 					<?php
@@ -231,7 +224,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 				<table class="fields">
 				<?php
-
 				$manufacturer_website = '';
 
 				if (!empty($item->manufacturer_website)) {
@@ -240,7 +232,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
 							$start_url = 'http://';
 					}
-					$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', "{$start_url}{$item->manufacturer_website}");
+					$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', htmlentities("{$start_url}{$item->manufacturer_website}"));
 				}
 				drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
 
@@ -264,14 +256,16 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				<div class="item-body">
 
 					<div class="usage">
-						<?php // DISPLAY DEPARTMENT NAME
+						<?php
 							if (!empty($item->department)) {
-							echo "<h2>".$this->model('departmentstore')->lookupName($item->department)."</h2>";
+							echo '<h2>'. $this->model('departmentstore')->lookupName($item->department). '</h2>';
 						}?>
 						<table class="layout fields">
 						<?php
 
 						drawField($lang['item.label.availability'], $this->escape($item->availability));
+						drawField($lang['item.label.restrictions'], $this->escape($item->restrictions));
+						drawField($lang['item.label.portability'], $this->escape($item->portability));
 
 						if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
 							$access = $this->escape($this->model('accesslevelstore')->lookupName($item->access));
@@ -301,10 +295,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							case Item::CALIB_YES:
 								$details = 'Yes, this item is calibrated.';
 								if (isSensibleDate($item->last_calibration_date)) {
-									$details .= '<br />Last Calibration: '. date('d-m-Y', $item->last_calibration_date);
+									$details .= '<br />Last Calibration: '. date($this->model('layout.date_format'), $item->last_calibration_date);
 								}
 								if (isSensibleDate($item->next_calibration_date)) {
-									$details .= '<br />Next Calibration: '. date('d-m-Y', $item->next_calibration_date);
+									$details .= '<br />Next Calibration: '. date($this->model('layout.date_format'), $item->next_calibration_date);
 								}
 								break;
 							case Item::CALIB_NO:
@@ -317,9 +311,13 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						}
 						drawField($lang['item.label.calibrated'], $details);
 
+						// @todo : Show quantity and description
+						if (1 < $item->quantity) {
+						drawField($lang['item.label.quantity'], $item->quantity .'.<br />'. $this->escape($item->quantity_detail));
+						}
 
 						if (isSensibleDate($item->PAT)) {
-							drawField($lang['item.label.PAT'], date('d-m-Y', $item->PAT));
+							drawField($lang['item.label.PAT'], date($this->model('layout.date_format'), $item->PAT));
 						}
 						?>
 						</table>
@@ -329,22 +327,82 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 						<table class="layout fields">
 						<?php
-						if (!empty($item->contact_1_email)) {
-							if (!empty($item->contact_1_name)) {
-								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_1_email, $item->contact_1_name);
+						if (!$user->isAnonymous()) {
+							// Contact 1
+							$contact_email = (!empty($item->contact_1_email)) ? $item->contact_1_email : '' ;
+							$contact_name = (!empty($item->contact_1_name)) ? $item->contact_1_name : $contact_email ;
+							$contact_link = '';
+
+							if (empty($contact_email)) {
+								$contact_link = sprintf('%1$s', $contact_name);
 							} else {
-								$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_1_email);
+								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
 							drawField($lang['item.label.contact_1'], $contact_link);
-						}
 
-						if (!empty($item->contact_2_email)) {
-							if (!empty($item->contact_2_name)) {
-								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $item->contact_2_email, $item->contact_2_name);
+							// Contact 2
+							$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
+							$contact_name = (!empty($item->contact_2_name)) ? $item->contact_2_name : $contact_email ;
+							$contact_link = '';
+
+							if (empty($contact_email)) {
+								$contact_link = sprintf('%1$s', $contact_name);
 							} else {
-								$contact_link = sprintf('<a href="mailto:%1$s">%1$s</a>', $item->contact_2_email);
+								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
 							drawField($lang['item.label.contact_2'], $contact_link);
+						} else {
+							if ($this->model('enquiry.enabled')) {
+								$enquiry_form_link = $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}");
+
+								if (Ecl::isEmpty($this->model('enquiry.send_to'))) {
+									$contact_email = (!empty($item->contact_1_email)) ? $item->contact_1_email : '' ;
+									$contact_name = (!empty($item->contact_1_name)) ? $item->contact_1_name : $contact_email ;
+									if (!empty($contact_name)) {
+										drawField($lang['item.label.contact_1'], $contact_name);
+									}
+
+									$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
+									$contact_name = (!empty($item->contact_2_name)) ? $item->contact_2_name : $contact_email ;
+									if (!empty($contact_name)) {
+										drawField($lang['item.label.contact_2'], $contact_name);
+									}
+								}
+								drawField('', sprintf('<a href="%1$s">%2$s</a>', $enquiry_form_link, 'Enquire about this item'));
+							} else {
+								// Contact 1
+								$contact_email = (!empty($item->contact_1_email)) ? $item->contact_1_email : '' ;
+								$contact_name = (!empty($item->contact_1_name)) ? $item->contact_1_name : $contact_email ;
+								$contact_link = '';
+
+								if (empty($contact_email)) {
+									$contact_link = sprintf('%1$s', $contact_name);
+								} else {
+									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
+								}
+								drawField($lang['item.label.contact_1'], $contact_link);
+
+								// Contact 2
+								$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
+								$contact_name = (!empty($item->contact_2_name)) ? $item->contact_2_name : $contact_email ;
+								$contact_link = '';
+
+								if (empty($contact_email)) {
+									$contact_link = sprintf('%1$s', $contact_name);
+								} else {
+									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
+								}
+								drawField($lang['item.label.contact_2'], $contact_link);
+							}
+						}
+
+
+
+						if (!empty($item->organisation)) {
+							$org = $this->model('organisationstore')->find($item->organisation);
+							if ($org) {
+								drawField($lang['org.label'], $this->escape($org->name));
+							}
 						}
 
 						if ($this->model('security')->checkItemPermission($item, 'item.location.view')) {
@@ -375,7 +433,15 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						$this->outf($lang['item.label.full_description'], '<h2>%s</h2>');
 						?>
 						<div class="item-description">
-							<?php echo $wiki_parser->parse($item->full_description); ?>
+							<?php
+							$text = $wiki_parser->parse($item->full_description);
+							$text = str_replace(
+								array('<h1>', '</h1>', '<h2>', '</h2>'),
+								array('<h3>', '</h3>', '<h3>', '</h3>'),
+								$text
+								);
+							echo $text;
+							?>
 						</div>
 						<?php
 					}
@@ -384,7 +450,15 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						$this->outf($lang['item.label.specification'], '<h2>%s</h2>');
 						?>
 						<div class="item-specification">
-							<?php echo $wiki_parser->parse($this->escape($item->specification)); ?>
+							<?php
+							$text = $wiki_parser->parse($this->escape($item->specification));
+							$text = str_replace(
+								array('<h1>', '</h1>', '<h2>', '</h2>'),
+								array('<h3>', '</h3>', '<h3>', '</h3>'),
+								$text
+								);
+							echo $text;
+							?>
 						</div>
 						<?php
 					}
@@ -465,8 +539,29 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					}
 
 
+					// Show associated child items
+					$children = $this->model('itemstore')->findChildren($item->id);
+					if (count($children)>0) {
+						?>
+						<div class="item-children">
+							<h2><?php $this->out($lang['item.label.showchildren']); ?></h2>
+							<ul class="item-list">
+								<?php
+								$url_stub = $this->router()->makeAbsoluteUri('/item/');
+								foreach($children as $child) {
+									$this->layout()->renderItemInList($child, "{$url_stub}{$child->slug}");
+								}
+								?>
+							</ul>
+						</div>
+						<?php
+					}
+					$children = null;
+
+
+
 					if (isSensibleDate($item->date_updated)) {
-						printf('<p class="note item-date-updated">%s: %s</p>', $lang['item.label.date_updated'], date('d-m-Y', $item->date_updated));
+						printf('<p class="note item-date-updated">%s: %s</p>', $lang['item.label.date_updated'], date($this->model('layout.date_format'), $item->date_updated));
 					}
 					?>
 				</div>
@@ -514,13 +609,13 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				} else {
 					?>
 					<div class="side-bar">
-						<h4>Categories</h4>
+						<h4><?php $this->out($lang['cat.label.plural']); ?></h4>
 						<ul>
 						<?php
 						foreach($categories as $i => $category) {
 							?>
 							<li>
-								<a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"); ?>">
+								<a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->url_suffix}"); ?>">
 									<?php $this->out($category->name); ?>
 									<span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span>
 								</a>
@@ -532,6 +627,27 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					</div>
 					<?php
 				}
+				$categories = null;
+
+
+				$facilities = $this->model('itemstore')->findParents($item->id);
+				if (count($facilities)>0) {
+					?>
+					<div class="side-bar tags">
+						<h4><?php $this->out($lang['item.label.showparents']); ?></h4>
+						<ul>
+							<?php
+							foreach($facilities as $i => $facility) {
+								?>
+								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/item/{$facility->slug}"); ?>"><?php $this->out($facility->name); ?></a></li>
+								<?php
+							}
+							?>
+						</ul>
+					</div>
+					<?php
+				}
+				$facilities = null;
 
 
 				$tags = $this->model('itemstore')->getItemTags($item->id);
@@ -551,8 +667,17 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					</div>
 					<?php
 				}
+				$tags = null;
+				?>
 
+				<div class="side-bar">
+					<h4>Permanent Link</h4>
+					<ul>
+						<li><a href="<?php echo $this->router()->makeAbsoluteUri("/id/item/{$item->idslug}"); ?>"># Permalink</a></li>
+					</ul>
+				</div>
 
+				<?php
 				if ( (!$user->isAnonymous()) && (KC__VISIBILITY_PUBLIC == $item->visibility) ) {
 					?>
 					<div class="side-bar">
@@ -573,13 +698,12 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						<?php
 						if ($this->model('socialnetwork.allow_googleplus')) {
 							?>
-							<g:plusone annotation="none"></g:plusone>
+							<div id="plusone-div" class="plusone"></div>
+							<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+								{lang:"en", parsetags:"explicit"}
+							</script>
 							<script type="text/javascript">
-							  (function() {
-							    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-							    po.src = 'https://apis.google.com/js/plusone.js';
-							    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-							  })();
+								gapi.plusone.render("plusone-div", {annotation:"none"});
 							</script>
 							<?php
 						}
@@ -606,11 +730,12 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
    }
 
 
-/* --------------------------------------------------------------------------------
- * Private Methods
- */
+
+	/* --------------------------------------------------------------------------------
+	 * Private Methods
+	 */
 
 
 
-}// /class
+}
 ?>

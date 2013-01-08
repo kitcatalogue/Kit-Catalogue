@@ -34,7 +34,7 @@ require_once('./inc__install.php');
 
 <div id="header">
 
-	<div class="kclogo"><img src="../images/system/kitcatalogue_logo.gif" alt="Kit Catalogue" /></div>
+	<div class="kclogo"><img src="../images/logo-kc.jpg" alt="Kit Catalogue" /></div>
 
 </div>
 

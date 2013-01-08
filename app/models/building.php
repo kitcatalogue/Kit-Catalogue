@@ -16,6 +16,9 @@ class Building {
 
 	public function __get($name) {
 		switch ($name) {
+			case 'idslug':
+				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
+				break;
 			case 'name':
 				return (empty($this->code)) ? $name : "{$name} ({$code})" ;
 				break;

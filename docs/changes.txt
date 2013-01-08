@@ -1,7 +1,7 @@
 
-* * * * * * * * * * * * * 
-Kit-Catalogue Change Log
-* * * * * * * * * * * * *
+* * * * * * * * * * * * * * *
+  Kit-Catalogue Change Log
+* * * * * * * * * * * * * * *
 
 
 This file contains the Kit-Catalogue recent change log.  Any notable updates,
@@ -11,17 +11,64 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.1.0  (released 12-09-2012)
+
+
+== Administration
+
+Added extra fields to the item records (upgrades, restrictions, organisation, and more asset fields).
+Added "last updated by" information to item records.
+Added log of who edited what item, and when.
+Added new reports.
+
+Fixed missing custom fields from Export Item CSV.
+
+
+== API  (See /docs/api.txt for more info on the new API)
+
+Added Public API allowing read-only access to public item details (basic fields only in this version).
+Added API item representations for HTML (.html), JSON (.json).
+
+
+== General
+
+Improved the search system:
+ - Prioritises hits in the title, manufacturer, model, acronym or keyword fields.
+ - Can search categories, tags and custodian names/emails (enabled by default), and departments and custom fields (disabled by default).
+Improved the styling of the browsing filters' side-bar to aid restyling.
+Improved minor aspects of the install and upgrade wizards.
+Improved minor styling issues across the whole system.
+
+Added an explicit permanent URL to an item's detail page (permalink).
+Added date and username (if logged in) to search results.
+Added item parent-facility functionality (associate multiple items with a single facility entry in the catalogue).
+Added full language override capability for category labels.
+Added ability to direct all enquiry form submissions to a single email address (overriding custodian emails).
+Added ability to list all tags used in the catalogue (browse to /tag/), but not provided as a menu link yet.
+Added config option to load a /local/local_head.html file in to the <head> section of all pages (config 'layout.use_local_head').
+Added config option to disable the sign-in prompt for anonymous guest users (config 'layout.signin_prompt_enabled').
+
+Fixed browsing problems when using renamed department labels.
+Fixed case sensitivity problem with emails when checking a custodian's ability to edit an item.
+Fixed coding problems that broke older PHP 5.3.x installations.
+Fixed include path problem with locally defined layouts.
+Fixed items having multiple associations with the same tag (re-save the item to fix).
+Fixed quantity fields not being shown on the item details page.
+
+
+
+--------------------------------------------------------------------------------
 v.1.0.0  (released 07-06-2012)
 
 
 == Administration
 
-Standardised "delete" options on all admin pages. 
+Improved standardisation of "delete" options on all admin pages. 
 Added custom field administration.
 Added export to CSV option.
 Added homepage block administration.
 
-Fixed minor errors in the admin pages.
+Fixed numerous minor errors in the admin pages.
 
 
 == General
@@ -29,8 +76,8 @@ Fixed minor errors in the admin pages.
 Improved styling across the whole application.
 Improved support for restyling using local CSS.
 Improved tag functionality.
+Added enquiry form.
 Added filtered item browsing.
-Added enquiry form (enabled by default).
 Added social network connectivity (disabled by default).
 
 Fixed minor errors on item display pages. 
@@ -61,78 +108,5 @@ Added a second staff contact, and associated custodian-level editing access.
 Added tags to the user-facing catalogue.
 
 Fixed errors in the item display pages.
-
-
-
---------------------------------------------------------------------------------
-v.0.9.7  (released 20-02-2012)
-
-
-== Administration
-
-Improved User administration (including fixes).
-Improved Item administration.
-
-Fixed broken links in the Staff Contacts report.
-Fixed an error in the item import wizard.
-
-Added new item reports.
-
-
-== General
-
-Improved the installation wizard.
-Improved security by blocking direct access to the phtml "view" files (.htaccess change).
-
-Added app.intro setting to local_config file.
-
-Fixed errors in the database install script.
-Fixed errors in the model classes.
-Fixed an error when viewing items without categories.
-
-
-== Documentation
-
-Fixed typo in the config file.
-
-
-
---------------------------------------------------------------------------------
-v.0.9.6  (released 16-02-2012)
-
-
-== Administration
-
-Improved Building administration - allows transfers between buildings.
-Improved Category administration - allows transfers between categories.
-Improved Site administration - allows transfers between sites.
-Improved Item administration - better image and file handling.
-
-Fixed errors in the import wizard.
-Fixed errors in the administration area (including typos).
-Fixed a display error with custom field names in the CSV import template.
-
-Added Reports to the administration area.
-Added ability to control which CPV codes are in use (see Category Admin => Configure CPV Codes).
-Added tagging to the Item administration (but not viewable publically yet).
-
-
-== General
-
-Improved the ECL library classes.
-Improved the installation wizard.
-Improved the Item views.
-Improved the views when using anonymous public access (including error fixes).
-Improved the normal and print stylesheets.
- 
-Added secure LDAP TLS option to config file (experimental - see notes in the config file).
-Added upgrade wizard for those upgrading an existing installation.
-Added logging of item views by visitors (new config option, enabled by default).
-
-
-== Documentation
-
-Improved the installation documentation.
-Improved the config file documentation and fixed typos.
 
 

@@ -1,7 +1,7 @@
 
-* * * * * * * * * *
-Pluggable Functions
-* * * * * * * * * *
+* * * * * * * * * * * *
+  Pluggable Functions
+* * * * * * * * * * * *
 
 
 
@@ -84,3 +84,4 @@ providing.
 	(auth success) or all of them have returned false (auth failed).
 	
 	
+

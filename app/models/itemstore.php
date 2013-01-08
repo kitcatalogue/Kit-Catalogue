@@ -18,6 +18,8 @@ class Itemstore {
 	protected $_model = null;
 	protected $_db = null;
 
+	protected $_cache_customfield_names = null;
+
 
 
 	/**
@@ -53,6 +55,12 @@ class Itemstore {
 	 * @return  array  The row representing the object.
 	 */
 	public function convertObjectToExport($object) {
+		// cache customfield info
+		if (null === $this->_cache_customfield_names) {
+			$this->_cache_customfield_names = $this->_model->get('customfieldstore')->findAll();
+		}
+
+
 		$row = array (
 			'item_id' => $object->id ,
 
@@ -63,6 +71,9 @@ class Itemstore {
 			'short_description' => $object->short_description ,
 			'full_description' => $object->full_description ,
 			'specification' => $object->specification ,
+
+			'upgrade' => $object->upgrades ,
+			'future_upgrade' => $object->future_upgrades ,
 
 			'acronym' => $object->acronym ,
 			'keywords' => $object->keywords ,
@@ -75,17 +86,20 @@ class Itemstore {
 
 			'department'  => $this->_model->get('departmentstore')->lookupName($object->department, 'Unknown') ,
 
-			'usergroup'      => $object->usergroup ,
+			'usergroup'   => $object->usergroup ,
 
 			'access'      => $this->_model->get('accesslevelstore')->lookupName($object->access, '') ,
+
+			'portability' => $object->portability ,
 
 			'availability'   => $object->availability ,
 
 			'visibility'  => $object->visibility ,
 
-			'site'      => $this->_model->get('sitestore')->lookupName($object->site, '') ,
-			'building'  => $this->_model->get('buildingstore')->lookupName($object->building, '') ,
-			'room'      => $object->room ,
+			'organisation' => $this->_model->get('organisationstore')->lookupName($object->organisation, '') ,
+			'site'         => $this->_model->get('sitestore')->lookupName($object->site, '') ,
+			'building'     => $this->_model->get('buildingstore')->lookupName($object->building, '') ,
+			'room'         => $object->room ,
 
 			'contact_1_name'  => $object->contact_1_name ,
 			'contact_1_email'  => $object->contact_1_email ,
@@ -96,6 +110,8 @@ class Itemstore {
 
 			'manufacturer_website' => $object->manufacturer_website ,
 			'copyright_notice' => $object->copyright_notice ,
+
+			'restrictions'   => $object->restrictions ,
 
 			'training_required' => ($object->training_required === true) ? 'yes' : ( ($object->training_required === false) ? 'no' : '' ) ,
 			'training_provided' => ($object->training_provided === true) ? 'yes' : ( ($object->training_provided === false) ? 'no' : '' ) ,
@@ -116,11 +132,33 @@ class Itemstore {
 			'supplier_id'          => $this->_model->get('supplierstore')->lookupName($object->supplier, '') ,
 			'date_of_purchase'     => $this->_db->formatDate($object->date_of_purchase, true) ,
 
+			'cost' => $object->cost ,
+			'replacement_cost' => $object->replacement_cost ,
+			'end_of_life' => $this->_db->formatDate($object->end_of_life, true) ,
+			'maintenance' => $object->maintenance ,
+
 			'date_added' => $this->_db->formatDate($object->date_added) ,
 			'date_updated' => $this->_db->formatDate($object->date_updated) ,
+			'last_updated_username' => $object->last_updated_username ,
+			'last_updated_email' => $object->last_updated_email ,
+
+			'is_disposed_of' => ($object->is_disposed_of) ? 'yes' : 'no' ,
+			'date_disposed_of' => $this->_db->formatDate($object->date_disposed_of, true) ,
+
+			'comments' => $object->comments ,
 
 			'archived' => ($object->archived) ? 'yes' : 'no' ,
+			'date_archived' => $this->_db->formatDate($object->date_archived, true) ,
+
+			'is_parent' => ($object->is_parent) ? 'yes' : 'no' ,
 		);
+
+		if (!empty($this->_cache_customfield_names)) {
+			$customfield_values = $this->getItemCustomFields($object->id);
+			foreach($this->_cache_customfield_names as $customfield) {
+				$row[$customfield->name] = (array_key_exists($customfield->id, $customfield_values)) ? $customfield_values[$customfield->id] : '' ;
+			}
+		}
 
 		return $row;
 	}// /method
@@ -146,17 +184,23 @@ class Itemstore {
 			'full_description' => $object->full_description ,
 			'specification' => $object->specification ,
 
+			'upgrades'        => $object->upgrades ,
+			'future_upgrades' => $object->future_upgrades ,
+
 			'acronym' => $object->acronym ,
 			'keywords' => $object->keywords ,
 
 			'technique' => $object->technique ,
 
-			'availability'   => $object->availability ,
+			'availability' => $object->availability ,
+			'restrictions' => $object->restrictions ,
 
 			'department_id'  => $object->department ,
 			'usergroup'      => $object->usergroup ,
 			'access_id'      => $object->access ,
+			'portability'    => $object->portability ,
 
+			'organisation' => $object->organisation ,
 			'site_id'      => $object->site ,
 			'building_id'  => $object->building ,
 			'room'         => $object->room ,
@@ -173,9 +217,6 @@ class Itemstore {
 			'manufacturer_website' => $object->manufacturer_website ,
 			'copyright_notice' => $object->copyright_notice ,
 
-			'date_added' => $this->_db->formatDate($object->date_added) ,
-			'date_updated' => $this->_db->formatDate($object->date_updated) ,
-
 			'training_required' => $object->training_required ,
 			'training_provided' => $object->training_provided ,
 
@@ -188,6 +229,11 @@ class Itemstore {
 			'last_calibration_date' => $this->_db->formatDate($object->last_calibration_date, true) ,
 			'next_calibration_date' => $this->_db->formatDate($object->next_calibration_date, true) ,
 
+			'date_added' => $this->_db->formatDate($object->date_added) ,
+			'date_updated' => $this->_db->formatDate($object->date_updated) ,
+			'last_updated_username' => $object->last_updated_username ,
+			'last_updated_email' => $object->last_updated_email ,
+
 			'asset_no'             => $object->asset_no ,
 			'finance_id'           => $object->finance_id ,
 			'serial_no'            => $object->serial_no ,
@@ -195,7 +241,20 @@ class Itemstore {
 			'supplier_id'          => $object->supplier ,
 			'date_of_purchase'     => $this->_db->formatDate($object->date_of_purchase, true) ,
 
-			'archived' => (int) $object->archived ,
+			'cost' => $object->cost ,
+			'replacement_cost' => $object->replacement_cost ,
+			'end_of_life' => $this->_db->formatDate($object->end_of_life, true) ,
+			'maintenance' => $object->maintenance ,
+
+			'is_disposed_of'   => (int) $object->is_disposed_of ,
+			'date_disposed_of' => $this->_db->formatDate($object->date_disposed_of, true) ,
+
+			'archived'      => (int) $object->archived ,
+			'date_archived' => $this->_db->formatDate($object->date_archived, true) ,
+
+			'comments' => $object->comments ,
+
+			'is_parent' => (int) $object->is_parent ,
 		);
 	}// /method
 
@@ -221,17 +280,23 @@ class Itemstore {
 		$object->full_description = $row['full_description'];
 		$object->specification = $row['specification'];
 
+		$object->upgrades = $row['upgrades'];
+		$object->future_upgrades = $row['future_upgrades'];
+
 		$object->acronym = $row['acronym'];
 		$object->keywords = $row['keywords'];
 
 		$object->technique = $row['technique'];
 
 		$object->availability = $row['availability'];
+		$object->restrictions = $row['restrictions'];
 
 		$object->department = $row['department_id'];
 		$object->usergroup = $row['usergroup'];
 		$object->access = $row['access_id'];
+		$object->portability = $row['portability'];
 
+		$object->organisation = $row['organisation'];
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
 		$object->room = $row['room'];
@@ -260,8 +325,10 @@ class Itemstore {
 		$object->last_calibration_date = (is_null($row['last_calibration_date'])) ? null : strtotime($row['last_calibration_date']) ;
 		$object->next_calibration_date = (is_null($row['next_calibration_date'])) ? null : strtotime($row['next_calibration_date']) ;
 
-		$object->date_added = (is_null($row['date_added'])) ? null : strtotime($row['date_added']); ;
-		$object->date_updated = (is_null($row['date_updated'])) ? null : strtotime($row['date_updated']); ;
+		$object->date_added = (is_null($row['date_added'])) ? null : strtotime($row['date_added']);
+		$object->date_updated = (is_null($row['date_updated'])) ? null : strtotime($row['date_updated']);
+		$object->last_updated_username = $row['last_updated_username'];
+		$object->last_updated_email = $row['last_updated_email'];
 
 		$object->asset_no = $row['asset_no'];
 		$object->finance_id = $row['finance_id'];
@@ -270,7 +337,20 @@ class Itemstore {
 		$object->supplier = $row['supplier_id'];
 		$object->date_of_purchase = (is_null($row['date_of_purchase'])) ? null : strtotime($row['date_of_purchase']) ;
 
+		$object->cost = $row['cost'];
+		$object->replacement_cost = $row['replacement_cost'];
+		$object->end_of_life = (is_null($row['end_of_life'])) ? null : strtotime($row['end_of_life']);
+		$object->maintenance = $row['maintenance'];
+
+		$object->is_disposed_of  = (bool) $row['is_disposed_of'];
+		$object->date_disposed_of = (is_null($row['date_disposed_of'])) ? null : strtotime($row['date_disposed_of']);
+
 		$object->archived = (bool) $row['archived'];
+		$object->date_archived = (is_null($row['date_archived'])) ? null : strtotime($row['date_archived']);
+
+		$object->comments = $row['comments'];
+
+		$object->is_parent = (bool) $row['is_parent'];
 
 		return $object;
 	}// /method
@@ -398,10 +478,39 @@ class Itemstore {
 	/**
 	 * Find all items.
 	 *
+	 * @param  mixed  $visibility  (optional)
+	 *
 	 * @return  object  An Ecl_Db_Recordset of objects requested.
 	 */
-	public function findAll() {
-		return $this->_find();
+	public function findAll($visibility = null) {
+		$visibility_clause = $this->getVisibilitySqlCondition($visibility);
+		return $this->_find($visibility_clause);
+	}// /method
+
+
+
+	/**
+	 * Get the list of tag used, and the item count for each tag.
+	 *
+	 * @param  mixed  $visibility  (optional)
+	 *
+	 * @return  array  An assoc array (tag => item count).
+	 */
+	public function findAllTags($visibility = null) {
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? "WHERE {$sql__vis_condition}" : null ;
+
+		$num_rows = $this->_db->query("
+			SELECT t.tag, count(it.item_id) AS item_count
+			FROM tag t
+				INNER JOIN item_tag it ON t.tag_id=it.tag_id
+				INNER JOIN item i ON it.item_id=i.item_id
+			$where_clause
+			GROUP BY tag
+			ORDER BY tag ASC
+		");
+
+		return ($this->_db->hasResult()) ? $this->_db->getResultAssoc('tag', 'item_count') : array() ;
 	}// /method
 
 
@@ -411,41 +520,14 @@ class Itemstore {
 	 *
 	 * @param  integer  $visibility
 	 *
-	 * @return  Array  An array of email addresses.
+	 * @return  Array  An array of techniques.
 	 */
-	public function findAllTechniques() {
+	public function findAllTechniques($visibility = null) {
 		$sql = "
 			SELECT DISTINCT technique
 			FROM `item`
 			WHERE technique<>''
 			ORDER BY technique
-		";
-
-		$this->_db->query($sql);
-		return ($this->_db->hasResult()) ? $this->_db->getColumn() : array() ;
-	}// /method
-
-
-
-	/**
-	 * Find all the distinct manufacturers for all equipment.
-	 *
-	 * @param  integer  $visibility
-	 *
-	 * @return  Array  An array of email addresses.
-	 */
-	public function findAllManufacturers($visibility) {
-
-		// @todo : Move to own model?
-
-		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
-		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
-
-		$sql = "
-			SELECT DISTINCT manufacturer
-			FROM `item`
-			WHERE manufacturer<>'' $sql__vis_condition
-			ORDER BY manufacturer
 		";
 
 		$this->_db->query($sql);
@@ -463,7 +545,7 @@ class Itemstore {
 	 */
 	public function findAllContacts($visibility) {
 
-		// @todo : Move to own model?
+		// @idea : Move to own model?
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
@@ -486,21 +568,75 @@ class Itemstore {
 
 
 	/**
-	* Get the file types available.
-	*
-	* @return  mixed  The array of objects requested.
-	*/
+	 * Get the file types available.
+	 *
+	 * @return  mixed  The array of objects requested.
+	 */
 	public function findAllFileTypes() {
 
-		// @todo : Move to own model?
+		// @idea : Move to own model?
 
 		$this->_db->query("
-				SELECT *
-				FROM file_type
-				ORDER BY name
-			");
+			SELECT *
+			FROM file_type
+			ORDER BY name
+		");
 
 		return ($this->_db->hasResult()) ? $this->_db->getResultAssoc('file_type_id', 'name') : array() ;
+	}// /method
+
+	/**
+	 * Find all the distinct manufacturers for all equipment.
+	 *
+	 * @param  integer  $visibility
+	 *
+	 * @return  Array  An array of manufacturers.
+	 */
+	public function findAllManufacturers($visibility) {
+
+		// @idea : Move to own model?
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
+
+		$sql = "
+			SELECT DISTINCT manufacturer
+			FROM `item`
+			WHERE manufacturer<>'' $sql__vis_condition
+			ORDER BY manufacturer
+		";
+
+		$this->_db->query($sql);
+		return ($this->_db->hasResult()) ? $this->_db->getColumn() : array() ;
+	}// /method
+
+
+
+	public function findAllParents($exclude_item_id = null) {
+		$exclude_item_id = (int) $exclude_item_id;
+
+		if ($exclude_item_id) {
+			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}'");
+		} else {
+			return $this->_find("is_parent='1'");
+		}
+	}// /method
+
+
+
+	public function findChildren($id) {
+		$sql__id = $this->_db->prepareValue( (int) $id);
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+				INNER JOIN item_child ic ON i.item_id=ic.child_item_id AND ic.item_id=$sql__id
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", null, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -772,6 +908,23 @@ class Itemstore {
 
 
 
+	public function findParents($id) {
+		$sql__id = $this->_db->prepareValue( (int) $id);
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+				INNER JOIN item_child ic ON i.item_id=ic.item_id AND child_item_id=$sql__id
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", null, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
 	/**
 	 * Find items for the given contact person.
 	 *
@@ -854,6 +1007,41 @@ class Itemstore {
 			$where_clause
 			ORDER BY manufacturer, model, acronym
 		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
+	 * Find all items in the organisation specified.
+	 *
+	 * @param  mixed  $organisation_id  The organisation, or array of organisations, to find.
+	 *
+	 * @return  object  An Ecl_Db_Recordset of objects requested.
+	 */
+	public function findForOrganisation($organisation_id, $visibility) {
+		if (is_array($organisation_id)) {
+			$id_set = $this->_db->prepareSet($organisation_id);
+			$where_clause = "organisation IN $id_set";
+		} else {
+			$sql__organisation_id = $this->_db->prepareValue( (int) $organisation_id);
+			$where_clause = "organisation=$sql__organisation_id";
+		}
+
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause .= (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM item
+			WHERE $where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", null, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -1056,30 +1244,30 @@ class Itemstore {
 	 * @param  string  $keywords  The terms to search for.
 	 * @param  integer  $visibility  The visibility of the items to search for.
 	 *
-	 * @return  mixed  The array of objects found.  On fail, null.
+	 * @return  mixed  The RecordSet of objects found.  On fail, null.
 	 */
 	public function searchItems($keywords, $visibility) {
 		$items = null;
 
 		$keywords = trim($keywords);
 
-		// @todo : Add category and tag searching
-
 		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
-		// Split the keywords depending on whether they're too small for MySQL's FULLTEXT search
-		$small_keywords = array();
-		$big_keywords = array();
-		$terms = explode(' ', $keywords);
+		// MySQL's default FULLTEXT search has character limitations, so we do things the hard way
+		// Grab the terms and run LIKE queries on everything we need.
 
-		foreach($terms as $term) {
+		$temp_terms = explode(' ', $keywords);
+
+		foreach($temp_terms as $term) {
 			$term = trim($term);
-			if (strlen($term) <= 3) {
-				$small_keywords[] = "%$term%";
-			} else {
-				$big_keywords[] = $term;
+			if (!empty($term)) {
+				$terms[] = "%{$term}%";
 			}
 		}
+		$temp_terms = null;
+
+
+		if (empty($terms)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
 
 		$queries = array();
@@ -1088,51 +1276,150 @@ class Itemstore {
 		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
 
 
-		if (!empty($big_keywords)) {
-			$sql__keywords = $this->_db->prepareValue($keywords);
-			$sql__matchclause = "MATCH (title, manufacturer, model, technique, acronym, keywords, full_description) AGAINST ($sql__keywords IN BOOLEAN MODE)";
+		// Search the primary fields
+		$fields = array('title', 'manufacturer', 'model', 'acronym', 'keywords');
+		$conditions = array();
+		foreach($fields as $field) {
+			$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
+		}
+		$sql__conditions = implode("\n OR " , $conditions);
+
+		$queries[] = "
+			SELECT DISTINCT i.*, '9' AS search_relevancy
+			FROM item i
+			WHERE ($sql__conditions)
+				$sql__vis_condition
+		";
+
+
+		// Search the secondary fields
+		$fields = array('full_description', 'technique');
+		$conditions = array();
+		foreach($fields as $field) {
+			$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
+		}
+		$sql__conditions = implode("\n OR " , $conditions);
+
+		$queries[] = "
+			SELECT DISTINCT i.*, '3' AS search_relevancy
+			FROM item i
+			WHERE ($sql__conditions)
+				$sql__vis_condition
+		";
+
+
+		// Search the categories
+		if ($this->_model->get('search.include_categories')) {
+			$sql__conditions = $this->_db->prepareFilter('c.name', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT *
-				FROM item
-				WHERE $sql__matchclause
+				SELECT DISTINCT i.*, '7' AS search_relevancy
+				FROM item i
+					INNER JOIN item_category ic ON ic.item_id=i.item_id
+					INNER JOIN category c ON c.category_id=ic.category_id
+				WHERE ($sql__conditions)
 					$sql__vis_condition
 			";
 		}
 
 
-		if (!empty($small_keywords)) {
-
-			$fields = array('title', 'manufacturer', 'model', 'full_description', 'acronym', 'technique', 'keywords');
+		// Search the custodian information
+		if ($this->_model->get('search.include_custodians')) {
+			$fields = array('contact_1_name', 'contact_1_email', 'contact_2_name', 'contact_2_email');
 			$conditions = array();
 			foreach($fields as $field) {
-				$conditions[] = $this->_db->prepareFilter($field, $small_keywords, 'OR', 'LIKE');
+				$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
 			}
 			$sql__conditions = implode("\n OR " , $conditions);
 
 			$queries[] = "
-				SELECT DISTINCT *
-				FROM item
-				WHERE $sql__conditions
+				SELECT DISTINCT i.*, '7' AS search_relevancy
+				FROM item i
+				WHERE ($sql__conditions)
 					$sql__vis_condition
 			";
 		}
 
+
+		// Search the departments
+		if ($this->_model->get('search.include_departments')) {
+			$sql__conditions = $this->_db->prepareFilter('d.name', $terms, 'OR', 'LIKE');
+
+			$queries[] = "
+				SELECT DISTINCT i.*, '6' AS search_relevancy
+				FROM item i
+					INNER JOIN department d ON i.department_id=d.department_id
+				WHERE ($sql__conditions)
+					$sql__vis_condition
+			";
+		}
+
+
+		// Search the tags
+		if ($this->_model->get('search.include_tags')) {
+			$sql__conditions = $this->_db->prepareFilter('t.tag', $terms, 'OR', 'LIKE');
+
+			$queries[] = "
+				SELECT DISTINCT i.*, '7' AS search_relevancy
+				FROM item i
+					INNER JOIN item_tag it ON it.item_id=i.item_id
+					INNER JOIN tag t ON t.tag_id=it.tag_id
+				WHERE ($sql__conditions)
+					$sql__vis_condition
+			";
+		}
+
+
+		// Search the custom fields
+		if ($this->_model->get('search.include_custom_fields')) {
+			$sql__conditions = $this->_db->prepareFilter('icf.value', $terms, 'OR', 'LIKE');
+
+			$queries[] = "
+				SELECT DISTINCT i.*, '5' AS search_relevancy
+				FROM item i
+					INNER JOIN item_custom icf ON icf.item_id=i.item_id
+				WHERE ($sql__conditions)
+					$sql__vis_condition
+			";
+		}
+
+
+
 		if (1 >= count($queries)) {
 			$sql = $queries[0];
 		} else {
-			$sql = $this->_db->unionise($queries, 'DISTINCT');
+			$sql = $this->_db->unionise($queries, 'ALL');
 		}
 
 		$sql .= "
-			ORDER BY
+			ORDER BY search_relevancy DESC,
 			CASE
 				WHEN title<>'' THEN title
 				ELSE manufacturer
-			END ASC, model, acronym
+			END ASC, manufacturer, model, acronym
 		";
 
-		return $this->_db->newRecordset($sql, null, array($this, 'convertRowToObject'));
+
+		// @debug :	Ecl::dump($sql);
+
+
+		$rows = $this->_db->newRecordset($sql, null)->toArray();
+
+		if (empty($rows)) { return new Ecl_Db_Emptyrecordset(null, ''); }
+
+		$unique_ids = array();
+		$unique_rows = array();
+
+		foreach($rows as $row) {
+			if (!in_array($row['item_id'], $unique_ids)) {
+				$unique_rows[] = $row;
+				$unique_ids[] = $row['item_id'];
+			}
+		}
+		$rows = null;
+		$unique_ids = null;
+
+		return new Ecl_Db_Arrayrecordset($unique_rows, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -1170,6 +1457,70 @@ class Itemstore {
 
 
 	/**
+	 * Set the child items associated with the given item.
+	 *
+	 * @param  integer  $item_id
+	 * @param  array  $children  Array of child item IDs.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function setItemChildren($item_id, $children) {
+		$children = (array) $children;
+
+		$sql__item_id = $this->_db->prepareValue($item_id);
+		$this->_db->delete('item_child', "item_id=$sql__item_id");
+
+		if (!empty($children)) {
+			$binds = null;
+			foreach($children as $child_item_id) {
+				$binds[] = array (
+					'item_id'       => $item_id ,
+					'child_item_id' => $child_item_id ,
+				);
+			}
+
+			if (!empty($binds)) {
+				$this->_db->insertMulti('item_child', $binds);
+			}
+		}
+		return true;
+	}// /method
+
+
+
+	/**
+	 * Set the parents associated with the given item.
+	 *
+	 * @param  integer  $item_id
+	 * @param  array  $parents  Array of parent item IDs.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function setItemParents($item_id, $parents) {
+		$parents = (array) $parents;
+
+		$sql__item_id = $this->_db->prepareValue($item_id);
+		$this->_db->delete('item_child', "child_item_id=$sql__item_id");
+
+		if (!empty($parents)) {
+			$binds = null;
+			foreach($parents as $parent_item_id) {
+				$binds[] = array (
+					'item_id'       => $parent_item_id ,
+					'child_item_id' => $item_id ,
+				);
+			}
+
+			if (!empty($binds)) {
+				$this->_db->insertMulti('item_child', $binds);
+			}
+		}
+		return true;
+	}// /method
+
+
+
+	/**
 	 * Set the tags associated with the given item.
 	 *
 	 * Passing an empty $tags array will effectively delete all existing item-tag links.
@@ -1181,49 +1532,82 @@ class Itemstore {
 	 */
 	public function setItemTags($item_id, $tags) {
 		$tags = array_map('trim', (array) $tags);
+		$tags = array_unique($tags);
 
+
+		// Delete tag associations
 		$sql__item_id = $this->_db->prepareValue($item_id);
-
-
-		// Delete existing tags
 		$this->_db->delete('item_tag', "item_id=$sql__item_id");
 
-		// Create new tags as required
 		if (empty($tags)) { return true; }
 
-		$binds = null;
-		foreach($tags as &$tag) {
-			$tag = trim($tag);
 
-			$length = strlen($tag);
+		// Find tags that already exist, and those that need creating
+		$new_binds = array();
 
-			if ( ($length>1) && ('#' == $tag[0]) )  {
-				if ($length>2) {
-					$tag = substr($tag, 1);
-				} else {
-					$tag = '';
-				}
-			}
+		$sql__all_tags_set = $this->_db->prepareSet($tags);
 
-			if (!empty($tag)) {
-				$binds[] = array (
+		$this->_db->query("
+			SELECT MIN(tag_id) AS tag_id, tag
+			FROM tag
+			WHERE tag IN $sql__all_tags_set
+			GROUP BY tag
+		");
+
+		if (!$this->_db->hasResult()) {
+			foreach($tags as $tag) {
+				$new_binds[] = array (
 					'tag'  => $tag ,
 				);
 			}
+		} else {
+			$existing_tags = $this->_db->getResultAssoc('tag_id', 'tag');
+
+			foreach($tags as $tag) {
+				$found = false;
+				foreach($existing_tags as $k => $v) {
+					if (strtolower($tag) == strtolower($v)) {
+						$found = true;
+						break;
+					}
+				}
+
+				if (!$found) {
+					$length = strlen($tag);
+
+					if ( ($length>1) && ('#' == $tag[0]) )  {
+						if ($length>2) {
+							$tag = substr($tag, 1);
+						} else {
+							$tag = '';
+						}
+					}
+
+					if (!empty($tag)) {
+						$new_binds[] = array (
+							'tag'  => $tag ,
+						);
+					}
+				}
+			}// /foreach(tag)
 		}
 
-		if (!empty($binds)) {
-			$this->_db->insertMulti('tag', $binds, true);
+
+		// Create new tags (if applicable)
+		if (!empty($new_binds)) {
+			$this->_db->insertMulti('tag', $new_binds, true);
 		}
+
 
 		// Create new item-tag links
 		$sql__tag_set = $this->_db->prepareSet($tags);
 
 		$this->_db->execute("
 			INSERT INTO `item_tag` (item_id, tag_id)
-			SELECT $sql__item_id AS item_id, tag_id
-			FROM `tag`
+			SELECT $sql__item_id AS item_id, MIN(tag_id)
+			FROM tag
 			WHERE tag IN $sql__tag_set
+			GROUP BY tag
 		");
 
 		return true;
@@ -1324,6 +1708,27 @@ class Itemstore {
 
 
 	/**
+	 * Transfer all items from the source organisation, to the target.
+	 *
+	 * The target organisation ID is not checked for validity.
+	 *
+	 * @param  integer  $source
+	 * @param  integer  $target
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function transferOrganisationItems($source, $target) {
+		$source = $this->_db->prepareValue( (int) $source);
+		$binds = array (
+			'organisation_id'  => (int) $target ,
+		);
+		$count =  $this->_db->update('item', $binds, "organisation_id={$source}");
+		return ($count>0);
+	}// /method
+
+
+
+	/**
 	 * Transfer all items from the source site, to the target.
 	 *
 	 * The target site ID is not checked for validity.
@@ -1356,10 +1761,27 @@ class Itemstore {
 
 		$id = $this->_db->prepareValue($item->id);
 
+		$user = $this->_model->get('user');
+
 		unset($binds['date_added']);
 		$binds['date_updated'] = $this->_db->formatDate(time());
+		$binds['last_updated_username'] = $user->username;
+		$binds['last_updated_email'] = $user->email;
 
 		$affected_count = $this->_db->update('item', $binds, "item_id=$id");
+
+
+		// Log item update
+		if ($user) {
+			$binds = array (
+				'date_updated'  => $this->_db->formatDate(time()) ,
+				'item_id'       => $item->id ,
+				'username'      => $user->username ,
+				'email'         => $user->email ,
+			);
+			$this->_db->insert('log_item_update', $binds);
+		}
+
 
 		return ($affected_count>0);
 	}// /method

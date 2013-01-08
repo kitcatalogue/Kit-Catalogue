@@ -29,19 +29,32 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 	$(document).ready( function() {
 
 		$('.clipped-list').each( function(i) {
-			if (parseInt($(this).css("height")) > 150) {
-				$(this).css('max-height', clipped_size)
-					.append('<div class="clipped-toggleinfo" data-mode="more" data-target="'+ $(this).attr('id') +'">show all&hellip;</div>');
+			var li_list = $(this).find('ul li');
+			if (li_list.length > 5) {
+				li_list.each( function (idx, el) {
+					if (idx>4) { $(el).hide(); }
+				});
+				$(this).append('<div class="clipped-toggleinfo" data-mode="more" data-target="'+ $(this).attr('id') +'">show all&hellip;</div>');
 			}
 		});
 
 		$(".clipped-toggleinfo").click(function(event) {
 			var target = $('#'+$(this).attr('data-target'));
+			var li_list = $(target).find('ul li');
+
 			if ('more' == $(this).attr('data-mode')) {
-				target.css('max-height', 'none');
+				if (li_list.length > 5) {
+					li_list.each( function (idx, el) {
+						if (idx>4) { $(el).show(); }
+					});
+				}
 				$(this).html('show less&hellip;').attr('data-mode', 'less');
 			} else {
-				target.css('max-height', clipped_size);
+				if (li_list.length > 5) {
+					li_list.each( function (idx, el) {
+						if (idx>4) { $(el).hide(); }
+					});
+				}
 				$(this).html('show all&hellip;').attr('data-mode', 'more');
 			}
 		});
@@ -161,10 +174,8 @@ if (isset($options['technique'])) { ksort($options['technique']); }
 
 
 
-// @debug : Ecl::dump($this->main_param, 'Main Param');
-// @debug : Ecl::dump($this->selected_params, 'Selected Params');
 
-
+$hide_properties = array();
 ?>
 
 <h1><?php $this->out($title); ?></h1>
@@ -186,6 +197,8 @@ if (!empty($this->selected_params)) {
 		unset($uri_params[$param_key]);
 
 		$url = $this->router()->makeAbsoluteUri('/browse/') . implode('/', $uri_params);
+
+		$hide_properties[] = $param_key;
 
 		switch($param_key) {
 			case 'category':
@@ -275,7 +288,6 @@ if (!$this->items) {
 					<?php
 					foreach($available_options as $l => $info) {
 						$name = (!empty($info['name'])) ? $info['name'] : "-No $k-" ;
-
 						if (isset($info['id'])) {
 							$url = $url_stub .'-'. urlencode($info['id']) .'-'. urlencode($info['name']);
 						} else {
@@ -307,7 +319,7 @@ if ( 0 < count($this->items)) {
 		<?php
 		$url_stub = "{$uri}item/";
 		foreach($this->items as $item) {
-			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}", array('department'));
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}", $hide_properties);
 		}
 		?>
 	</ul>

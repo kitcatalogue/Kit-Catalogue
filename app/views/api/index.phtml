@@ -1,0 +1,53 @@
+<?php
+
+
+?>
+<h1>Kit-Catalogue API</h1>
+
+
+<h3>Public API</h3>
+<p>
+	The public API provides access to information about all the items publically available in this catalogue.
+</p>
+
+<?php
+$status = (true === $this->model('api.public.enabled')) ? 'available' : 'unavailable' ;
+?>
+<p class="api_status api_<?php echo($status); ?>">The public API for this catalogue is <?php $this->out($status); ?>.</p>
+<?php
+if ('available' == $status) {
+	$api_link = $this->router()->makeAbsoluteUri('/api/public');
+	?>
+	<p>You can begin to access the public API at: <a href="<?php echo($api_link); ?>"><?php $this->out($api_link); ?></a>
+	<?php
+}
+?>
+
+
+<h3>Private API</h3>
+<p>
+	The private API allows access to specific sets of items within this catalogue.
+	You will need an API key to access the private api.
+</p>
+
+<?php
+$status = (true === $this->model('api.private.enabled')) ? 'available' : 'unavailable' ;
+?>
+<p class="api_status api_<?php echo($status); ?>">The private API for this catalogue is <?php $this->out($status); ?>.</p>
+<?php
+if ('available' == $status) {
+	$api_link = $this->router()->makeAbsoluteUri('/api/private');
+	?>
+	<p>You can begin to access the private API at <a href="<?php echo($api_link); ?>"><?php $this->out($api_link); ?></a>
+	<?php
+}
+
+
+if ($this->model('data.licence_enabled')) {
+	?>
+	<h3>Data Licence</h3>
+	<?php
+	$this->render('snippets_licenceinfo');
+}
+
+

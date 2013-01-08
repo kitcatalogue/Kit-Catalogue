@@ -27,7 +27,7 @@ CREATE TABLE `access` (
   `access_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -203,62 +203,82 @@ CREATE TABLE `homepageblock` (
 --
 
 DROP TABLE IF EXISTS `item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `item` (
-  `item_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(250) DEFAULT '',
-  `manufacturer` VARCHAR(100) NOT NULL DEFAULT '',
-  `model` VARCHAR(100) DEFAULT '',
-  `short_description` VARCHAR(250) DEFAULT '',
-  `full_description` TEXT DEFAULT '',
-  `specification` TEXT DEFAULT '',
-  `acronym` VARCHAR(15) DEFAULT '',
-  `keywords` VARCHAR(250) DEFAULT '',
-  `technique` VARCHAR(250) DEFAULT '',
-  `availability` VARCHAR(250) DEFAULT '',
-  `department_id` INT(10) UNSIGNED DEFAULT NULL,
-  `usergroup` VARCHAR(250) DEFAULT '',
-  `access_id` INT(10) UNSIGNED DEFAULT NULL,
-  `site_id` INT(10) UNSIGNED DEFAULT NULL,
-  `building_id` INT(10) UNSIGNED DEFAULT NULL,
-  `room` varchar(250) DEFAULT '',
-  `contact_1_name` VARCHAR(250) DEFAULT '',
-  `contact_1_email` VARCHAR(250) DEFAULT '',
-  `contact_2_name` VARCHAR(250) DEFAULT '',
-  `contact_2_email` VARCHAR(250) DEFAULT '',
-  `visibility` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(250) DEFAULT '',
+  `manufacturer` varchar(100) DEFAULT '',
+  `model` varchar(100) DEFAULT '',
+  `short_description` varchar(250) DEFAULT '',
+  `full_description` text,
+  `specification` text,
+  `upgrades` text,
+  `future_upgrades` text,
+  `acronym` varchar(15) DEFAULT '',
+  `keywords` varchar(250) DEFAULT '',
+  `technique` varchar(250) DEFAULT '',
+  `availability` varchar(250) DEFAULT '',
+  `restrictions` varchar(250) DEFAULT NULL,
+  `department_id` int(10) unsigned DEFAULT NULL,
+  `usergroup` varchar(250) DEFAULT '',
+  `access_id` int(10) unsigned DEFAULT NULL,
+  `portability` varchar(250) DEFAULT NULL,
+  `organisation` int(10) unsigned DEFAULT NULL,
+  `site_id` int(10) unsigned DEFAULT NULL,
+  `building_id` int(10) unsigned DEFAULT NULL,
+  `room` varchar(250) NOT NULL DEFAULT '',
+  `contact_1_name` varchar(250) DEFAULT '',
+  `contact_1_email` varchar(250) DEFAULT '',
+  `contact_2_name` varchar(250) DEFAULT '',
+  `contact_2_email` varchar(250) DEFAULT '',
+  `visibility` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `image` varchar(250) NOT NULL DEFAULT '',
-  `manufacturer_website` VARCHAR(250) DEFAULT '',
-  `copyright_notice` VARCHAR(250) DEFAULT '',
-  `date_added` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `date_updated` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `training_required` TINYINT(3) DEFAULT NULL,
-  `training_provided` TINYINT(3) DEFAULT NULL,
+  `manufacturer_website` varchar(250) DEFAULT '',
+  `copyright_notice` varchar(250) DEFAULT '',
+  `date_added` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_updated_username` varchar(250) DEFAULT '',
+  `last_updated_email` varchar(250) DEFAULT '',
+  `training_required` tinyint(3) DEFAULT NULL,
+  `training_provided` tinyint(3) DEFAULT NULL,
   `quantity` int(5) DEFAULT '1',
-  `quantity_detail` VARCHAR(250) DEFAULT '',
+  `quantity_detail` varchar(250) DEFAULT '',
   `PAT` datetime DEFAULT NULL,
-  `calibrated` VARCHAR(4) DEFAULT '',
-  `last_calibration_date` DATETIME DEFAULT NULL,
-  `next_calibration_date` DATETIME DEFAULT NULL,
-  `asset_no` VARCHAR(50) DEFAULT NULL,
-  `finance_id` VARCHAR(50) DEFAULT NULL,
-  `serial_no` VARCHAR(50) DEFAULT NULL,
-  `year_of_manufacture` VARCHAR(4) DEFAULT NULL,
-  `supplier_id` INT(11) DEFAULT NULL,
-  `date_of_purchase` DATETIME DEFAULT NULL,
-  `archived` TINYINT(3) UNSIGNED DEFAULT '0',
+  `calibrated` varchar(4) DEFAULT '',
+  `last_calibration_date` datetime DEFAULT NULL,
+  `next_calibration_date` datetime DEFAULT NULL,
+  `asset_no` varchar(50) DEFAULT NULL,
+  `finance_id` varchar(50) DEFAULT NULL,
+  `serial_no` varchar(50) DEFAULT NULL,
+  `year_of_manufacture` varchar(4) DEFAULT NULL,
+  `supplier_id` int(11) DEFAULT NULL,
+  `date_of_purchase` datetime DEFAULT NULL,
+  `cost` varchar(100) DEFAULT '',
+  `replacement_cost` varchar(100) DEFAULT '',
+  `end_of_life` datetime DEFAULT NULL,
+  `maintenance` varchar(250) DEFAULT NULL,
+  `is_disposed_of` varchar(5) DEFAULT '0',
+  `date_disposed_of` datetime DEFAULT NULL,
+  `comments` text,
+  `archived` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `date_archived` datetime DEFAULT NULL,
+  `is_parent` tinyint(3) unsigned DEFAULT '0',
   PRIMARY KEY (`item_id`),
   KEY `department` (`department_id`),
   KEY `manufacturer` (`manufacturer`),
   KEY `visibility` (`visibility`),
-  KEY `staff_contact` (`contact_1_email`),
-  KEY `PAT_date` (`PAT`),
-  KEY `archived_items` (`archived`),
+  KEY `staff_contact` USING BTREE (`contact_1_email`),
+  KEY `PAT` (`PAT`),
+  KEY `archived` (`archived`),
   KEY `asset_no` (`asset_no`),
   KEY `finance_id` (`finance_id`),
   KEY `serial_no` (`serial_no`),
   KEY `supplier_id` (`supplier_id`),
-  FULLTEXT KEY `textsearch` (`title`,`manufacturer`,`model`,`full_description`,`acronym`,`technique`,`keywords`)
+  KEY `is_parent` (`is_parent`),
+  KEY `is_disposed_of` (`is_disposed_of`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 
@@ -274,6 +294,23 @@ CREATE TABLE `item_category` (
   `category_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_id`,`category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+-- 
+-- Table structure for table `item_child`
+--
+
+DROP TABLE IF EXISTS `item_child`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE  `item_child` (
+  `item_id` int(10) unsigned NOT NULL,
+  `child_item_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`item_id`,`child_item_id`),
+  KEY `child_item_id` (`child_item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -330,6 +367,28 @@ CREATE TABLE `item_tag` (
 
 
 
+-- 
+-- Definition of table `log_item_update`
+--
+
+DROP TABLE IF EXISTS `log_item_update`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `log_item_update` (
+  `log_item_update_id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `date_updated` DATETIME NOT NULL,
+  `item_id` INTEGER UNSIGNED NOT NULL,
+  `username` VARCHAR(250),
+  `email` VARCHAR(250),
+  PRIMARY KEY (`log_item_update_id`),
+  INDEX `item_id`(`item_id`),
+  INDEX `date_updated`(`date_updated`),
+  INDEX `email`(`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
 --
 -- Table structure for table `log_signin`
 --
@@ -362,6 +421,23 @@ CREATE TABLE `log_view` (
   `username` varchar(250) DEFAULT NULL,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`log_view_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Table structure for table `organisation`
+--
+
+DROP TABLE IF EXISTS `organisation`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `organisation` (
+  `organisation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`organisation_id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

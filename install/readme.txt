@@ -18,30 +18,35 @@ option in the installation wizard to ensure your database is fully updated too.
 
 
 
-If you wish to bypass the wizard, then these are the basic things you should
- do to get Kit-Catalogue working...
+If you wish to bypass the wizard, then these are the basic things you should 
+do to get Kit-Catalogue working...
 
 
+(1) Have an Apache web server running at least PHP 5.3 and MySQL 4.  Unzip the
+Kit-Catalogue zip-file into a new website, or sub-folder of an existing website.
+ 
 
-(1) If this is a fresh installation, you will need to enable your local folder.
+
+(2) If this is a fresh installation, you will need to enable your local folder.
 To do this, rename the  /new_local/  folder to  /local/
 
 Within your local folder, edit  local_config.php  and change the configuration
 settings within it to setup connections to your MySQL database, LDAP, etc.
-Future installations/upgrades of Kit-Catalogue will no overwrite the settings
+Future installations/upgrades of Kit-Catalogue will not overwrite the settings
 you define in your local folder. This should smooth future upgrades, and
 reduce the work required to keep Kit-Catalogue up-to-date.
 
 
 
-(2) Give PHP write permissions to the  /writeable/  folder.  This folder will
-be used for uploading and importing items, images and associated resources.
+(3) Create a  /writable/  folder, and give PHP write permissions to it.
+This folder will be used for uploading and importing items, images and 
+associated resources.
 
 Kit-Catalogue will also use it for cache files and intermediate processing steps.
 
 
 
-(3) Make sure Apache is configured with mod_rewrite enabled.
+(4) Make sure Apache is configured with mod_rewrite enabled.
 
 To do this, edit httpd.conf and...
 
@@ -55,7 +60,7 @@ Ensure that mod_rewrite is enabled by uncommenting this line:
 
 
 
-(4) Kit-Catalogue comes with a built in user account called "admin", with the
+(5) Kit-Catalogue comes with a built in user account called "admin", with the
 following details:
 
 username: admin
@@ -72,7 +77,7 @@ authentication) you should change the default admin password!
 
 
 
-(5) For security reasons, once you have installed Kit-Catalogue and made sure
+(6) For security reasons, once you have installed Kit-Catalogue and made sure
 it is all working properly, you should edit your local config and disable the
 installer using this setting.
 
@@ -85,12 +90,5 @@ For added security, you could delete the  /install/  folder to prevent
 unauthorised access, but if you later upgrade or reinstall Kit-Catalogue, you
 will have a new version of the  /install/  folder created, so disabling it in
 your config is a must.
-
-
-
-**** If this is a fresh installation ****
-
-
-Run the installer, but select the "upgrade" option.
 
 

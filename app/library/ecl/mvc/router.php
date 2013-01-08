@@ -269,6 +269,7 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 		}// /while (routes to process)
 
 
+
 		// If there's no params, then there was a problem routing the request
 		if (!$params) {
 			return $this->_dispatchAction('404', 'error');
@@ -535,7 +536,7 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 		$view_name = strtolower($view_name);
 		$include_path = $this->mvcRoot();
 
-		if (empty($module_name)) {
+		if (null === $module_name) {
 			$module_name = $this->getCurrentModule();
 		}
 
@@ -588,7 +589,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			$this->action('exception', 'error', '');
 		}
 
-
 		// Output whatever we've responded with
 		try {
 			// If using a layout
@@ -598,7 +598,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			} else {
 				$this->response()->content(ob_get_clean());
 			}
-
 			$this->response()->send();
 			return true;
 		} catch (Ecl_Response_Exception_HeadersSentException $e) {

@@ -19,9 +19,15 @@ if (!empty($this->backlink)) {
 </ul>
 
 <ul style="margin-top: 1em;">
-	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+	<li>
+		<a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a>
+		<p class="note">Import new items from a CSV file.</p>
+	</li>
 </ul>
 
 <ul style="margin-top: 1em;">
-	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/export/'); ?>">Export CSV</a></li>
+	<li>
+		<a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/export/'); ?>">Export CSV</a>
+		<p class="note">Export a back-up of all your item data to a CSV file.</p>
+	</li>
 </ul>
