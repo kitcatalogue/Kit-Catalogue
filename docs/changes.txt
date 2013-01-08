@@ -11,6 +11,23 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.1.2  (released 26-09-2012)
+
+
+== Administration
+
+Fixed empty tags being created and assigned to items.
+
+Changed the items by building report to order by "room".
+
+
+== General
+
+Fixed minor site styling issues.
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.1  (released 13-09-2012)
 
 
@@ -91,32 +108,5 @@ Added filtered item browsing.
 Added social network connectivity (disabled by default).
 
 Fixed minor errors on item display pages. 
-
-
-
---------------------------------------------------------------------------------
-v.0.9.8  (released 09-05-2012)
-
-
-== Administration
-
-Improved Item administration.
-Improved the item importer.
-
-Fixed numerous minor errors in the admin pages.
-
-
-== General
-
-Improved styling across the whole application.
-Improved the item search.
-Improved the installation wizard.
-
-Added language support for overriding labels and wording within the application.
-Added more fields to the item records to capture data on calibration, training, asset numbers, etc.
-Added a second staff contact, and associated custodian-level editing access.
-Added tags to the user-facing catalogue.
-
-Fixed errors in the item display pages.
 
 

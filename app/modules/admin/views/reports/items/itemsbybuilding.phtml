@@ -15,6 +15,7 @@ $this->model('db')->query("
 	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_1_email, contact_2_email, date_updated
 	FROM `item`
 	WHERE building_id=:building
+	ORDER BY room ASC
 ", $binds);
 
 
