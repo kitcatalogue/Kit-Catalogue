@@ -249,7 +249,7 @@ $config['data.licence_enabled'] = false;
 
 // The name of the data licence being used.
 // If blank, no licensing name or link will be shown.
-// By default, this is the UK's Open Government Licence
+// By default, this is the UK Open Government Licence
 $config['data.licence_name'] = 'UK Open Government Licence';
 
 // The link URL to the full licence text.

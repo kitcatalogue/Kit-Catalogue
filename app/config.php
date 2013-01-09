@@ -73,7 +73,7 @@ $config['org.logo'] = '';
 $config['app.debug'] = false;
 
 
-$config['app.version'] = '1.1.2';
+$config['app.version'] = '1.1.3';
 
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)

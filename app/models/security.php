@@ -134,10 +134,10 @@ class Security {
 				// Hide items that are 'draft' unless user is
 				// the custodian
 				if ($item->visibility != 3) {
-					$perms['item.accesslevel.view']   = true;
-					$perms['item.customfields.view']  = true;
-					$perms['item.files.view']         = true;
-					$perms['item.location.view']      = true;
+					$perms['item.accesslevel.view']  = true;
+					$perms['item.customfields.view'] = true;
+					$perms['item.files.view']        = true;
+					$perms['item.location.view']     = true;
 				}
 
 				if ($new_item) {
@@ -147,21 +147,23 @@ class Security {
 					}
 				} else {
 					// If user is the item custodian (has the same email address)
-					if ( (strtolower($this->_user->email) == strtolower($item->contact_1_email))
-						|| (strtolower($this->_user->email) == strtolower($item->contact_2_email)) ) {
+					if (
+						(!empty($this->_user->email))
+						&& (
+							(strtolower($this->_user->email) == strtolower($item->contact_1_email))
+							|| (strtolower($this->_user->email) == strtolower($item->contact_2_email))
+							)
+						) {
 							$perms['site.item.edit']  = true;
 
-							$perms['item.accesslevel.view']   = true;
-							$perms['item.customfields.view']  = true;
-							$perms['item.files.view']         = true;
-							$perms['item.location.view']      = true;
+							$perms['item.accesslevel.view']  = true;
+							$perms['item.customfields.view'] = true;
+							$perms['item.files.view']        = true;
+							$perms['item.location.view']     = true;
 					} else {
 						// If user has editing rights for the item's department
-						// and the item isn't set to draft...
-						if ($item->visibility!=3) {
-							if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
-								$perms['site.item.edit'] = true;
-							}
+						if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
+							$perms['site.item.edit'] = true;
 						}
 					}
 				}

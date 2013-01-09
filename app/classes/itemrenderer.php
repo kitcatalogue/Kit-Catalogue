@@ -86,7 +86,8 @@ class ItemRenderer {
 			<?php
 			$image = '';
 			if (!empty($item->image)) {
-				$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+				//$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+				$image = $this->_router->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 			}
 			?>
 			<dt data-key="image">Image</dt>
@@ -113,7 +114,8 @@ class ItemRenderer {
 
 		$image = '';
 		if (!empty($item->image)) {
-			$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			//$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			$image = $this->_router->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 		}
 
 		$obj->contact1 = $item->contact_1_email;

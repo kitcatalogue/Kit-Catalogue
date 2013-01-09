@@ -1,0 +1,17 @@
+<?php
+$this->router()->layout(null);
+
+$basename = basename($this->filename);
+
+$ttl = 604800;   // 604800 seconds = 1 week
+
+header("Cache-Control: public");
+header("Pragma: public");
+header("Cache-Control: maxage={$ttl}");
+header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $ttl) . ' GMT');
+header('Content-Type: '.$this->mime_type);
+
+readfile($this->filename);
+
+
+?>

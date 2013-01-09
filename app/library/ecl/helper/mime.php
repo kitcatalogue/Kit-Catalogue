@@ -9,7 +9,7 @@
 class Ecl_Helper_Mime {
 
 	// Private Properties
-	protected $_map = array (
+	protected static $_map = array (
 
 		// Audio
 		'mp3'   => 'audio/mpeg3' ,
@@ -106,6 +106,7 @@ class Ecl_Helper_Mime {
 		if ($file_ext[0]=='.') {
 			$file_ext = substr($file_ext, 1, strlen($file_ext));
 		}
+		$file_ext = strtolower($file_ext);
 
 		return (array_key_exists($file_ext, self::$_map)) ? self::$_map[$file_ext] : $default_type ;
 	}// /method

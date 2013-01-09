@@ -39,6 +39,27 @@ class Controller_Item extends Ecl_Mvc_Controller {
 
 
 
+	public function actionDownloadimage () {
+		$item = $this->model('itemstore')->find($this->param('itemid'));
+
+		$filename = $this->param('image');
+
+		if (empty($item)) {
+			$this->router()->action('404', 'error');
+			return true;
+		}
+
+		$ext = pathinfo($filename, PATHINFO_EXTENSION);
+		$ext = strtolower($ext);
+		$mime_type = Ecl_Helper_Mime::getTypeForExtension($ext);
+
+		$this->view()->filename = $this->model('app.upload_root').'/items'. $item->getFilePath() .'/'. $filename;
+		$this->view()->mime_type = $mime_type;
+		$this->view()->render('item_downloadimage');
+	}// /method
+
+
+
 	public function actionIndex() {
 		$user = $this->model('user');
 

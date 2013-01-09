@@ -122,6 +122,11 @@ $router->addRoute('*', 'item/:itemname/:itemid/file/:filename', array(
 	'action'      => 'downloadfile' ,
 ));
 
+$router->addRoute('*', 'item/:itemname/:itemid/image/:image', array(
+	'controller'  => 'item' ,
+	'action'      => 'downloadimage' ,
+));
+
 
 
 // Department
