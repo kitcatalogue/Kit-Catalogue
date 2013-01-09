@@ -11,6 +11,18 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.1.3  (restricted release)
+
+
+== Security
+
+Added ability to move your writable folder out of your document root.
+Fixed images being directly referenced, they are now accessed via the system only.
+Fixed users with blank email addresses being linked to items with blank contact details.
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.2  (released 26-09-2012)
 
 

@@ -89,7 +89,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
 		} else {
 			$image_alt = $item->name;
-			$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			//$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			$image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 		}
 		?>
 		<li class="item" id="item-<?php $this->out($item->id); ?>">
@@ -150,7 +151,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		} else {
 			$no_image = false;
 			$image_alt = $item->manufacturer .' '. $item->model;
-			$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			//$image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
+			$image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 		}
 
 		$files = $this->model('itemstore')->findFilesForItem($item);
@@ -587,7 +589,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 					foreach($image_files as $i => $file) {
 						if ($file->filename != $item->image) {
-							$extra_image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $file->filename);
+							//$extra_image = $this->router()->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $file->filename);
+							$extra_image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$file->filename}");
 							?>
 							<div class="extra-image">
 								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="80" height="80" alt="" /></a>
