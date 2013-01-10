@@ -14,7 +14,7 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->router()->layout()->addBreadcrumb($this->model()->lang['cat.label.plural'], $this->router()->makeAbsoluteUri('/category/'));
+		$this->router()->layout()->addBreadcrumb($this->model()->lang['cat.label.plural'], $this->router()->makeAbsoluteUri('/'. $this->model()->lang['cat.route'].'/'));
 	}// /method
 
 

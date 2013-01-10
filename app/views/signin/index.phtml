@@ -43,7 +43,10 @@ switch (strtolower($this->request()->get('msg'))) {
 ?>
 
 <h1>Sign in to <?php $this->out($this->model('app.title')); ?>.</h1>
-<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
+<?php
+$use_https = $this->model('app.use_https') ? true : false ;
+?>
+<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/', $use_https); ?>" method="post" id="signonform">
 <table class="form" style="margin-left: 5em;">
 <tr>
 	<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>

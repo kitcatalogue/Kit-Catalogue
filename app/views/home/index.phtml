@@ -16,7 +16,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 
 <ul id="homepage-list" class="cf">
 	<li id="browse-categories">
-		<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">Browse by <?php $this->out($lang['cat.label']); ?></a></h2>
+		<h2><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/"); ?>">Browse by <?php $this->out($lang['cat.label']); ?></a></h2>
 		<?php
 		$categories = $this->model('categorystore')->findUsedRanked(5, $user->param('visibility'));
 		if ($categories) {
@@ -26,7 +26,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 				$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label']). '-');
 				foreach($categories as $category) {
 					if (false) {
-						$url = $this->router()->makeAbsoluteUri("/category/{$category->slug}");
+						$url = $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->slug}");
 						$count = $category->getItemCount($user->param('visibility'));
 						?>
 						<li><a href="<?php echo $url; ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
@@ -38,7 +38,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 					<?php
 				}
 				?>
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">more&hellip;</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/"); ?>">more&hellip;</a></li>
 			</ul>
 			<?php
 		}

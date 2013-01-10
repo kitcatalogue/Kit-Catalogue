@@ -1,7 +1,8 @@
 <?php
 error_reporting(E_ALL);
 $app_root = $this->model('app.root');
-$www_root = $this->model('app.www');
+$www_root = rtrim($this->router()->makeAbsoluteUri('/'), '/');
+
 
 $user = $this->model('user');
 $lang = $this->model('lang');
@@ -44,16 +45,16 @@ $lang = $this->model('lang');
 			<a class="logo" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.jpg" alt="Kit-Catalogue" /></a>
 
 			<?php
-		$org_logo = $this->model()->get('org.logo');
-		if (!empty($org_logo)) {
-			?>
-			<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
-			<?php
-		}
-		$this->renderSection('layout.header');
+			$org_logo = $this->model()->get('org.logo');
+			if (!empty($org_logo)) {
+				?>
+				<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+				<?php
+			}
+			$this->renderSection('layout.header');
 
-		$user = $this->model('user');
-		?>
+			$user = $this->model('user');
+			?>
 		</div>
 	</div>
 

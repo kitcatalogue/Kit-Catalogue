@@ -33,6 +33,33 @@ $router->actionDefault('index');
 
 
 // --------------------------------------------------------------------------------
+// Setup model
+
+
+include($config['app.include_root'].'/model.php');
+
+
+$router->model($model);
+
+
+
+// --------------------------------------------------------------------------------
+// Setup routing instructions
+
+
+// If using HTTPS, switch to it if user is authenticated
+if ($config['app.use_https']) {
+	if (!$model->get('user')->isAnonymous()) {
+		$secure_base_url = preg_replace('#^http:#', 'https:', $config['app.www']);
+		$router->baseUri($secure_base_url);
+	}
+}
+
+
+include($config['app.include_root'].'/routes.php');
+
+
+// --------------------------------------------------------------------------------
 // Setup layout
 
 
@@ -49,27 +76,7 @@ if (empty($config['layout.template_file'])) {
 		$router->layout()->setTemplateFile($layout_template_file);
 	}
 }
-$router->layout()->addBreadcrumb('Home', $config['app.www']);
-
-
-
-// --------------------------------------------------------------------------------
-// Setup model
-
-
-include($config['app.include_root'].'/model.php');
-
-
-$router->model($model);
-
-
-
-// --------------------------------------------------------------------------------
-// Setup routing instructions
-
-
-include($config['app.include_root'].'/routes.php');
-
+$router->layout()->addBreadcrumb('Home', $router->makeAbsoluteUri('/'));
 
 
 // --------------------------------------------------------------------------------

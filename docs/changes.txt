@@ -11,6 +11,16 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.1.4  (released 26-10-2012)
+
+
+== Security
+
+Added option to enable HTTPS encryption for users browsing internally (config 'app.use_https').
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.3  (restricted release)
 
 
