@@ -373,15 +373,22 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 	 * If $relative_url is ommited, then the router's base URI will be returned.
 	 *
 	 * @param  string  $relative_url  (optional)  (default: null)
+	 * @param  boolean  $https  (optional)  (default: false)
 	 *
 	 * @return  string  The new absolute URL.
 	 */
-	public function makeAbsoluteUri($relative_url = null) {
-		// If the relative URL needs a leading '/', add one
+	public function makeAbsoluteUri($relative_url = null, $https = false) {
+		// If the relative URL has a leading '/', remove it
 		if ('/' == substr($relative_url, 0, 1)) {
 			$relative_url = substr($relative_url, 1);
 		}
-		return $this->baseUri() . $relative_url;
+
+		$url = $this->baseUri() . $relative_url;
+
+		if ($https) {
+			$url = preg_replace('#^http:#', 'https:', $url);
+		}
+		return $url;
 	}// /method
 
 

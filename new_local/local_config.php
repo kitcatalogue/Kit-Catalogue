@@ -48,6 +48,12 @@ $config['org.logo'] = '';
 // WARNING : We advise disabling this setting on a public-facing site.
 $config['app.debug'] = false;
 
+// Should users signing in, or browsing internally, be switched to browsing over HTTPS?
+// Essentially, once a user authenticates, app.www will be changed to using 'https://' instead of 'http://'.
+// You must ensure you have the appropriate SSL certificates, etc, setup on your server.
+// If you wish to use HTTPS for all access, set 'app.www' to use a HTTPS URL.
+$config['app.use_https'] = false;
+
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
 // DO NOT include a trailing slash '/'

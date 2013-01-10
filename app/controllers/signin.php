@@ -57,7 +57,7 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 
 			$this->model('userstore')->setUserSession($user_info);
 
-			$this->response()->setRedirect($this->model('app.www'));
+			$this->response()->setRedirect($this->router()->makeAbsoluteUri('/', $this->model('app.use_https')));
 		}
 	}// /method
 
