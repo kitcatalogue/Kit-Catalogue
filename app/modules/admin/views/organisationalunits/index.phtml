@@ -1,0 +1,67 @@
+<?php
+
+$this->layout()->appendSection('layout.head', '
+<style type="text/css">
+
+span.treecontrols { display: inline-block; margin-left: 1em; }
+
+</style>
+');
+?>
+
+<h1>Administer <?php $this->out($this->model('lang')->get('ou.label.adminsection')); ?></h1>
+
+<div class="cf">
+
+
+	<p>Below is the organisational tree for this catalogue.</p>
+
+	<?php
+	if ($this->organisationalunits->count()==0) {
+		?>
+		<p class="warning">No organisational units have been setup yet.</p>
+		<?php
+	} else {
+
+		$ou_list = $this->organisationalunits->toArray();
+
+		$current_level = 0;
+		while (!empty($ou_list)) {
+			$current_ou = array_shift($ou_list);
+
+			if ($current_ou->tree_level > $current_level) {
+				echo '<ul>';
+			}
+
+			if ($current_ou->tree_level < $current_level) {
+				echo str_repeat('</ul>', $current_level - $current_ou->tree_level);
+			}
+
+			echo '<li><a href="">'. $this->escape($current_ou->name) .'</a>';
+
+			echo '<span class="treecontrols">';
+			if (2 < $current_ou->tree_level) {
+				echo '[<a href="#" title="move up">^</a>]';
+			}
+			if (1 < ($current_ou->tree_right - $current_ou->tree_left)) {
+				echo '[<a href="#" title="move down">v</a>]';
+			}
+
+			echo '[<a href="#" title="add child unit">+</a>]';
+
+			echo '</span>';
+			echo '</li>';
+
+			$current_level = $current_ou->tree_level;
+
+			if (empty($ou_list)) {
+				echo str_repeat('</ul>', $current_level + 1);
+			}
+		}
+	}
+	?>
+
+
+</div>
+
+

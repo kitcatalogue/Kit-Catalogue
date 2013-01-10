@@ -203,6 +203,21 @@ class Organisationalunitstore {
 
 
 	/**
+	 * Find all organisational units in tree-order.
+	 *
+	 * @return  mixed  An array of objects.  On fail, null.
+	 */
+	public function findTree() {
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM ou
+			ORDER BY tree_left ASC
+		", null, array($this, 'convertRowToObject') );
+	}// /method
+
+
+
+	/**
 	 * Lookup the name of a organisational unit using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
@@ -252,8 +267,8 @@ class Organisationalunitstore {
 	 *
 	 * @return  object  A Organisation object.
 	 */
-	public function newOrganisation() {
-		return new Organisation();
+	public function newOrganisationalunit() {
+		return new Organisationalunit();
 	}// /method
 
 

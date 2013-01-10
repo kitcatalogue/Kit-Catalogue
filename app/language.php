@@ -219,14 +219,22 @@ $lang['item.label.date_updated'] = 'Last Updated';
 
 
 
-
-
 /*
  * Organisations
  */
 
 $lang['org.label'] = 'Organisation';
 $lang['org.label.plural'] = 'Organisations';
+
+
+
+/*
+ * Organisational Units
+ */
+
+$lang['ou.label.adminsection'] = 'Organisational Structure';
+$lang['ou.label'] = 'Organisational Unit';
+$lang['ou.label.plural'] = 'Organisational Units';
 
 
 
