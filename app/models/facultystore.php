@@ -2,16 +2,16 @@
 
 
 
-include_once('organisation.php');
+include_once('faculty.php');
 
 
 
 /**
- * Organisation Store class
+ * Faculty Store class
  *
  * @version 1.0.0
  */
-class Organisationstore {
+class facultystore {
 
 	// Private Properties
 	protected $_db = null;
@@ -46,7 +46,7 @@ class Organisationstore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'organisation_id'  => $object->id ,
+			'faculty_id'  => $object->id ,
 			'name'     => $object->name ,
 		);
 
@@ -63,9 +63,9 @@ class Organisationstore {
 	 * @return  object
 	 */
 	public function convertRowToObject($row) {
-		$object = $this->newOrganisation();
+		$object = $this->newfaculty();
 
-		$object->id = $row['organisation_id'];
+		$object->id = $row['faculty_id'];
 		$object->name = $row['name'];
 
 		return $object;
@@ -74,7 +74,7 @@ class Organisationstore {
 
 
 	/**
-	 * Delete an organisation.
+	 * Delete an faculty.
 	 *
 	 * @param  integer  $id  The record to delete.
 	 *
@@ -82,13 +82,13 @@ class Organisationstore {
 	 */
 	public function delete($id) {
 		$id = $this->_db->prepareValue($id);
-		$affected_count = $this->_db->delete('organisation', "organisation_id=$id");
+		$affected_count = $this->_db->delete('faculty', "faculty_id=$id");
 
 		$binds = array (
-			'organisation_id'  => null ,
+			'faculty_id'  => null ,
 		);
 
-		$this->_db->update('item', $binds, "organisation_id=$id");
+		$this->_db->update('item', $binds, "faculty_id=$id");
 
 		return ($affected_count>0);
 	}// /method
@@ -96,7 +96,7 @@ class Organisationstore {
 
 
 	/**
-	 * Find the organisation(s) specified.
+	 * Find the faculty(s) specified.
 	 *
 	 * @param  mixed  $id  The ID, or array of IDs, to find.
 	 *
@@ -108,20 +108,20 @@ class Organisationstore {
 
 			return $this->_db->newRecordset("
 				SELECT *
-				FROM organisation
-				WHERE organisation_id IN $id_set
+				FROM faculty
+				WHERE faculty_id IN $id_set
 				ORDER BY name ASC
 			", null, array($this, 'convertRowToObject') );
 		} else {
 
 			$binds = array (
-				'organisation_id'  => (int) $id ,
+				'faculty_id'  => (int) $id ,
 			);
 
 			$row_count = $this->_db->query("
 				SELECT *
-				FROM organisation
-				WHERE organisation_id=:organisation_id
+				FROM faculty
+				WHERE faculty_id=:faculty_id
 				LIMIT 1
 			", $binds);
 
@@ -132,14 +132,14 @@ class Organisationstore {
 
 
 	/**
-	 * Find all organisations.
+	 * Find all facultys.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
 	public function findAll() {
 		return $this->_db->newRecordset("
 			SELECT *
-			FROM organisation
+			FROM faculty
 			ORDER BY name ASC
 		", null, array($this, 'convertRowToObject') );
 	}// /method
@@ -147,7 +147,7 @@ class Organisationstore {
 
 
 	/**
-	 * Find all organisations used by at least one item of equipment, for the given visibility.
+	 * Find all facultys used by at least one item of equipment, for the given visibility.
 	 *
 	 * @param  integer  $visibility  (optional) The item visibility to check
 	 *
@@ -158,21 +158,45 @@ class Organisationstore {
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
-			SELECT o.*
-			FROM organisation o INNER JOIN item i ON o.organisation_id=i.site_id
+			SELECT f.*
+			FROM faculty f INNER JOIN item i ON f.faculty_id=i.site_id
 			WHERE (i.visibility & $sql__visibility)=$sql__visibility
-			ORDER BY o.name ASC
+			ORDER BY f.name ASC
 		", null, array($this, 'convertRowToObject') );
 	}// /method
 
 
 
 	/**
-	 * Find an organisation by its name.
+	 * Find the faculties used for equipment in an organisation.
+	 *
+	 * @param  string  $organisation_id  The organisation ID to check for.
+	 *
+	 * @return  mixed  An array of objects.  On fail, null.
+	 */
+	public function findForOrganisation($organisation_id) {
+
+		$binds = array (
+			'organisation'  => $organisation_id ,
+		);
+
+		return $this->_db->newRecordset("
+			SELECT DISTINCT f.*
+			FROM faculty f
+				INNER JOIN item i ON f.faculty_id=i.faculty
+			WHERE i.organisation=:organisation
+			ORDER BY name ASC
+		", $binds, array($this, 'convertRowToObject') );
+	}// /method
+
+
+
+	/**
+	 * Find an faculty by its name.
 	 *
 	 * @param  string  $name
 	 *
-	 * @return  mixed  The Organisation.  On fail, null.
+	 * @return  mixed  The faculty.  On fail, null.
 	 */
 	public function findForName($name) {
 
@@ -182,7 +206,7 @@ class Organisationstore {
 
 		$row_count = $this->_db->query("
 			SELECT *
-			FROM organisation
+			FROM faculty
 			WHERE name=:name
 			LIMIT 1
 		", $binds);
@@ -193,64 +217,64 @@ class Organisationstore {
 
 
 	/**
-	 * Find an existing organisation with the given name, or create a new one with the name.
+	 * Find an existing faculty with the given name, or create a new one with the name.
 	 *
-	 * If $org_to_create is given, then it will be inserted and returned as the new organisation.
-	 * If it is left empty, then a new organisation will be created.
-	 * Any newly created organisation will use the given name.
+	 * If $faculty_to_create is given, then it will be inserted and returned as the new faculty.
+	 * If it is left empty, then a new faculty will be created.
+	 * Any newly created faculty will use the given name.
 	 *
 	 * @param  string  $name
-	 * @param  mixed  $org_to_create  (optional)
+	 * @param  mixed  $faculty_to_create  (optional)
 	 *
-	 * @return  object  The Organisation
+	 * @return  object  The faculty
 	 */
-	public function findOrCreateForName($name, $org_to_create = null) {
-		$org = $this->findForName($name);
-		if (!empty($org)) { return $org; }
+	public function findOrCreateForName($name, $faculty_to_create = null) {
+		$faculty = $this->findForName($name);
+		if (!empty($faculty)) { return $faculty; }
 
-		if (empty($org_to_create)) {
-			$org = $this->newOrganisation();
+		if (empty($faculty_to_create)) {
+			$faculty = $this->newfaculty();
 		}
-		$org->name = $name;
-		$org->id = $this->insert($org);
-		return $org;
+		$faculty->name = $name;
+		$faculty->id = $this->insert($faculty);
+		return $faculty;
 	}// /method
 
 
 
 	/**
-	 * Lookup the name of a organisation using its ID.
+	 * Lookup the name of a faculty using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
 	 * This method uses caching to speed up subsequent lookups, so will be faster if you need more than one.
 	 *
-	 * @param  integer  $organisation_id
+	 * @param  integer  $faculty_id
 	 * @param  string  $default  (optional) The default name to return.
 	 *
-	 * @return  string  The organisation's name.  On fail, $default.
+	 * @return  string  The faculty's name.  On fail, $default.
 	 */
-	public function lookupName($organisation_id, $default = '') {
+	public function lookupName($faculty_id, $default = '') {
 		if (null === $this->_lookup) {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
-		return (isset($this->_lookup[$organisation_id])) ? $this->_lookup[$organisation_id] : $default ;
+		return (isset($this->_lookup[$faculty_id])) ? $this->_lookup[$faculty_id] : $default ;
 	}// /method
 
 
 
 	/**
-	 * Insert a new organisation.
+	 * Insert a new faculty.
 	 *
-	 * @param  object  $object  The Organisation to create.
+	 * @param  object  $object  The faculty to create.
 	 *
 	 * @return  mixed  The new id created.  On fail, null.
 	 */
 	public function insert($object) {
 		$binds = $this->convertObjectToRow($object);
 
-		unset($binds['organisation_id']);   // Don't insert the id, we want a new one
+		unset($binds['faculty_id']);   // Don't insert the id, we want a new one
 
-		$new_id = $this->_db->insert('organisation', $binds);
+		$new_id = $this->_db->insert('faculty', $binds);
 
 		return ($new_id>0) ? $new_id : null ;
 	}// /method
@@ -258,18 +282,18 @@ class Organisationstore {
 
 
 	/**
-	 * Get a new instance of a Organisation object.
+	 * Get a new instance of a faculty object.
 	 *
-	 * @return  object  A Organisation object.
+	 * @return  object  A faculty object.
 	 */
-	public function newOrganisation() {
-		return new Organisation();
+	public function newfaculty() {
+		return new faculty();
 	}// /method
 
 
 
 	/**
-	 * Update an existing organisation.
+	 * Update an existing faculty.
 	 *
 	 * @param  object  $object
 	 *
@@ -280,7 +304,7 @@ class Organisationstore {
 
 		$id = $this->_db->prepareValue($object->id);
 
-		$affected_count = $this->_db->update('organisation', $binds, "organisation_id=$id");
+		$affected_count = $this->_db->update('faculty', $binds, "faculty_id=$id");
 
 		return ($affected_count>0);
 	}// /method
