@@ -311,9 +311,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						}
 						drawField($lang['item.label.calibrated'], $details);
 
-						// @todo : Show quantity and description
 						if (1 < $item->quantity) {
-						drawField($lang['item.label.quantity'], $item->quantity .'.<br />'. $this->escape($item->quantity_detail));
+							drawField($lang['item.label.quantity'], $item->quantity .'.<br />'. $this->escape($item->quantity_detail));
 						}
 
 						if (isSensibleDate($item->PAT)) {

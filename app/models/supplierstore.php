@@ -207,8 +207,6 @@ class Supplierstore {
 	 */
 	public function findUsedRanked($num = 0, $visibility = null) {
 
-		// @todo : This method is broken.
-
 		$num = (int) $num;
 		$limit_clause = ($num>0) ? "LIMIT $num" : null ;
 
@@ -338,7 +336,6 @@ class Supplierstore {
 
 		foreach($visibility_types as $type => $sql) {
 			$row_count = $this->_db->query($sql);
-
 
 			if ($row_count>0) {
 				$counts = $this->_db->getResultAssoc('supplier_id', 'count');

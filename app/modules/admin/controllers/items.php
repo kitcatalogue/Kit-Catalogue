@@ -134,6 +134,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				// Rebuild cached item counts
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('departmentstore')->rebuildItemCounts();
+				$this->model('supplierstore')->rebuildItemCounts();
 			}
 			$this->layout()->clearBreadcrumbs(2);
 			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The item has been deleted');

@@ -2,16 +2,16 @@
 
 
 
-include_once('organisation.php');
+include_once('organisationalunit.php');
 
 
 
 /**
- * Organisation Store class
+ * Organisational Unit Store class
  *
  * @version 1.0.0
  */
-class Organisationstore {
+class Organisationalunitstore {
 
 	// Private Properties
 	protected $_db = null;
@@ -46,8 +46,12 @@ class Organisationstore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'organisation_id'  => $object->id ,
-			'name'     => $object->name ,
+			'ou_id'  => $object->id ,
+			'name'   => $object->name ,
+
+			'tree_left'  => $object->tree_left ,
+			'tree_right'  => $object->tree_right ,
+			'tree_level'  => $object->tree_level ,
 		);
 
 		return $row;
@@ -63,10 +67,14 @@ class Organisationstore {
 	 * @return  object
 	 */
 	public function convertRowToObject($row) {
-		$object = $this->newOrganisation();
+		$object = $this->newOrganisationalunit();
 
-		$object->id = $row['organisation_id'];
+		$object->id = $row['ou_id'];
 		$object->name = $row['name'];
+
+		$object->tree_left  = $row['tree_left'];
+		$object->tree_right = $row['tree_right'];
+		$object->tree_level = $row['tree_level'];
 
 		return $object;
 	}// /method
@@ -74,7 +82,9 @@ class Organisationstore {
 
 
 	/**
-	 * Delete an organisation.
+	 * Delete an organisational unit.
+	 *
+	 * Removes all sub-units from the org tree.
 	 *
 	 * @param  integer  $id  The record to delete.
 	 *
@@ -82,13 +92,13 @@ class Organisationstore {
 	 */
 	public function delete($id) {
 		$id = $this->_db->prepareValue($id);
-		$affected_count = $this->_db->delete('organisation', "organisation_id=$id");
+		$affected_count = $this->_db->delete('ou', "ou_id=$id");
 
 		$binds = array (
-			'organisation_id'  => null ,
+			'ou'  => null ,
 		);
 
-		$this->_db->update('item', $binds, "organisation_id=$id");
+		$this->_db->update('item', $binds, "ou_id=$id");
 
 		return ($affected_count>0);
 	}// /method
@@ -96,7 +106,7 @@ class Organisationstore {
 
 
 	/**
-	 * Find the organisation(s) specified.
+	 * Find the organisational unit(s) specified.
 	 *
 	 * @param  mixed  $id  The ID, or array of IDs, to find.
 	 *
@@ -108,20 +118,20 @@ class Organisationstore {
 
 			return $this->_db->newRecordset("
 				SELECT *
-				FROM organisation
-				WHERE organisation_id IN $id_set
+				FROM ou
+				WHERE ou_id IN $id_set
 				ORDER BY name ASC
 			", null, array($this, 'convertRowToObject') );
 		} else {
 
 			$binds = array (
-				'organisation_id'  => (int) $id ,
+				'ou_id'  => (int) $id ,
 			);
 
 			$row_count = $this->_db->query("
 				SELECT *
-				FROM organisation
-				WHERE organisation_id=:organisation_id
+				FROM ou
+				WHERE ou_id=:ou_id
 				LIMIT 1
 			", $binds);
 
@@ -132,14 +142,14 @@ class Organisationstore {
 
 
 	/**
-	 * Find all organisations.
+	 * Find all organisational units.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
 	public function findAll() {
 		return $this->_db->newRecordset("
 			SELECT *
-			FROM organisation
+			FROM ou
 			ORDER BY name ASC
 		", null, array($this, 'convertRowToObject') );
 	}// /method
@@ -158,17 +168,17 @@ class Organisationstore {
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
-			SELECT o.*
-			FROM organisation o INNER JOIN item i ON o.organisation_id=i.organisation_id
+			SELECT ou.*
+			FROM ou ou INNER JOIN item i ON ou.ou_id=i.ou
 			WHERE (i.visibility & $sql__visibility)=$sql__visibility
-			ORDER BY o.name ASC
+			ORDER BY ou.name ASC
 		", null, array($this, 'convertRowToObject') );
 	}// /method
 
 
 
 	/**
-	 * Find an organisation by its name.
+	 * Find an organisational unit by its name.
 	 *
 	 * @param  string  $name
 	 *
@@ -182,7 +192,7 @@ class Organisationstore {
 
 		$row_count = $this->_db->query("
 			SELECT *
-			FROM organisation
+			FROM ou
 			WHERE name=:name
 			LIMIT 1
 		", $binds);
@@ -193,64 +203,44 @@ class Organisationstore {
 
 
 	/**
-	 * Find an existing organisation with the given name, or create a new one with the name.
-	 *
-	 * If $org_to_create is given, then it will be inserted and returned as the new organisation.
-	 * If it is left empty, then a new organisation will be created.
-	 * Any newly created organisation will use the given name.
-	 *
-	 * @param  string  $name
-	 * @param  mixed  $org_to_create  (optional)
-	 *
-	 * @return  object  The Organisation
-	 */
-	public function findOrCreateForName($name, $org_to_create = null) {
-		$org = $this->findForName($name);
-		if (!empty($org)) { return $org; }
-
-		if (empty($org_to_create)) {
-			$org = $this->newOrganisation();
-		}
-		$org->name = $name;
-		$org->id = $this->insert($org);
-		return $org;
-	}// /method
-
-
-
-	/**
-	 * Lookup the name of a organisation using its ID.
+	 * Lookup the name of a organisational unit using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
 	 * This method uses caching to speed up subsequent lookups, so will be faster if you need more than one.
 	 *
-	 * @param  integer  $organisation_id
+	 * @param  integer  $ou_id
 	 * @param  string  $default  (optional) The default name to return.
 	 *
-	 * @return  string  The organisation's name.  On fail, $default.
+	 * @return  string  The organisational unit's name.  On fail, $default.
 	 */
-	public function lookupName($organisation_id, $default = '') {
+	public function lookupName($ou_id, $default = '') {
 		if (null === $this->_lookup) {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
-		return (isset($this->_lookup[$organisation_id])) ? $this->_lookup[$organisation_id] : $default ;
+		return (isset($this->_lookup[$ou_id])) ? $this->_lookup[$ou_id] : $default ;
 	}// /method
 
 
 
 	/**
-	 * Insert a new organisation.
+	 * Insert a new organisational unit.
 	 *
-	 * @param  object  $object  The Organisation to create.
+	 * @param  object  $object  The Organisational Unit to create.
+	 * @param  integer  $parent_id  The parent for the new OU.
 	 *
 	 * @return  mixed  The new id created.  On fail, null.
 	 */
-	public function insert($object) {
+	public function insert($object, $parent_id) {
 		$binds = $this->convertObjectToRow($object);
 
-		unset($binds['organisation_id']);   // Don't insert the id, we want a new one
+		unset($binds['ou_id']);   // Don't insert the id, we want a new one
 
-		$new_id = $this->_db->insert('organisation', $binds);
+		/*
+		 *  @todo : OU insert needs writing
+		 */
+
+
+		$new_id = $this->_db->insert('ou', $binds);
 
 		return ($new_id>0) ? $new_id : null ;
 	}// /method
