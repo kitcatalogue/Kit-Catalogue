@@ -1034,6 +1034,21 @@ class Ecl_Db_Mysql {
 
 
 	/**
+	 * Set the connect to use the given charset
+	 *
+	 * @param  string  $charset
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function setCharset($charset) {
+		if (empty($charset)) { return false; }
+		if (!$this->connect()) { $this->_throwError('No Connection'); }
+		return mysql_set_charset($charset, $this->_connection);
+	}
+
+
+
+	/**
 	 * Set the connection info to use
 	 *
 	 * @param  array  $config  An assoc-array of connection settings.
@@ -1056,9 +1071,14 @@ class Ecl_Db_Mysql {
 	/**
 	 * Set debug mode
 	 * When in debug mode, detailed error reports are echoed
+	 *
+	 * @param  boolean  Debug mode to use.
+	 *
+	 * @return  boolean  True in all cases.
 	 */
 	public function setDebug($on) {
 		$this->_debug = (bool) $on;
+		return true;
 	}// /method
 
 

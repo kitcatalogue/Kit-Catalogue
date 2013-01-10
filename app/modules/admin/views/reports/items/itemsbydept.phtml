@@ -15,6 +15,7 @@ $this->model('db')->query("
 	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_1_email, contact_2_email, date_updated
 	FROM `item`
 	WHERE department_id=:department
+	ORDER BY room ASC
 ", $binds);
 
 
@@ -52,7 +53,10 @@ if (!empty($items_temp)) {
 
 
 if ($this->is_download) {
-	header("Cache-Control: public");
+	// IE 8 over HTTPS fix
+	header("Cache-Control: private, max-age=15");
+	header("Pragma: ");
+
 	header("Content-Description: File Transfer");
 	header("Content-Disposition: attachment; filename=items_for_department.csv");
 	header('Content-Type: text/csv');

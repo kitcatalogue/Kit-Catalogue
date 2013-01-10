@@ -624,13 +624,17 @@ class Itemstore {
 
 
 
-	public function findChildren($id) {
+	public function findChildren($id, $visibility = null) {
 		$sql__id = $this->_db->prepareValue( (int) $id);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? "WHERE {$sql__vis_condition}" : null ;
 
 		return $this->_db->newRecordset("
 			SELECT i.*
 			FROM item i
 				INNER JOIN item_child ic ON i.item_id=ic.child_item_id AND ic.item_id=$sql__id
+			$where_clause
 			ORDER BY
 				CASE
 					WHEN title<>'' THEN title
@@ -1072,25 +1076,21 @@ class Itemstore {
 		$where_clause = '';
 		$where_conditions = array();
 
-
 		if (isset($params['category'])) {
 			$binds['category_id'] = $params['category'];
-			$join_clause .= 'INNER JOIN item_category ic ON i.item_id=ic.item_id  AND ic.category_id=:category_id';
+			$join_clause .= 'INNER JOIN item_category ic ON i.item_id=ic.item_id AND ic.category_id=:category_id';
+			unset($params['category']);
 		}
 
 		if (isset($params['department'])) {
 			$sql_val = $this->_db->prepareValue($params['department']);
 			$where_conditions[] = "(department_id=$sql_val)";
+			unset($params['department']);
 		}
 
-		if (isset($params['manufacturer'])) {
-			$sql_val = $this->_db->prepareValue($params['manufacturer']);
-			$where_conditions[] = "(manufacturer=$sql_val)";
-		}
-
-		if (isset($params['technique'])) {
-			$sql_val = $this->_db->prepareValue($params['technique']);
-			$where_conditions[] = "(technique=$sql_val)";
+		foreach($params as $k => $v) {
+			$sql_val = $this->_db->prepareValue($v);
+			$where_conditions[] = "($k=$sql_val)";
 		}
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
@@ -1243,28 +1243,40 @@ class Itemstore {
 	 *
 	 * @param  string  $keywords  The terms to search for.
 	 * @param  integer  $visibility  The visibility of the items to search for.
+	 * @param  boolean  $whole_term_only  Only the entire keyword string is searched for. (default: false)
 	 *
 	 * @return  mixed  The RecordSet of objects found.  On fail, null.
 	 */
-	public function searchItems($keywords, $visibility) {
+	public function searchItems($keywords, $visibility, $whole_term_only = false) {
 		$items = null;
 
 		$keywords = trim($keywords);
 
 		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
+		// Remove common wildcard characters
+		$keywords = str_replace('*', ' ', $keywords);
+		$keywords = str_replace('%', ' ', $keywords);
+
 		// MySQL's default FULLTEXT search has character limitations, so we do things the hard way
 		// Grab the terms and run LIKE queries on everything we need.
 
-		$temp_terms = explode(' ', $keywords);
-
-		foreach($temp_terms as $term) {
-			$term = trim($term);
-			if (!empty($term)) {
-				$terms[] = "%{$term}%";
+		$terms = array();
+		if ($whole_term_only) {
+			if (strlen($keywords)>=2) {
+				$terms = array("%{$keywords}%");
 			}
+		} else {
+			$temp_terms = explode(' ', $keywords);
+
+			foreach($temp_terms as $term) {
+				$term = trim($term);
+				if ( (!empty($term)) && (strlen($term)) >=2) {
+					$terms[] = "%{$term}%";
+				}
+			}
+			$temp_terms = null;
 		}
-		$temp_terms = null;
 
 
 		if (empty($terms)) { return new Ecl_Db_Emptyrecordset(null, ''); }
@@ -1276,6 +1288,22 @@ class Itemstore {
 		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
 
 
+		// Whole term searching on major fields
+		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords');
+		$conditions = array();
+		foreach($fields as $field) {
+			$conditions[] = $this->_db->prepareFilter($field, "%{$keywords}%", 'OR', 'LIKE');
+		}
+		$sql__conditions = implode("\n OR " , $conditions);
+
+		$queries[] = "
+			SELECT DISTINCT i.*, 15 AS search_relevancy
+			FROM item i
+			WHERE ($sql__conditions)
+				$sql__vis_condition
+		";
+
+
 		// Search the primary fields
 		$fields = array('title', 'manufacturer', 'model', 'acronym', 'keywords');
 		$conditions = array();
@@ -1285,7 +1313,7 @@ class Itemstore {
 		$sql__conditions = implode("\n OR " , $conditions);
 
 		$queries[] = "
-			SELECT DISTINCT i.*, '9' AS search_relevancy
+			SELECT DISTINCT i.*, 8 AS search_relevancy
 			FROM item i
 			WHERE ($sql__conditions)
 				$sql__vis_condition
@@ -1293,7 +1321,7 @@ class Itemstore {
 
 
 		// Search the secondary fields
-		$fields = array('full_description', 'technique');
+		$fields = array('short_description', 'full_description', 'technique');
 		$conditions = array();
 		foreach($fields as $field) {
 			$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
@@ -1301,7 +1329,7 @@ class Itemstore {
 		$sql__conditions = implode("\n OR " , $conditions);
 
 		$queries[] = "
-			SELECT DISTINCT i.*, '3' AS search_relevancy
+			SELECT DISTINCT i.*, 7 AS search_relevancy
 			FROM item i
 			WHERE ($sql__conditions)
 				$sql__vis_condition
@@ -1313,7 +1341,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('c.name', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 5 AS search_relevancy
 				FROM item i
 					INNER JOIN item_category ic ON ic.item_id=i.item_id
 					INNER JOIN category c ON c.category_id=ic.category_id
@@ -1333,7 +1361,7 @@ class Itemstore {
 			$sql__conditions = implode("\n OR " , $conditions);
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 3 AS search_relevancy
 				FROM item i
 				WHERE ($sql__conditions)
 					$sql__vis_condition
@@ -1346,7 +1374,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('d.name', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '6' AS search_relevancy
+				SELECT DISTINCT i.*, 1 AS search_relevancy
 				FROM item i
 					INNER JOIN department d ON i.department_id=d.department_id
 				WHERE ($sql__conditions)
@@ -1360,7 +1388,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('t.tag', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 5 AS search_relevancy
 				FROM item i
 					INNER JOIN item_tag it ON it.item_id=i.item_id
 					INNER JOIN tag t ON t.tag_id=it.tag_id
@@ -1375,7 +1403,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('icf.value', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '5' AS search_relevancy
+				SELECT DISTINCT i.*, 1 AS search_relevancy
 				FROM item i
 					INNER JOIN item_custom icf ON icf.item_id=i.item_id
 				WHERE ($sql__conditions)

@@ -333,8 +333,9 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 	outline: none; /* Removes dotted border in FireFox */
 }
 
-.logo.institution {
+.institution {
 	float: right;
+	outline: none; /* Removes dotted border in FireFox */
 }
 
 

@@ -87,6 +87,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 	public function actionEdit() {
 
 		$saved_ok = false;
+		$added_ok = false;
 
 		$item_id = $this->param('id');
 
@@ -126,7 +127,6 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		$backlink = $this->router()->makeAbsoluteUri(base64_decode($this->request()->get('backlink')));
 
-
 		if ($this->request()->post('submitdelete')) {
 			if (!$new_item) {
 				$this->model('itemstore')->delete($item->id);
@@ -159,6 +159,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 			$errors = false;
 			$saved_ok = false;
+			$added_ok = false;
 
 			// Check if an over-sized file has been posted
 			if ( empty($_POST) && empty($_FILES) ) {
@@ -393,6 +394,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Your new item could not be created.');
 					} else {
 						$continue_saving = true;
+						$added_ok = true;
+
 						$item->id = $id;
 						$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your new item has been created.');
 					}
@@ -566,6 +569,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		$this->view()->item_path = $item_path;
 		$this->view()->backlink = $backlink;
 		$this->view()->saved_ok = $saved_ok;
+		$this->view()->added_ok = $added_ok;
 		$this->view()->php_max_upload = $uploader->getPhpUploadMaxSize();
 		$this->view()->render('items_edit');
 	}

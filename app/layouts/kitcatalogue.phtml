@@ -46,10 +46,17 @@ $lang = $this->model('lang');
 
 			<?php
 			$org_logo = $this->model()->get('org.logo');
+			$org_www = $this->model()->get('org.www');
 			if (!empty($org_logo)) {
-				?>
-				<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
-				<?php
+				if (!empty($org_www)) {
+					?>
+					<a class="institution" href="<?php echo $org_www; ?>"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+					<?php
+				} else {
+					?>
+					<span class="institution"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></span>
+					<?php
+				}
 			}
 			$this->renderSection('layout.header');
 

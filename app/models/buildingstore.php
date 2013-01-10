@@ -241,6 +241,32 @@ class Buildingstore {
 
 
 	/**
+	 * Find an existing building with the given name, or create a new one with the name.
+	 *
+	 * If $building_to_create is given, then it will be inserted and returned as the new building.
+	 * If it is left empty, then a new building will be created.
+	 * Any newly created building will use the given name.
+	 *
+	 * @param  string  $name
+	 * @param  mixed  $building_to_create  (optional)
+	 *
+	 * @return  object  The building
+	 */
+	public function findOrCreateForName($name, $building_to_create = null) {
+		$building = $this->findForName($name);
+		if (!empty($building)) { return $building; }
+
+		if (empty($building_to_create)) {
+			$building = $this->newBuilding();
+		}
+		$building->name = $name;
+		$building->id = $this->insert($building);
+		return $building;
+	}// /method
+
+
+
+	/**
 	 * Insert a new building.
 	 *
 	 * @param  object  $object  The building to create.

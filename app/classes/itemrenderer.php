@@ -86,7 +86,6 @@ class ItemRenderer {
 			<?php
 			$image = '';
 			if (!empty($item->image)) {
-				//$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
 				$image = $this->_router->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 			}
 			?>
@@ -114,7 +113,6 @@ class ItemRenderer {
 
 		$image = '';
 		if (!empty($item->image)) {
-			//$image = $this->_router->makeAbsoluteUri($this->model('app.items_www') . $item->getFilePath() .'/'. $item->image);
 			$image = $this->_router->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
 		}
 

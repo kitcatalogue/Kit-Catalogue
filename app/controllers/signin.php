@@ -36,6 +36,9 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 			// Unsuccessful, go back to login page
 			$this->response()->setRedirect($this->model('app.www'). '/signin/?msg=failed');
 		} else {
+			// Successful
+
+			session_regenerate_id();
 
 			if ($this->model('signin.log')) {
 				$this->model('db')->insert('log_signin', array (

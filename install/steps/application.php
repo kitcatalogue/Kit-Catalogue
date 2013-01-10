@@ -146,31 +146,6 @@ if (file_exists($path)) {
 	</td>
 	<td class="center">N/A</td>
 </tr>
-<tr>
-	<td class="name">app.items_www</td>
-	<td>
-		<?php out($config['app.items_www']); ?>
-		<p class="note">This is the path which, when appended to <em>$config['app.www']</em>, will give the url from which item files are accessed.</p>
-		<p class="note">For your installation, the URL produced is <em><?php echo $config['app.www'].$config['app.items_www']; ?></em></p>
-		<p class="note">This should point to the physical path <em>&lt;app.upload_root&gt;/items</em></p>
-	</td>
-	<td class="center">N/A</td>
-</tr>
-<?php
-if (false) {
-	// @todo : The API has not been written yet, so ignore this install wizard entry until ready
-	?>
-	<tr>
-		<td class="name">app.api_www</td>
-		<td>
-			<?php out($config['app.api_www']); ?>
-			<p class="note">The browsable location of the catalogue API. Default value: <em>/data</em></p>
-		</td>
-		<td class="center">N/A</td>
-	</tr>
-	<?php
-}
-?>
 </table>
 
 

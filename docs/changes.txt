@@ -11,6 +11,33 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.1.2.0  (released TBC)
+
+
+== Security
+
+Fixed user permissions not being deleted when a user was removed in the administration area. 
+Fixed HTTPS not being used for CSS/javascript files, if user visited a HTTPS url without being logged in.
+Fixed IE8 not downloading CSV files when browsing over HTTPS.  
+Fixed titles of internal-only child items appearing on parent item records (access to the actual items was still blocked).  
+
+== Config
+
+Removed 'app.items_www' setting as it is no longer required.
+Removed 'app.api_www' setting as it is no longer required.
+
+
+== General
+
+Added reCAPTCHA option to enquiry forms to combat spam (config 'enquiry.use_recaptcha' and 'recaptcha.___' section)
+Added setting to log all enquiry form submissions (enabled by default).
+Fixed organisation logo not linking to organisational website (config 'org.www').
+Fixed searching with common wildcard characters returning no results ('*' and '%').
+Fixed searching using a single character using all available memory for results.  Minimum search length is 2 characters.
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.4  (released 26-10-2012)
 
 
@@ -19,14 +46,21 @@ v.1.1.4  (released 26-10-2012)
 Added option to enable HTTPS encryption for users browsing internally (config 'app.use_https').
 
 
+== General
+
+Fixed problem with enquiry form email messages. 
+Fixed errors on some pages when using renamed category labels.
+
+
 
 --------------------------------------------------------------------------------
-v.1.1.3  (restricted release)
+v.1.1.3  (limited release)
 
 
 == Security
 
 Added ability to move your writable folder out of your document root.
+Added option to enable HTTPS encryption for users browsing internally (config 'app.use_https').
 Fixed images being directly referenced, they are now accessed via the system only.
 Fixed users with blank email addresses being linked to items with blank contact details.
 

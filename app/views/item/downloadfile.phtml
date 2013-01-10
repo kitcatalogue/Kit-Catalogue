@@ -3,7 +3,10 @@ $this->router()->layout(null);
 
 $basename = basename($this->filename);
 
-header("Cache-Control: public");
+// IE 8 over HTTPS fix
+header("Cache-Control: private, max-age=15");
+header("Pragma: ");
+
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename={$basename}");
 header('Content-Type: application/octet-stream');

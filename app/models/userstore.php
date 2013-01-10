@@ -121,6 +121,8 @@ class Userstore {
 		$username = $this->_db->prepareValue($username);
 		$affected_count = $this->_db->delete('user', "username=$username");
 
+		$this->model('sysauth')->deleteForAgent($user->username, $authorisations);
+
 		return ($affected_count>0);
 	}// /method
 

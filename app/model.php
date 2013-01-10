@@ -62,6 +62,8 @@ $model->setFunction('db', function ($model) {
 
 	$db->setDebug( (bool) $model->get('app.debug', false));
 
+	// We use SET NAMES too, in case our PHP version is one of the buggy ones
+	$db->setCharset('utf8');
 	$db->execute('SET NAMES utf8');
 
 	return $db;
