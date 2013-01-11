@@ -169,10 +169,27 @@ class Organisationalunitstore {
 
 		return $this->_db->newRecordset("
 			SELECT ou.*
-			FROM ou ou INNER JOIN item i ON ou.ou_id=i.ou
+			FROM ou INNER JOIN item i ON ou.ou_id=i.ou
 			WHERE (i.visibility & $sql__visibility)=$sql__visibility
 			ORDER BY ou.name ASC
 		", null, array($this, 'convertRowToObject') );
+	}// /method
+
+
+
+	public function findChildrenForLeftRight($parent_left, $parent_right) {
+
+		$binds = array(
+			'parent_left'  => $parent_left ,
+			'parent_right' => $parent_right ,
+		);
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM ou
+			WHERE tree_left>:parent_left AND tree_right<:parent_right
+			ORDER BY name ASC
+		", $binds, array($this, 'convertRowToObject') );
 	}// /method
 
 
