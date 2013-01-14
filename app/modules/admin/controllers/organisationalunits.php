@@ -30,6 +30,8 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 		$this->layout()->clearBreadcrumbs(2);
 		$this->layout()->clearFeedback();
 
+		Ecl::stop('creating..');
+
 		if ($this->request()->isPost()) {
 			$errors = false;
 
@@ -76,6 +78,13 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 			}
 		} else {
 			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create organisational unit.  No information posted.');
+		}
+
+
+		if ($errors) {
+			$this->view()->window_to_show = 'add_window';
+			$this->view()->window_ou = $this->view()->organisationalunits[0];
+			$this->view()->window_feedback = '';
 		}
 
 		$this->action('index');

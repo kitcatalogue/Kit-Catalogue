@@ -9,6 +9,7 @@ class Organisationalunit {
 	// Public Properties
 	public $id = null;        // The internal ID (numeric)
 	public $name = '';        // The name
+	public $url = '';
 
 	public $tree_left = null;
 	public $tree_right = null;
