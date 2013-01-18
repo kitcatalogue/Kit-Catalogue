@@ -61,7 +61,7 @@ class Ecl_Parser_Wikicode {
 
 				$first_char = substr($line, 0, 1);
 
-				if ($first_char) {
+				if ($first_char !== false) {
 					switch ($first_char) {
 						case '-' :   // Horizontal Line
 							$output .= $this->_parseHorizontalLine($i);
