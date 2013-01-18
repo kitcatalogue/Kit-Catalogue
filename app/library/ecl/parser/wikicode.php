@@ -3,7 +3,7 @@
  * A class providing Creole 1.0 Wiki-code parsing.
  *
  * @package  Ecl
- * @version  1.0.0
+ * @version  1.1.0
  */
 class Ecl_Parser_Wikicode {
 
@@ -61,7 +61,7 @@ class Ecl_Parser_Wikicode {
 
 				$first_char = substr($line, 0, 1);
 
-				if ($first_char) {
+				if ($first_char !== false) {
 					switch ($first_char) {
 						case '-' :   // Horizontal Line
 							$output .= $this->_parseHorizontalLine($i);
@@ -240,8 +240,8 @@ class Ecl_Parser_Wikicode {
 		$output = preg_replace('%__(.*)(?:__|$)%sU', '<strong>$1</strong>', $output);
 
 		// Italic
-		$output = preg_replace('%(?<!http:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output);
-		$output = preg_replace('%(?<!http:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output);
+		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output);
+		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output);
 		$output = preg_replace('%\'\'(.*)(?\'\'|$)%sU', '<em>$1</em>', $output);
 
 		// Subscript
