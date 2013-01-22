@@ -30,8 +30,6 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 		$this->layout()->clearBreadcrumbs(2);
 		$this->layout()->clearFeedback();
 
-		Ecl::stop('creating..');
-
 		if ($this->request()->isPost()) {
 			$errors = false;
 
@@ -46,7 +44,7 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 				$errors[] = 'Unable to find parent organisational unit. You cannot add to the organisational structure without the parent unit.';
 			}
 
-			$ou_name = $this->request()->post('name');
+			$ou_name = $this->request()->post('ou_name');
 			if (empty($ou_name)) {
 				$errors[] = 'You must provide the name of your new organisational unit.';
 			}
@@ -56,19 +54,10 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 			} else {
 				$new_ou = $ou_store->newOrganisationalunit();
 
-				$new_ou->level = $parent_ou->level + 1;
-
-				// @todo : separate tree from ou
-
-				$siblings = $ou_store->findChildrenForLeftRight($parent_ou->left, $parent_ou->right);
-				if (empty($siblings)) {
-
-				}
-
-				$new_ou->name = $organisation_name;
+				$new_ou->name = $ou_name;
 				$new_ou->url = $this->request()->post('url');
 
-				$new_id = $ou_store->insert($new_ou);
+				$new_id = $ou_store->insert($new_ou, $parent_ou->id);
 
 				if ($new_id) {
 					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The organisational unit '{$new_ou->name} has been added");
@@ -79,7 +68,6 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 		} else {
 			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create organisational unit.  No information posted.');
 		}
-
 
 		if ($errors) {
 			$this->view()->window_to_show = 'add_window';
@@ -97,6 +85,7 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 	 */
 	public function actionIndex() {
 		$this->view()->organisationalunits = $this->model('organisationalunitstore')->findTree();
+
 		$this->view()->render('organisationalunits_index');
 	}// /method
 

@@ -43,6 +43,34 @@ $model->setObject('lang', $lang);
 
 
 
+$model->setFunction('organisationalunitstore', function($model) {
+	return new Organisationalunitstore($model, $model->get('db'));
+});
+
+
+
+$model->setFunction('ou_tree', function ($model) {
+	$ou_tree = new Ecl_Tree_Manager($model->get('db'), 'ou_tree', array (
+		'ordered' => true ,
+	));
+
+	$ou_tree->setLinkedTable('ou', 'ou_id');
+
+	$ou_tree->setRowFunction( function($row) {
+		$object = new StdClass();
+		$object->id = $row['ou_id'];
+		$object->name = $row['name'];
+		$object->url = $row['url'];
+
+		$object->tree_node_id = $row['tree_node_id'];
+		$object->tree_level = $row['tree_level'];
+		return $object;
+	});
+
+	return $ou_tree;
+});
+
+
 $model->setObject('request', Ecl::factory('Ecl_Request'));
 
 

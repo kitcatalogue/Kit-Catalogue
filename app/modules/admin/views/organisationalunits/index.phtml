@@ -2,36 +2,6 @@
 $this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', '
-<style type="text/css">
-
-span.treecontrols { display: inline-block; margin-left: 1em; }
-
-
-#modalmask {
-	position:absolute;
-	display:none;
-
-	z-index:9000;
-	background-color:#000;
-}
-
-.window {
-	position: fixed;
-	display: none;
-	width: 500px;
-	height: 300px;
-	z-index: 9999;
-
-	padding: 1em;
-	background-color: #e0e0e0;
-	border: 1px solid #999;
-	border-radius: 10px;
-}
-
-.window .closemodal { float: right; margin: -0.8em -0.5em 0 0; color: #666; font-weight: bold; }
-
-
-</style>
 <script type="text/javascript">
 
 $(document).ready( function() {
@@ -94,7 +64,7 @@ $(document).ready( function() {
 		e.preventDefault();
 		var ou_id = $(this).closest("li").data("ouid");
 		$("#ouid").val(ou_id);
-		showmodal($("#add_window"));
+		$.showmodal($("#add_window"));
 	});
 
 
@@ -135,7 +105,7 @@ if ('add_window' == $window_to_show) {
 <div class="cf">
 
 
-	<p>Below is the organisational tree for this catalogue.</p>
+	<p>Below is the organisational tree for this catalogue. Click on a unit's name to edit it, or use the adjacent buttons to add, delete or move units in the tree.</p>
 
 	<?php
 	if ($this->organisationalunits->count()==0) {
@@ -145,6 +115,50 @@ if ('add_window' == $window_to_show) {
 	} else {
 		echo('<div id="tree">');
 
+		$ou_list = $this->organisationalunits->toArray();
+
+		$current_level = -1;
+		while (!empty($ou_list)) {
+			$ou = array_shift($ou_list);
+
+			if ($ou->tree_level > $current_level) {
+				echo '<ul>';
+			}
+
+			if ($ou->tree_level < $current_level) {
+				echo str_repeat('</ul>', $current_level - $ou->tree_level);
+			}
+
+			if (0 == $ou->tree_level) {
+				printf('<li data-ouid="%1$s"> %2$s ', $ou->id, $this->escape($ou->name));
+			} else {
+				printf('<li data-ouid="%1$s"><a class="tree_edit" href="#" title="edit unit"> %2$s </a>', $ou->id, $this->escape($ou->name));
+			}
+
+			echo '<span class="treecontrols">';
+			if (0 == $ou->tree_level) {
+				echo '[<a class="tree_add" href="#" title="add child unit">+</a>] ';
+			} else {
+				echo '[<a class="tree_add" href="#" title="add child unit">+</a>] ';
+				echo '[<a class="tree_move" href="#" title="move unit">move</a>] ';
+				echo '[<a class="tree_delete" href="#" title="delete unit">x</a>] ';
+			}
+
+			echo '</span>';
+			echo '</li>';
+
+			$current_level = $ou->tree_level;
+
+			echo '</li>';
+
+			if (empty($ou_list)) {
+				echo str_repeat('</ul>', $current_level + 1);
+			}
+		}
+		echo('</div>');
+
+
+		/*
 		$ou_list = $this->organisationalunits->toArray();
 
 		$current_level = 0;
@@ -179,6 +193,7 @@ if ('add_window' == $window_to_show) {
 			}
 		}
 		echo('</div>');
+		*/
 	}
 	?>
 
@@ -209,6 +224,34 @@ if ('add_window' == $window_to_show) {
 
 	<div style="margin-top: 2em; text-align: center;">
 		<?php Ecl_Helper_Html::formSubmit('submitadd', 'Save Changes'); ?>
+	</div>
+	</form>
+
+</div>
+
+
+
+<div id="edit_window" class="window">
+
+	<a class="closemodal" href="#" title="close window">close</a>
+	<h3>Edit Organisational Unit</h3>
+	<?php
+	Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/organisationalunits/edit') );
+	Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+	Ecl_Helper_Html::formHidden('ouid', '');
+	?>
+	<dl class="form">
+
+		<dt><label>Name</label></dt>
+		<dd><input type="text" name="ou_name" size="60" maxlength="250" value="" /></dd>
+
+		<dt><label>URL</label></dt>
+		<dd><input type="text" name="ou_url" size="60" maxlength="250" value="" /></dd>
+
+	</dl>
+
+	<div style="margin-top: 2em; text-align: center;">
+		<?php Ecl_Helper_Html::formSubmit('submitedit', 'Save Changes'); ?>
 	</div>
 	</form>
 

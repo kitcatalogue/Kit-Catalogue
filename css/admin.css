@@ -29,3 +29,35 @@ div.report h2 { margin-left: -1em;}
 .itemedit_last_updated_info { float: right; padding: 1em; font-size: 0.9em; border: 1px solid #ccc; text-align: center; }
 
 
+
+#tree ul { padding: 0; }
+#tree ul ul { margin-left: 2em; padding: 0;}
+#tree ul ul li { margin: 0; padding: 0 0 0 15px; line-height: 20px; background: url(../images/system/tree_node.png) left center no-repeat; }
+#tree ul ul li:last-child { background: url(../images/system/tree_lastnode.png) left center no-repeat; }
+		
+		
+span.treecontrols { display: inline-block; margin-left: 1em; }
+
+
+#modalmask {
+	position:absolute;
+	display:none;
+
+	z-index:9000;
+	background-color:#000;
+}
+
+.window {
+	position: fixed;
+	display: none;
+	width: 500px;
+	height: 300px;
+	z-index: 9999;
+
+	padding: 1em;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
+	border-radius: 10px;
+}
+
+.window .closemodal { float: right; margin: -0.8em -0.5em 0 0; color: #666; font-weight: bold; }

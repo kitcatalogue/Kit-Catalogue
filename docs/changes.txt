@@ -34,7 +34,7 @@ Added setting to log all enquiry form submissions (enabled by default).
 Fixed organisation logo not linking to organisational website (config 'org.www').
 Fixed searching with common wildcard characters returning no results ('*' and '%').
 Fixed searching using a single character using all available memory for results.  Minimum search length is 2 characters.
-
+Fixed wikicode fields not showing lines beginning with a zero '0'.
 
 
 --------------------------------------------------------------------------------

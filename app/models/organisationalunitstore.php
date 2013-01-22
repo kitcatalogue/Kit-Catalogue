@@ -15,6 +15,7 @@ class Organisationalunitstore {
 
 	// Private Properties
 	protected $_db = null;
+	protected $_model = null;
 
 	protected $_lookup = null;
 
@@ -23,9 +24,11 @@ class Organisationalunitstore {
 	/**
 	 * Constructor
 	 *
+	 * @param  object  $model  An Ecl_Mvc_Model object.
 	 * @param  object  $database  An Ecl_Db data access object.
 	 */
-	public function __construct($database) {
+	public function __construct($model, $database) {
+		$this->_model = $model;
 		$this->_db = $database;
 	}// /->__construct()
 
@@ -48,10 +51,7 @@ class Organisationalunitstore {
 		$row = array (
 			'ou_id'  => $object->id ,
 			'name'   => $object->name ,
-
-			'tree_left'  => $object->tree_left ,
-			'tree_right'  => $object->tree_right ,
-			'tree_level'  => $object->tree_level ,
+			'url'    => $object->url ,
 		);
 
 		return $row;
@@ -71,10 +71,7 @@ class Organisationalunitstore {
 
 		$object->id = $row['ou_id'];
 		$object->name = $row['name'];
-
-		$object->tree_left  = $row['tree_left'];
-		$object->tree_right = $row['tree_right'];
-		$object->tree_level = $row['tree_level'];
+		$object->url = $row['url'];
 
 		return $object;
 	}// /method
@@ -225,11 +222,7 @@ class Organisationalunitstore {
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
 	public function findTree() {
-		return $this->_db->newRecordset("
-			SELECT *
-			FROM ou
-			ORDER BY tree_left ASC
-		", null, array($this, 'convertRowToObject') );
+		return $this->_model->get('ou_tree')->fetchTreeLinked();
 	}// /method
 
 
@@ -258,7 +251,7 @@ class Organisationalunitstore {
 	 * Insert a new organisational unit.
 	 *
 	 * @param  object  $object  The Organisational Unit to create.
-	 * @param  integer  $parent_id  The parent for the new OU.
+	 * @param  integer  $parent_id  The parent OU for the new OU.
 	 *
 	 * @return  mixed  The new id created.  On fail, null.
 	 */
@@ -267,12 +260,18 @@ class Organisationalunitstore {
 
 		unset($binds['ou_id']);   // Don't insert the id, we want a new one
 
-		/*
-		 *  @todo : OU insert needs writing
-		 */
-
-
 		$new_id = $this->_db->insert('ou', $binds);
+
+		if ($new_id>0) {
+			$ou_tree = $this->_model->get('ou_tree');
+			$parent_node = $ou_tree->findForRef($parent_id);
+			if ($parent_node) {
+				$node = $ou_tree->newNode();
+				$node->name = $binds['name'];
+				$node->ref = $new_id;
+				$ou_tree->addChild($parent_id, $node);
+			}
+		}
 
 		return ($new_id>0) ? $new_id : null ;
 	}// /method
@@ -303,6 +302,15 @@ class Organisationalunitstore {
 		$id = $this->_db->prepareValue($object->id);
 
 		$affected_count = $this->_db->update('organisation', $binds, "organisation_id=$id");
+
+		if ($affected_count > 0) {
+			$ou_tree = $this->_model->get('ou_tree');
+			$node = $ou_tree->findForRef($object->ou_id);
+			if ($node) {
+				$node->name = $binds['name'];
+				$ou_tree->update($node);
+			}
+		}
 
 		return ($affected_count>0);
 	}// /method
