@@ -11,8 +11,6 @@ class Organisationalunit {
 	public $name = '';        // The name
 	public $url = '';
 
-	public $tree_left = null;
-	public $tree_right = null;
 	public $tree_level = null;
 
 

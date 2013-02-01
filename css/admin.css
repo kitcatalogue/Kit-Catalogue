@@ -30,16 +30,47 @@ div.report h2 { margin-left: -1em;}
 
 
 
-#tree ul { padding: 0; }
-#tree ul ul { margin-left: 2em; padding: 0;}
-#tree ul ul li { margin: 0; padding: 0 0 0 15px; line-height: 20px; background: url(../images/system/tree_node.png) left center no-repeat; }
-#tree ul ul li:last-child { background: url(../images/system/tree_lastnode.png) left center no-repeat; }
-		
-		
-span.treecontrols { display: inline-block; margin-left: 1em; }
+/* UL Tree Lists */
 
 
-#modalmask {
+#tree ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#tree ul ul {
+background: url(../images/system/tree_line.png) repeat-y;
+  margin-left: 10px;
+}
+
+#tree ul ul > li {
+  margin: 0;
+  padding: 0 0 0 14px;
+  line-height: 20px;
+  background: url(../images/system/tree_node.png) no-repeat;
+}
+
+
+#tree ul ul li.last_child {
+  background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+}
+
+#tree ul ul li:last-child {
+  background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+}
+
+
+#tree a.tree_edit { font-weight: bold; }
+
+span.treecontrols { display: inline-block; margin-left: 0.7em; font-size: 0.9em; }
+
+
+
+/* Modal Windows */
+
+
+#modalwindow_mask {
 	position:absolute;
 	display:none;
 
@@ -51,7 +82,7 @@ span.treecontrols { display: inline-block; margin-left: 1em; }
 	position: fixed;
 	display: none;
 	width: 500px;
-	height: 300px;
+	height: auto;
 	z-index: 9999;
 
 	padding: 1em;
@@ -60,4 +91,8 @@ span.treecontrols { display: inline-block; margin-left: 1em; }
 	border-radius: 10px;
 }
 
-.window .closemodal { float: right; margin: -0.8em -0.5em 0 0; color: #666; font-weight: bold; }
+.window a.modalwindow_close { float: right; margin: -0.8em -0.5em 0 0; color: #666; font-weight: bold; }
+
+#modalwindow_desc { clear: both; }
+
+

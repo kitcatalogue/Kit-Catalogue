@@ -548,6 +548,8 @@ input { font-family: sans-serif; }   /* Fix IE's weird input-width bug */
 
 div.button_bar { margin: 0.5em 0; text-align: center; }
 
+div.button_bar input + input { margin-left: 6em; }
+
 
 .admin-link ,
 .admin_link {

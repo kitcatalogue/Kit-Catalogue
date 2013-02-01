@@ -1,4 +1,12 @@
 <?php
+$lang = $this->model('lang');
+
+$ou_label = $lang['ou.label'];
+$lower_ou_label = strtolower($lang['ou.label']);
+$lower_ou_label_plural = strtolower($lang['ou.label.plural']);
+
+
+
 $this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', '
@@ -6,6 +14,10 @@ $this->layout()->appendSection('layout.head', '
 
 $(document).ready( function() {
 
+	$.require([
+		"jquery.dump.js" ,
+		"ecl.js" ,
+	]);
 
 	jQuery.showmodal = function showmodal(obj) {
 		var fadespeed = 400;
@@ -19,7 +31,7 @@ $(document).ready( function() {
 		var mask_width = (doc_width > win_width) ? doc_width : win_width ;
 		var mask_height = (doc_height > win_height) ? doc_height : win_height ;
 
-		$("#modalmask").css({
+		$("#modalwindow_mask").css({
 			"width" : mask_width,
 			"height": mask_height
 		}).fadeTo(fadespeed, 0.80);
@@ -27,12 +39,19 @@ $(document).ready( function() {
 		obj.css({
 			"top" : (win_height/2) - (obj.height()/2) ,
 			"left": (win_width/2) - (obj.width()/2)
-		}).addClass("activewindow").fadeIn(fadespeed);
+		}).addClass("modalwindow_active").fadeIn(fadespeed);
+	}
+
+
+	jQuery.closemodal = function closemodal() {
+		var fadespeed = 200;
+		$(".modalwindow_active").removeClass("modalwindow_active").hide();
+        $("#modalwindow_mask").fadeOut(fadespeed);
 	}
 
 
 	$(window).resize(function () {
-		var obj = $(".activewindow");
+		var obj = $(".modalwindow_active");
 
 		if (obj.length > 0) {
 			var doc_width = $(document).width();
@@ -44,7 +63,7 @@ $(document).ready( function() {
 			var mask_width = (doc_width > win_width) ? doc_width : win_width ;
 			var mask_height = (doc_height > win_height) ? doc_height : win_height ;
 
-			$("#modalmask").css({
+			$("#modalwindow_mask").css({
 				"width" : mask_width,
 				"height": mask_height
 			});
@@ -57,55 +76,146 @@ $(document).ready( function() {
 	});
 
 
-	$("body").prepend("<div id=\"modalmask\"></div>");
+	$("body").prepend("<div id=\"modalwindow_mask\"></div>");
 
 
 	$("a.tree_add").on("click", function(e) {
 		e.preventDefault();
 		var ou_id = $(this).closest("li").data("ouid");
-		$("#ouid").val(ou_id);
-		$.showmodal($("#add_window"));
+
+		$("#modalwindow_form").attr("action", "'. $this->router()->makeAbsoluteUri('/admin/organisationalunits/create') .'");
+		$("#modalwindow_title").html("Add a new '. $lang['ou.label'] .'.");
+		$("#modalwindow_desc").html("Enter the details for your new '. $lower_ou_label .'.");
+		$("#modalwindow_command").val("add");
+		$("#ou_id").val(ou_id);  // Parent OU ID
+		$("#ou_name").val("");
+		$("#ou_url").val("");
+
+		$("#ou_locationsection").hide();
+
+		$("#delete_button_container").hide();
+
+		$.showmodal($("#modalwindow"));
+
+		$("#ou_name").focus();
 	});
 
 
-    $(".closemodal").on("click", function (e) {
+	$("a.tree_edit").on("click", function(e) {
+		e.preventDefault();
+		var ou_id = $(this).closest("li").data("ouid");
+		$("#ouid").val(ou_id);
+
+		// Request OU info
+		$.ajax({
+			url     : APP_WWW + "/ajax/findou/" ,
+			cache   : false,
+			data    : { id : ou_id } ,
+			success : function (reply) {
+				if ( ("ok" == reply._status) && (reply.ou) ) {
+					$("#modalwindow_form").attr("action", "'. $this->router()->makeAbsoluteUri('/admin/organisationalunits/edit') .'");
+					$("#modalwindow_title").html("Edit: "+reply.ou.name);
+					$("#modalwindow_desc").html("Edit the details of this '. $lower_ou_label .' below.");
+					$("#modalwindow_command").val("edit");
+					$("#ou_id").val(reply.ou.id);  // Editing OU ID
+					$("#ou_name").val(reply.ou.name);
+					$("#ou_url").val(reply.ou.url);
+
+					$("#ou_locationsection").show();
+					$("#ou_location option[value=\""+ reply.ou.id +"\"]").prop("selected", true);
+
+					$("#delete_button_container").show();
+
+					$.showmodal($("#modalwindow"));
+					$("#ou_name").focus();
+
+					return;
+				}
+				alert("Unable to find '. $lower_ou_label.'.");
+			} ,
+			error   : function (reply) {
+				alert("Error");
+			} ,
+		});// /ajax
+	});
+
+
+
+    $(".modalwindow_close").on("click", function (e) {
         e.preventDefault();
-        $("#modalmask").hide();
-		$(".activewindow").removeClass("activewindow").hide();
+		$.closemodal();
     });
+
+
+
+	var del_button = $("<input type=\"submit\" name=\"submitdelete\" value=\"Delete '. $lang['ou.label'] .'\" />");
+	del_button.click(function () {
+		var do_delete = confirm("Please confirm that you want to delete this '. $lower_ou_label .'.\\n\\nAny associated items or child '. $lower_ou_label_plural .' will be re-assigned to the parent '. $lower_ou_label .'.\\n\\nThis operation cannot be undone.");
+		if (do_delete) {
+			$("#modalwindow_form").attr("method", "post").attr("action", "'. $this->router()->makeAbsoluteUri('/admin/organisationalunits/delete') .'").submit();
+		}
+	});
+	$("#delete_button_container").append(del_button);
+
+
+	$("#tree li:last-child").addClass("last_child");
+
+
 
 });
 
 </script>
 ');
-
-
-$window_to_show = $this->param('window_to_show');
-
-if ('add_window' == $window_to_show) {
-	$this->layout()->appendSection('layout.head', '
-	<script type="text/javascript">
-
-		$(document).ready( function() {
-
-			$("#add_window input[name=\"ou_name\"]").val("'. $this->escape($this->window_ou->name) .'");
-			$("#add_window input[name=\"ou_url\"]").val("'. $this->escape($this->window_ou->url) .'");
-
-			$.showmodal($("#add_window"));
-
-		});
-
-	</script>
-	');
-}
 ?>
 
 <h1>Administer <?php $this->out($this->model('lang')->get('ou.label.adminsection')); ?></h1>
 
 <div class="cf">
 
+	<p>Below is the <?php echo strtolower($this->model('lang')->get('ou.label.adminsection')); ?> for this catalogue. Click on a unit's name to edit it, or use add button to add another sub-unit.</p>
 
-	<p>Below is the organisational tree for this catalogue. Click on a unit's name to edit it, or use the adjacent buttons to add, delete or move units in the tree.</p>
+	<div class="admin-box">
+		<h3>Level Labels</h3>
+		<p>Define how the different levels of your structure are labelled.
+
+		<?php
+		$path = $this->model('ou_tree')->findLongestPath();
+
+		if (!empty($path)) {
+			// Remove root node
+			unset($path[0]);
+			$path_count = count($path);
+
+			$levels = $this->model('organisationalunitstore')->getLevelLabels();
+
+			$level_count = count($levels);
+
+			$max_level = ($path_count>$level_count) ? $path_count : $level_count ;
+
+			for($level=1; $level<=$max_level; $level++) {
+
+				?>
+				<div>
+					<?php
+					Ecl_Helper_Html::formLabel('level_'.$level, "Level $level");
+					echo(' ');
+					$name = (array_key_exists($level, $levels)) ? $levels[$level] : '' ;
+					Ecl_Helper_Html::formInput('level_'.$level, 30, 250, $name);
+					if (array_key_exists($level, $path)) {
+						$node = $path[$level];
+						?>
+						<p class="note" style="margin-left: 4em;">(i.e. for "<?php $this->out($node->name); ?>")</p>
+						<?php
+					}
+					?>
+				</div>
+				<?php
+			}
+		}
+		?>
+
+	</div>
+
 
 	<?php
 	if ($this->organisationalunits->count()==0) {
@@ -113,147 +223,115 @@ if ('add_window' == $window_to_show) {
 		<p class="warning">No organisational units have been setup yet.</p>
 		<?php
 	} else {
-		echo('<div id="tree">');
+		?>
+		<div id="tree">
+			<?php
+			$ou_list = $this->organisationalunits->toArray();
 
-		$ou_list = $this->organisationalunits->toArray();
+			function renderTree($tree, $callback = null, $current_level = null) {
+				if (null === $current_level) {
+					$current_level = -1;
+				} else {
+					$current_level = (int) $current_level;
+				}
 
-		$current_level = -1;
-		while (!empty($ou_list)) {
-			$ou = array_shift($ou_list);
+				$node = array_shift($tree);
 
-			if ($ou->tree_level > $current_level) {
-				echo '<ul>';
+				$indent = str_repeat("\t", $node->tree_level);
+
+				if ($node->tree_level > $current_level) {
+					echo("\n{$indent}<ul>");
+				} elseif ($node->tree_level < $current_level) {
+					$closing_indent = str_repeat("\t", $current_level);
+					echo str_repeat("\n{$closing_indent}</ul>", $current_level - $node->tree_level);
+				}
+
+				echo "\n{$indent}";
+				if (is_callable($callback)) {
+					$callback($node);
+				} else {
+					$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+					echo "<li>{$name}";
+				}
+
+				if (!empty($tree)) {
+					renderTree($tree, $callback, $node->tree_level);
+
+					if ($node->tree_level > $current_level) {
+						echo str_repeat("\n</ul>\n", $node->tree_level);
+					}
+				}
+
+				return true;
 			}
 
-			if ($ou->tree_level < $current_level) {
-				echo str_repeat('</ul>', $current_level - $ou->tree_level);
-			}
-
-			if (0 == $ou->tree_level) {
-				printf('<li data-ouid="%1$s"> %2$s ', $ou->id, $this->escape($ou->name));
-			} else {
-				printf('<li data-ouid="%1$s"><a class="tree_edit" href="#" title="edit unit"> %2$s </a>', $ou->id, $this->escape($ou->name));
-			}
-
-			echo '<span class="treecontrols">';
-			if (0 == $ou->tree_level) {
-				echo '[<a class="tree_add" href="#" title="add child unit">+</a>] ';
-			} else {
-				echo '[<a class="tree_add" href="#" title="add child unit">+</a>] ';
-				echo '[<a class="tree_move" href="#" title="move unit">move</a>] ';
-				echo '[<a class="tree_delete" href="#" title="delete unit">x</a>] ';
-			}
-
-			echo '</span>';
-			echo '</li>';
-
-			$current_level = $ou->tree_level;
-
-			echo '</li>';
-
-			if (empty($ou_list)) {
-				echo str_repeat('</ul>', $current_level + 1);
-			}
-		}
-		echo('</div>');
-
-
-		/*
-		$ou_list = $this->organisationalunits->toArray();
-
-		$current_level = 0;
-		while (!empty($ou_list)) {
-			$ou = array_shift($ou_list);
-
-			if ($ou->tree_level > $current_level) {
-				echo '<ul>';
-			}
-
-			if ($ou->tree_level < $current_level) {
-				echo str_repeat('</ul>', $current_level - $ou->tree_level);
-			}
-
-			printf('<li data-ouid="%1$s"> %2$s', $ou->id, $this->escape($ou->name));
-
-			echo '<span class="treecontrols">';
-			echo '[<a class="tree_add" href="#" title="add child unit">+</a>]';
-			if (1 < $ou->tree_level) {
-				echo '[<a class="tree_edit" href="#" title="edit unit">edit</a>]';
-				echo '[<a class="tree_move" href="#" title="move unit">move</a>]';
-				echo '[<a class="tree_delete" href="#" title="delete unit">x</a>]';
-			}
-
-			echo '</span>';
-			echo '</li>';
-
-			$current_level = $ou->tree_level;
-
-			if (empty($ou_list)) {
-				echo str_repeat('</ul>', $current_level + 1);
-			}
-		}
-		echo('</div>');
-		*/
+			$that = $this;
+			renderTree($ou_list, function($node) use ($that) {
+				$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+				if (0 == $node->tree_level) {
+					printf('<li data-ouid="%1$s"> %2$s ', $node->id, $that->escape($name));
+				} else {
+					printf('<li data-ouid="%1$s"><a class="tree_edit" href="#" title="edit unit"> %2$s </a>', $node->id, $that->escape($name));
+				}
+				echo '<span class="treecontrols">';
+				echo '[<a class="tree_add" href="#" title="add child unit">add</a>] ';
+				echo '</span>';
+			});
+			?>
+		</div>
+		<?php
 	}
 	?>
 
-
 </div>
 
 
 
-<div id="add_window" class="window">
+<div id="modalwindow" class="window">
 
-	<a class="closemodal" href="#" title="close window">close</a>
-	<h3>Add New Organisational Unit</h3>
+	<a class="modalwindow_close" href="#" title="close window">close</a>
+	<h3 id="modalwindow_title">Title</h3>
+	<div id="delete_button_container"></div>
 	<?php
-	Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/organisationalunits/create') );
+	Ecl_Helper_Html::form('modalwindow_form', '#');
 	Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
-	Ecl_Helper_Html::formHidden('ouid', '');
+	Ecl_Helper_Html::formHidden('ou_id', '');
 	?>
-	<p>Enter the details for your new organisational unit.</p>
+
+	<p id="modalwindow_desc"></p>
 	<dl class="form">
 
-		<dt><label>Name</label></dt>
-		<dd><input type="text" name="ou_name" size="60" maxlength="250" value="" /></dd>
+		<dt><label>Name *</label></dt>
+		<dd><?php Ecl_Helper_Html::formInput('ou_name', 60, 250, ''); ?></dd>
 
 		<dt><label>URL</label></dt>
-		<dd><input type="text" name="ou_url" size="60" maxlength="250" value="" /></dd>
-
+		<dd><?php Ecl_Helper_Html::formInput('ou_url', 60, 250, ''); ?></dd>
 	</dl>
 
-	<div style="margin-top: 2em; text-align: center;">
-		<?php Ecl_Helper_Html::formSubmit('submitadd', 'Save Changes'); ?>
+	<div id="ou_locationsection">
+		<dl class="form">
+
+			<dt><label>Location in Organisation</label></dt>
+			<dd>
+				<select name="ou_location" id="ou_location">
+					<option value=""> &nbsp; </option>
+					<?php
+					foreach($this->organisationalunits as $ou) {
+						printf('<option value="%1$s">%3$s %2$s </option>', $ou->id, $this->escape($ou->name), str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level) );
+					}
+					?>
+				</select>
+				<p class="note">Changing location will move the <?php $this->out($lower_ou_label); ?> and all its descendents, to beneath the selected <?php $this->out($lower_ou_label); ?>.</p>
+			</dd>
+
+		</dl>
 	</div>
-	</form>
-
-</div>
-
-
-
-<div id="edit_window" class="window">
-
-	<a class="closemodal" href="#" title="close window">close</a>
-	<h3>Edit Organisational Unit</h3>
-	<?php
-	Ecl_Helper_Html::form('categoryform', $this->router()->makeAbsoluteUri('/admin/organisationalunits/edit') );
-	Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
-	Ecl_Helper_Html::formHidden('ouid', '');
-	?>
-	<dl class="form">
-
-		<dt><label>Name</label></dt>
-		<dd><input type="text" name="ou_name" size="60" maxlength="250" value="" /></dd>
-
-		<dt><label>URL</label></dt>
-		<dd><input type="text" name="ou_url" size="60" maxlength="250" value="" /></dd>
-
-	</dl>
 
 	<div style="margin-top: 2em; text-align: center;">
-		<?php Ecl_Helper_Html::formSubmit('submitedit', 'Save Changes'); ?>
+		<input type="button" name="modalwindow_cancel" class="modalwindow_close" value="Cancel" />
+		<?php Ecl_Helper_Html::formSubmit('modalwindow_submit', 'Save'); ?>
 	</div>
-	</form>
+	<?php Ecl_Helper_Html::formClose(); ?>
 
 </div>
 

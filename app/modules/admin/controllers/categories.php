@@ -78,7 +78,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 
 					$this->layout()->clearBreadcrumbs(2);
 					$this->layout()->clearFeedback();
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "Your new ". strtolower($lang['cat.label']) ." has been saved : '{$category->name}'.");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your new '. strtolower($lang['cat.label']) ." '{$category->name}' has been added.");
 					$this->action('index');
 				}
 

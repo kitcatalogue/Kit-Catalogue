@@ -24,17 +24,12 @@ ALTER TABLE `department`
 
 
 
--- 
--- Definition of table `faculty`
+--
+-- Changes to table `item`
 --
 
-CREATE TABLE IF NOT EXISTS `faculty` (
-  `faculty_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) NOT NULL DEFAULT '',
-  `url` varchar(250) NOT NULL DEFAULT '',
-  PRIMARY KEY (`faculty_id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE `item`
+	ADD COLUMN `ou_id` INTEGER UNSIGNED DEFAULT 0 AFTER `portability`;
 
 
 
@@ -66,6 +61,59 @@ CREATE TABLE IF NOT EXISTS `log_enquiry` (
 
 ALTER TABLE `organisation`
 	ADD COLUMN `url` VARCHAR(250) NOT NULL DEFAULT '' AFTER `name`;
+
+
+
+-- 
+-- Changes to table `ou`
+--
+
+CREATE TABLE  `ou` (
+  `ou_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `url` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`ou_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `ou` (ou_id, name, url)
+VALUES (1, 'Catalogue', '');
+
+
+
+-- 
+-- Changes to table `ou_tree`
+--
+
+CREATE TABLE  `ou_tree` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tree_left` int(10) unsigned NOT NULL,
+  `tree_right` int(10) unsigned NOT NULL,
+  `tree_level` int(10) unsigned NOT NULL,
+  `name` varchar(250) DEFAULT '',
+  `ref` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tree_left` (`tree_left`),
+  KEY `tree_right` (`tree_right`),
+  KEY `tree_level` (`tree_level`),
+  KEY `ref` (`ref`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `ou_tree` (id, tree_left, tree_right, tree_level, name, ref)
+VALUES (1, 1, 2, 0, 'Catalogue', null);
+
+
+
+-- 
+-- Changes to table `ou_tree_label`
+--
+
+CREATE TABLE `ou_tree_label` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 

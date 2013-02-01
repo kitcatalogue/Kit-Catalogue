@@ -169,7 +169,7 @@ Class Ecl_Tree_Manager {
 	 * return  boolean  The operation was successful.
 	 */
 	public function delete($node) {
-		$node = $this->_findNode($node);
+		$node = $this->_findNode($node, true);
 
 		if (empty($node)) { return false; }
 		if (0 == $node->tree_level) { return false; }
@@ -203,7 +203,30 @@ Class Ecl_Tree_Manager {
 
 
 	/**
-	 * Delete a node and all its descendents.
+	 * Delete a node from the tree, and move any children up to the parent node.
+	 *
+	 * If there is no parent node then this method will fail.
+	 *
+	 * @param  mixed  $node
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function deleteAndPromoteChildren($node) {
+		$node = $this->_findNode($node, true);
+
+		if (empty($node)) { return false; }
+		if (0 == $node->tree_level) { return false; }
+
+		$children_moved = $this->transplantChildrenToParent($node);
+		if (!$children_moved) { return false; }
+
+		return $this->delete($node);
+	}
+
+
+
+	/**
+	 * Delete a node and and descendents.
 	 *
 	 * @see delete()
 	 *
@@ -246,7 +269,8 @@ Class Ecl_Tree_Manager {
 
 
 
-	public function findTree($node = null) {
+	public function fetchTreeLinked() {
+
 		if (empty($node)) {
 			$binds = null;
 			$where = null;
@@ -262,15 +286,54 @@ Class Ecl_Tree_Manager {
 			$where = "WHERE tree_left>=:tree_left
 				AND tree_left<=:tree_right
 			";
-
 		}
 
+		$sql__select_from = $this->_getSqlSelectFrom();
+
 		return $this->_db->newRecordset("
-			SELECT *
-			FROM `{$this->_table}`
+			$sql__select_from
 			$where
 			ORDER BY tree_left
-		", $binds, array($this, 'newNode'))->toArray();
+		", null, $this->_row_function);
+	}
+
+
+
+	public function find($id) {
+		$binds = array (
+			'id'  => $id ,
+		);
+
+		$this->_db->query("
+			SELECT *
+			FROM `{$this->_table}`
+			WHERE id=:id
+			LIMIT 1
+		", $binds);
+
+		return $this->_db->getObject(array($this, 'convertRowToObject'));
+	}
+
+
+
+	public function findAncestors($node) {
+		$node = $this->_findNode($node);
+		if (empty($node))  { return array(); }
+
+		$binds = array (
+			'tree_left'   => $node->tree_left ,
+			'tree_right'  => $node->tree_right ,
+		);
+
+		$this->_db->query("
+			SELECT *
+			FROM `{$this->_table}`
+			WHERE tree_left<:tree_left
+				AND tree_right>:tree_right
+			ORDER BY tree_left
+		", $binds);
+
+		return $this->_db->getResultObjects(array($this, 'convertRowToObject'));
 	}
 
 
@@ -341,76 +404,6 @@ Class Ecl_Tree_Manager {
 
 
 
-	public function findAncestors($node) {
-		$node = $this->_findNode($node);
-		if (empty($node))  { return array(); }
-
-		$binds = array (
-			'tree_left'   => $node->tree_left ,
-			'tree_right'  => $node->tree_right ,
-		);
-
-		$this->_db->query("
-			SELECT *
-			FROM `{$this->_table}`
-			WHERE tree_left<:tree_left
-				AND tree_right>:tree_right
-			ORDER BY tree_left
-		", $binds);
-
-		return $this->_db->getResultObjects(array($this, 'convertRowToObject'));
-	}
-
-
-
-	public function fetchTreeLinked() {
-
-		if (empty($node)) {
-			$binds = null;
-			$where = null;
-		} else {
-			$node = $this->_findNode($node);
-			if (empty($node)) { return array(); }
-
-			$binds = array (
-				'tree_left'  => $node->tree_left ,
-				'tree_right' => $node->tree_right ,
-			);
-
-			$where = "WHERE tree_left>=:tree_left
-				AND tree_left<=:tree_right
-			";
-
-		}
-
-		$sql__select_from = $this->_getSqlSelectFrom();
-
-		return $this->_db->newRecordset("
-			$sql__select_from
-			$where
-			ORDER BY tree_left
-		", null, $this->_row_function);
-	}
-
-
-
-	public function find($id) {
-		$binds = array (
-			'id'  => $id ,
-		);
-
-		$this->_db->query("
-			SELECT *
-			FROM `{$this->_table}`
-			WHERE id=:id
-			LIMIT 1
-		", $binds);
-
-		return $this->_db->getObject(array($this, 'convertRowToObject'));
-	}
-
-
-
 	/**
 	 * Find the tree node for the given ref value.
 	 *
@@ -449,7 +442,6 @@ Class Ecl_Tree_Manager {
 				ORDER BY tree_node_id ASC
 			", null, array($this, '_row_function') );
 		} else {
-
 			$binds = array (
 				'tree_node_id'  => (int) $id ,
 			);
@@ -462,6 +454,21 @@ Class Ecl_Tree_Manager {
 
 			return $this->_db->getObject(array($this, '_row_function') );
 		}
+	}
+
+
+
+	public function findLongestPath() {
+		$this->_db->query("
+			SELECT id
+			FROM `{$this->_table}`
+			ORDER BY tree_level DESC, tree_left ASC
+			LIMIT 1
+		");
+
+		if (!$this->_db->hasResult()) { return array(); }
+
+		return $this->findPath($this->_db->getValue());
 	}
 
 
@@ -489,6 +496,42 @@ Class Ecl_Tree_Manager {
 		", $binds);
 
 		return $this->newNode($this->_db->getRow());
+	}
+
+
+
+	public function findPath($node) {
+		$node = $this->_findNode($node);
+		if (empty($node))  { return array(); }
+
+		$binds = array (
+			'tree_left'   => $node->tree_left ,
+			'tree_right'  => $node->tree_right ,
+		);
+
+		$this->_db->query("
+			SELECT *
+			FROM `{$this->_table}`
+			WHERE tree_left<=:tree_left
+				AND tree_right>=:tree_right
+			ORDER BY tree_left
+		", $binds);
+
+		return $this->_db->getResultObjects(array($this, 'convertRowToObject'));
+	}
+
+
+
+	public function findPathString($node, $separator) {
+		$nodes = $this->findPath($node);
+		if (empty($nodes)) { return ''; }
+
+		$node_names = array();
+		foreach($nodes as $node) {
+			$node_names[] = $node->name;
+		}
+
+		return implode($separator, $node_names);
 	}
 
 
@@ -524,6 +567,34 @@ Class Ecl_Tree_Manager {
 
 
 
+	public function findTree($node = null) {
+		if (empty($node)) {
+			$binds = null;
+			$where = null;
+		} else {
+			$node = $this->_findNode($node);
+			if (empty($node)) { return array(); }
+
+			$binds = array (
+				'tree_left'  => $node->tree_left ,
+				'tree_right' => $node->tree_right ,
+			);
+
+			$where = "WHERE tree_left>=:tree_left
+				AND tree_left<=:tree_right
+			";
+		}
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM `{$this->_table}`
+			$where
+			ORDER BY tree_left
+		", $binds, array($this, 'newNode'))->toArray();
+	}
+
+
+
 	public function install() {
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS `{$this->_table}` (
@@ -550,6 +621,30 @@ Class Ecl_Tree_Manager {
 		$this->_insertNodeInfo($root);
 
 		return true;
+	}
+
+
+
+	/**
+	 * Check if a node is the same as, or a descendent of, the parent.
+	 *
+	 * @param  mixed  $node
+	 * @param  mixed  $parent
+	 *
+	 * @return  boolean  The node is descended from the parent.
+	 */
+	public function isDescendedFrom($node, $parent) {
+		$node = $this->_findNode($node, true);
+		if (empty($node)) { return false; }
+
+		$parent = $this->_findNode($parent, true);
+		if (empty($parent)) { return false; }
+
+		if ($node->id == $parent->id) {	return true; }
+
+		if ( ($node->tree_left <= $parent->tree_left) && ($node->tree_right >= $parent->tree_right) ) { return true; }
+
+		return false;
 	}
 
 
@@ -605,11 +700,15 @@ Class Ecl_Tree_Manager {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function transplant($node, $new_parent) {
-		$node = $this->_findNode($node);
+		$node = $this->_findNode($node, true);
 		if (empty($node)) { return false; }
 
 		$new_parent = $this->_findNode($new_parent, true);
 		if (empty($new_parent)) { return false; }
+
+		if ($node->id == $new_parent->id) { return true; }
+
+		if ($this->isDescendedFrom($node, $new_parent)) { return false; }
 
 		$subtree = $this->findTree($node);
 		$node_count = count($subtree);
@@ -617,6 +716,32 @@ Class Ecl_Tree_Manager {
 		$this->deleteSubtree($node);
 
 		$this->addSubtree($new_parent, $subtree);
+
+		return true;
+	}
+
+
+
+	/**
+	 * Transplant the children of a node to its parent.
+	 *
+	 * @param  mixed  $node
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function transplantChildrenToParent($node) {
+		$node = $this->_findNode($node, true);
+		if (empty($node)) { return false; }
+
+		$new_parent = $this->findParent($node);
+		if (empty($new_parent)) { return false; }
+
+		$children = $this->findChildren($node);
+		if (!empty($children)) {
+			foreach($children as $child) {
+				$this->transplant($child->id, $new_parent->id);
+			}
+		}
 
 		return true;
 	}
@@ -654,14 +779,12 @@ Class Ecl_Tree_Manager {
 	 */
 	protected function _findNode($node, $force_refresh = false) {
 		if ($node instanceof Ecl_Tree_Node) {
-			if (empty($node->id)) {
-				return null;
-			}
+			if (empty($node->id)) {	return null; }
 
-			if ($force_refresh) {
-				$node = $node->id;
-			} else {
+			if (!$force_refresh) {
 				return $node;
+			} else {
+				$node = $node->id;
 			}
 		}
 
@@ -721,7 +844,6 @@ Class Ecl_Tree_Manager {
 	 */
 	protected  function _insertNode($node) {
 		$binds = (array) $node;
-		unset($binds['id']);
 
 		return $this->_db->insert($this->_table, $binds);
 	}

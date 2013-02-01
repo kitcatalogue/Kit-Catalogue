@@ -20,6 +20,8 @@ Fixed user permissions not being deleted when a user was removed in the administ
 Fixed HTTPS not being used for CSS/javascript files, if user visited a HTTPS url without being logged in.
 Fixed IE8 not downloading CSV files when browsing over HTTPS.  
 Fixed titles of internal-only child items appearing on parent item records (access to the actual items was still blocked).  
+Fixed AJAX calls not using HTTPS when required.
+
 
 == Config
 
@@ -31,10 +33,12 @@ Removed 'app.api_www' setting as it is no longer required.
 
 Added reCAPTCHA option to enquiry forms to combat spam (config 'enquiry.use_recaptcha' and 'recaptcha.___' section)
 Added setting to log all enquiry form submissions (enabled by default).
+Fixed minor typo errors in the admin area.
 Fixed organisation logo not linking to organisational website (config 'org.www').
-Fixed searching with common wildcard characters returning no results ('*' and '%').
+Fixed searching with the common, but unneccesary, wildcard characters '*' and '%' returning no results.
 Fixed searching using a single character using all available memory for results.  Minimum search length is 2 characters.
 Fixed wikicode fields not showing lines beginning with a zero '0'.
+ 
 
 
 --------------------------------------------------------------------------------

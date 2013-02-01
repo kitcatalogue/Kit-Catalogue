@@ -73,6 +73,8 @@ class Organisationalunitstore {
 		$object->name = $row['name'];
 		$object->url = $row['url'];
 
+		$object->tree_level = $row['tree_level'];
+
 		return $object;
 	}// /method
 
@@ -88,14 +90,28 @@ class Organisationalunitstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function delete($id) {
-		$id = $this->_db->prepareValue($id);
-		$affected_count = $this->_db->delete('ou', "ou_id=$id");
+		$sql__id = $this->_db->prepareValue($id);
+
+		// Delete from the tree
+		$ou_tree = $this->_model->get('ou_tree');
+		$node = $ou_tree->findForRef($id);
+
+		if (!$node) { return false; }
+
+		$parent = $ou_tree->findParent($node);
+		if (!$parent) { return false; }
+
+		if (!$ou_tree->deleteAndPromoteChildren($node)) { return false; }
 
 		$binds = array (
-			'ou'  => null ,
+			'ou_id'  => $parent->id ,
 		);
 
-		$this->_db->update('item', $binds, "ou_id=$id");
+		// Update existing items
+		$this->_db->update('item', $binds, "ou_id=$sql__id");
+
+		// Delete OU
+		$affected_count = $this->_db->delete('ou', "ou_id=$sql__id");
 
 		return ($affected_count>0);
 	}// /method
@@ -114,8 +130,9 @@ class Organisationalunitstore {
 			$id_set = $this->_db->prepareSet($id);
 
 			return $this->_db->newRecordset("
-				SELECT *
+				SELECT ou.*, ot.tree_level
 				FROM ou
+					INNER JOIN ou_tree ot ON ou.ou_id=ot.ref
 				WHERE ou_id IN $id_set
 				ORDER BY name ASC
 			", null, array($this, 'convertRowToObject') );
@@ -126,8 +143,9 @@ class Organisationalunitstore {
 			);
 
 			$row_count = $this->_db->query("
-				SELECT *
+				SELECT ou.*, ot.tree_level
 				FROM ou
+					INNER JOIN ou_tree ot ON ou.ou_id=ot.ref
 				WHERE ou_id=:ou_id
 				LIMIT 1
 			", $binds);
@@ -247,6 +265,16 @@ class Organisationalunitstore {
 
 
 
+	public function getLevelLabels() {
+		return $this->_db->newRecordset("
+			SELECT id, name
+			FROM ou_tree_label
+			ORDER BY id ASC
+		")->toAssoc('id', 'name');
+	}
+
+
+
 	/**
 	 * Insert a new organisational unit.
 	 *
@@ -260,17 +288,17 @@ class Organisationalunitstore {
 
 		unset($binds['ou_id']);   // Don't insert the id, we want a new one
 
+		$ou_tree = $this->_model->get('ou_tree');
+		$parent_node = $ou_tree->findForRef($parent_id);
+		if (!$parent_node) { return false; }
+
 		$new_id = $this->_db->insert('ou', $binds);
 
 		if ($new_id>0) {
-			$ou_tree = $this->_model->get('ou_tree');
-			$parent_node = $ou_tree->findForRef($parent_id);
-			if ($parent_node) {
-				$node = $ou_tree->newNode();
-				$node->name = $binds['name'];
-				$node->ref = $new_id;
-				$ou_tree->addChild($parent_id, $node);
-			}
+			$node = $ou_tree->newNode();
+			$node->name = $binds['name'];
+			$node->ref = $new_id;
+			$ou_tree->addChild($parent_node, $node);
 		}
 
 		return ($new_id>0) ? $new_id : null ;
@@ -289,6 +317,18 @@ class Organisationalunitstore {
 
 
 
+	public function setLevelLabels($assoc) {
+		foreach($assoc as $id => $name) {
+			$binds = array (
+				'id'   => $id ,
+				'name' => $name ,
+			);
+		}
+		return $this->_db->replaceMulti('ou_tree_label', $binds);
+	}
+
+
+
 	/**
 	 * Update an existing organisation.
 	 *
@@ -301,7 +341,7 @@ class Organisationalunitstore {
 
 		$id = $this->_db->prepareValue($object->id);
 
-		$affected_count = $this->_db->update('organisation', $binds, "organisation_id=$id");
+		$affected_count = $this->_db->update('ou', $binds, "ou_id=$id");
 
 		if ($affected_count > 0) {
 			$ou_tree = $this->_model->get('ou_tree');
@@ -312,7 +352,7 @@ class Organisationalunitstore {
 			}
 		}
 
-		return ($affected_count>0);
+		return true; //($affected_count>0);
 	}// /method
 
 
