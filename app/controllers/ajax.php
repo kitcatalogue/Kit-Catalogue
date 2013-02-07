@@ -58,5 +58,28 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 
 
 
+	public function actionFindou() {
+		if (!$this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+			$this->reply->setFail('Access denied');
+			return;
+		}
+
+		$ou_id = $this->request()->get('id');
+
+		$ou = $this->model('organisationalunitstore')->find($ou_id);
+		if (!$ou) {
+			$this->reply->setFail('Unknown OU requested.');
+			return;
+		} else {
+			if (0 == $ou->tree_level) {
+				$this->reply->setFail('Access denied to root OU.');
+			} else {
+				$this->reply->setData('ou', $ou);
+			}
+		}
+	}// /method
+
+
+
 }// /class
 ?>

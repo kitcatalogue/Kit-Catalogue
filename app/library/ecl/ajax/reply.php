@@ -8,7 +8,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.0.0
+ * @version  1.0.2
  */
 Class Ecl_Ajax_Reply {
 
@@ -136,7 +136,7 @@ Class Ecl_Ajax_Reply {
 	 */
 	public function status($status = null) {
 		if (func_num_args()>0) {
-			if (!in_array($status, array (self::STATUS_FAIL, self::STATUS_OK))) {
+			if (in_array($status, array (self::STATUS_FAIL, self::STATUS_OK))) {
 				$this->_status = $status;
 			}
 		}
@@ -146,13 +146,13 @@ Class Ecl_Ajax_Reply {
 
 
 	public function setFail($message = null, $code = null) {
-		return $this->setStatus(self::STATUS_FAIL, $code, $message);
+		return $this->setStatus(self::STATUS_FAIL, $message, $code);
 	}// /method
 
 
 
 	public function setOk($message = null) {
-		return $this->setStatus(self::STATUS_OK, null, $message);
+		return $this->setStatus(self::STATUS_OK, $message, null);
 	}// /method
 
 
@@ -208,7 +208,7 @@ Class Ecl_Ajax_Reply {
 	 * Return the JSON representation of this reply.
 	 *
 	 * The "_status" entry is ALWAYS returned.
-	 * The "_id", "_code" and "_message" entries only appear if not empty.
+	 * The "_id", "_code" and "_message" entries appear only if not empty.
 	 *
 	 * Any data keys that clash with one of the 'official' entries above, will be overriden.
 	 * e.g. data['_status'] = 'something' WILL be replaced by the correct 'ok' or 'fail'.

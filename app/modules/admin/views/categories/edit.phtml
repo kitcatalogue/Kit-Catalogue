@@ -24,7 +24,7 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 
 		cpvLookup();
 
-		var del_button = $('<input type="submit" name="submitdelete" value="Delete {$lang['cat.label.plural']}" />');
+		var del_button = $('<input type="submit" name="submitdelete" value="Delete {$lang['cat.label']}" />');
 		del_button.click(function () {
 			return confirm('Please confirm that you want to delete this {$lower_cat_label}.\\n\\nAny Items associated with this category will remain, but no longer be registered with it.\\n\\nThis operation cannot be undone.');
 		});

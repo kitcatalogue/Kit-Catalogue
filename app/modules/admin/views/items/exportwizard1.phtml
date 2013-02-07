@@ -1,9 +1,10 @@
+<?php
+$lang = $this->model('lang');
+?>
 
 <h1>Export Items to CSV</h1>
 <p>This function will export all your item data to a CSV file.</p>
 <p><strong>Please Note</strong> : The exported data cannot be re-imported into your catalogue.  We plan to add this functionality in a future version of Kit-Catalogue.</p>
-
-<br />
 
 <div class="item">
 	<div>
@@ -13,13 +14,32 @@
 
 		<dl>
 
-			<dt><?php Ecl_Helper_Html::formLabel('department', 'Select which items to export');?></dt>
+			<dt><?php Ecl_Helper_Html::formLabel('ou', 'Select which items should be exported');?></dt>
+			<dd>
+				<select name="ou" id="ou">
+					<?php
+					$ou_list = $this->model('organisationalunitstore')->findTree();
+					foreach($ou_list as $ou) {
+						printf('<option value="%1$s" %4$s>%3$s %2$s </option>', $ou->id, $this->escape($ou->name), str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level), ( ($ou->id==$item->ou) ? 'selected="selected"' : null) );
+					}
+					?>
+				</select>
+			</dd>
+
+			<dt>Options</dt>
 			<dd>
 				<?php
-				$options = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
-				$options = array ('' => '--Export Entire Catalogue--') + $options;
+				$cboxes = array (
+					array (
+						'name'      => 'options[]' ,
+						'id'        => 'option_includesubtree' ,
+						'label'     => "Include items from descended {$lang['ou.label.plural']}." ,
+						'value'     => 'include_subtree' ,
+						'selected'  => true ,
+					),
+				);
 
-				Ecl_Helper_Html::formSelect('department', $options);
+				Ecl_Helper_Html::formCheckboxTable($cboxes);
 				?>
 			</dd>
 

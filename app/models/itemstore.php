@@ -84,8 +84,6 @@ class Itemstore {
 
 			'technique' => $object->technique ,
 
-			'department'  => $this->_model->get('departmentstore')->lookupName($object->department, 'Unknown') ,
-
 			'usergroup'   => $object->usergroup ,
 
 			'access'      => $this->_model->get('accesslevelstore')->lookupName($object->access, '') ,
@@ -96,7 +94,11 @@ class Itemstore {
 
 			'visibility'  => $object->visibility ,
 
-			'organisation' => $this->_model->get('organisationstore')->lookupName($object->organisation, '') ,
+			//'department'  => $this->_model->get('departmentstore')->lookupName($object->department, 'Unknown') ,  // @todo : Deprecated - remove
+			//'organisation' => $this->_model->get('organisationstore')->lookupName($object->organisation, '') ,   // @todo : Deprecated - remove
+
+			'ou' => $this->_model->get('organisationalunitstore')->lookupName($object->ou, '') ,
+
 			'site'         => $this->_model->get('sitestore')->lookupName($object->site, '') ,
 			'building'     => $this->_model->get('buildingstore')->lookupName($object->building, '') ,
 			'room'         => $object->room ,
@@ -195,12 +197,16 @@ class Itemstore {
 			'availability' => $object->availability ,
 			'restrictions' => $object->restrictions ,
 
-			'department_id'  => $object->department ,
 			'usergroup'      => $object->usergroup ,
 			'access_id'      => $object->access ,
 			'portability'    => $object->portability ,
 
-			'organisation' => $object->organisation ,
+			'department_id'  => $object->department ,   // @todo : Deprecated - remove
+			'organisation' => $object->organisation ,   // @todo : Deprecated - remove
+
+			'ou_id' => $object->ou ,
+
+
 			'site_id'      => $object->site ,
 			'building_id'  => $object->building ,
 			'room'         => $object->room ,
@@ -291,12 +297,15 @@ class Itemstore {
 		$object->availability = $row['availability'];
 		$object->restrictions = $row['restrictions'];
 
-		$object->department = $row['department_id'];
 		$object->usergroup = $row['usergroup'];
 		$object->access = $row['access_id'];
 		$object->portability = $row['portability'];
 
-		$object->organisation = $row['organisation'];
+		$object->ou = $row['ou_id'];
+
+		$object->organisation = $row['organisation'];   // @todo : Deprecated - remove
+		$object->department = $row['department_id'];    // @todo : Deprecated - remove
+
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
 		$object->room = $row['room'];
@@ -1051,6 +1060,48 @@ class Itemstore {
 
 
 	/**
+	 * Find any items in the department and category specified.
+	 *
+	 * @param  integer  $ou_id  The OU to find.
+	 * @param  boolean  $include_descendents  Include items from descendent OUs.
+ 	 * @param  integer  $visibility
+	 *
+	 * @return  mixed  The array of objects requested.  On fail, null.
+	 */
+	public function findForOU($ou_id, $include_descendents = true, $visibility = null) {
+
+		$ou_list = array($ou_id);
+
+		if ($include_descendents) {
+			$node = $this->_model->get('ou_tree')->findForRef($ou_id);
+			if (!$node) { return array(); }
+
+			$descendent_ou_list = $this->_model->get('ou_tree')->findDescendentRefs($node);
+
+			$ou_list = array_merge($ou_list, (array) $descendent_ou_list);
+		}
+
+		$sql__ou_set = $this->_db->prepareSet($ou_list);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+		return $this->_db->newRecordset("
+			SELECT i.*
+			FROM item i
+			WHERE ou_id IN $sql__ou_set
+				$where_clause
+			ORDER BY
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+		", null, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
 	 * Find any items matching the given parameters.
 	 *
 	 * Parameters are matched using "AND".
@@ -1428,7 +1479,7 @@ class Itemstore {
 		";
 
 
-		// @debug :	Ecl::dump($sql);
+		// @debug : Ecl::dump($sql);
 
 
 		$rows = $this->_db->newRecordset($sql, null)->toArray();
