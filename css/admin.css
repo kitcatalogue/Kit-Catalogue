@@ -6,6 +6,13 @@
 
 
 
+fieldset h2 { font-size: 1.2em; }
+fieldset h3 { font-size: 1em; }
+
+
+hr { height: 1px; background-color: #ddd; border: 0; color: #ddd; }
+fieldset hr { width: 98%; }
+
 #main .grid_row { margin-top: 1.8em; }
 
 
@@ -26,8 +33,8 @@ div.report h2 { margin-left: -1em;}
 
 
 
-.itemedit_last_updated_info { float: right; padding: 1em; font-size: 0.9em; border: 1px solid #ccc; text-align: center; }
-
+.itemedit_sidestatus { width: 15em; clear: right; float: right; margin: 1em 1em 0 0; padding: 1em; font-size: 0.9em; background-color: #eee; border: 1px solid #ccc; text-align: center; }
+.itemedit_sidestatus p { margin-bottom: 1em; }
 
 
 /* UL Tree Lists */
@@ -63,9 +70,13 @@ background: url(../images/system/tree_line.png) repeat-y;
 
 #tree a.tree_edit { font-weight: bold; }
 
-span.treecontrols { display: inline-block; margin-left: 0.7em; font-size: 0.9em; }
+span.treecontrols { display: inline-block; margin-left: 0.7em; color: #999; font-size: 0.9em; }
 
-
+span.treecontrols a ,
+span.treecontrols a:link ,
+span.treecontrols a:visited ,
+span.treecontrols a:hover ,
+span.treecontrols a:active { color: #aaa !important; }
 
 /* Modal Windows */
 

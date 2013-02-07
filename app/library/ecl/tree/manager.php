@@ -9,7 +9,7 @@
  * Must be linked with a second table containing the node's actual information.
  *
  * @package  Ecl
- * @version  1.0.0
+ * @version  1.1.0
  */
 Class Ecl_Tree_Manager {
 
@@ -377,6 +377,7 @@ Class Ecl_Tree_Manager {
 	/**
 	 * Find all nodes descended from the given node.
 	 *
+	 * Nodes are returned in tree_left order
 	 * To return just the direct children, @see findChildren()
 	 *
 	 * @param  mixed  $node  The node, or node id, to check.
@@ -397,9 +398,41 @@ Class Ecl_Tree_Manager {
 			FROM `{$this->_table}`
 			WHERE tree_left>:tree_left
 				AND tree_left<:tree_right
+			ORDER BY tree_left
 		", $binds);
 
 		return $this->_db->getResultObjects(array($this, 'convertRowToObject'));
+	}
+
+
+
+	/**
+	 * Find all ref IDs descended from the given node.
+	 *
+	 * Refs are returned in tree_left order.
+	 *
+	 * @param  mixed  $node  The node, or node id, to check.
+	 *
+	 * @return  array  The array of child ref IDs.
+	 */
+	public function findDescendentRefs($node) {
+		$node = $this->_findNode($node);
+		if (empty($node))  { return array(); }
+
+		$binds = array (
+			'tree_left'   => $node->tree_left ,
+			'tree_right'  => $node->tree_right ,
+		);
+
+		$this->_db->query("
+			SELECT ref
+			FROM `{$this->_table}`
+			WHERE tree_left>:tree_left
+				AND tree_left<:tree_right
+			ORDER BY tree_left
+		", $binds);
+
+		return $this->_db->getColumn();
 	}
 
 
@@ -844,7 +877,7 @@ Class Ecl_Tree_Manager {
 	 */
 	protected  function _insertNode($node) {
 		$binds = (array) $node;
-
+		unset($binds['id']);
 		return $this->_db->insert($this->_table, $binds);
 	}
 
@@ -869,7 +902,7 @@ Class Ecl_Tree_Manager {
 
 		if (empty($children)) {	return $parent->tree_right; }
 		if ($name < $children[0]->name) { return $children[0]->tree_left; }
-		if ($name > end($children)->name) { return $parent->tree_right;	}
+		if ($name >= end($children)->name) { return $parent->tree_right; }
 
 		$left = false;
 		foreach($children as $child) {

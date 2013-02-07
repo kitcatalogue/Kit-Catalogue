@@ -34,12 +34,12 @@ $(document).ready( function() {
 		$("#modalwindow_mask").css({
 			"width" : mask_width,
 			"height": mask_height
-		}).fadeTo(fadespeed, 0.80);
+		}).fadeTo(fadespeed, 0.80).show();
 
 		obj.css({
 			"top" : (win_height/2) - (obj.height()/2) ,
 			"left": (win_width/2) - (obj.width()/2)
-		}).addClass("modalwindow_active").fadeIn(fadespeed);
+		}).addClass("modalwindow_active").fadeIn(fadespeed).show();
 	}
 
 
@@ -168,16 +168,17 @@ $(document).ready( function() {
 ');
 ?>
 
-<h1>Administer <?php $this->out($this->model('lang')->get('ou.label.adminsection')); ?></h1>
+<h1>Administer <?php $this->out($lang['ou.label.adminsection']); ?></h1>
 
 <div class="cf">
 
-	<p>Below is the <?php echo strtolower($this->model('lang')->get('ou.label.adminsection')); ?> for this catalogue. Click on a unit's name to edit it, or use add button to add another sub-unit.</p>
+	<p>Below is the <?php echo strtolower($lang['ou.label.adminsection']); ?> for this catalogue. Click on a unit's name to edit it, or use add button to add another sub-unit.</p>
 
 	<div class="admin-box">
 		<h3>Level Labels</h3>
-		<p>Define how the different levels of your structure are labelled.
+		<p>Label the levels of your <?php $this->out(strtolower($lang['ou.label.adminsection'])); ?>.</p>
 
+		<form action="<?php echo $this->router()->makeAbsoluteUri('/admin/organisationalunits/labels'); ?>" method="post">
 		<?php
 		$path = $this->model('ou_tree')->findLongestPath();
 
@@ -193,7 +194,6 @@ $(document).ready( function() {
 			$max_level = ($path_count>$level_count) ? $path_count : $level_count ;
 
 			for($level=1; $level<=$max_level; $level++) {
-
 				?>
 				<div>
 					<?php
@@ -201,19 +201,23 @@ $(document).ready( function() {
 					echo(' ');
 					$name = (array_key_exists($level, $levels)) ? $levels[$level] : '' ;
 					Ecl_Helper_Html::formInput('level_'.$level, 30, 250, $name);
-					if (array_key_exists($level, $path)) {
+					if (!array_key_exists($level, $path)) {
+						$label_example = '(Not currently used)';
+					} else {
 						$node = $path[$level];
-						?>
-						<p class="note" style="margin-left: 4em;">(i.e. for "<?php $this->out($node->name); ?>")</p>
-						<?php
+						$label_example = "(i.e. for \"{$node->name}\")";
 					}
 					?>
+					<p class="note" style="margin-left: 4em;"><?php $this->out($label_example); ?></p>
 				</div>
 				<?php
 			}
 		}
 		?>
-
+		<div class="button_bar">
+			<?php Ecl_Helper_Html::formSubmit('savelabels', 'Save Labels'); ?>
+		</div>
+		</form>
 	</div>
 
 

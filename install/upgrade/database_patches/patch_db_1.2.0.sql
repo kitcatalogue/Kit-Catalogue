@@ -33,6 +33,23 @@ ALTER TABLE `item`
 
 
 
+--
+-- Changes to table `item`
+--
+
+CREATE TABLE `item_link` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL,
+  `item_id` INTEGER UNSIGNED NOT NULL,
+  `name` VARCHAR(250) NOT NULL,
+  `url` VARCHAR(250) NOT NULL,
+  `file_type` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `item_id` (`item_id`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- 
 -- Definition of table `log_enquiry`
 --

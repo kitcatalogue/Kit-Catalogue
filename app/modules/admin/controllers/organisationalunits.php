@@ -124,7 +124,9 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 		$this->layout()->clearBreadcrumbs(2);
 		$this->layout()->clearFeedback();
 
-		if ($this->request()->isPost()) {
+		if (!$this->request()->isPost()) {
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, "Unable to edit $lower_ou_label.  No information posted.");
+		} else {
 			$errors = false;
 
 			$ou_store = $this->model('organisationalunitstore');
@@ -138,7 +140,6 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 				$errors[] = "Unable to find $lower_ou_label.";
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);
 			} else {
-
 				// Change of location
 				$new_location = $this->request()->post('ou_location');
 
@@ -174,8 +175,6 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 					}
 				}
 			}
-		} else {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, "Unable to edit $lower_ou_label.  No information posted.");
 		}
 
 		$this->action('index');
@@ -190,6 +189,30 @@ class Controller_Admin_Organisationalunits extends Ecl_Mvc_Controller {
 		$this->view()->organisationalunits = $this->model('organisationalunitstore')->findTree();
 		$this->view()->render('organisationalunits_index');
 	}// /method
+
+
+
+	public function actionLabels() {
+		$this->layout()->clearBreadcrumbs(2);
+		$this->layout()->clearFeedback();
+
+		if (!$this->request()->isPost()) {
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, "Unable to edit $lower_ou_label.  No information posted.");
+		} else {
+			$levels = $this->request()->postPrefixed('level_', true);
+			if (!empty($levels)) {
+				$saved_ok = $this->model('organisationalunitstore')->setLevelLabels($levels);
+
+				if (!$saved_ok ) {
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Your changes could not be saved.');
+				} else {
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your changes have been saved.');
+				}
+			}
+		}
+
+		$this->action('index');
+	}
 
 
 

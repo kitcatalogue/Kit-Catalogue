@@ -171,6 +171,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		}
 
 
+		$links = $this->model('itemlinkstore')->findForItem($item->id);
+
+
 		if ($this->model('log.item_view')) {
 			$this->model('db')->insert('log_view', array (
 				'date_view'  => $this->model('db')->formatDate(time()) ,
@@ -465,10 +468,16 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 
 					/*
-					 * Show Available Files
+					 * Show Available Resources
 					 */
-					if ( ($this->model('security')->checkItemPermission($item, 'item.files.view')) && (!empty($other_files)) ) {
+					if ( ($this->model('security')->checkItemPermission($item, 'item.files.view'))
+						&& ( (!empty($other_files)) || (!empty($links)) ) ) {
+
 						$grouped_files = null;
+
+						foreach($links as $link) {
+							$grouped_files[$link->type][] = $link;
+						}
 
 						foreach($other_files as $file) {
 							$grouped_files[$file->type][] = $file;
@@ -476,22 +485,33 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 						$types = $this->model('itemstore')->findAllFileTypes();
 
-						$this->outf($lang['item.label.files'], '<h2>%s</h2>');
+						$this->outf($lang['item.label.resources'], '<h2>%s</h2>');
 						?>
-						<div class="item-files">
+						<div class="item-resources">
 							<?php
 							foreach($grouped_files as $file_type => $file_group) {
-								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Files' ;
+								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Resources' ;
 								?>
 								<h4><?php $this->out($type_name); ?></h4>
 								<ul>
 									<?php
-									foreach($file_group as $file) {
-										$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$file->filename}");
-										$display_name = (empty($file->name)) ? $file->filename : $file->name ;
-										?>
-										<li><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
-										<?php
+									foreach($file_group as $resource) {
+										if ($resource instanceof Itemfile) {
+											$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$resource->filename}");
+											$display_name = (empty($resource->name)) ? $resource->filename : $resource->name ;
+											?>
+											<li class="file"><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
+											<?php
+										} else {
+											$start_url = '';
+											if ( (substr($resource->url, 0, 7)!='http://')
+												&& (substr($resource->url, 0, 8)!='https://') ) {
+													$start_url = 'http://';
+											}
+											?>
+											<li class="link"><a href="<?php echo $start_url.$resource->url; ?>" target="_blank"><?php $this->out($resource->name); ?></a></li>
+											<?php
+										}
 									}
 									?>
 								</ul>

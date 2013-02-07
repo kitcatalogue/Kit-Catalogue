@@ -12,6 +12,8 @@
 class Ecl_Helper_Html {
 
 
+	protected static $_unique_ids = array();
+
 
 	/**
 	 * Constructor
@@ -936,6 +938,16 @@ class Ecl_Helper_Html {
 
 
 
+	public static function formSubmitUnique($name, $value, $attr = null) {
+		$html_id = self::_getUniqueHtmlId($name);
+		$value = self::escape($value);
+		$attr = self::convertAttrToHtml($attr);
+		printf('<input type="submit" name="%1$s" id="%2$s" value="%3$s" %4$s />', $name, $html_id, $value, $attr);
+		return true;
+	}// /method
+
+
+
 	/**
 	 * Draw a <textarea> tag.
 	 *
@@ -1159,6 +1171,17 @@ class Ecl_Helper_Html {
 	/* --------------------------------------------------------------------------------
 	 * Private Methods
 	 */
+
+
+
+	protected static function _getUniqueHtmlId($name) {
+		if (!array_key_exists($name, self::$_unique_ids)) {
+			self::$_unique_ids[$name] = 0;
+		} else {
+			self::$_unique_ids[$name]++;
+		}
+		return $name . self::$_unique_ids[$name];
+	}
 
 
 

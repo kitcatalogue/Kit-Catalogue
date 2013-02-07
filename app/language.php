@@ -63,14 +63,15 @@ $lang['dept.label.plural'] = 'Departments';
  */
 
 $lang['item.formsection.main'] = 'Main Details';
+$lang['item.formsection.description'] = 'Description';
 $lang['item.formsection.parent'] = 'Parent Facility';
 $lang['item.formsection.categorisation'] = 'Categorisation';
 $lang['item.formsection.access'] = 'Access & Usage';
 $lang['item.formsection.contact'] = 'Contact Information';
-$lang['item.formsection.location'] = 'Location';
+$lang['item.formsection.location'] = 'Physical Location';
 $lang['item.formsection.asset'] = 'Asset & Finance Information';
 $lang['item.formsection.custom'] = 'Custom Fields';
-$lang['item.formsection.files'] = 'Images & Files';
+$lang['item.formsection.resources'] = 'Resources';
 
 
 
@@ -135,12 +136,15 @@ $lang['item.form.is_disposed_of'] = 'Has Been Disposed Of';
 $lang['item.form.date_disposed_of'] = 'Date Disposed Of';
 
 $lang['item.form.archived'] = 'Archived';
+$lang['item.form.date_archived'] = 'Date Archived';
 
 $lang['item.form.comments'] = 'Comments';
 
-$lang['item.form.files'] = 'Additional Files';
+$lang['item.form.files'] = 'Additional Files & Documentation';
 
 $lang['item.form.copyright_notice'] = 'Copyright Notice';
+
+$lang['item.form.links'] = 'Links';
 
 
 
@@ -207,13 +211,14 @@ $lang['item.label.maintenance'] = 'Maintenance';
 $lang['item.label.is_disposed_of'] = 'Disposed of';
 $lang['item.label.date_disposed_of'] = 'Date Disposed of';
 
+$lang['item.label.archived'] = 'Archived';
+$lang['item.label.date_archived'] = 'Date Archived';
 
-$lang['item.label.files'] = 'Additional Files';
+$lang['item.label.resources'] = 'Additional Resources';
 
 $lang['item.label.copyright_notice'] = '';
 
-$lang['item.form.archived'] = 'Archived';
-$lang['item.form.date_archived'] = 'Date Archived';
+$lang['item.label.links'] = 'Links';
 
 $lang['item.label.date_updated'] = 'Last Updated';
 

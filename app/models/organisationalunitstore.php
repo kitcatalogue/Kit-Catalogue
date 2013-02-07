@@ -134,7 +134,7 @@ class Organisationalunitstore {
 				FROM ou
 					INNER JOIN ou_tree ot ON ou.ou_id=ot.ref
 				WHERE ou_id IN $id_set
-				ORDER BY name ASC
+				ORDER BY ou.name ASC
 			", null, array($this, 'convertRowToObject') );
 		} else {
 
@@ -165,14 +165,15 @@ class Organisationalunitstore {
 		return $this->_db->newRecordset("
 			SELECT *
 			FROM ou
-			ORDER BY name ASC
+				INNER JOIN ou_tree ot ON ou.ou_id=ot.ref
+			ORDER BY ou.name ASC
 		", null, array($this, 'convertRowToObject') );
 	}// /method
 
 
 
 	/**
-	 * Find all organisations used by at least one item of equipment, for the given visibility.
+	 * Find all organisational units used by at least one item of equipment, for the given visibility.
 	 *
 	 * @param  integer  $visibility  (optional) The item visibility to check
 	 *
@@ -184,7 +185,9 @@ class Organisationalunitstore {
 
 		return $this->_db->newRecordset("
 			SELECT ou.*
-			FROM ou INNER JOIN item i ON ou.ou_id=i.ou
+			FROM ou
+				INNER JOIN ou_tree ot ON ou.ou_id=ot.ref
+				INNER JOIN item i ON ou.ou_id=i.ou
 			WHERE (i.visibility & $sql__visibility)=$sql__visibility
 			ORDER BY ou.name ASC
 		", null, array($this, 'convertRowToObject') );
@@ -318,8 +321,9 @@ class Organisationalunitstore {
 
 
 	public function setLevelLabels($assoc) {
+		$binds = array();
 		foreach($assoc as $id => $name) {
-			$binds = array (
+			$binds[] = array (
 				'id'   => $id ,
 				'name' => $name ,
 			);

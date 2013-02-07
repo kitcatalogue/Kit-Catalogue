@@ -39,12 +39,15 @@ class Item {
 	public $availability = '';
 	public $restrictions = '';
 
-	public $department = '';   // Department ID
 	public $usergroup = '';
 	public $access = '';   // Access ID
 	public $portability = '';
 
-	public $organisation = '';
+	public $department = '';   // @todo : Deprecated - remove
+	public $organisation = ''; // @todo : Deprecated - remove
+
+	public $ou = null;
+
 	public $site = '';       // Site ID
 	public $building = '';   // Building ID
 	public $room = '';

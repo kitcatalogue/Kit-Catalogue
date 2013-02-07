@@ -815,10 +815,11 @@ div.extra-image img:hover {opacity:1;filter:alpha(opacity=100); /* For IE8 and e
 .extra-image { float: left; border: 2px solid #fff; }
 
 
-.item-files { margin-left: 1em; }
-.item-files ul {list-style:none;}
-.item-files ul li {height:2em;background: url(../images/system/file.gif) no-repeat;}
-.item-files a {padding-left:2em;}
+.item-resources { margin-left: 1em; }
+.item-resources ul { list-style: none; }
+.item-resources ul li.file { height: 2em; background: url(../images/system/file.gif) no-repeat; }
+.item-resources ul li.link { height: 2em; background: url(../images/system/link.gif) no-repeat; }
+.item-resources a { padding-left: 2em; }
 
 
 .item-children ul.item-list { margin: 0; }
