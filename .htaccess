@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Redirect all requests for non-existent files/folders to index.php 
 RewriteEngine On
@@ -9,3 +10,16 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L,QSA]
 
 php_flag magic_quotes_gpc off
+=======
+
+# Redirect all requests for non-existent files/folders to index.php 
+RewriteEngine On
+
+RewriteRule ^.*?\.phtml$ forbidden [F,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L,QSA]
+
+php_flag magic_quotes_gpc off
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

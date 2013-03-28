@@ -1,5 +1,6 @@
 <?php
 $building = $this->building;
+<<<<<<< HEAD
 $lang = $this->model('lang');
 
 $building_label_lower = strtolower($lang['building.label']);
@@ -8,10 +9,20 @@ $site_label_lower = strtolower($lang['site.label']);
 $this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', <<<EndJS
+=======
+
+
+$this->layout()->addGlobalJavascript();
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
+
+$this->layout()->appendSection('layout.head', '
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
+<<<<<<< HEAD
 		var del_button = $('<input type="submit" name="submitdelete" value="Delete Building" />');
 		del_button.click(function () {
 			return confirm('Please confirm that you want to delete this building.\\n\\nThis operation cannot be undone.');
@@ -34,14 +45,58 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 
 <input type="submit" name="submitsave" value="Save Changes" style="position: absolute; left: -100%;" />
 
+=======
+		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete Building</a></div>");
+		del_button.click(function () {
+			$(\'#dialog-building\').html(\'' . $building->name . '\');
+			$(\'#dialog\').dialog(\'open\');
+		});
+		$("#delete_button_container").append(del_button);
+
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$(\'#dialog\').dialog({
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "Delete": function() {
+                	$(\'#submitdelete\').val(\'1\');
+                    $(\'#buildingform\').submit();
+                },
+                "Cancel": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
+	});
+
+</script>
+');
+?>
+
+
+
+<h1>Edit Building: <?php $this->out($building->name); ?></h1>
+<p>Here you can edit this building, or transfer its items to another.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 <div id="delete_button_container"></div>
 
 
+<<<<<<< HEAD
 <h1>Edit <?php echo $lang['building.label']; ?>: <?php $this->out($building->name); ?></h1>
 
 
 <p>Here you can edit this <?php echo $building_label_lower; ?>, or transfer its items to another.</p>
+=======
+<?php
+Ecl_Helper_Html::form('buildingform', $this->request()->uri());
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+Ecl_Helper_Html::formHidden('submitdelete', '');
+?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <dl class="form">
 	<dt>Building Code</dt>
 	<dd><?php Ecl_Helper_Html::formInput('code', 20, 250, $building->code); ?></dd>
@@ -57,9 +112,15 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 		if (empty($sites)) {
 			?>
 			<p class="warning">
+<<<<<<< HEAD
 				No campus <?php echo $site_label_lower; ?> have been setup yet.
 				<br /><br />
 				Campus <?php echo $site_label_lower; ?> are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
+=======
+				No campus sites have been setup yet.
+				<br /><br />
+				Campus sites are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			</p>
 			<?php
 		} else {
@@ -74,9 +135,12 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 	<dt><?php Ecl_Helper_Html::formLabel('longitude', 'Longitude'); ?></dt>
 	<dd><?php Ecl_Helper_Html::formInput('longitude', 10, 10, $building->longitude); ?></dd>
 
+<<<<<<< HEAD
 	<dt><?php Ecl_Helper_Html::formLabel('url', 'URL'); ?></dt>
 	<dd><?php Ecl_Helper_Html::formInput('url', 50, 250, $building->url); ?></dd>
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 </dl>
 
 <div>
@@ -84,18 +148,30 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 </div>
 
 <br />
+<<<<<<< HEAD
 <h3>Transfer Items</h3>
+=======
+<h3>Items Listed</h3>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <?php
 $items = $this->model('itemstore')->findForBuilding($building->id, KC__VISIBILITY_INTERNAL);
 
 if (0 < $items->count()) {
 	?>
+<<<<<<< HEAD
 	<p>This <?php echo $building_label_lower; ?> contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
+=======
+	<p>This building contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	<?php
 	/*
 	 * @todo : When browse by building is available, uncomment this
+<<<<<<< HEAD
 	 * <p><a href="<?php echo $this->router()->makeAbsoluteUri("/building/{$building->slug}"); ?>">View items in catalogue</a></p>
+=======
+	 * <p><a href="<?php echo $this->router()->makeAbsoluteUri("/building/{$building->url_suffix}"); ?>">View items in catalogue</a></p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 */
 	?>
 
@@ -105,7 +181,11 @@ if (0 < $items->count()) {
 
 	if (!empty($options)) {
 		?>
+<<<<<<< HEAD
 		<p>If you would like to transfer your items to a different <?php echo $building_label_lower; ?>, please select a destination to transfer all items to.</p>
+=======
+		<p>If you would like to transfer your items to a different building, please select a destination to transfer all items to.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		<?php
 		Ecl_Helper_Html::formSelect('destination', $options);
 		?>
@@ -115,20 +195,32 @@ if (0 < $items->count()) {
 		$cboxes[] = array (
 			'name'      => 'delete_on_transfer' ,
 			'id'        => 'delete_on_transfer' ,
+<<<<<<< HEAD
 			'label'     => "Delete current $building_label_lower after transfer" ,
+=======
+			'label'     => 'Delete current department after transfer' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			'value'     => '1' ,
 			'selected'  => false ,
 		);
 		Ecl_Helper_Html::formCheckboxTable($cboxes);
 		?>
+<<<<<<< HEAD
 		<div>
+=======
+		<div style="text-align: right;">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
 		</div>
 		<?php
 	}
 } else {
 	?>
+<<<<<<< HEAD
 	<p>This <?php echo $building_label_lower; ?> is not associated with any items.</p>
+=======
+	<p>This building is not associated with any items.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<?php
 }
 ?>
@@ -138,4 +230,12 @@ if (0 < $items->count()) {
 Ecl_Helper_Html::formClose();
 ?>
 
+<<<<<<< HEAD
+=======
+<div id="dialog" title="Verify Delete Building">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>Please confirm that this building will be deleted.</p><p>Any Items associated with this building will remain, but no longer be registered with the building.</p><p>This operation cannot be undone.</p>
+	<p id="dialog-building"></p>
+</div>
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 

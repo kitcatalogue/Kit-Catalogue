@@ -7,7 +7,10 @@ $www_root = $this->model('app.www');
 
 
 $this->layout()->appendSection('layout.head', '
+<<<<<<< HEAD
 	<!-- INSTALL.REWRITE=OK : This string is checked for as part of the install process -->
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<style type="text/css">
 
 		#signonform { margin-bottom: 1em; }
@@ -44,10 +47,14 @@ switch (strtolower($this->request()->get('msg'))) {
 ?>
 
 <h1>Sign in to <?php $this->out($this->model('app.title')); ?>.</h1>
+<<<<<<< HEAD
 <?php
 $use_https = $this->model('app.use_https') ? true : false ;
 ?>
 <form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/', $use_https); ?>" method="post" id="signonform">
+=======
+<form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/'); ?>" method="post" id="signonform">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <table class="form" style="margin-left: 5em;">
 <tr>
 	<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>

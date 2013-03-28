@@ -342,6 +342,7 @@ class Ecl_Http_Request {
 		$content = null;
 
 		if ($this->_method=='POST') {
+<<<<<<< HEAD
 			$form_content = Ecl_Helper_String::buildQuerystring($this->_form, '&');
 			$this->setHeader('Content-Type', 'application/x-www-form-urlencoded');
 			$this->setHeader('Content-Length', strlen($form_content));
@@ -350,6 +351,14 @@ class Ecl_Http_Request {
 			$content = "\r\n\r\n{$this->_content}";
 		}
 
+=======
+			$content .= Ecl_Helper_String::buildQuerystring($this->_form, '&');
+			$this->setHeader('Content-Type', 'application/x-www-form-urlencoded');
+		}
+
+		$content .= "\r\n\r\n" . $this->_content;
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		// Process basic headers
 		foreach($this->_headers as $k => $v) {
@@ -383,6 +392,11 @@ class Ecl_Http_Request {
 		$request_string = implode("\r\n", $lines);
 		$request_string .= $content;
 
+<<<<<<< HEAD
+=======
+		// @debug : Ecl::dump($request_string, 'Request String', true);
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		return $request_string;
 	}// /method
 

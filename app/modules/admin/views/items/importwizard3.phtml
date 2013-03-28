@@ -61,9 +61,15 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 
 				uksort($info['issues'], function($a, $b) {
 					$sort_order = array (
+<<<<<<< HEAD
 						'title'           => 1 ,  // mandatory
 						'manufacturer'    => 2 ,  // mandatory
 						'ou'              => 3 ,  // mandatory
+=======
+						'manufacturer'    => 1 ,  // mandatory
+						'model'           => 2 ,  // mandatory
+						'department'      => 3 ,  // mandatory
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						'contact_1_email' => 4 ,  // mandatory
 
 						'technique'       => 5 ,
@@ -87,6 +93,7 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 					}
 
 
+<<<<<<< HEAD
 					if ('title' == $k) {
 						?>
 						<dt class="mandatory_error"><strong>Item Title / Manufacturer</strong> are mandatory.  You must supply a title and/or manufacturer below.</dt>
@@ -97,6 +104,23 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 							<label for="<?php echo "manufacturer_{$rownum}"; ?>">Manufacturer</label><br />
 							<?php Ecl_Helper_Html::formInput("manufacturer_{$rownum}", 40, 100, ''); ?>
 						</dd>
+=======
+					// @todo : Allow user to edit the imported value for all issues
+
+
+					if ('manufacturer' == $k) {
+						?>
+						<dt class="mandatory_error"><strong>Manufacturer</strong> is mandatory.  You must supply a value for this item below.</dt>
+						<dd class="mandatory_error"><?php Ecl_Helper_Html::formInput("manufacturer_{$rownum}", 40, 100, ''); ?></dd>
+						<?php
+					}
+
+
+					if ('model' == $k) {
+						?>
+						<dt class="mandatory_error"><strong>Model</strong> is mandatory.  You must supply a value for this item below.</dt>
+						<dd class="mandatory_error"><?php Ecl_Helper_Html::formInput("model_{$rownum}", 40, 100, ''); ?></dd>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						<?php
 					}
 
@@ -117,7 +141,13 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 										<select name="contact_1_email_<?php $this->out($rownum); ?>" id="contact_1_email_<?php $this->out($rownum); ?>">
 											<optgroup label="Existing options">
 												<?php
+<<<<<<< HEAD
 												Ecl_Helper_Html::formOptions($this->lookups['contact_1_email']);
+=======
+												$selected = null;
+												$keys = array_keys($this->lookups['contact_1_email']);
+												Ecl_Helper_Html::formOptions($this->lookups['contact_1_email'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 												?>
 											</optgroup>
 										</select>
@@ -144,13 +174,20 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 					}
 
 
+<<<<<<< HEAD
 					if ('ou' == $k) {
 						?>
 						<dt class="mandatory_error"><strong><?php echo $lang['ou.label']; ?></strong> is mandatory, but the value imported was not recognised.</dt>
+=======
+					if ('department' == $k) {
+						?>
+						<dt class="mandatory_error"><strong><?php echo $lang['dept.label']; ?></strong> is mandatory, but the value imported was not recognised.</dt>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						<dd class="mandatory_error">
 							<table class="layout">
 							<tr>
 								<td>
+<<<<<<< HEAD
 									<?php Ecl_Helper_Html::formLabel("ou_{$rownum}", 'Select the '. strtolower($lang['ou.label']) .' to use'); ?><br />
 									<select name="ou_<?php $this->out($rownum); ?>" id="ou_<?php $this->out($rownum); ?>">
 										<?php
@@ -158,6 +195,35 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 										?>
 									</select>
 								</td>
+=======
+									<?php Ecl_Helper_Html::formLabel("department_{$rownum}", 'Select the '. strtolower($lang['dept.label']) .' to use'); ?><br />
+									<select name="department_<?php $this->out($rownum); ?>" id="department_<?php $this->out($rownum); ?>">
+										<?php
+										if ($v != '-- none --') {
+											?>
+											<optgroup label="Imported value">
+												<option value="<?php $this->outParam('use_imported'); ?>"><?php $this->out($v); ?></option>
+											</optgroup>
+											<?php
+										}
+										?>
+										<optgroup label="Existing options">
+											<?php
+											$selected = null;
+											if ( isset($this->lookups['department']) && (!empty($this->lookups['department']))) {
+												$keys = array_keys($this->lookups['department']);
+												$selected = null;
+											}
+											Ecl_Helper_Html::formOptions($this->lookups['department'], $selected);
+											?>
+										</optgroup>
+									</select>
+								</td>
+								<td style="padding-left: 2em; display: none;">
+									<?php Ecl_Helper_Html::formLabel("new_department_{$rownum}", '&hellip;or enter a new department name'); ?><br />
+									<?php Ecl_Helper_Html::formInput("new_department_{$rownum}", 40, 250, ''); ?>
+								</td>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 							</tr>
 							</table>
 						</dd>
@@ -175,7 +241,15 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 								</optgroup>
 								<optgroup label="Existing options">
 									<?php
+<<<<<<< HEAD
 									Ecl_Helper_Html::formOptions($this->lookups['access']);
+=======
+									$selected = null;
+									if ( isset($this->lookups['access']) && (!empty($this->lookups['access']))) {
+										$keys = array_keys($this->lookups['access']);
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['access'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 									?>
 								</optgroup>
 							</select>
@@ -194,7 +268,15 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 								</optgroup>
 								<optgroup label="Existing options">
 									<?php
+<<<<<<< HEAD
 									Ecl_Helper_Html::formOptions($this->lookups['category']);
+=======
+									$selected = null;
+									if ( isset($this->lookups['category']) && (!empty($this->lookups['category']))) {
+										$keys = array_keys($this->lookups['category']);
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['category'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 									?>
 								</optgroup>
 							</select>
@@ -213,7 +295,15 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 								</optgroup>
 								<optgroup label="Existing options">
 									<?php
+<<<<<<< HEAD
 									Ecl_Helper_Html::formOptions($this->lookups['building']);
+=======
+									$selected = null;
+									if ( isset($this->lookups['building']) && (!empty($this->lookups['building']))) {
+										$keys = array_keys($this->lookups['building']);
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['building'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 									?>
 								</optgroup>
 							</select>
@@ -232,7 +322,15 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 								</optgroup>
 								<optgroup label="Existing options">
 									<?php
+<<<<<<< HEAD
 									Ecl_Helper_Html::formOptions($this->lookups['site']);
+=======
+									$selected = null;
+									if ( isset($this->lookups['site']) && (!empty($this->lookups['site']))) {
+										$keys = array_keys($this->lookups['site']);
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['site'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 									?>
 								</optgroup>
 							</select>
@@ -251,7 +349,16 @@ Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
 								</optgroup>
 								<optgroup label="Existing options">
 									<?php
+<<<<<<< HEAD
 									Ecl_Helper_Html::formOptions($this->lookups['technique']);
+=======
+									$selected = null;
+									if ( isset($this->lookups['technique']) && (!empty($this->lookups['technique']))) {
+										$keys = array_keys($this->lookups['technique']);
+										$selected = $keys[0];
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['technique'], $selected);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 									?>
 								</optgroup>
 							</select>

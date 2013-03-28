@@ -13,8 +13,11 @@ class Controller_Admin_Home extends Ecl_Mvc_Controller {
 			return false;
 		}
 
+<<<<<<< HEAD
 		$this->router()->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->router()->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
 	}
 

@@ -5,8 +5,11 @@
  * Future updates to Kit-Catalogue may overwrite this config file.
  *
  * Do not edit the settings in here, instead edit and override the settings in local/local_language.php
+<<<<<<< HEAD
  *
  * To control the top-menu text, override the 'menu.<?>.label' settings in your local configuration file.
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 
 
@@ -33,12 +36,15 @@ $lang['building.label.plural'] = 'Buildings';
  * Category
  */
 
+<<<<<<< HEAD
 // The route MUST be a single, lowercase word suitable for inclusion in a URL
 // The route MUST NOT clash with the name of another entity in kit-catalogue, such as 'category' or 'item'.
 // The route MUST contain only alphanumeric characters, i.e. Only a-z or 0-9.
 // For example, you could use "department" (the default) or "school".
 $lang['cat.route'] = 'category';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $lang['cat.label'] = 'Category';
 $lang['cat.label.plural'] = 'Categories';
 
@@ -60,6 +66,7 @@ $lang['dept.label.plural'] = 'Departments';
 
 
 /*
+<<<<<<< HEAD
  * Facility
  */
 
@@ -69,11 +76,14 @@ $lang['facility.label.plural'] = 'Facilities';
 
 
 /*
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  * Item Form Fields (as used in the item editor)
  * Some fields use the labels defined elsewhere, e.g. 'cat.label' or 'dept.label'.
  */
 
 $lang['item.formsection.main'] = 'Main Details';
+<<<<<<< HEAD
 $lang['item.formsection.description'] = 'Description';
 $lang['item.formsection.parent'] = 'Parent Facility';
 $lang['item.formsection.categorisation'] = 'Categorisation';
@@ -84,6 +94,15 @@ $lang['item.formsection.location'] = 'Physical Location';
 $lang['item.formsection.asset'] = 'Asset & Finance Information';
 $lang['item.formsection.custom'] = 'Custom Fields';
 $lang['item.formsection.resources'] = 'Resources';
+=======
+$lang['item.formsection.categorisation'] = 'Categorisation';
+$lang['item.formsection.access'] = 'Access & Usage';
+$lang['item.formsection.contact'] = 'Contact Information';
+$lang['item.formsection.location'] = 'Location';
+$lang['item.formsection.asset'] = 'Asset & Finance Information';
+$lang['item.formsection.custom'] = 'Custom Fields';
+$lang['item.formsection.files'] = 'Images & Files';
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
@@ -93,25 +112,34 @@ $lang['item.form.model'] = 'Model';
 $lang['item.form.short_description'] = 'Short Description';
 $lang['item.form.full_description'] = 'Full Description';
 $lang['item.form.specification'] = 'Specification';
+<<<<<<< HEAD
 
 $lang['item.form.upgrades'] = 'Upgrades';
 $lang['item.form.future_upgrades'] = 'Future Upgrades';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $lang['item.form.manufacturer_website'] = 'Manufacturer\'s Website';
 $lang['item.form.technique'] = 'Technique';
 $lang['item.form.keywords'] = 'Keywords';
 $lang['item.form.acronym'] = 'Acronym';
 
+<<<<<<< HEAD
 $lang['item.form.is_parent'] = "Use this item as a parent facility";
 $lang['item.form.selectparent'] = 'Associate this item with one or more parent facilities';
 $lang['item.form.showchildren'] = 'Associated child items';
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $lang['item.form.visibility'] = 'Visibility';
 $lang['item.form.usergroup'] = 'User Group';
 $lang['item.form.availability'] = 'Availability';
+<<<<<<< HEAD
 $lang['item.form.restrictions'] = 'Restrictions';
 
 $lang['item.form.portability'] = 'Portability';
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $lang['item.form.trainingrequired'] = 'Training Required';
 $lang['item.form.trainingprovided'] = 'Training Provided';
@@ -123,6 +151,7 @@ $lang['item.form.next_calibration_date'] = 'Next Calibration Date';
 $lang['item.form.quantity'] = 'Quantity';
 $lang['item.form.quantity_detail'] = 'Quantity Detail';
 
+<<<<<<< HEAD
 $lang['item.form.contact'] = 'Staff Contact';   // Used as a generic label for contact information
 
 $lang['item.form.contact_1'] = 'First Staff Contact';
@@ -134,6 +163,12 @@ $lang['item.form.contact_2_email'] = 'Second Contact Email';
 
 
 $lang['item.form.image'] = 'Image';
+=======
+
+$lang['item.form.contact_1'] = 'First Staff Contact';
+$lang['item.form.contact_2'] = 'Second Staff Contact';
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $lang['item.form.room'] = 'Room';
 
@@ -145,6 +180,7 @@ $lang['item.form.year_of_manufacture'] = 'Year of Manufacture';
 $lang['item.form.supplier'] = 'Supplier';
 $lang['item.form.date_of_purchase'] = 'Date of Purchase';
 $lang['item.form.PAT'] = 'PAT Expiry Date';
+<<<<<<< HEAD
 
 $lang['item.form.cost'] = 'Purchase Cost';
 $lang['item.form.replacement_cost'] = 'Replacement Cost';
@@ -172,6 +208,13 @@ $lang['item.form.embedded_content'] = 'Embedded Content';
 
 $lang['item.form.links'] = 'Links';
 
+=======
+$lang['item.form.files'] = 'Additional Files';
+
+
+$lang['item.form.copyright_notice'] = 'Copyright Notice';
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 /*
@@ -185,15 +228,19 @@ $lang['item.label.model'] = 'Model';
 $lang['item.label.short_description'] = '';
 $lang['item.label.full_description'] = 'Description';
 $lang['item.label.specification'] = 'Specification';
+<<<<<<< HEAD
 
 $lang['item.label.upgrades'] = 'Upgrades';
 $lang['item.label.future_upgrades'] = 'Future Upgrades';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $lang['item.label.manufacturer_website'] = '';
 $lang['item.label.technique'] = 'Technique';
 $lang['item.label.acronym'] = 'Acronym';
 $lang['item.label.keywords'] = 'Keywords';
 
+<<<<<<< HEAD
 $lang['item.label.showchildren'] = 'Associated Items';
 $lang['item.label.showparents'] = 'Associated Facilities';
 
@@ -202,6 +249,11 @@ $lang['item.label.availability'] = 'Availability';
 $lang['item.label.restrictions'] = 'Restrictions';
 
 $lang['item.label.portability'] = 'Portability';
+=======
+
+$lang['item.label.usergroup'] = 'User Group';
+$lang['item.label.availability'] = 'Availability';
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $lang['item.label.training'] = 'Training';
 
@@ -229,6 +281,7 @@ $lang['item.label.date_of_purchase'] = 'Purchase Date';
 $lang['item.label.PAT'] = 'PAT Expiry';
 
 
+<<<<<<< HEAD
 $lang['item.label.cost'] = 'Cost';
 $lang['item.label.replacement_cost'] = 'Replacement Cost';
 $lang['item.label.end_of_life'] = 'Expected End of Life';
@@ -247,12 +300,18 @@ $lang['item.label.copyright_notice'] = '';
 $lang['item.label.embedded_content'] = 'Embedded Content';
 
 $lang['item.label.links'] = 'Links';
+=======
+$lang['item.label.files'] = 'Additional Files';
+$lang['item.label.copyright_notice'] = '';
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $lang['item.label.date_updated'] = 'Last Updated';
 
 
 
 /*
+<<<<<<< HEAD
  * Organisations
  */
 
@@ -272,6 +331,8 @@ $lang['ou.label.plural'] = 'Organisational Units';
 
 
 /*
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  * Site
  */
 

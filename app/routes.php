@@ -19,6 +19,7 @@ $router->addRoute('*', ':module/:controller/:action/:id');
 
 
 
+<<<<<<< HEAD
 // API
 
 $router->addroute('*', 'api', array (
@@ -49,12 +50,26 @@ $router->addroute('*', 'api/private/:action', array (
 
 // Support
 
+=======
+// Support Routes
+
+$router->addRoute('*', 'support/:itemname/:id/file/:filename', array(
+	'controller'  => 'item' ,
+	'action'      => 'downloadfile' ,
+));
+
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', 'support/help', array(
 	'module'      => 'support' ,
 	'controller'  => 'help' ,
 	'action'      => 'index' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', 'support', array(
 	'module'      => 'support' ,
 	'controller'  => 'help' ,
@@ -63,6 +78,7 @@ $router->addRoute('*', 'support', array(
 
 
 
+<<<<<<< HEAD
 // Search
 
 
@@ -74,21 +90,37 @@ $router->addRoute('*', 'search/item/:itemname/:itemid' , array(
 $router->addRoute('*', 'search/' , array(
 	'controller'  => 'search' ,
 	'action'      => 'results' ,
+=======
+// Search Routes
+
+$router->addRoute('*', 'search/' , array(
+	'controller'  => 'item' ,
+	'action'      => 'search' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 ));
 
 
 
+<<<<<<< HEAD
 // My Profile
 
 $router->addRoute('*', 'myprofile/items/:itemname/:itemid', array(
 	'controller'  => 'myprofile' ,
 	'action'      => 'viewitem' ,
+=======
+// Custom field Routes
+
+$router->addRoute('*', 'custom/' , array(
+	'controller'  => 'item' ,
+	'action'      => 'custom' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 ));
 
 
 
 // Tags
 
+<<<<<<< HEAD
 $router->addRoute('*', 'tag/:tag', array(
 	'controller'  => 'tag' ,
 	'action'      => 'view' ,
@@ -106,12 +138,21 @@ $router->addRoute('*', 'tag/:tag/item/:itemname/:itemid', array(
 $router->addRoute('*', 'facility/:item/:itemname/:itemid', array(
 	'controller'  => 'facility' ,
 	'action'      => 'viewitem' ,
+=======
+$router->addRoute('*', 'tags/:tag', array(
+	'controller'  => 'item' ,
+	'action'      => 'tags' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 ));
 
 
 
+<<<<<<< HEAD
 
 // Resource / File
+=======
+// Resource / File Route
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', 'resource/:id', array(
 	'controller'  => 'resource' ,
@@ -120,18 +161,27 @@ $router->addRoute('*', 'resource/:id', array(
 
 
 
+<<<<<<< HEAD
 // Item
+=======
+// Item Routes
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', 'item/:itemname/:itemid', array(
 	'controller'  => 'item' ,
 	'action'      => 'view' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', 'item/:itemname/:itemid/file/:filename', array(
 	'controller'  => 'item' ,
 	'action'      => 'downloadfile' ,
 ));
 
+<<<<<<< HEAD
 $router->addRoute('*', 'item/:itemname/:itemid/image/:image', array(
 	'controller'  => 'item' ,
 	'action'      => 'downloadimage' ,
@@ -140,22 +190,39 @@ $router->addRoute('*', 'item/:itemname/:itemid/image/:image', array(
 
 
 // Department
+=======
+
+
+// Department Routes
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 $router->addRoute('*', $model->lang['dept.route'] , array(
 	'controller'  => 'department' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid' , array(
 	'controller'  => 'department' ,
 	'action'      => 'view' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/category/:catname/:catid', array(
 	'controller'  => 'department' ,
 	'action'      => 'view' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/item/:itemname/:itemid', array(
 	'controller'  => 'department' ,
 	'action'      => 'viewitem' ,
@@ -163,6 +230,7 @@ $router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/item/:item
 
 
 
+<<<<<<< HEAD
 // Custom Field
 
 
@@ -170,12 +238,20 @@ $router->addRoute('*', 'customfield/:fieldname/:fieldid/:fieldvalue/item/:itemna
 	'controller'  => 'customfield' ,
 	'action'      => 'viewitem' ,
 ));
+=======
+// Custom Field Routes
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', 'customfield/:fieldname/:fieldid/:fieldvalue', array(
 	'controller'  => 'customfield' ,
 	'action'      => 'viewvalue' ,
 ));
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $router->addRoute('*', 'customfield/:fieldname/:fieldid', array(
 	'controller'  => 'customfield' ,
 	'action'      => 'listvalues' ,
@@ -183,7 +259,11 @@ $router->addRoute('*', 'customfield/:fieldname/:fieldid', array(
 
 
 
+<<<<<<< HEAD
 // Staff Contact
+=======
+// Staff Contact Routes
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', 'contact/:contactid' , array(
 	'controller'  => 'contact' ,
@@ -192,6 +272,7 @@ $router->addRoute('*', 'contact/:contactid' , array(
 
 
 
+<<<<<<< HEAD
 // Category
 
 $router->addRoute('*', $model->lang['cat.route'], array(
@@ -263,16 +344,33 @@ $router->addRoute('*', 'browse/:param1/:param2/:param3/item/:itemname/:itemid', 
 
 $router->addRoute('*', 'browse/:param1/:param2/:param3/:param4/item/:itemname/:itemid', array(
 	'controller'  => 'browse' ,
+=======
+// Category Routes
+
+
+$router->addRoute('*', 'category/:catname/:catid' , array(
+	'controller'  => 'category' ,
+	'action'      => 'view' ,
+));
+
+
+$router->addRoute('*', 'category/:catname/:catid/item/:itemname/:itemid', array(
+	'controller'  => 'category' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	'action'      => 'viewitem' ,
 ));
 
 
 
+<<<<<<< HEAD
 // ID
 
 $router->addRoute('*', 'id/:action/:id/:name', array (
 	'controller' => 'id' ,
 ));
+=======
+// ID Route
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', 'id/:action/:id', array (
 	'controller' => 'id' ,
@@ -280,6 +378,7 @@ $router->addRoute('*', 'id/:action/:id', array (
 
 
 
+<<<<<<< HEAD
 // Manufacturer A-Z
 
 $router->addRoute('*', 'a-z/' , array(
@@ -297,10 +396,25 @@ $router->addRoute('*', 'a-z/item/:itemname/:itemid' , array(
 $router->addRoute('*', 'enquiry/:itemid', array (
 	'controller'  => 'enquiry' ,
 	'action'      => 'index' ,
+=======
+// Filter Routes
+
+
+$router->addRoute('*', 'filter/' , array(
+	'controller'  => 'filter' ,
+	'action'      => 'view' ,
+));
+
+
+$router->addRoute('*', 'filter/JSON' , array(
+	'controller'  => 'filter' ,
+	'action'      => 'JSON' ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 ));
 
 
 
+<<<<<<< HEAD
 // OU Admin homepage
 
 $router->addRoute('*', 'ouadmin', array (
@@ -309,6 +423,15 @@ $router->addRoute('*', 'ouadmin', array (
 	'module'      => 'ouadmin' ,
 ));
 
+=======
+// Calibration Routes
+
+
+$router->addRoute('*', 'calibration/JSON' , array(
+	'controller'  => 'calibration' ,
+	'action'      => 'JSON' ,
+));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 // Admin homepage
@@ -320,8 +443,12 @@ $router->addRoute('*', 'admin', array (
 ));
 
 
+<<<<<<< HEAD
 
 // Homepage
+=======
+// Homepage Route
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $router->addRoute('*', '/', array(
 	'controller'  => 'home' ,

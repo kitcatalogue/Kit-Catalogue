@@ -83,7 +83,11 @@ class Customfieldstore {
 
 		$this->_db->delete('item_custom', "field_id={$id}");
 
+<<<<<<< HEAD
 		$affected_count = $this->_db->delete('custom_field', "field_id={$id}");
+=======
+		$this->_db->delete('custom_field', "field_id={$id}");
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		return ($affected_count>0);
 	}// /method
@@ -138,6 +142,52 @@ class Customfieldstore {
 
 
 	/**
+<<<<<<< HEAD
+=======
+	 * Insert a new custom field.
+	 *
+	 * @param  object  $customfield  The field to create.
+	 *
+	 * @return  mixed  The new id created.  On fail, null.
+	 */
+	public function insert($customfield) {
+
+		$name = $this->_db->prepareValue($customfield->name);
+
+		$num_rows = $this->_db->query("
+			SELECT field_id
+			FROM custom_field
+			WHERE name=$name
+		");
+
+		if ($num_rows>0) {
+			return null;
+		} else {
+			$binds = $this->convertObjectToRow($customfield);
+
+			unset($binds['field_id']);   // Don't insert the id, we want a new one
+
+			$new_id = $this->_db->insert('custom_field', $binds);
+
+			return ($new_id>0) ? $new_id : null ;
+		}
+	}// /method
+
+
+
+	/**
+	 * Get a new instance of a Customfield object.
+	 *
+	 * @return  object
+	 */
+	public function newCustomfield() {
+		return new Customfield();
+	}// /method
+
+
+
+	/**
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Get the values used for a custom field, ranked by the number of items represented.
 	 *
 	 * A $limit of '0' means all matching fields will be returned.
@@ -200,6 +250,7 @@ class Customfieldstore {
 
 
 
+<<<<<<< HEAD
 	/**
 	 * Insert a new custom field.
 	 *
@@ -262,6 +313,8 @@ class Customfieldstore {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/* ----------------------------------------------------------------------
 	 * Private Methods
 	 */

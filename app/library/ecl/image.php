@@ -10,8 +10,11 @@ class Ecl_Image {
 	// Private Properties
 	protected $_image = null;   // The image resource
 
+<<<<<<< HEAD
 	protected $_filename = null;
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	protected $_width = null;
 	protected $_height = null;
 
@@ -20,6 +23,7 @@ class Ecl_Image {
 	/**
 	 * Constructor
 	 *
+<<<<<<< HEAD
 	 * @see createFromFile()
 	 * @see createFromImage()
 	 * @see createFromString()
@@ -30,6 +34,10 @@ class Ecl_Image {
 		$this->_image = $resource;
 		$this->_width = imagesx($this->_image);
 		$this->_height = imagesy($this->_image);
+=======
+	 */
+	public function __construct() {
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /->__construct()
 
 
@@ -93,6 +101,7 @@ class Ecl_Image {
 
 
 	/**
+<<<<<<< HEAD
 	 * Create an image instance from the given file.
 	 *
 	 * @param  string  $filename  The file to load.
@@ -100,11 +109,26 @@ class Ecl_Image {
 	 * @return  object  The image object. On fail, null.
 	 */
 	public static function createFromFile($filename) {
+=======
+	 * Load this image from the given file.
+	 *
+	 * @param  string  $filename  The file to load.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function fromFile($filename) {
+
+		$this->clear();
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		if (!file_exists($filename)) { return false; }
 
 		$info = @getimagesize($filename);
+<<<<<<< HEAD
 		if (!$info) { return null; }
+=======
+		if (!$info) { return false; }
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$image_functions = array (
 			IMAGETYPE_GIF   => 'imagecreatefromgif' ,
@@ -114,6 +138,7 @@ class Ecl_Image {
 			IMAGETYPE_XBM   => 'imagecreatefromwxbm' ,
 		);
 
+<<<<<<< HEAD
 		if (!array_key_exists($info[2], $image_functions)) { return null; }
 
 		if (!function_exists($image_functions[$info[2]])) { return null; }
@@ -126,6 +151,19 @@ class Ecl_Image {
 		$img->setFilename($filename);
 
 		return $img;
+=======
+		if (!array_key_exists($info[2], $image_functions)) { return false; }
+
+		if (!function_exists($image_functions[$info[2]])) { return false; }
+
+		// Get the image resource
+		$this->_image = $image_functions[$info[2]]($filename);
+
+		$this->_width = $info[0];
+		$this->_height = $info[1];
+
+		return true;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -135,16 +173,31 @@ class Ecl_Image {
 	 *
 	 * @param  resource  $img  The image to load.
 	 *
+<<<<<<< HEAD
 	 * @return  object  The image object. On fail, null.
 	 */
 	public static function createFromImage($resource) {
 		if (!is_resource($resource)) { return null; }
 		return new static($resource);
+=======
+	 * @return  boolean  The operation was successful
+	 */
+	public function fromImage($img) {
+		if (!is_resource($img)) { return false; }
+
+		// Get the image resource
+		$this->_image = $img;
+		$this->_width = imagesx($this->_image);
+		$this->_height = imagesy($this->_image);
+
+		return true;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
 
 	/**
+<<<<<<< HEAD
 	 * Create an image instance from a string representation.
 	 *
 	 * @param  string  $string  The image as a raw string.
@@ -157,6 +210,29 @@ class Ecl_Image {
 		if (!$img) { return null; }
 
 		return self::createFromResource($img_resourcE);
+=======
+	 * Load this image from the string representation.
+	 *
+	 * @param  string  $string  The image as a raw string.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function fromString($string) {
+
+		$this->clear();
+
+		$img = imagecreatefromstring($string);
+
+		if (!$img) { return false; }
+
+		// Get the image resource
+		$this->_image = $img;
+
+		$this->_width = imagesx($this->_image);
+		$this->_height = imagesy($this->_image);
+
+		return true;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -277,7 +353,11 @@ class Ecl_Image {
 			// Resize the image
 			imagecopyresampled($target, $source, 0, 0, 0, 0, $new_width, $new_height, $old_width, $old_height);
 
+<<<<<<< HEAD
 			imagedestroy($source);
+=======
+			imagedestory($source);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 			$this->_image = $target;
 
@@ -356,6 +436,7 @@ class Ecl_Image {
 
 
 
+<<<<<<< HEAD
 	public function setFilename($filename) {
 		$this->_filename = $filename;
 		return true;
@@ -363,6 +444,8 @@ class Ecl_Image {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Returns the Data URL equivalent for the current image contents in jpeg format.
 	 *
@@ -387,6 +470,7 @@ class Ecl_Image {
 
 
 	/**
+<<<<<<< HEAD
 	 * Save the image back to its original filename.
 	 *
 	 * If the image was not created using ->fromFile() then this method will fail.
@@ -419,6 +503,8 @@ class Ecl_Image {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Save this image to a file in gif format.
 	 *
 	 * @param  string  $filename  The file to save to.

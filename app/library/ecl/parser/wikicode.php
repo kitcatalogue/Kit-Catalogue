@@ -3,7 +3,11 @@
  * A class providing Creole 1.0 Wiki-code parsing.
  *
  * @package  Ecl
+<<<<<<< HEAD
  * @version  1.1.0
+=======
+ * @version  1.0.0
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 class Ecl_Parser_Wikicode {
 
@@ -61,7 +65,11 @@ class Ecl_Parser_Wikicode {
 
 				$first_char = substr($line, 0, 1);
 
+<<<<<<< HEAD
 				if ($first_char !== false) {
+=======
+				if ($first_char) {
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 					switch ($first_char) {
 						case '-' :   // Horizontal Line
 							$output .= $this->_parseHorizontalLine($i);
@@ -240,8 +248,13 @@ class Ecl_Parser_Wikicode {
 		$output = preg_replace('%__(.*)(?:__|$)%sU', '<strong>$1</strong>', $output);
 
 		// Italic
+<<<<<<< HEAD
 		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output);
 		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output);
+=======
+		$output = preg_replace('%(?<!http:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output);
+		$output = preg_replace('%(?<!http:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$output = preg_replace('%\'\'(.*)(?\'\'|$)%sU', '<em>$1</em>', $output);
 
 		// Subscript
@@ -364,6 +377,10 @@ class Ecl_Parser_Wikicode {
 		foreach($lines as $i => $line) {
 			preg_match('%^([\*#]*)(.*)%', $line, $matches);
 			if ($matches) {
+<<<<<<< HEAD
+=======
+				// @debug : Ecl::dump($matches);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				$list_tag = trim($matches[1]);
 				$list_text = trim($matches[2]);
 
@@ -508,7 +525,11 @@ class Ecl_Parser_Wikicode {
 						}
 					}
 
+<<<<<<< HEAD
 					$output .= "</tr>\n";
+=======
+					$output .= "<tr>\n";
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 					$end = ($line_idx == $this->_lines_count-1);
 					$line_idx++;

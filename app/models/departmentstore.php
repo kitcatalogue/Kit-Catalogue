@@ -173,6 +173,7 @@ class Departmentstore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Find all department IDs and Names, and their respective counts, for the items specified.
 	 *
 	 * @param  array  $id  The array of item IDs to find.
@@ -196,6 +197,8 @@ class Departmentstore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Find a department by its name.
 	 *
 	 * @param  string  $name
@@ -221,6 +224,7 @@ class Departmentstore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Find an existing department with the given name, or create a new one with the name.
 	 *
 	 * If $dept_to_create is given, then it will be inserted and returned as the new department.
@@ -247,6 +251,8 @@ class Departmentstore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Find the requested number of departments, ranked by item usage, for the given visibility.
 	 *
 	 * @param  integer  $num  The number of results to return.
@@ -343,6 +349,7 @@ class Departmentstore {
 	 * This method uses caching to speed up subsequent lookups, so will be faster if you need more than one.
 	 *
 	 * @param  integer  $dept_id
+<<<<<<< HEAD
 	 * @param  string  $default  (optional) The default name to return.
 	 *
 	 * @return  string  The department's name.  On fail, $default.
@@ -352,6 +359,16 @@ class Departmentstore {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
 		return (isset($this->_lookup[$dept_id])) ? $this->_lookup[$dept_id] : $default ;
+=======
+	 *
+	 * @return  string  The department's name.  On fail, ''.
+	 */
+	public function lookupName($dept_id) {
+		if (null === $this->_lookup) {
+			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
+		}
+		return (isset($this->_lookup[$dept_id])) ? $this->_lookup[$dept_id] : '' ;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -380,7 +397,11 @@ class Departmentstore {
 		);
 
 
+<<<<<<< HEAD
 		// Get all the counts for each department
+=======
+		// Get all the counts for each category
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$update_info = null;
 
 		foreach($visibility_types as $type => $sql) {

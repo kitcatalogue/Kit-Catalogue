@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 <?php
 $lang = $this->model('lang');
 ?>
 <h1 class="green-bar">Administer <?php $this->out($lang['cat.label.plural']); ?></h1>
+=======
+<h1 class="green-bar">Administer Categories</h1>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 <div class="cf">
 
 	<div class="admin-box">
+<<<<<<< HEAD
 		<h3>Add a new <?php $this->out(strtolower($lang['cat.label'])); ?></h3>
+=======
+		<h3>Add a new category</h3>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		<?php
 		Ecl_Helper_Html::form('createcategoryform', $this->router()->makeAbsoluteUri('/admin/categories/create/') );
@@ -26,8 +34,13 @@ $lang = $this->model('lang');
 
 
 	<div class="admin-box">
+<<<<<<< HEAD
 		<h3>Rebuild <?php $this->out($lang['cat.label']); ?> Item Counts</h3>
 		<p>If you need to manually rebuild the item counts cached for each <?php $this->out(strtolower($lang['cat.label'])); ?>, use the button below.</p>
+=======
+		<h3>Rebuild Category Item Counts</h3>
+		<p>If you need to manually rebuild the item counts cached for each category, use the button below.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<?php
 				Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/categories/rebuildcounts/') );
 				Ecl_Helper_Html::formSubmit('submitrebuild', 'Rebuild Item Counts');
@@ -39,7 +52,11 @@ $lang = $this->model('lang');
 
 	<div class="admin-box">
 		<h3>Configure CPV Codes</h3>
+<<<<<<< HEAD
 		<p>The full CPV list contains almost 9,500 entries and can slow down the <?php $this->out(strtolower($lang['cat.label'])); ?> administration pages. You can configure Kit-Catalogue to only use the CPV codes you find relevant by using the button below.</p>
+=======
+		<p>The full CPV list contains almost 9,500 entries and can slow down the category administration pages. You can configure Kit-Catalogue to only use the CPV codes you find relevant by using the button below.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<?php
 			Ecl_Helper_Html::form('rebuildcountsform', $this->router()->makeAbsoluteUri('/admin/categories/cpvcodes') );
 			Ecl_Helper_Html::formSubmit('submitcpvcodes', 'Configure CPV Codes');
@@ -47,8 +64,13 @@ $lang = $this->model('lang');
 			?>
 	</div>
 
+<<<<<<< HEAD
 	<p>Below is the list of the <?php $this->out(strtolower($lang['cat.label.plural'])); ?> available for use in this catalogue.</p>
 	<p><?php $this->out($lang['cat.label.plural']); ?> are used to group together items of equipment with a similar purpose or functionality.</p>
+=======
+	<p>Below is the list of the categories available for use in this catalogue.</p>
+	<p>Categories are used to group together items of equipment with a similar purpose or functionality.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	<?php

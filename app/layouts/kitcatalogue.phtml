@@ -1,10 +1,15 @@
 <?php
 error_reporting(E_ALL);
+<<<<<<< HEAD
 $app_root = $this->model('app.root');
 $www_root = rtrim($this->router()->makeAbsoluteUri('/'), '/');
 
 
 $user = $this->model('user');
+=======
+$www_root = $this->model('app.www');
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $lang = $this->model('lang');
 
 
@@ -25,6 +30,7 @@ $lang = $this->model('lang');
 	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
 		<?php
 	}
+<<<<<<< HEAD
 
 	$this->renderSection('layout.head');
 
@@ -33,6 +39,9 @@ $lang = $this->model('lang');
 			include("{$app_root}/local/local_head.html");
 		}
 	}
+=======
+	$this->renderSection('layout.head');
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	?>
 </head>
 <?php echo $this->getSection('layout.pre-body'); ?>
@@ -45,6 +54,7 @@ $lang = $this->model('lang');
 			<a class="logo" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.jpg" alt="Kit-Catalogue" /></a>
 
 			<?php
+<<<<<<< HEAD
 			$org_logo = $this->model()->get('org.logo');
 			$org_www = $this->model()->get('org.www');
 			if (!empty($org_logo)) {
@@ -62,6 +72,18 @@ $lang = $this->model('lang');
 
 			$user = $this->model('user');
 			?>
+=======
+		$org_logo = $this->model()->get('org.logo');
+		if (!empty($org_logo)) {
+			?>
+			<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+			<?php
+		}
+		$this->renderSection('layout.header');
+
+		$user = $this->model('user');
+		?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		</div>
 	</div>
 
@@ -71,6 +93,7 @@ $lang = $this->model('lang');
 		?>
 	<div id="userbar" class="cf">
 		<ul id="usernav">
+<<<<<<< HEAD
 			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out</a></li>
 			<?php
 			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
@@ -95,6 +118,17 @@ $lang = $this->model('lang');
 				}
 				$this->out($name);
 			?></strong></li>
+=======
+			<li><a href="<?php echo $www_root; ?>/signin/signout">Sign Out</a></li>
+			<?php
+			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/admin">Administration</a></li>
+				<?php
+			}
+			?>
+			<li>Welcome <strong><?php $this->out("{$user->forename} {$user->surname}"); ?></strong></li>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		</ul>
 	</div>
 		<?php
@@ -102,6 +136,7 @@ $lang = $this->model('lang');
 	?>
 
 	<div id="top">
+<<<<<<< HEAD
 
 		<div id="nav" class="cf">
 			<?php
@@ -178,6 +213,47 @@ $lang = $this->model('lang');
 		?>
 	</div>
 
+=======
+		<ul id="nav" class="cf">
+			<li><a href="<?php echo $www_root; ?>/">Home</a></li>
+			<?php
+			if ( !$this->model('user')->isAnonymous() || $this->model('app.allow_anonymous') ) {
+			?>
+			<li><a href="<?php echo $www_root; ?>/category/"><?php $this->out($lang['cat.label.plural']); ?></a></li>
+			<li><a href="<?php echo $www_root; ?>/<?php echo $lang['dept.route'] ?>/"><?php $this->out($lang['dept.label.plural']); ?></a></li>
+			<li><a href="<?php echo $www_root; ?>/item/">Items A - Z</a></li>
+			<?php
+			}
+			if ($user->isAnonymous()) {
+				?>
+				<li class="user" style="float: right;"><a href="<?php echo $www_root; ?>/signin/">Sign In</a></li>
+				<?php
+			}
+			?>
+		</ul>
+		<?php
+		if ($this->hasBreadcrumbs()) {?>
+		<ul id="breadcrumbs"><?php
+			$this->renderBreadcrumbs();?>
+		</ul><?php
+		}
+		if ( (!$this->model('user')->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {?>
+		<form id="search-form" action="<?php echo $www_root; ?>/search/" method="get">
+			<div id="search-box">
+				<input type="text" name="q" id="search" class="hint" value="Search..." onfocus="if (this.value=='Search...') { this.className = ''; this.value = ''; }" onblur="if (this.value == '') { this.className = 'hint'; this.value = 'Search...'; }" />
+				<input type="image" name="searchsubmit" id="search-image" src="<?php echo $www_root; ?>/images/bg-search.png" />
+			</div>
+		</form><?php
+		}
+
+		if ($this->model('user')->isAnonymous()) {
+			?>
+			<p class="signin_warning"><strong>Please <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">sign in</a> to view the full catalogue.</strong> Only some items of equipment may be visible to the public.</p>
+			<?php
+		}
+		?>
+	</div>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<?php
 	$this->renderFeedback();
 
@@ -193,9 +269,13 @@ $lang = $this->model('lang');
 
 		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
 
+<<<<<<< HEAD
 		<?php $this->renderView('snippets_licenceinfo', ''); ?>
 
 		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v<?php $this->out($this->model('app.version')); ?>).<br />
+=======
+		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v.<?php $this->out($this->model('app.version')); ?>).<br />
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>
 	</div>
 </div>

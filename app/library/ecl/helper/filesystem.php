@@ -6,7 +6,11 @@
  *
  * @package  Ecl
  * @static
+<<<<<<< HEAD
  * @version  1.2.0
+=======
+ * @version  1.0.0
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 class Ecl_Helper_Filesystem {
 
@@ -112,11 +116,16 @@ class Ecl_Helper_Filesystem {
 	 *
 	 * Does no error checking.
 	 *
+<<<<<<< HEAD
 	 * @param  mixed  $path  The path of the file(s) to delete.
+=======
+	 * @param  string  $path  The path of the file to delete.
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 *
 	 * @return  boolean  The operation was successful.
 	 */
 	public static function deleteFile($path) {
+<<<<<<< HEAD
 		if (is_array($path)) {
 			foreach($path as $filepath) {
 				@unlink($filepath);
@@ -125,6 +134,9 @@ class Ecl_Helper_Filesystem {
 		} else {
 			return @unlink($path);
 		}
+=======
+		return @unlink($path);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -238,6 +250,7 @@ class Ecl_Helper_Filesystem {
 	 * Get the files within the given folder.
 	 *
 	 * @param  string  $path  The path of the folder to scan.
+<<<<<<< HEAD
 	 * @param  string  $pattern  (optional) A regex pattern to whitelist files against. (default: '')
 	 *
 	 * @return  array  An array of files.
@@ -277,15 +290,27 @@ class Ecl_Helper_Filesystem {
 		$files = array();
 
 		$now = time();
+=======
+	 *
+	 * @return  mixed  An array of filenames. On fail, null.
+	 */
+	public static function getFiles($path) {
+		$files = null;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$all_files = self::getFolderContents($path);
 		if ($all_files) {
 			foreach($all_files as $i => $name) {
+<<<<<<< HEAD
 				$full_path = $path.'/'.$name;
 				if (!is_dir($full_path)) {
 					if ( ($now - filemtime($full_path)) > $age) {
 						$files[] = $name;
 					}
+=======
+				if (!is_dir($path.'/'.$name)) {
+					$files[] = $name;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				}
 			}
 		}

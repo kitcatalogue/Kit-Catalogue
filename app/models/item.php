@@ -6,6 +6,7 @@
  */
 class Item {
 
+<<<<<<< HEAD
 	const CALIB_YES    = 'yes';
 	const CALIB_NO     = 'no';
 	const CALIB_AUTO   = 'auto';
@@ -20,6 +21,16 @@ class Item {
 
 	public $is_parent = false;   // Can act as a parent facility to other items
 
+=======
+	const CALIB_YES = 'yes';
+	const CALIB_NO = 'no';
+	const CALIB_AUTO = 'auto';
+	const CALIB_NOTAPP = '';
+
+	// Public Properties
+	public $id = null;   // The internal ID (numeric)
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
     public $title = '';
 	public $manufacturer = '';
 	public $model = '';
@@ -28,15 +39,19 @@ class Item {
 	public $full_description = '';
 	public $specification = '';
 
+<<<<<<< HEAD
 	public $upgrades = '';
 	public $future_upgrades = '';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	public $acronym = '';
 	public $keywords = '';
 
 	public $technique = '';
 
 	public $availability = '';
+<<<<<<< HEAD
 	public $restrictions = '';
 
 	public $usergroup = '';
@@ -47,6 +62,12 @@ class Item {
 	public $organisation = ''; // @todo : Deprecated - remove
 
 	public $ou = null;
+=======
+
+	public $department = '';   // Department ID
+	public $usergroup = '';
+	public $access = '';   // Access ID
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	public $site = '';       // Site ID
 	public $building = '';   // Building ID
@@ -60,15 +81,21 @@ class Item {
 	public $visibility = 0;
 
 	public $image = '';
+<<<<<<< HEAD
 	public $embedded_content = '';
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	public $manufacturer_website = '';
 	public $copyright_notice = '';
 
 	public $date_added = null;
 	public $date_updated = null;
+<<<<<<< HEAD
 	public $last_updated_username = null;
 	public $last_updated_email = null;
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	public $training_required = null;
 	public $training_provided = null;
@@ -89,6 +116,7 @@ class Item {
 	public $supplier = '';     // Who supplied the item (may not be manufacturer)
 	public $date_of_purchase = null;
 
+<<<<<<< HEAD
 	public $cost = '';
 	public $replacement_cost = '';
 	public $end_of_life = null;
@@ -99,6 +127,8 @@ class Item {
 
 	public $comments = '';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	public $archived = false;
 
 
@@ -114,6 +144,7 @@ class Item {
 	public function __get($name) {
 
 		switch ($name) {
+<<<<<<< HEAD
 			case 'idslug':
 				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
 				break;
@@ -123,6 +154,8 @@ class Item {
 			case 'last_updated_by':
 				return (!empty($this->last_updated_email)) ? $this->last_updated_email : $this->last_updated_username ;
 				break;
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			case 'name':
 				if (!empty($this->title)) {
 					return $this->title;
@@ -145,6 +178,7 @@ class Item {
 
 
 
+<<<<<<< HEAD
 	public function __isset($name) {
 		$x = $this->$name;
 		return isset($x);
@@ -152,6 +186,8 @@ class Item {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 /* --------------------------------------------------------------------------------
  * Public Methods
  */
@@ -182,6 +218,7 @@ class Item {
 	public function validate(&$errors = null) {
 		$errors = null;
 
+<<<<<<< HEAD
 		if ( (empty($this->item_title)) && (empty($this->manufacturer)) ) {
 			$errors['title'] = 'Title is empty. Either Title or Manufacturer must be supplied.';
 			$errors['manufacturer'] = 'Manufacturer is empty. Either Title or Manufacturer must be supplied.';
@@ -191,6 +228,14 @@ class Item {
 
 		if (empty($this->contact_1_email)) { $errors['contact_1_email'] = 'Contact 1 Email is empty.'; }
 		//elseif (false === filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
+=======
+		if (empty($this->manufacturer)) { $errors['manufacturer'] = 'Manufacturer is empty.'; }
+		if (empty($this->model)) { $errors['model'] = 'Model is empty'; }
+		if (empty($this->department)) { $errors['department'] = 'Department is empty.'; }
+
+		if (empty($this->contact_1_email)) { $errors['contact_1_email'] = 'Contact 1 Email is empty.'; }
+		//elseif (filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		if (!empty($errors)) { return false; }
 

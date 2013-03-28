@@ -11,6 +11,7 @@ class Building {
 	public $code = '';
 	public $name = '';
 	public $site_id = null;
+<<<<<<< HEAD
 
 	public $latitude = null;
 	public $longitude = null;
@@ -24,6 +25,13 @@ class Building {
 			case 'idslug':
 				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
 				break;
+=======
+	public $latitude = null;
+	public $longitude = null;
+
+	public function __get($name) {
+		switch ($name) {
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			case 'name':
 				return (empty($this->code)) ? $name : "{$name} ({$code})" ;
 				break;

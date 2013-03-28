@@ -1,13 +1,49 @@
 <?php
+<<<<<<< HEAD
 $this->router()->layout(null);
 
 // IE 8 over HTTPS fix
 header("Cache-Control: private, max-age=15");
 header("Pragma: ");
 
+=======
+/**
+ * Administration item edit view
+ *
+ * This file handles the view of an item in edit mode
+ *
+ * @copyright  2012 Loughborough University
+ *
+ * This file is part of Kit Catalogue
+ * 
+ * Kit Catalogue is free software: you can redistribute it and/or modify it 
+ * under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version.
+ * 
+ * Kit Catalogue is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+ * for more details.
+ * 
+ * You should have received a copy of the GNU General Public License 
+ * along with Kit Catalogue. If not, see http://www.gnu.org/licenses/.
+ *
+ * @author     Paul Newman <p.m.newman@lboro.ac.uk>
+ * @license    http://www.gnu.org/licenses/
+ */
+$this->router()->layout(null);
+
+
+header("Cache-Control: public");
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename=kitcatalogue_template.csv");
 header('Content-Type: text/csv');
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 echo(implode(', ', $this->row_headers) ."\n");
 ?>

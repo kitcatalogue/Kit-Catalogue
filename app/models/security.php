@@ -15,15 +15,23 @@ class Security {
 
 	protected $_perm_lookup = array();
 
+<<<<<<< HEAD
 	protected $_ou_adminable = array();
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
 	 * Constructor
 	 *
+<<<<<<< HEAD
 	 * @param  object  $user  An Ecl_User object.
 	 * @param  object  $sysauth  An Ecl_Authorisation object.
+=======
+	 * @param  object  $database  An Ecl_Db data access object.
+	 * @param  object  $user  An Ecl_User object.
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * @param  object  $model  An Ecl_Router_Model object.
 	 */
 	public function __construct($user, $sysauth, $model) {
@@ -33,6 +41,7 @@ class Security {
 
 		$authorisations = $this->_sysauth->findForAgent($this->_user->username);
 		$this->_auth_lookup = Ecl_Helper_Array::extractGroupedValues($authorisations, 'auth', 'item');
+<<<<<<< HEAD
 		if (is_null($this->_auth_lookup)) { $this->_auth_lookup = array(); }
 
 		// If there are some OU auths, fetch the sub-ou IDs as they are also adminable.
@@ -57,6 +66,10 @@ class Security {
 				}
 			}
 		}
+=======
+
+		if (is_null($this->_auth_lookup)) { $this->_auth_lookup = array(); }
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -100,17 +113,30 @@ class Security {
 
 
 	/**
+<<<<<<< HEAD
 	 * Check if the current user has the requested ou and auth.
 	 *
 	 * Convenience method that converts an ou_id to a proper authorisation 'object'.
 	 *
 	 * @param  integer  $ou_id
+=======
+	 * Check if the current user has the requested department and auth.
+	 *
+	 * Convenience method that converts a department_id to a proper authorisation 'object'.
+	 *
+	 * @param  integer  $dept_id
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * @param  string  $auth
 	 *
 	 * @return  boolean  The user has the auth on the requested object.
 	 */
+<<<<<<< HEAD
 	public function checkOUAuth($ou_id, $auth) {
 		return $this->checkObjectAuth("ou_{$ou_id}", $auth);
+=======
+	public function checkDeptAuth($dept_id, $auth) {
+		return $this->checkObjectAuth("dept_{$dept_id}", $auth);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}/// method
 
 
@@ -158,6 +184,7 @@ class Security {
 				// Hide items that are 'draft' unless user is
 				// the custodian
 				if ($item->visibility != 3) {
+<<<<<<< HEAD
 					$perms['item.accesslevel.view']  = true;
 					$perms['item.customfields.view'] = true;
 					$perms['item.files.view']        = true;
@@ -167,10 +194,22 @@ class Security {
 				if ($new_item) {
 					// If user has ANY OU editing rights
 					if ($this->checkAuth(KC__AUTH_CANOUADMIN)) {
+=======
+					$perms['item.accesslevel.view']   = true;
+					$perms['item.customfields.view']  = true;
+					$perms['item.files.view']         = true;
+					$perms['item.location.view']      = true;
+				}
+
+				if ($new_item) {
+					// If user has ANY department editing rights
+					if ($this->checkAuth(KC__AUTH_CANEDIT)) {
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						$perms['site.item.edit']  = true;
 					}
 				} else {
 					// If user is the item custodian (has the same email address)
+<<<<<<< HEAD
 					if (
 						(!empty($this->_user->email))
 						&& (
@@ -188,6 +227,23 @@ class Security {
 						// If user has editing rights for the item's OU
 						if ($this->checkOUAuth($item->ou_id, KC__AUTH_CANOUADMIN)) {
 							$perms['site.item.edit'] = true;
+=======
+					if ($this->_user->email == $item->contact_1_email
+						|| $this->_user->email == $item->contact_2_email) {
+							$perms['site.item.edit']  = true;
+
+							$perms['item.accesslevel.view']   = true;
+							$perms['item.customfields.view']  = true;
+							$perms['item.files.view']         = true;
+							$perms['item.location.view']      = true;
+					} else {
+						// If user has editing rights for the item's department
+						// and the item isn't set to draft...
+						if ($item->visibility!=3) {
+							if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
+								$perms['site.item.edit'] = true;
+							}
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						}
 					}
 				}
@@ -207,6 +263,7 @@ class Security {
 
 
 
+<<<<<<< HEAD
 	/**
 	 * Find the ous the current user has the given auth for.
 	 *
@@ -229,6 +286,8 @@ class Security {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 /* --------------------------------------------------------------------------------
  * Private Methods
  */

@@ -37,8 +37,11 @@ class Ecl_Db_Mysql {
 
 	protected $_debug = false;   // debug mode - Echos verbose error messages
 
+<<<<<<< HEAD
 	protected $_schema = null;   // Schema instance
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
@@ -794,12 +797,15 @@ class Ecl_Db_Mysql {
 
 
 
+<<<<<<< HEAD
 	public function getDatabaseName() {
 		return $this->_config['database'];
 	}
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  	/**
 	 * Return the PHP timestamp represented by the given database formatted string
 	 *
@@ -914,6 +920,7 @@ class Ecl_Db_Mysql {
 
 
 
+<<<<<<< HEAD
 	public function getSchema() {
 		if (!($this->_schema instanceof Ecl_Db_Mysql_Schema)) {
 			$this->_schema = new Ecl_Db_Mysql_Schema($this);
@@ -924,6 +931,8 @@ class Ecl_Db_Mysql {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Return the last query run
 	 */
@@ -956,12 +965,15 @@ class Ecl_Db_Mysql {
 	/* Methods for preparing elements of an SQL query */
 
 
+<<<<<<< HEAD
 	public function prepareFieldName($field) {
 		$field = str_replace(array('`', '\\', "\0"), '', $field);
 		return "`{$field}`";
 	}
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	/**
 	 * Build a filter clause of the form (aaa='xxx' OR aaa='yyy' OR aaa='zzz' ... ).
@@ -974,7 +986,11 @@ class Ecl_Db_Mysql {
 	 * @return  string  The completed filter clause.
 	 */
 	public function prepareFilter($field_name, $filter_values, $logical_operator = 'OR', $comparison_operator = '=') {
+<<<<<<< HEAD
 		$filter_values = (array) $filter_values;
+=======
+		$filter_values = (array) $filter_values;	// cast values to array (in case it was only passed one)
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$filter_clause = '(';
 		$w_count = count($filter_values);
@@ -994,7 +1010,11 @@ class Ecl_Db_Mysql {
 	/**
 	 * Prepare an SQL query by replacing any placeholders using the given binds.
 	 *
+<<<<<<< HEAD
 	 * Placeholders should be of the form: ':name'
+=======
+	 * Placeholders should be of the form:  ':name'
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * The binds array should be of the form:  array ( name1 => value1, name2 => value2, ..)
 	 * Binds are automatically escaped before being replacing the relevant placeholder.
 	 *
@@ -1041,6 +1061,7 @@ class Ecl_Db_Mysql {
 
 
 
+<<<<<<< HEAD
 	public function prepareTableName($table) {
 		$table = str_replace(array('`', '\\', "\0"), '', $table);
 		return "`{$table}`";
@@ -1048,6 +1069,8 @@ class Ecl_Db_Mysql {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Prepare a value for putting into the database
 	 *
@@ -1065,6 +1088,7 @@ class Ecl_Db_Mysql {
 
 
 	/**
+<<<<<<< HEAD
 	 * Set the connect to use the given charset
 	 *
 	 * @param  string  $charset
@@ -1080,6 +1104,8 @@ class Ecl_Db_Mysql {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Set the connection info to use
 	 *
 	 * @param  array  $config  An assoc-array of connection settings.
@@ -1102,6 +1128,7 @@ class Ecl_Db_Mysql {
 	/**
 	 * Set debug mode
 	 * When in debug mode, detailed error reports are echoed
+<<<<<<< HEAD
 	 *
 	 * @param  boolean  Debug mode to use.
 	 *
@@ -1110,6 +1137,11 @@ class Ecl_Db_Mysql {
 	public function setDebug($on) {
 		$this->_debug = (bool) $on;
 		return true;
+=======
+	 */
+	public function setDebug($on) {
+		$this->_debug = (bool) $on;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 

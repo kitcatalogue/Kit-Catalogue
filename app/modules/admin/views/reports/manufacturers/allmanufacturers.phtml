@@ -10,10 +10,14 @@ $this->model('db')->query("
 $all_manufacturers = $this->model('db')->getResult('manufacturer', 'item_count');
 
 if ($this->is_download) {
+<<<<<<< HEAD
 	// IE 8 over HTTPS fix
 	header("Cache-Control: private, max-age=15");
 	header("Pragma: ");
 
+=======
+	header("Cache-Control: public");
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	header("Content-Description: File Transfer");
 	header("Content-Disposition: attachment; filename=all_staff_contacts.csv");
 	header('Content-Type: text/csv');

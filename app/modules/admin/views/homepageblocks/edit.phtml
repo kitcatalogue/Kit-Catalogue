@@ -3,12 +3,20 @@ $block = $this->block;
 
 
 $this->layout()->addGlobalJavascript();
+<<<<<<< HEAD
 
 $this->layout()->appendSection('layout.head', <<<EndJS
+=======
+$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
+$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
+
+$this->layout()->appendSection('layout.head', '
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
+<<<<<<< HEAD
 		var del_button = $('<input type="submit" name="submitdelete" value="Delete Homepage Block" />');
 		del_button.click(function () {
 			return confirm('Please confirm that you want to delete this homepage block.\\n\\nThis operation cannot be undone.');
@@ -71,6 +79,84 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 <div>
 	<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
 </div>
+=======
+		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete Block</a></div>");
+		del_button.click(function () {
+			$(\'#dialog-site\').html(\'' . $block->block_name . '\');
+			$(\'#dialog\').dialog(\'open\');
+		});
+		$("#delete_button_container").append(del_button);
+
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$(\'#dialog\').dialog({
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            modal: true,
+            resizable: false,
+            buttons: {
+                "Delete": function() {
+                	$(\'#submitdelete\').val(\'1\');
+                    $(\'#blockform\').submit();
+                },
+                "Cancel": function() {
+                    $(this).dialog("close");
+                }
+            }
+        });
+	});
+
+</script>
+');
+?>
+
+
+<h1>Edit Block : <?php $this->out($block->block_name); ?></h1>
+<p>Here you can edit this block.</p>
+<div id="delete_button_container"></div>
+
+
+<?php
+Ecl_Helper_Html::form('blockform', $this->request()->uri());
+Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
+Ecl_Helper_Html::formHidden('submitdelete', '');
+?>
+<h3>New block details</h3>
+
+	<dl class="form">
+
+		<dt>Name</dt>
+		<dd><?php Ecl_Helper_Html::formInput('block_name', 50, 250, $block->block_name); ?></dd>
+
+		<dt>Filter on</dt>
+		<dd><?php Ecl_Helper_Html::formSelect('block_to_find', $this->model('customfieldstore')->findAll()->toAssoc('id', 'name'), $block->block_to_find); ?></dd>
+
+		<dt>Enabled?</dt>
+		<dd>
+			<?php
+			Ecl_Helper_Html::formCheckbox('block_enabled', 'enabled', 'Yes', $block->block_enabled);
+			Ecl_Helper_Html::formLabel('enabled', 'Yes, enable this block');
+			?>
+		</dd>
+
+		<dt>Visibility</dt>
+		<dd>
+			<?php
+			$options = array(
+				'2' => 'Internal Only' ,
+				'1' => 'Public Only' ,
+				'3' => 'Both Internal and Public'
+			);
+			Ecl_Helper_Html::formSelect('visibility', $options, $block->visibility);
+			?>
+		</dd>
+
+	</dl>
+
+	<div>
+		<?php Ecl_Helper_Html::formSubmit('submitsave', 'Save Changes'); ?>
+	</div>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
@@ -79,3 +165,13 @@ Ecl_Helper_Html::formClose();
 ?>
 
 
+<<<<<<< HEAD
+=======
+
+<div id="dialog" title="Verify Delete Block">
+	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span> Are you sure you want to delete the block:</p>
+	<p id="dialog-blockname"></p>
+</div>
+
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

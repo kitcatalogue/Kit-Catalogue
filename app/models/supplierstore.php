@@ -207,6 +207,11 @@ class Supplierstore {
 	 */
 	public function findUsedRanked($num = 0, $visibility = null) {
 
+<<<<<<< HEAD
+=======
+		// @todo : This method is broken.
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$num = (int) $num;
 		$limit_clause = ($num>0) ? "LIMIT $num" : null ;
 
@@ -288,11 +293,16 @@ class Supplierstore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Lookup the name of a supplier using its ID.
+=======
+	 * Lookup the supplier_name of a supplier using its ID.
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 *
 	 * Use find() if you only want a single lookup.
 	 * This method uses caching to speed up subsequent lookups, so will be faster if you need more than one.
 	 *
+<<<<<<< HEAD
 	 * @param  integer  $supplier_id
 	 * @param  string  $default  (optional)
 	 *
@@ -303,6 +313,17 @@ class Supplierstore {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
 		return (isset($this->_lookup[$supplier_id])) ? $this->_lookup[$supplier_id] : $default ;
+=======
+	 * @param  integer  $dept_id
+	 *
+	 * @return  string  The supplier's supplier_name.  On fail, ''.
+	 */
+	public function lookupName($dept_id) {
+		if (null === $this->_lookup) {
+			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
+		}
+		return (isset($this->_lookup[$dept_id])) ? $this->_lookup[$dept_id] : '' ;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -331,12 +352,20 @@ class Supplierstore {
 		);
 
 
+<<<<<<< HEAD
 		// Get all the counts for each supplier
+=======
+		// Get all the counts for each category
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$update_info = null;
 
 		foreach($visibility_types as $type => $sql) {
 			$row_count = $this->_db->query($sql);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			if ($row_count>0) {
 				$counts = $this->_db->getResultAssoc('supplier_id', 'count');
 				if ($counts) {

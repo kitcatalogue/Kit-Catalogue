@@ -624,12 +624,22 @@ class Ecl_Http {
 		if (!$handle) {
 			return null;
 		} else {
+<<<<<<< HEAD
+=======
+			// @debug : Ecl::dump($request_string, 'HTTP :: full request');
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			// Sent the request and get the response
 			fwrite($handle, $request_string);
 			$raw_response = stream_get_contents($handle);
 			fclose($handle);
 		}
 
+<<<<<<< HEAD
+=======
+		// @debug : Ecl::dump($raw_response, 'HTTP :: full response');
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		return $raw_response;
 	}// /method
 

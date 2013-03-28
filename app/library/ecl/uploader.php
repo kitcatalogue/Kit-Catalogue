@@ -87,6 +87,7 @@ class Ecl_Uploader {
 
 
 	/**
+<<<<<<< HEAD
 	 * Get the PHP ini upload_max_size in bytes.
 	 *
 	 * @return  integer
@@ -122,6 +123,8 @@ class Ecl_Uploader {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Get the path to the uploaded file using that was uploaded through the given input-file element.
 	 *
 	 * @param  string  $input_name  The name of the HTML input element.

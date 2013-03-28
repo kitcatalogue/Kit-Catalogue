@@ -11,6 +11,7 @@ if (!empty($this->backlink)) {
 
 <p>To edit individual items of equipment, browse the site normally and look for <a class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
 <ul>
+<<<<<<< HEAD
 	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/customfields/index/'); ?>">Item Field Customisation</a></li>
 </ul>
 
@@ -31,3 +32,10 @@ if (!empty($this->backlink)) {
 		<p class="note">Export a back-up of all your item data to a CSV file.</p>
 	</li>
 </ul>
+=======
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/customise/'); ?>">Item Field Customisation</a></li>
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
+	<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+</ul>
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

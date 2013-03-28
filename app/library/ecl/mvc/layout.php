@@ -212,6 +212,7 @@ class Ecl_Mvc_Layout extends Ecl_Mvc {
 
 
 	/**
+<<<<<<< HEAD
 	 * Render and echo out a view.
 	 *
 	 * @param  string  $view_name
@@ -233,6 +234,17 @@ class Ecl_Mvc_Layout extends Ecl_Mvc {
 				throw new Ecl_Mvc_Layout_Exception("Unknown view: '$view_name' in module '$module_name'.", 1);
 			}
 		}
+=======
+	 * Render a snippet using the given parameters.
+	 *
+	 * @param  string  $template
+	 * @param  array  $params  (optional)
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function z_renderSnippet($template, $params = array() ) {
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 

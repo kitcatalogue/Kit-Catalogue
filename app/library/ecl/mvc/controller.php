@@ -68,6 +68,7 @@ abstract class Ecl_Mvc_Controller extends Ecl_Mvc {
 	public function action($action_name) {
 		$action_method = 'action' . ucfirst(strtolower($action_name));
 
+<<<<<<< HEAD
 		$this->_action = $action_method;
 		$this->_abort = false;
 
@@ -81,6 +82,19 @@ abstract class Ecl_Mvc_Controller extends Ecl_Mvc {
 
 		if (!$this->aborting()) {
 			$action_method = $this->_action;
+=======
+		// If the method doesn't exist throw an exception
+		if (!method_exists($this, $action_method)) {
+			throw new Ecl_Mvc_Controller_InvalidActionException("Unable to find action '$action_method' on controller '". $this->getName() ."'.", 1);
+			return false;
+		}
+
+		$this->_action = $action_method;
+		$this->_abort = false;
+
+		$this->beforeAction();
+		if (!$this->aborting()) {
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			$this->$action_method();
 			$this->afterAction();
 		}

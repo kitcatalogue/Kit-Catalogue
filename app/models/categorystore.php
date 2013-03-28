@@ -16,8 +16,11 @@ class Categorystore {
 	// Private Properties
 	protected $_db = null;
 
+<<<<<<< HEAD
 	protected $_lookup = null;
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
@@ -158,12 +161,23 @@ class Categorystore {
 	public function findAllUsed($visibility = null) {
 
 		switch ($visibility) {
+<<<<<<< HEAD
 			case KC__VISIBILITY_PUBLIC:
 				$where_clause = "WHERE item_count_public>'0'";
 				break;
 			case KC__VISIBILITY_INTERNAL:
 			default:
 				$where_clause = "WHERE item_count_internal>'0'";
+=======
+			case KC__VISIBILITY_INTERNAL:
+				$where_clause = "WHERE item_count_internal>'0'";
+				break;
+			case KC__VISIBILITY_PUBLIC:
+				$where_clause = "WHERE item_count_public>'0'";
+				break;
+			default:
+				$where_clause = null;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				break;
 		}// /switch
 
@@ -178,6 +192,7 @@ class Categorystore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Find all categories IDs and Names, and their respective counts, for the items specified.
 	 *
 	 * @param  array  $id  The array of item IDs to find.
@@ -205,6 +220,10 @@ class Categorystore {
 	 *
 	 * @fix : Deprecated - remove in favour of findForOU() later!
 	 *
+=======
+	 * Find categories for department.
+	 *
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * @param  string  $department_id  The department ID to check for.
 	 * @param  integer  $visibility
 	 *
@@ -257,6 +276,7 @@ class Categorystore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Find categories for OU.
 	 *
 	 * @param  integer  $ou_id  The OU ID to check for.
@@ -280,12 +300,33 @@ class Categorystore {
 				INNER JOIN item i ON ic.item_id=i.item_id
 			WHERE i.ou_id=:ou_id $where_clause
 			ORDER BY name ASC
+=======
+	 * Find all categories for the item specified.
+	 *
+	 * @param  integer  $item_id  The item to find.
+	 *
+	 * @return  object  An Ecl_Db_Recordset of objects requested.
+	 */
+	public function findForItem($item_id) {
+
+		$binds = array (
+			':item_id'  => $item_id ,
+		);
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM category c
+				INNER JOIN item_category ic ON c.category_id=ic.category_id
+			WHERE ic.item_id=:item_id
+			ORDER BY c.name
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
 
 
 
 	/**
+<<<<<<< HEAD
 	 * Find all categories for the item specified.
 	 *
 	 * @param  mixed  $id  The item, or array of items, to find.
@@ -324,6 +365,8 @@ class Categorystore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Get the vocabulary codes associated with the given category
 	 *
 	 * @param  integer  $category_id
@@ -351,6 +394,7 @@ class Categorystore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Get the names of categories associated with the given item.
 	 *
 	 * @param  integer  $item_id
@@ -376,6 +420,8 @@ class Categorystore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Create an SQL condition appropriate for the given visibility.
 	 *
 	 * The condition for internal-visibility will be empty, as all items should be returned.
@@ -436,6 +482,7 @@ class Categorystore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Lookup the name of a category using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
@@ -456,6 +503,8 @@ class Categorystore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Insert a new category.
 	 *
 	 * @param  object  $object  The Category to create.

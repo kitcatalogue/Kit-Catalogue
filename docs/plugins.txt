@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 * * * * * * * * * * * *
   Pluggable Functions
@@ -85,3 +86,92 @@ providing.
 	
 	
 
+=======
+
+* * * * * * * * * *
+Pluggable Functions
+* * * * * * * * * *
+
+
+
+At set points within the system, Kit-Catalogue will check to see if there are any custom functions associated with 
+specific named hook-points, and if there are, it will run those functions and process the results.
+
+You can attach your own custom PHP functions to these hook points by adding them to the local/plugins folder.  Any PHP 
+file within the local/plugins folder will be automatically read-in, so you can either edit the existing plugins.php 
+file, or create your own new file(s) to put your functions in.
+
+To attach a function to a named hook, use the following code:
+
+$plugins->add('<hook-name>', function(<arguments>) {
+	<your code>
+});
+
+
+Let's try an example.  When authenticating a user, Kit-Catalogue will call all the functions associated with the 
+hook-name 'signin.authenticate'.  You could hook in to this functionality, and supply your own customised 
+authentication function that could check your institutions Active Directory, access an authentication web service, 
+or read from a separate database list of user account details.
+
+This pseudo-code example may make things a bit clearer:
+
+
+$plugins->add('signin.authenticate', function($model, $username, $password) {
+
+	$database = new MyDatabase('databaseserver', 'dbuser', 'dbpass');
+
+	$row = $database->query("
+		SELECT *
+		FROM local_users
+		WHERE username='$username' AND password='$password'
+	");
+	 
+	if ($row) {
+		$_SESSION['_user_data'] = $row;
+		return true;
+	}
+
+	return false;
+});
+
+
+You can attach multiple functions to the same hook point, and they will be called in priority order.  You can set the 
+priority using the third parameter on the ->add() method. Lower priority functions are called before higher ones, and 
+the default priority is 10.
+
+The following example would call the web service authentication function first (priority 1), then the active directory 
+function (priority '5'):  
+
+
+$plugins->add('signin.authenticate', function($model, $username, $password) {
+	<check against active directory>
+}, 5);
+
+
+$plugins->add('signin.authenticate', function($model, $username, $password) {
+	<check against web service>
+}, 1);
+
+
+
+The following hook-names are available to be plugged in to.  Make sure you use the correct arguments list for 
+each hook point, as the parameters passed to each function can be very different.  For some of the more complicated 
+functionality, you may want to check the source code itself to see what operations your function could/should be 
+providing.
+
+
+
+'signin.authenticate'
+	Signature:  function ($model, $username, $password) {}
+	
+	If the user authenticates, functions should call:  $model->userstore()->setUserSession($info)
+	and then return true to signal no further authentications are required.
+	
+	If the user fails to authenticate, functions should return false.
+	
+	Authentication functions will be called in priority order, until one of them returns true,
+	(auth success) or all of them have returned false (auth failed).
+	
+	
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

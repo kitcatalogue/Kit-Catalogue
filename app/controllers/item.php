@@ -13,7 +13,11 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			return;
 		}
 
+<<<<<<< HEAD
 		$this->layout()->addBreadcrumb('Items', $this->router()->makeAbsoluteUri('/atoz/'));
+=======
+		$this->layout()->addBreadcrumb('Items', $this->router()->makeAbsoluteUri('/item/'));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -39,6 +43,7 @@ class Controller_Item extends Ecl_Mvc_Controller {
 
 
 
+<<<<<<< HEAD
 	public function actionDownloadimage () {
 		$item = $this->model('itemstore')->find($this->param('itemid'));
 
@@ -60,6 +65,8 @@ class Controller_Item extends Ecl_Mvc_Controller {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	public function actionIndex() {
 		$user = $this->model('user');
 
@@ -80,7 +87,29 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			$this->view()->items = $this->model('itemstore')->findForManufacturerLetter($letter, $user->param('visibility'));
 		}
 
+<<<<<<< HEAD
 		$this->view()->render('atoz_index');
+=======
+		$this->layout()->addBreadcrumb("{$letter}..", $this->router()->makeAbsoluteUri("/item/?letter={$letter}"));
+
+		$this->view()->render('item_atoz');
+	}// /method
+
+
+
+	public function actionSearch() {
+		$query = $this->request()->get('q');
+		$query = urldecode($query);
+
+		$this->layout()->addBreadcrumb("Searching for \"$query\"", $this->router()->makeAbsoluteUri("/search/?q={$query}"));
+
+		$this->view()->query = $query;
+
+		$query = str_replace('%', '\%', $query);
+
+		$this->view()->items = $this->model('itemstore')->searchItems($query, $this->model('user')->param('visibility'));
+		$this->view()->render('item_searchresults');
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -98,7 +127,11 @@ class Controller_Item extends Ecl_Mvc_Controller {
 			return true;
 		}
 
+<<<<<<< HEAD
 		$this->layout()->addBreadcrumb($item->name, $this->router()->makeAbsoluteUri("/item/{$item->slug}"));
+=======
+		$this->layout()->addBreadcrumb("{$item->manufacturer} {$item->model}", $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}"));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$this->view()->item = $item;
 
@@ -107,11 +140,39 @@ class Controller_Item extends Ecl_Mvc_Controller {
 
 
 
+<<<<<<< HEAD
+=======
+	public function actionTags() {
+
+		$query = urldecode($this->param('tag'));
+
+		$this->layout()->addBreadcrumb("Items tagged: {$query}", $this->router()->makeAbsoluteUri("tags/{$query}"));
+
+		$this->view()->query = $query;
+
+		$query = str_replace('%', '\%', $query);
+
+		$this->view()->items = $this->model('itemstore')->findForTags($query, $this->model('user')->param('visibility'),'');
+		$this->view()->render('item_searchresults');
+	}// /method
+
+
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 /* --------------------------------------------------------------------------------
  * Private Methods
  */
 
 
 
+<<<<<<< HEAD
+=======
+	protected function _getCategoryForNameParam($param_name) {
+		return $this->model('categorystore')->findForName(strtolower(urldecode($this->param($param_name))));
+	}// /method
+
+
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 }// /class
 ?>

@@ -89,6 +89,10 @@ function cpvLookup() {
 			url     : APP_WWW + "/ajax/cpvmatch/" ,
 			data    : { q : cpv_trigger.val() } ,
 			success : function (reply) {
+<<<<<<< HEAD
+=======
+				//alert($.dump(reply));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				if ( ("ok" == reply._status) && (reply.matches) ) {
 					showSuggestions(reply);
 					return;

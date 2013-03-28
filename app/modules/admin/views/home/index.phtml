@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 	?>
@@ -9,11 +10,14 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 }
 ?>
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <h1>Administration Options</h1>
 
 <table class="layout" style="width: 100%;">
 <tr>
 	<td>
+<<<<<<< HEAD
 		<div class="white-box">
 			<h4>Item administration</h4>
 			<p class="note">To edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
@@ -41,6 +45,19 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 		</div>
 
 		<div class="white-box">
+=======
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Item administration</h4>
+			<p class="note">To edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/customise/'); ?>">Item Field Customisation</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a></li>
+			</ul>
+		</div>
+
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<h4>Homepage blocks</h4>
 			<p class="note">Customisation of which blocks appear on the homepage</p>
 			<ul>
@@ -49,30 +66,45 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 		</div>
 	</td>
 	<td>
+<<<<<<< HEAD
 		<div class="white-box">
+=======
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<h4>Categorisation</h4>
 			<p class="note">Catalogue metadata</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/categories/index/'); ?>"><?php $this->out($this->model()->lang['cat.label.plural']); ?></a></li>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'); ?>"><?php $this->out($this->model()->lang['access.label.plural']); ?></a></li>
+<<<<<<< HEAD
 				<?php if (false) { ?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisations/index/'); ?>"><?php $this->out($this->model()->lang['org.label.plural']); ?></a></li>
 				<?php } ?>
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			</ul>
 			<br />
 			<p class="note">Locations</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/sites/index/'); ?>"><?php $this->out($this->model()->lang['site.label.plural']); ?></a></li>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/buildings/index/'); ?>"><?php $this->out($this->model()->lang['building.label.plural']); ?></a></li>
+<<<<<<< HEAD
 				<?php if (false) { ?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/departments/index/'); ?>"><?php $this->out($this->model()->lang['dept.label.plural']); ?></a></li>
 				<?php } ?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisationalunits/index/'); ?>"><?php $this->out($this->model()->lang['ou.label.adminsection']); ?></a></li>
+=======
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/departments/index/'); ?>"><?php $this->out($this->model()->lang['dept.label.plural']); ?></a></li>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			</ul>
 		</div>
 	</td>
 	<td>
+<<<<<<< HEAD
 		<div class="white-box">
+=======
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<h4>Users</h4>
 			<p class="note">User managment</p>
 			<ul>
@@ -80,7 +112,11 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 			</ul>
 		</div>
 
+<<<<<<< HEAD
 		<div class="white-box">
+=======
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			<h4>Reports</h4>
 			<p class="note">Report managment</p>
 			<ul>

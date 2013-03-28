@@ -27,6 +27,7 @@ if ($this->departments->count()>0) {
 	} else {
 		$chunks = array ( 0 => $this->departments );
 	}
+<<<<<<< HEAD
 
 	$item_count = 0;
 	foreach($chunks as $chunk) {
@@ -37,6 +38,10 @@ if ($this->departments->count()>0) {
 	$item_plural = ($this->departments->count()==1) ? 'item' : 'items' ;
 	?>
 	<p class="note">The following <?php $this->out(strtolower($lang['dept.label.plural'])); ?> have equipment listed in this catalogue (<?php echo "$item_count $item_plural"; ?>).</p>
+=======
+	?>
+	<p class="note">The following <?php $this->out(strtolower($lang['dept.label.plural'])); ?> have equipment listed in this catalogue.</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<div id="categories">
 		<table class="layout" style="width: 900px; margin: 0 1em 0 1em;">
 		<tr>
@@ -48,6 +53,7 @@ if ($this->departments->count()>0) {
 					<ul>
 						<?php
 						foreach($chunk as $i => $department) {
+<<<<<<< HEAD
 							if (false) {
 								?>
 								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->slug}"); ?>"><?php $this->out($department->name); ?> <span class="count">(<?php $this->out($department->getItemCount($user->param('visibility'))); ?>)</span></a></li>
@@ -55,6 +61,10 @@ if ($this->departments->count()>0) {
 							}
 							?>
 							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label'])."-{$department->id}-".urlencode($department->name)); ?>"><?php $this->out($department->name); ?> <span class="count">(<?php $this->out($department->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+=======
+							?>
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->url_suffix}"); ?>"><?php $this->out($department->name); ?> <span class="count">(<?php $this->out($department->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 							<?php
 						}
 						?>
@@ -69,4 +79,8 @@ if ($this->departments->count()>0) {
 	</div>
 	<?php
 }
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

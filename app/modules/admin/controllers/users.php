@@ -137,10 +137,17 @@ class Controller_Admin_Users extends Ecl_Mvc_Controller {
 			$authorisations = array ();
 
 			// Process Department Authorisations
+<<<<<<< HEAD
 			$permissions = $this->request()->post('permissions');
 			if (!empty($permissions)) {
 				foreach($permissions as $perm_id) {
 					$authorisations[$perm_id] = KC__AUTH_CANOUADMIN;
+=======
+			$dept_auths = $this->request()->post('auth_dept');
+			if (!empty($dept_auths)) {
+				foreach($dept_auths as $dept_perm_id) {
+					$authorisations[$dept_perm_id] = KC__AUTH_CANEDIT;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				}
 			}
 

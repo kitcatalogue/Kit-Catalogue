@@ -37,7 +37,11 @@ class Controller_Id extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/category/'));
+<<<<<<< HEAD
 		$this->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("category/{$category->slug}"));
+=======
+		$this->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("category/{$category->url_suffix}"));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$this->view()->category = $category;
 		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
@@ -58,7 +62,11 @@ class Controller_Id extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Departments', $this->router()->makeAbsoluteUri("/department/"));
+<<<<<<< HEAD
 		$this->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->slug}"));
+=======
+		$this->layout()->addBreadcrumb($department->name, $this->router()->makeAbsoluteUri("/department/{$department->url_suffix}"));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$this->view()->department = $department;
 		$this->view()->category = null;
@@ -70,9 +78,13 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 	public function actionItem() {
+<<<<<<< HEAD
 		$item = $this->model('itemstore')->find((int) $this->param('id'));
 
 		$format = $this->_getFormat();
+=======
+		$item = $this->model('itemstore')->find($this->param('id'));
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		if (empty($item)) {
 			$this->router()->action('404', 'error');
@@ -84,9 +96,17 @@ class Controller_Id extends Ecl_Mvc_Controller {
 			return true;
 		}
 
+<<<<<<< HEAD
 		$this->view()->item = $item;
 
 		$this->view()->render("id_item.{$format}");
+=======
+		$this->layout()->addBreadcrumb("{$item->manufacturer} {$item->model}", $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}"));
+
+		$this->view()->item = $item;
+
+		$this->view()->render('item_view');
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -97,6 +117,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 
+<<<<<<< HEAD
 	public function _getFormat() {
 		$valid_formats = array('html', 'json', 'rdf', 'ttl');
 
@@ -108,5 +129,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 }// /class
 ?>

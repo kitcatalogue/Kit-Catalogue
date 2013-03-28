@@ -7,8 +7,11 @@
 class Userstore {
 
 	// Private Properties
+<<<<<<< HEAD
 	protected $_model = null;
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	protected $_db = null;
 	protected $_user_session_var = '_user_data';
 
@@ -17,12 +20,20 @@ class Userstore {
 	/**
 	 * Constructor
 	 *
+<<<<<<< HEAD
 	 * @param  object  $model  The model instance.
 	 * @param  string  $user_session_var  (optional) The session key to use when storing user data.
 	 */
 	public function __construct($model, $user_session_var = '_user_data') {
 		$this->_model = $model;
 		$this->_db = $this->_model->get('db');
+=======
+	 * @param  object  $database  An Ecl_Db data access object.
+	 * @param  string  $user_session_var  (optional) The session key to use when storing user data.
+	 */
+	public function __construct($database, $user_session_var = '_user_data') {
+		$this->_db = $database;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		if (!empty($user_session_var)) { $this->_user_session_var = $user_session_var; }
 	}// /method
 
@@ -121,9 +132,14 @@ class Userstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function delete($username) {
+<<<<<<< HEAD
 		$sql__username = $this->_db->prepareValue($username);
 		$affected_count = $this->_db->delete('user', "username=$sql__username");
 		$this->_model->get('sysauth')->deleteForAgent($username);
+=======
+		$username = $this->_db->prepareValue($username);
+		$affected_count = $this->_db->delete('user', "username=$username");
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		return ($affected_count>0);
 	}// /method
@@ -209,7 +225,10 @@ class Userstore {
 	 * @return  object  The current user. On fail, an empty user instance.
 	 */
 	public function newUserFromSession() {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		if (isset($_SESSION[$this->_user_session_var])) {
 			$user = $this->newUser();
 			$user->fromAssoc($_SESSION[$this->_user_session_var]);
@@ -229,6 +248,10 @@ class Userstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function setPassword($username, $password) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$sql__username = $this->_db->prepareValue($username);
 
 		$salt = Ecl_Helper_String::random(10);
@@ -255,7 +278,10 @@ class Userstore {
 	 *   'surname' ,
 	 *   'email' ,
 	 *   'username' ,   // The user's username (what they used to signin)
+<<<<<<< HEAD
 	 *   'params' ,     // Array of additional parameters
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * )
 	 *
 	 * @param  array  $assoc  An assoc-array of user information
@@ -263,11 +289,16 @@ class Userstore {
 	 * @return  boolean  The operation was successfull.
 	 */
 	public function setUserSession($assoc) {
+<<<<<<< HEAD
 		$valid_fields = array ('id', 'forename', 'surname', 'email', 'username', 'params');
+=======
+		$valid_fields = array ('id', 'forename', 'surname', 'email', 'username');
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$user = Ecl::factory('Ecl_User');
 		$user->generateSessionKey();
 
+<<<<<<< HEAD
 		$user_data = array();
 		foreach($valid_fields as $i => $field) {
 			if (!array_key_exists($field, $assoc)) {
@@ -276,6 +307,12 @@ class Userstore {
 				foreach($assoc[$field] as $k => $v) {
 					$user->setParam($k, $v);
 				}
+=======
+		$user_data = array ();
+		foreach($valid_fields as $i => $field) {
+			if (!array_key_exists($field, $assoc)) {
+				return false;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			} else {
 				$user->$field = $assoc[$field];
 			}

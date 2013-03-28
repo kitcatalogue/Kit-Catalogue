@@ -1,0 +1,48 @@
+<?php
+// is this a search, or a lookup?
+if (is_numeric($this->query)) {
+	// lookup
+	$searchstring = $this->model('homepageblockstore')->lookupReason($this->query);
+} else {
+	$searchstring = $this->query;
+}
+
+
+if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+	printf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
+}
+?>
+
+<h1>Search Results</h1>
+<?php
+$count = $this->items->count();
+
+if (0 == $count) {
+	if (empty($searchstring)) {
+		?>
+		<p class="note">No items found - you must enter the text to search.</p>
+		<?php
+	} else {
+		?>
+		<p class="note">No items found matching "<?php $this->out($searchstring); ?>".</p>
+		<?php
+	}
+} else {
+	?>
+	<p class="note"><strong><?php $this->out($count); ?> found</strong> matching "<?php $this->out($searchstring); ?>".</p>
+
+	<ul id="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri('/item/');
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
+		}
+		?>
+	</ul>
+	<?php
+}
+?>
+
+

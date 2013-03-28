@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 
+=======
+<?php
+?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 <h1>Import Items from CSV</h1>
 <p>Step 4 : Import Complete</p>
 
 
 <?php
+<<<<<<< HEAD
 if (!empty($this->successful_items)) {
 	?>
 	<h2>The following items were imported successfully.</h2>
@@ -19,5 +25,210 @@ if (!empty($this->successful_items)) {
 	<?php
 }
 ?>
+=======
+Ecl_Helper_Html::form('importform', $this->router()->makeAbsoluteUri('/admin/items/import/?step=4'));
+Ecl_Helper_Html::formHidden('filename', $this->filename);
+Ecl_Helper_Html::formHidden('ignore_rows', $this->ignore_rows);
+?>
+
+
+<div class="item">
+
+	<?php
+	foreach($this->items as $rownum => $info) {
+		$item = $info['item'];
+		?>
+		<h2><?php $this->out("{$item->name} &nbsp; (row {$rownum})"); ?></h2>
+		<?php
+		if (!is_array($info['issues'])) {
+			?>
+			<p style="margin-left: 2em;">All data appears to be OK.</p>
+			<?php
+		} else {
+			?>
+			<div class="issues">
+				<dl>
+				<?php
+				foreach($info['issues'] as $k => $v) {
+
+					if (empty($v)) {
+						$v = '-- none --';
+					}
+
+
+					// @todo : Refactor these if statements to a single method (assuming they remain simple lookups)
+					// @todo : Allow user to edit the imported value
+
+					if ('access' == $k) {
+						?>
+						<dt><strong>Access Level</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="access_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<option value="_usenone"> -- leave blank -- </option>
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['access']) && (!empty($this->lookups['access']))) {
+										$keys = array_keys($this->lookups['access']);
+										$selected = $keys[0];
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['access'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+					if ('supplier' == $k) {
+						?>
+						<dt><strong>Supplier</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="supplier_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<option value="_usenone"> -- leave blank -- </option>
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['supplier']) && (!empty($this->lookups['supplier']))) {
+										$keys = array_keys($this->lookups['supplier']);
+										$selected = $keys[0];
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['supplier'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+					if ('building' == $k) {
+						?>
+						<dt><strong>Building</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="building_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<option value="_usenone"> -- leave blank -- </option>
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['building']) && (!empty($this->lookups['building']))) {
+										$keys = array_keys($this->lookups['building']);
+										$selected = $keys[0];
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['building'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+					if ('category' == $k) {
+						?>
+						<dt><strong>Category</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="category_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['category']) && (!empty($this->lookups['category']))) {
+										$keys = array_keys($this->lookups['category']);
+										$selected = null;
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['category'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+					if ('department' == $k) {
+						?>
+						<dt><strong>Department</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="department_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['department']) && (!empty($this->lookups['department']))) {
+										$keys = array_keys($this->lookups['department']);
+										$selected = null;
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['department'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+					if ('site' == $k) {
+						?>
+						<dt><strong>Site</strong> not recognised. Select a value to use.</dt>
+						<dd>
+							<select name="site_<?php $this->out($rownum); ?>">
+								<optgroup label="Imported value">
+									<option value="_useimportedvalue"><?php $this->out($v); ?></option>
+								</optgroup>
+								<optgroup label="Existing options">
+									<option value="_usenone"> -- leave blank -- </option>
+									<?php
+									$selected = null;
+									if ( isset($this->lookups['site']) && (!empty($this->lookups['site']))) {
+										$keys = array_keys($this->lookups['site']);
+										$selected = $keys[0];
+									}
+									Ecl_Helper_Html::formOptions($this->lookups['site'], $selected);
+									?>
+								</optgroup>
+							</select>
+						</dd>
+						<?php
+					}
+
+
+				}
+				?>
+				</dl>
+			</div>
+			<?php
+		}
+	}
+	?>
+
+
+	<div class="button_bar">
+		<?php
+		Ecl_Helper_Html::formSubmit('submitback', '&lt; Back');
+		Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
+		Ecl_Helper_Html::formSubmit('submitfinish', 'Finish');
+		?>
+	</div>
+
+</div>
+
+
+<?php Ecl_Helper_Html::formClose(); ?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 

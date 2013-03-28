@@ -13,6 +13,10 @@
  * Installation Settings
  */
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 // Setting this to false will lockout the installation wizard.
 // Even if you have deleted your /install/ folder, you should set this to false as if you
 // later upgrade or reinstall it will recreate a new /install/ folder.
@@ -20,6 +24,7 @@ $config['install.enabled'] = false;
 
 
 
+<<<<<<< HEAD
 // IMPORTANT
 // When updating to v1.2.0, your existing departments and organisations will be copied to your
 // catalogue's new organisational tree structure. The catalogue will continue to support
@@ -33,12 +38,19 @@ $config['app.use_ou_tree'] = false;
 
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 /*
  * Application Paths
  */
 
+<<<<<<< HEAD
 $config['app.root'] = realpath(dirname(__FILE__) . '/../');   // The basis from which we work out the other paths
 $config['app.include_root'] = dirname(__FILE__);
+=======
+$config['app.root'] = realpath(__DIR__ . '/../');   // The basis from which we work out the other paths
+$config['app.include_root'] = __DIR__;
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $config['app.local_root'] = $config['app.root'] . '/local';
 
@@ -46,6 +58,16 @@ $config['app.writable_root'] = $config['app.root'] . '/writable';
 $config['app.upload_root'] = $config['app.writable_root'] . '/uploads';
 
 
+<<<<<<< HEAD
+=======
+// Relative Browsable Paths
+
+$config['app.api_www'] = '/data';
+
+$config['app.items_www'] = '/writable/uploads/items';
+
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 /*
  * Your Organisation's Details
@@ -74,13 +96,20 @@ $config['org.logo'] = '';
 // WARNING : Do not leave this setting enabled on a public-facing site.
 $config['app.debug'] = false;
 
+<<<<<<< HEAD
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
 $config['app.version'] = '2.0.0.beta-7';
+=======
+
+$config['app.version'] = '0.9.8';
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
 // DO NOT include a trailing slash '/'
+<<<<<<< HEAD
 $config['app.www'] = 'http://www.example.com/catalogue';
 
 // Should users signing in, or browsing internally, be switched to browsing over HTTPS?
@@ -88,11 +117,15 @@ $config['app.www'] = 'http://www.example.com/catalogue';
 // You must ensure you have the appropriate SSL certificates, etc, setup on your server.
 // If you wish to use HTTPS for all access, set 'app.www' to use a HTTPS URL.
 $config['app.use_https'] = false;
+=======
+$config['app.www'] = '/catalogue';
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 // The title of your Kit-Catalogue installation
 $config['app.title'] = 'Kit-Catalogue';
 
 // The introductory text to show on the home page.
+<<<<<<< HEAD
 // The text will be interpreted as HTML.
 $config['app.intro'] = "A catalogue of all the equipment and facilities available at our institution.";
 
@@ -101,6 +134,12 @@ $config['app.email.owner'] = '';
 
 // The contact email address offering support for catalogue users
 $config['app.email.support'] = '';
+=======
+$config['app.intro'] = "A catalogue of all the equipment and facilities available at our institution.";
+
+// The contact email address of the catalogue webmaster
+$config['app.email'] = '';
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 // Allow anonymous (non-signed in) access to the catalogue.
 // If enabled, anonymous users can still only see items marked "public"
@@ -120,9 +159,15 @@ $config['app.user_session_var'] = '_user_data';
 
 $config['db.host'] = 'localhost';
 $config['db.port'] = 3308;
+<<<<<<< HEAD
 $config['db.username'] = 'kc-username';
 $config['db.password'] = 'kc-password';
 $config['db.database'] = 'kc-database';
+=======
+$config['db.username'] = 'kitcatalogue';
+$config['db.password'] = 'kc1234';
+$config['db.database'] = 'kitcatalogue';
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
@@ -174,6 +219,7 @@ $config['ldap.use_secure'] = false;
 
 
 /*
+<<<<<<< HEAD
  * Item Settings
  */
 
@@ -208,6 +254,8 @@ $config['import.date_format_mdy'] = false;
 
 
 /*
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  * Layout and Styling Settings
  */
 
@@ -224,6 +272,7 @@ $config['layout.default'] = 'default';
 // Should the system automatically include local/css/local.css
 $config['layout.use_local_css'] = true;
 
+<<<<<<< HEAD
 // Should the system automatically include local/local_head.html
 // Use this setting and the local_head.html file to include scripts (such as Google Analytics)
 $config['layout.use_local_head'] = true;
@@ -306,6 +355,8 @@ $config['admin.help.manual'] = 'http://kit-catalogue.lboro.ac.uk/project/softwar
 // Define the text of the user manual link.
 $config['admin.help.manual_title'] = 'Kit-Catalogue User Manual';
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 /*
@@ -318,6 +369,7 @@ $config['log.item_view'] = true;
 
 
 /*
+<<<<<<< HEAD
  * Item Enquiries
  */
 
@@ -453,6 +505,15 @@ $config['data.licence_name'] = 'Open Government Licence';
 // http://www.nationalarchives.gov.uk/doc/open-government-licence/
 $config['data.licence_link'] = 'http://www.nationalarchives.gov.uk/doc/open-government-licence/';
 
+=======
+ * Linked Data and API Settings
+ */
+
+// Enables the API and makes it available to the public (see docs/api.txt for more info)
+// At the moment there is no API, so this is disabled by default.
+$config['api.enabled'] = false;
+
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 ?>

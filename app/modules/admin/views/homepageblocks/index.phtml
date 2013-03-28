@@ -1,10 +1,17 @@
 
 <h1>Administer Homepage Blocks</h1>
+<<<<<<< HEAD
 <p>Homepage blocks allow you to add options for browsing custom fields to your catalogue homepage.</p>
 
 <div class="cf">
 	<div class="admin-box">
 		<p>Alternatively, you can add a new homepage block here.</p>
+=======
+
+<div class="cf">
+	<div class="admin-box">
+		<p>Alternatively, you can add a new homepage block here</p>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		<?php
 		Ecl_Helper_Html::form('blockform', $this->router()->makeAbsoluteUri('/admin/homepageblocks/create/'));
 		Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());

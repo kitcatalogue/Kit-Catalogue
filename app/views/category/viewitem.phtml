@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 $lang = $this->model('lang');
 
 $url_category = urlencode(strtolower($this->category->name));
@@ -6,6 +7,8 @@ $this->router()->layout()->addBreadcrumb($this->category->name, $this->router()-
 $this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}/item/{$this->item->slug}"));
 
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $goto_url = '';
 $this->layout()->renderItemInFull($this->item, $goto_url);
 ?>

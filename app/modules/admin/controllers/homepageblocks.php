@@ -26,7 +26,11 @@ class Controller_Admin_Homepageblocks extends Ecl_Mvc_Controller {
 	 * Create a new homepageblock.
 	 */
 	public function actionCreate() {
+<<<<<<< HEAD
 		$this->layout()->clearBreadcrumbs(1);
+=======
+		$this->layout()->clearBreadcrumbs(2);
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->layout()->clearFeedback();
 
 		if ($this->request()->isPost()) {
@@ -53,8 +57,11 @@ class Controller_Admin_Homepageblocks extends Ecl_Mvc_Controller {
 				} else {
 					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new homepageblock.');
 				}
+<<<<<<< HEAD
 				$this->response()->setRedirect($this->router()->makeAbsoluteUri("/admin/homepageblocks/edit/{$new_id}"));
 				return;
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 		} else {
 			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create homepageblock.  No information posted.');
@@ -120,8 +127,11 @@ class Controller_Admin_Homepageblocks extends Ecl_Mvc_Controller {
 			}
 		}
 
+<<<<<<< HEAD
 		$this->layout()->addBreadcrumb('Edit: ', $this->router()->makeAbsoluteUri('/admin/homepageblocks/create/'));
 
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->view()->block = $block;
 		$this->view()->render('homepageblocks_edit');
 	}// /method

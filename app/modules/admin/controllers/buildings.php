@@ -129,7 +129,10 @@ class Controller_Admin_Buildings extends Ecl_Mvc_Controller {
 					$building->site_id = $this->request()->post('site_id');
 					$building->latitude = $this->request()->post('latitude');
 					$building->longitude = $this->request()->post('longitude');
+<<<<<<< HEAD
 					$building->url = $this->request()->post('url');
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 					if (empty($building->name)) {

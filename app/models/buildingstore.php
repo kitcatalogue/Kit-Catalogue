@@ -16,7 +16,10 @@ class Buildingstore {
 	// Private Properties
 	protected $_db = null;
 
+<<<<<<< HEAD
 	protected $_lookup = null;
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
@@ -51,7 +54,10 @@ class Buildingstore {
 			'site_id'      => $object->site_id ,
 			'latitude'     => $object->latitude ,
 			'longitude'    => $object->longitude ,
+<<<<<<< HEAD
 			'url'          => $object->url ,
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		return $row;
@@ -75,7 +81,10 @@ class Buildingstore {
 		$object->site_id = $row['site_id'];
 		$object->latitude = $row['latitude'];
 		$object->longitude = $row['longitude'];
+<<<<<<< HEAD
 		$object->url = $row['url'];
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		return $object;
 	}// /method
@@ -162,7 +171,10 @@ class Buildingstore {
 	 */
 	public function findAllUsed($visibility = null) {
 
+<<<<<<< HEAD
 		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
@@ -176,6 +188,7 @@ class Buildingstore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Find buildings for OU.
 	 *
 	 * @param  string  $ou_id  The OU ID to check for.
@@ -186,13 +199,29 @@ class Buildingstore {
 
 		$binds = array (
 			'ou_id'  => $ou_id ,
+=======
+	 * Find buildings for department.
+	 *
+	 * @param  string  $department_id  The department ID to check for.
+	 *
+	 * @return  mixed  An array of objects.  On fail, null.
+	 */
+	public function findForDepartment($department_id) {
+
+		$binds = array (
+			'department'  => $department_id ,
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT s.*
 			FROM building s
 				INNER JOIN item i ON s.building_id=i.building
+<<<<<<< HEAD
 			WHERE i.ou_id=:ou_id
+=======
+			WHERE i.building=:building
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
@@ -224,6 +253,7 @@ class Buildingstore {
 
 
 	/**
+<<<<<<< HEAD
 	 * Lookup the name of a building using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
@@ -270,6 +300,8 @@ class Buildingstore {
 
 
 	/**
+=======
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Insert a new building.
 	 *
 	 * @param  object  $object  The building to create.
@@ -326,4 +358,8 @@ class Buildingstore {
 
 
 }// /class
+<<<<<<< HEAD
 ?>
+=======
+?>
+>>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
