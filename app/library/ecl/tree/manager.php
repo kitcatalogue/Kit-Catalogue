@@ -600,6 +600,37 @@ Class Ecl_Tree_Manager {
 
 
 
+	public function findSubRefsForRef($ref, $include_root = true) {
+		$node = $this->findForRef($ref);
+		if (empty($node)) { return array(); }
+
+		$binds = array (
+			'tree_left'  => $node->tree_left ,
+			'tree_right' => $node->tree_right ,
+		);
+
+		if ($include_root) {
+			$where = "WHERE tree_left>=:tree_left AND tree_left<=:tree_right";
+		} else {
+			$where = "WHERE tree_left>:tree_left AND tree_left<=:tree_right";
+		}
+
+		$this->_db->query("
+			SELECT DISTINCT ref
+			FROM `{$this->_table}`
+			$where
+			ORDER BY tree_left
+		", $binds);
+
+		if ($this->_db->hasResult()) {
+			return $this->_db->getColumn();
+		} else {
+			return array();
+		}
+	}
+
+
+
 	public function findTree($node = null) {
 		if (empty($node)) {
 			$binds = null;
@@ -645,13 +676,13 @@ Class Ecl_Tree_Manager {
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		");
 
-		$root = $this->newNode();
-		$root->name = 'Root';
-		$root->tree_left = 1;
-		$root->tree_right = 2;
-		$root->tree_level = 0;
-
-		$this->_insertNodeInfo($root);
+		$node = $this->newNode();
+		$node->id = 1;
+		$node->tree_left = 1;
+		$node->tree_right = 2;
+		$node->tree_level = 0;
+		$node->ref = null;
+		$this->_db->insert($this->_table, $binds);
 
 		return true;
 	}
@@ -783,10 +814,12 @@ Class Ecl_Tree_Manager {
 
 	public function update($node) {
 		$sql__node_id = $this->_db->prepareValue($node->id);
-		unbind($node['id']);
+
+		$binds = (array) $node;
+
 		$affected_count = $this->_db->update($this->_table, $binds, "id={$sql__node_id}");
 
-		return ($affected_count>0);;
+		return ($affected_count>0);
 	}
 
 

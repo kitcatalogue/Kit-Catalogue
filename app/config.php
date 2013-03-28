@@ -13,7 +13,6 @@
  * Installation Settings
  */
 
-
 // Setting this to false will lockout the installation wizard.
 // Even if you have deleted your /install/ folder, you should set this to false as if you
 // later upgrade or reinstall it will recreate a new /install/ folder.
@@ -21,10 +20,22 @@ $config['install.enabled'] = false;
 
 
 
+// IMPORTANT
+// When updating to v1.2.0, your existing departments and organisations will be copied to your
+// catalogue's new organisational tree structure. The catalogue will continue to support
+// your separate organisation and department records to a limited degree while you check through
+// the organisational tree, and configure it to your requirements.
+//
+// We plan to remove the separate department and organisation records in a future update.
+//
+// When you're ready to make the switch to using the new OU Tree, change this setting to true.
+$config['app.use_ou_tree'] = false;
+
+
+
 /*
  * Application Paths
  */
-
 
 $config['app.root'] = realpath(dirname(__FILE__) . '/../');   // The basis from which we work out the other paths
 $config['app.include_root'] = dirname(__FILE__);
@@ -39,7 +50,6 @@ $config['app.upload_root'] = $config['app.writable_root'] . '/uploads';
 /*
  * Your Organisation's Details
  */
-
 
 // The title to use when showing your organisation's name
 $config['org.title'] = 'Our organisation';
@@ -59,15 +69,14 @@ $config['org.logo'] = '';
  * Application Settings
  */
 
-
 // Enable debugging mode.
 // When enabled, verbose error messages and other system features useful for testing are activated.
 // WARNING : Do not leave this setting enabled on a public-facing site.
 $config['app.debug'] = false;
 
-
-$config['app.version'] = '1.1.5';
-
+// The current Kit-Catalogue software version.
+// Do not override this setting as you could break future updates.
+$config['app.version'] = '2.0.0.beta-7';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -165,6 +174,40 @@ $config['ldap.use_secure'] = false;
 
 
 /*
+ * Item Settings
+ */
+
+// If enabled, the "embedded_content" field is available to item editors and
+// things like youtube videos can be embedded directly in an item's details page.
+// You can also use this field for any custom HTML content.
+$config['item.allow_embedded_content'] = true;
+
+// Use the lightbox functionality when showing item images.
+// If disabled, images will open in a new window instead.
+$config['item.allow_lightbox'] = true;
+
+// Enter the maximum permitted dimensions of uploaded images in pixels.
+// On upload, images exceeding one or more of these dimensions will be resized accordingly.
+// Aspect ratios will be respected during resize.
+// Use null for a dimension if there should be no limit.
+// Although these settings default to off (null), using 600 pixels for each dimension would be a sensible limit.
+$config['item.image.max_width'] = null;
+$config['item.image.max_height'] = null;
+
+
+
+/*
+ * Import Settings
+ */
+
+// Should imported dates be parsed in US-style M/D/Y format.
+// Any setting other than true will cause the importer to use D/M/Y format.
+// To change the date format used for output, see 'layout.date_format'.
+$config['import.date_format_mdy'] = false;
+
+
+
+/*
  * Layout and Styling Settings
  */
 
@@ -186,10 +229,82 @@ $config['layout.use_local_css'] = true;
 $config['layout.use_local_head'] = true;
 
 // The formatting options to use when outputting dates (e.g. Last updated)
+// By default, this is 'j\<\s\u\p\>S\<\/\s\u\p\> F, Y' which gives dates like 25th December, 2012.
+// The ordinal suffix, e.g. 'th', will be in superscript.
 $config['layout.date_format'] = 'j\<\s\u\p\>S\<\/\s\u\p\> F, Y';
+
+// The formatting options to use when outputting dates in reports.
+// By default, this is 'd-M-Y' which gives dates like 25 DEC 2012.
+$config['layout.date_format_report'] = 'd M Y';
 
 // Show the sign-in prompt to anonymous users on every page
 $config['layout.signin_prompt_enabled'] = true;
+
+
+
+/*
+ * Menu Settings
+ */
+
+// Home menu option
+$config['menu.home.enabled'] = true;
+$config['menu.home.label'] = 'Home';
+
+// Categories menu option
+$config['menu.category.enabled'] = true;
+$config['menu.category.label'] = 'Category';
+
+// Department menu option
+$config['menu.department.enabled'] = true;
+$config['menu.department.label'] = 'Departments';
+
+// OU menu option
+$config['menu.ou.enabled'] = true;
+$config['menu.ou.label'] = 'Departments';
+
+// Manufacturer menu option
+$config['menu.manufacturer.enabled'] = true;
+$config['menu.manufacturer.label'] = 'Manufacturer A-Z';
+
+// Facility menu option
+$config['menu.facility.enabled'] = false;
+$config['menu.facility.label'] = 'Facilities';
+
+// Tag menu option
+$config['menu.tag.enabled'] = false;
+$config['menu.tag.label'] = 'Tags';
+
+
+
+/*
+ * Administration Area Settings
+ */
+
+// Editors are users able to edit items with which they are associated.
+// They're intended as a supplement to the staff contacts who can usually edit
+// their own items.  (See the admin.item.edit options below).
+// If you need a user to edit all items in an organisational unit, give them
+// the administrator permission for that OU in the user area.
+$config['admin.item.editors.enabled'] = false;
+
+// If enabled, only system and OU administrators can assign editors to items.
+// If disabled, anyone who can edit an item can add/remove other editors too.
+$config['admin.item.editors.adminonly'] = true;
+
+// These settings control whether the staff contacts for an item have editing rights
+// If disabled (false) then custodians can still view the administrative item
+// information, but not change it.
+// By default, the editing is enabled (true).
+$config['admin.item.edit.contact_1'] = true;
+$config['admin.item.edit.contact_2'] = true;
+
+// Defines where the administration area's user manual link goes.
+// If left blank, no link will be shown.
+// Defaults to the Kit-Catalogue user manual, http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/
+$config['admin.help.manual'] = 'http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/';
+
+// Define the text of the user manual link.
+$config['admin.help.manual_title'] = 'Kit-Catalogue User Manual';
 
 
 
@@ -266,8 +381,13 @@ $config['search.include_custodians'] = true;
 // You can't limit which custom fields are used, it's all or nothing.
 $config['search.include_custom_fields'] = false;
 
-// Include items where search terms match the associated department
-$config['search.include_departments'] = false;
+// Include items where search terms match the associated organisational unit
+$config['search.include_ou'] = true;
+
+// If 'search.include_ou' is true, this setting controls whether searches should return
+// all items from descendent OUs.
+// e.g. a search for "science" could return all items in the OUs science/chemistry, science/physics, science/...
+$config['search.include_ou_descendents'] = true;
 
 // Include items where search terms match associated tags
 $config['search.include_tags'] = true;
@@ -275,7 +395,7 @@ $config['search.include_tags'] = true;
 
 
 /*
- * Social Networking Settings
+ * Social Media and Networking Settings
  */
 
 // Enable the Google Plus button

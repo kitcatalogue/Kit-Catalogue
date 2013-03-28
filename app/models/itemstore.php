@@ -39,6 +39,117 @@ class Itemstore {
 
 
 	/**
+	 * Build a query suitable for searching the given parameters, and order the results accordingly.
+	 *
+	 * @param  array  $params
+	 * @param  array  $order_by
+	 *
+	 * @return  string  The SQL requested. On fail, empty string.
+	 */
+	public function buildSearchQuery($params, $order_by = array('name' => 'ASC')) {
+		if (!is_array($params)) { return ''; }
+
+		$filter_join_map = array (
+			'category'  => 'INNER JOIN item_category ic ON i.item_id=ic.item_id ' ,
+		);
+
+		$order_join_map = array (
+			'building'  => 'LEFT JOIN building b ON i.building_id=b.building_id ' ,
+			'category'  => 'LEFT JOIN item_category ic ON i.item_id=ic.item_id ' ,
+			'ou'        => 'LEFT JOIN ou ON i.ou_id=ou.ou_id ' ,
+			'site'      => 'LEFT JOIN site ON i.item_id=s.site_id' ,
+			'supplier'  => 'LEFT JOIN supplier s ON i.supplier_id=s.supplier_id ' ,
+		);
+
+		$joins = array();
+
+		$sql__join_clause = '';
+		$sql__where_clause = '';
+		$sql__orderby_clause = '';
+
+
+		$where_conditions = array();
+		$binds = array();
+
+		if (isset($params['category'])) {
+			$binds['category_id'] = $params['category'];
+			$joins['category'] = $filter_join_map['category'] . ' AND ic.category_id=:category_id';
+			unset($params['category']);
+		}
+
+
+		if (isset($params['contact'])) {
+			$binds['contact'] = $params['contact'];
+			$where_conditions[] = "(contact_1_email=:contact OR contact_2_email=:contact)";
+			unset($params['contact']);
+		}
+
+
+		if (isset($params['ou_id'])) {
+			$sql_set = $this->_db->prepareSet($params['ou_id']);
+			$where_conditions[] = "(ou_id IN $sql_set)";
+			unset($params['ou_id']);
+		}
+
+
+		// @todo : Deprecated - remove
+		if (isset($params['department'])) { unset($params['department']); }
+
+
+		foreach($params as $k => $v) {
+			$sql_val = $this->_db->prepareValue($v);
+			$where_conditions[] = "($k=$sql_val)";
+		}
+
+
+		$where_conditions = implode(' AND ', $where_conditions);
+		if (!empty($where_conditions)) { $sql__where_clause = "WHERE $where_conditions"; }
+
+
+		// Process orderby
+		if (empty($order_by)) {	$order_by = array('name' => 'ASC');	}
+
+		$order_by_parts = array();
+
+		$orderby_map = array(
+			'name'      => "CASE WHEN title<>'' THEN title ELSE manufacturer END" ,
+			'building'  => 'b.name' ,
+			'ou'        => 'ou.name' ,
+			'supplier'  => 's.name' ,
+		);
+
+		foreach($order_by as $field => $direction) {
+			$direction = ('DESC' == strtoupper($direction)) ? 'DESC' : 'ASC' ;
+
+			if (array_key_exists($field, $orderby_map)) {
+				if ( (!array_key_exists($field, $joins)) && (array_key_exists($field, $order_join_map)) ) {
+					$joins[$field] = $order_join_map[$field];
+				}
+				$field = $orderby_map[$field];
+			}
+			$order_by_parts[] = "$field $direction";
+		}
+
+		$sql__orderby_clause = 'ORDER BY '. implode(', ', $order_by_parts);
+
+
+		// Process joins
+		if (!empty($joins)) {
+			$sql__join_clause = implode("\n", $joins);
+		}
+
+		return $this->_db->prepareQuery("
+			SELECT i.*
+			FROM item i
+				$sql__join_clause
+			$sql__where_clause
+			$sql__orderby_clause
+		", $binds);
+	}
+
+
+
+	/**
 	 * Convert the domain object to an export row.
 	 *
 	 * This method converts the object to a row of data suitable for inclusion in
@@ -94,9 +205,6 @@ class Itemstore {
 
 			'visibility'  => $object->visibility ,
 
-			//'department'  => $this->_model->get('departmentstore')->lookupName($object->department, 'Unknown') ,  // @todo : Deprecated - remove
-			//'organisation' => $this->_model->get('organisationstore')->lookupName($object->organisation, '') ,   // @todo : Deprecated - remove
-
 			'ou' => $this->_model->get('organisationalunitstore')->lookupName($object->ou, '') ,
 
 			'site'         => $this->_model->get('sitestore')->lookupName($object->site, '') ,
@@ -134,7 +242,7 @@ class Itemstore {
 			'supplier_id'          => $this->_model->get('supplierstore')->lookupName($object->supplier, '') ,
 			'date_of_purchase'     => $this->_db->formatDate($object->date_of_purchase, true) ,
 
-			'cost' => $object->cost ,
+			'purchase_cost' => $object->cost ,
 			'replacement_cost' => $object->replacement_cost ,
 			'end_of_life' => $this->_db->formatDate($object->end_of_life, true) ,
 			'maintenance' => $object->maintenance ,
@@ -161,6 +269,14 @@ class Itemstore {
 				$row[$customfield->name] = (array_key_exists($customfield->id, $customfield_values)) ? $customfield_values[$customfield->id] : '' ;
 			}
 		}
+
+		// Excel will screw up the display of fields starting with some characters
+		// so values with non-alphanumeric characters are prefixed with a space.
+		array_walk($row, function(&$v) {
+			if ( (strlen($v)>0) && (!ctype_alnum($v[0])) ) {
+				$v = ' '. $v;
+			}
+		});
 
 		return $row;
 	}// /method
@@ -219,6 +335,8 @@ class Itemstore {
 			'visibility'  => $object->visibility ,
 
 			'image' => $object->image ,
+
+			'embedded_content' => $object->embedded_content,
 
 			'manufacturer_website' => $object->manufacturer_website ,
 			'copyright_notice' => $object->copyright_notice ,
@@ -303,8 +421,8 @@ class Itemstore {
 
 		$object->ou = $row['ou_id'];
 
-		$object->organisation = $row['organisation'];   // @todo : Deprecated - remove
-		$object->department = $row['department_id'];    // @todo : Deprecated - remove
+		$object->organisation = $row['organisation'];   // @todo : Deprecated - to be removed
+		$object->department = $row['department_id'];    // @todo : Deprecated - to be removed
 
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
@@ -318,6 +436,8 @@ class Itemstore {
 		$object->visibility = $row['visibility'];
 
 		$object->image = $row['image'];
+
+		$object->embedded_content = $row['embedded_content'];
 
 		$object->manufacturer_website = $row['manufacturer_website'];
 		$object->copyright_notice = $row['copyright_notice'];
@@ -448,9 +568,11 @@ class Itemstore {
 	 */
 	public function getVisibilitySqlCondition($visibility, $table_alias = '') {
 		$table_alias = (!empty($table_alias)) ? "{$table_alias}." : null ;
-		if (KC__VISIBILITY_PUBLIC == $visibility) {
+		if (empty($visibility)) {
+			return '';
+		}  elseif (KC__VISIBILITY_PUBLIC == $visibility) {
 			return "{$table_alias}visibility='$visibility'";
-		} else {
+		}  elseif (KC__VISIBILITY_INTERNAL == $visibility) {
 			return '';
 		}
 	}// /method
@@ -621,8 +743,11 @@ class Itemstore {
 
 
 
-	public function findAllParents($exclude_item_id = null) {
+	public function findAllParents($exclude_item_id = null, $visibility = null) {
 		$exclude_item_id = (int) $exclude_item_id;
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		if (!empty($sql__vis_condition)) { $sql__vis_condition .= ' AND'; }
 
 		if ($exclude_item_id) {
 			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}'");
@@ -1107,62 +1232,27 @@ class Itemstore {
 	 * Parameters are matched using "AND".
 	 * e.g.
 	 * array (
-	 *   'department'  => 1 ,
+	 *   'ou'            => 4 ,
 	 *   'manufacturer'  => 'IBM' ,
 	 * )
 	 *
-	 * will only find items manufactured by IBM that are also in department 1.
+	 * will only find items manufactured by IBM that are also in organisational unit 4.
 	 *
 	 * @param  array  $params  Assoc array of parameters.
- 	 * @param  integer  $visibility
+ 	 * @param  mixed  $order_by  Assoc array of order parameters and directions.
 	 *
 	 * @return  mixed  The array of objects requested.  On fail, null.
 	 */
-	public function findForSearchParams($params, $visibility) {
-		if (!is_array($params)) { return array(); }
+	public function findForSearchParams($params, $order_by = array('name' => 'asc'), $row_function = null) {
+		$query = $this->buildSearchQuery($params, $order_by);
 
-		$binds = array();
+		if (empty($query)) { return array(); }
 
-		$join_clause = '';
-		$where_clause = '';
-		$where_conditions = array();
-
-		if (isset($params['category'])) {
-			$binds['category_id'] = $params['category'];
-			$join_clause .= 'INNER JOIN item_category ic ON i.item_id=ic.item_id AND ic.category_id=:category_id';
-			unset($params['category']);
+		if (null === $row_function) {
+			$row_function = array($this, 'convertRowToObject');
 		}
 
-		if (isset($params['department'])) {
-			$sql_val = $this->_db->prepareValue($params['department']);
-			$where_conditions[] = "(department_id=$sql_val)";
-			unset($params['department']);
-		}
-
-		foreach($params as $k => $v) {
-			$sql_val = $this->_db->prepareValue($v);
-			$where_conditions[] = "($k=$sql_val)";
-		}
-
-		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
-		if (!empty($sql__vis_condition)) {
-			$where_conditions[] = $sql__vis_condition;
-		}
-
-		$where_conditions = implode(' AND ', $where_conditions);
-		if (!empty($where_conditions)) { $where_clause = "WHERE $where_conditions"; }
-
-		return $this->_db->newRecordset("
-			SELECT i.*
-			FROM item i
-				$join_clause
-			$where_clause
-			ORDER BY
-				CASE
-					WHEN title<>'' THEN title
-					ELSE manufacturer
-				END ASC, model, acronym
-		", $binds, array($this, 'convertRowToObject'));
+		return $this->_db->newRecordset($query, null, $row_function);
 	}// /method
 
 
@@ -1420,17 +1510,55 @@ class Itemstore {
 		}
 
 
-		// Search the departments
-		if ($this->_model->get('search.include_departments')) {
-			$sql__conditions = $this->_db->prepareFilter('d.name', $terms, 'OR', 'LIKE');
+		// Search the organisational units
+		if ($this->_model->get('search.include_ou')) {
 
-			$queries[] = "
-				SELECT DISTINCT i.*, 1 AS search_relevancy
-				FROM item i
-					INNER JOIN department d ON i.department_id=d.department_id
-				WHERE ($sql__conditions)
-					$sql__vis_condition
-			";
+			if (!$this->_model->get('search.include_ou_descendents')) {
+				$sql__conditions = $this->_db->prepareFilter('ou.name', $terms, 'OR', 'LIKE');
+
+				$queries[] = "
+					SELECT DISTINCT i.*, 1 AS search_relevancy
+					FROM item i
+						INNER JOIN ou ON i.ou_id=ou.ou_id
+					WHERE ($sql__conditions)
+						$sql__vis_condition
+				";
+			} else {
+				$sql__conditions = $this->_db->prepareFilter('name', $terms, 'OR', 'LIKE');
+
+				$this->_db->query("
+					SELECT ou_id
+					FROM ou
+					WHERE $sql__conditions
+					ORDER BY ou_id
+				");
+
+				if ($this->_db->hasResult()) {
+					$ou_list = $this->_db->getColumn();
+
+					$ou_id_list = array();
+					foreach($ou_list as $ou_id) {
+						$ou_ids = $this->_model->get('ou_tree')->findSubRefsForRef($ou_id);
+						if (!empty($ou_ids)) {
+							$ou_id_list = array_merge($ou_id_list, $ou_ids);
+						}
+					}
+
+					$ou_id_list = array_unique($ou_id_list);
+
+					if (!empty($ou_id_list)) {
+
+						$sql__ou_set = $this->_db->prepareSet($ou_id_list);
+						$queries[] = "
+							SELECT DISTINCT i.*, 1 AS search_relevancy
+							FROM item i
+							INNER JOIN ou ON i.ou_id=ou.ou_id
+							WHERE (ou.ou_id IN $sql__ou_set)
+								$sql__vis_condition
+						";
+					}
+				}
+			}
 		}
 
 
@@ -1479,13 +1607,11 @@ class Itemstore {
 		";
 
 
-		// @debug : Ecl::dump($sql);
-
-
 		$rows = $this->_db->newRecordset($sql, null)->toArray();
 
 		if (empty($rows)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
+		// Create a unique recordset
 		$unique_ids = array();
 		$unique_rows = array();
 

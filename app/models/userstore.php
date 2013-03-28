@@ -7,6 +7,8 @@
 class Userstore {
 
 	// Private Properties
+	protected $_model = null;
+
 	protected $_db = null;
 	protected $_user_session_var = '_user_data';
 
@@ -15,11 +17,12 @@ class Userstore {
 	/**
 	 * Constructor
 	 *
-	 * @param  object  $database  An Ecl_Db data access object.
+	 * @param  object  $model  The model instance.
 	 * @param  string  $user_session_var  (optional) The session key to use when storing user data.
 	 */
-	public function __construct($database, $user_session_var = '_user_data') {
-		$this->_db = $database;
+	public function __construct($model, $user_session_var = '_user_data') {
+		$this->_model = $model;
+		$this->_db = $this->_model->get('db');
 		if (!empty($user_session_var)) { $this->_user_session_var = $user_session_var; }
 	}// /method
 
@@ -118,10 +121,9 @@ class Userstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function delete($username) {
-		$username = $this->_db->prepareValue($username);
-		$affected_count = $this->_db->delete('user', "username=$username");
-
-		$this->model('sysauth')->deleteForAgent($user->username, $authorisations);
+		$sql__username = $this->_db->prepareValue($username);
+		$affected_count = $this->_db->delete('user', "username=$sql__username");
+		$this->_model->get('sysauth')->deleteForAgent($username);
 
 		return ($affected_count>0);
 	}// /method
@@ -227,7 +229,6 @@ class Userstore {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function setPassword($username, $password) {
-
 		$sql__username = $this->_db->prepareValue($username);
 
 		$salt = Ecl_Helper_String::random(10);

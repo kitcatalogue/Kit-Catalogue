@@ -5,16 +5,13 @@ if (!defined('KC_INSTALL_WIZARD')) { die('Install wizard steps cannot be called 
 ?>
 
 
-
-<h2>IIS setup</h2>
-<p>We have not yet produced detailed instructions for setting up Kit-Catalogue on Windows IIS.  We'll hopefully
-have them ready soon, and will update this section of the installer then.</p>
-
-
 <h2>Apache setup</h2>
 
 <p>This section will run some basic checks on the Apache installation, to see if it's working properly.</p>
 
+
+<h2>IIS setup</h2>
+<p>We have not yet produced detailed instructions for setting up Kit-Catalogue on Windows IIS.
 
 
 <h2>Check Apache mod_rewrite</h2>
@@ -50,7 +47,6 @@ if (false !== strpos($modules_text, 'mod_rewrite')) {
 		<br />Using <em>AllowOverride All</em> should definitely work, but may enable settings you do not wish to use.</li>
 	<li>Ensure that mod_rewrite is enabled by uncommenting this line:
 		<br /><em>LoadModule rewrite_module modules/mod_rewrite.so</em></li>
-
 </ul>
 
 

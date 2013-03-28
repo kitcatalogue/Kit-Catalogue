@@ -28,8 +28,8 @@ Ecl_Helper_Html::form('enquiryform', $this->router()->makeAbsoluteUri("/enquiry/
 		<td><?php $this->out($item->name); ?></td>
 	</tr>
 	<tr>
-		<th>Department</th>
-		<td><?php $this->out($this->model('departmentstore')->lookupName($item->department)); ?></td>
+		<th>Location</th>
+		<td><?php $this->out($this->model('organisationalunitstore')->lookupName($item->ou)); ?></td>
 	</tr>
 	<?php
 	if (!empty($item->access)) {

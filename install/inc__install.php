@@ -1,30 +1,4 @@
 <?php
-error_reporting(E_ALL | E_STRICT);
-ini_set('display_errors', '1');
-
-date_default_timezone_set('Europe/London');
-setlocale(LC_ALL, 'en_UK.UTF8');
-
-
-define('KC_INSTALL_WIZARD', true);
-
-
-
-// Define some constants
-define('ROOT_PATH', realpath(dirname(__FILE__) . '/..'));
-define('APP_PATH', ROOT_PATH . '/app');
-define('LOCAL_PATH', ROOT_PATH . '/local');
-define('WRITABLE_PATH', ROOT_PATH . '/writable');
-
-
-
-// Setup LDAP basics if extension not installed (This stops errors appearing in the config files, etc)
-if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
-	define('LDAP_OPT_PROTOCOL_VERSION', 17);
-	define('LDAP_OPT_REFERRALS', 8);
-}
-
-
 
 // Check for installation lock
 $path = LOCAL_PATH.'/local_config.php';
@@ -39,6 +13,33 @@ if (file_exists($path)) {
 			</pre>");
 	}
 }
+
+
+
+define('KC_INSTALL_WIZARD', true);
+
+
+
+define('ROOT_PATH', realpath(dirname(__FILE__) . '/..'));
+define('APP_PATH', ROOT_PATH . '/app');
+define('LOCAL_PATH', ROOT_PATH . '/local');
+define('WRITABLE_PATH', ROOT_PATH . '/writable');
+
+
+
+define('INSTALLER_PATH', realpath(__DIR__));
+
+
+
+// Setup LDAP basics if extension not installed (This stops errors appearing)
+if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
+	define('LDAP_OPT_PROTOCOL_VERSION', 17);
+	define('LDAP_OPT_REFERRALS', 8);
+}
+
+
+
+require('../app/bootstrap.php');
 
 
 

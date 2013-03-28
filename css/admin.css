@@ -3,107 +3,156 @@
  *
  * @version 1.1.0
  */
+ 
+ 
+fieldset h2 {
+	font-size: 1.2em;
+}
+
+fieldset h3 {
+	font-size: 1em;
+}
+
+hr {
+	height: 1px;
+	background-color: #ddd;
+	border: 0;
+	color: #ddd;
+}
+
+fieldset hr {
+	width: 98%;
+}
+
+option[disabled="disabled"] { background-color: #eee; }
 
 
 
-fieldset h2 { font-size: 1.2em; }
-fieldset h3 { font-size: 1em; }
-
-
-hr { height: 1px; background-color: #ddd; border: 0; color: #ddd; }
-fieldset hr { width: 98%; }
-
-#main .grid_row { margin-top: 1.8em; }
+div.scrollable { height: 10em; overflow: auto; padding: 0.3em; border: 1px solid #999; }
 
 
 
-.admin_section { padding: 0.5em; background-color: #f6f6f6; border: 1px solid #ddd; border-radius: 10px; }
 
-.admin_section h2 { margin-top: 0.5em; }
+#main .grid_row {
+	margin-top: 1.8em;
+}
 
-.admin_section + .admin_section { margin-top: 1.5em; }
+.admin_section {
+	padding: 0.5em;
+	background-color: #f6f6f6;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+}
+
+.admin_section h2 {
+	margin-top: 0.5em;
+}
+
+.admin_section+.admin_section {
+	margin-top: 1.5em;
+}
+
+.form_section {
+	margin-left: 1.5em;
+}
+
+div.report {
+	margin: 0 2em 1em 2em;
+	padding: 0em 1.5em 0.5em 1.5em;
+	background-color: #f6f6f6;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+}
+
+div.report h2 {
+	margin-left: -1em;
+}
+
+.itemedit_sidestatus {
+	width: 15em;
+	clear: right;
+	float: right;
+	margin: 1em 1em 0 0;
+	padding: 1em;
+	font-size: 0.9em;
+	background-color: #eee;
+	border: 1px solid #ccc;
+	text-align: center;
+}
+
+.itemedit_sidestatus p {
+	margin-bottom: 1em;
+}
 
 
-.form_section { margin-left: 1.5em; }
+.white-box {
+	margin: 1em 0.5em 1em 0.5em;
+	padding: 1em;
+	border: 1px solid #ddd;
+	background: #fff;
+}
 
 
-div.report { margin: 0 2em 1em 2em; padding: 0em 1.5em 0.5em 1.5em; background-color: #f6f6f6; border: 1px solid #ddd; border-radius: 10px; }
+.help-box {
+	float: right;
+	width: 40em;
+	margin: 0.3em;
+	padding: 0.3em;
+	border: 1px solid #ddd;
+	background: #dfd;
+}
 
-div.report h2 { margin-left: -1em;}
+.help-box p { margin: 0.2em; }
 
-
-
-.itemedit_sidestatus { width: 15em; clear: right; float: right; margin: 1em 1em 0 0; padding: 1em; font-size: 0.9em; background-color: #eee; border: 1px solid #ccc; text-align: center; }
-.itemedit_sidestatus p { margin-bottom: 1em; }
 
 
 /* UL Tree Lists */
 
-
 #tree ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
 }
 
 #tree ul ul {
-background: url(../images/system/tree_line.png) repeat-y;
-  margin-left: 10px;
+	background: url(../images/system/tree_line.png) repeat-y;
+	margin-left: 10px;
 }
 
-#tree ul ul > li {
-  margin: 0;
-  padding: 0 0 0 14px;
-  line-height: 20px;
-  background: url(../images/system/tree_node.png) no-repeat;
+#tree ul ul>li {
+	margin: 0;
+	padding: 0 0 0 14px;
+	line-height: 20px;
+	background: url(../images/system/tree_node.png) no-repeat;
 }
-
 
 #tree ul ul li.last_child {
-  background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+	background: #fff url(../images/system/tree_lastnode.png) no-repeat;
 }
 
 #tree ul ul li:last-child {
-  background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+	background: #fff url(../images/system/tree_lastnode.png) no-repeat;
 }
 
+#tree a.tree_edit {
+	font-weight: bold;
+}
 
-#tree a.tree_edit { font-weight: bold; }
+#tree li>input {
+	margin-right: 0.5em;
+}
 
-span.treecontrols { display: inline-block; margin-left: 0.7em; color: #999; font-size: 0.9em; }
+span.treecontrols {
+	display: inline-block;
+	margin-left: 1em;
+	color: #999;
+	font-size: 0.9em;
+}
 
-span.treecontrols a ,
-span.treecontrols a:link ,
-span.treecontrols a:visited ,
-span.treecontrols a:hover ,
+span.treecontrols a,
+span.treecontrols a:link,
+span.treecontrols a:visited,
+span.treecontrols a:hover,
 span.treecontrols a:active { color: #aaa !important; }
-
-/* Modal Windows */
-
-
-#modalwindow_mask {
-	position:absolute;
-	display:none;
-
-	z-index:9000;
-	background-color:#000;
-}
-
-.window {
-	position: fixed;
-	display: none;
-	width: 500px;
-	height: auto;
-	z-index: 9999;
-
-	padding: 1em;
-	background-color: #e0e0e0;
-	border: 1px solid #999;
-	border-radius: 10px;
-}
-
-.window a.modalwindow_close { float: right; margin: -0.8em -0.5em 0 0; color: #666; font-weight: bold; }
-
-#modalwindow_desc { clear: both; }
 
 

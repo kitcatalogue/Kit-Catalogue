@@ -4,7 +4,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.1.0
+ * @version  1.4.0
  */
 class Ecl_Helper_Array {
 
@@ -21,6 +21,16 @@ class Ecl_Helper_Array {
 /* --------------------------------------------------------------------------------
  * Public Methods
  */
+
+
+
+	public static function changeValueCase($array, $case = CASE_LOWER) {
+		if (CASE_UPPER == $case) {
+			return array_map('strtoupper', $array);
+		} else {
+			return array_map('strtolower', $array);
+		}
+	}
 
 
 
@@ -104,11 +114,11 @@ class Ecl_Helper_Array {
 
 		if ($row_objects) {
 			foreach($array as $i => $array_row) {
-				$assoc_array[$array_row->$key_index] = $array_row;
+				$assoc_array[$array_row->$key_column] = $array_row;
 			}
 		} else {
 			foreach($array as $i => $array_row) {
-				$assoc_array["{$array_row[$key_index]}"] = $array_row;
+				$assoc_array["{$array_row[$key_column]}"] = $array_row;
 			}
 		}
 		return $assoc_array;

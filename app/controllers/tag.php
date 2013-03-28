@@ -13,13 +13,13 @@ class Controller_Tag extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->layout()->addBreadcrumb('Tags', $this->router()->makeAbsoluteUri('/tag/'));
+		$this->layout()->addBreadcrumb($this->model('lang')->get('tag.label.plural'), $this->router()->makeAbsoluteUri('/tag/'));
 	}// /method
 
 
 
 	public function actionIndex() {
-		$tags = $this->view()->tags = $this->model('itemstore')->findAllTags();
+		$tags = $this->view()->tags = $this->model('itemstore')->findAllTags($this->model('user')->param('visibility'));
 
 		$sort = strtolower($this->request()->get('sort', 'name'));
 

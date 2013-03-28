@@ -134,15 +134,15 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 
 		<dt><?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *'); ?></dt>
 		<dd>
-			<p class="note">Where does this item reside within your <?php $this->out(strtolower($lang['ou.label.adminsection'])); ?>.</p>
-			<select name="ou" id="ou">
-				<?php
-				$ou_list = $this->model('organisationalunitstore')->findTree();
-				foreach($ou_list as $ou) {
-					printf('<option value="%1$s" %4$s>%3$s %2$s </option>', $ou->id, $this->escape($ou->name), str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level), ( ($ou->id==$item->ou) ? 'selected="selected"' : null) );
-				}
+			<?php
+			if (!$this->layout()->renderOUSelect('ou', $item->ou)) {
+				$ou_name = $this->model('organisationalunitstore')->lookupName($item->ou);
 				?>
-			</select>
+				<strong><?php $this->out($ou_name); ?></strong>
+				<br /><span class="note">(only administrators can change an item's <?php $this->out(strtolower($lang['ou.label'])); ?>)</span>
+				<?php
+			}
+			?>
 		</dd>
 
 		<dt id="changevis"><?php Ecl_Helper_Html::formLabel('visibility', $lang['item.form.visibility'].' *'); ?></dt>
@@ -271,6 +271,79 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 <div style="text-align: center;">
 	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
 </div>
+
+
+
+<?php
+if ($this->model('admin.item.editors.enabled')) {
+	?>
+
+	<fieldset>
+		<legend><?php $this->out($lang['item.formsection.editors']); ?></legend>
+
+		<p class="note">Editors can update an individual item's details, but are not contactable through emails or enquiries.</p>
+
+		<dl class="form">
+
+			<dt>Add A New Editor</dt>
+			<dd>
+				<table class="layout">
+				<tr>
+					<th>Username</th>
+					<th style="padding-left: 2em;">&hellip;or email address</th>
+					<th>&nbsp;</th>
+				</tr>
+				<tr>
+					<td>
+						<?php
+						Ecl_Helper_Html::formInput('new_editor_username', 20, 50, '');
+						?>
+					</td>
+					<td style="padding-left: 2em;">
+						<?php
+						Ecl_Helper_Html::formInput('new_editor_email', 40, 250, '');
+						?>
+					</td>
+					<td style="padding-left: 2em;">
+						<?php
+						Ecl_Helper_Html::formButton('add_editor', 'add_editor', 'Add');
+						?>
+					</td>
+				</tr>
+				</table>
+			</dd>
+
+			<dt>Current Editors For This Item</dt>
+			<?php
+			$editors = $this->model('itemeditorstore')->findForItem($item->id);
+			if (0 == $editors->count()) {
+				?>
+				<dd>None listed.</dd>
+				<?php
+			} else {
+				?>
+				<dd>
+					<?php
+					$options = array();
+					foreach($editors as $editor) {
+						$options[$editor->id] = $editor->toString();
+					}
+					Ecl_Helper_Html::formCheckboxGrid('editors', $options);
+					?>
+				</dd>
+				<?php
+			}
+			?>
+
+		</dl>
+	</fieldset>
+
+	<div style="text-align: center;">
+		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	</div>
+	<?php
+}
+?>
 
 
 <fieldset>
@@ -403,7 +476,13 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 					echo('<p>No child items are associated with this facility.</p>');
 				} else {
 					echo('<p class="note">Untick a child item to remove it from this facility.</p>');
-					Ecl_Helper_Html::formCheckboxGrid('children', $options, 2, $selected);
+					if (10 > count($options)) {
+						Ecl_Helper_Html::formCheckboxGrid('children', $options, 2, $selected);
+					} else {
+						echo '<div class="scrollable">';
+						Ecl_Helper_Html::formCheckboxGrid('children', $options, 2, $selected);
+						echo '</div>';
+					}
 				}
 				?>
 				<br />
@@ -437,7 +516,13 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 					echo('<p>No parent facilities have been defined.</p>');
 				} else {
 					echo('<p class="note">Untick a parent facility to remove this item from it.</p>');
-					Ecl_Helper_Html::formCheckboxGrid('parents', $options, 2, $selected);
+					if (10 > count($options)) {
+						Ecl_Helper_Html::formCheckboxGrid('parents', $options, 2, $selected);
+					} else {
+						echo '<div class="scrollable">';
+						Ecl_Helper_Html::formCheckboxGrid('parents', $options, 2, $selected);
+						echo '</div>';
+					}
 				}
 				?>
 			</dd>
@@ -619,104 +704,6 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 	<legend><?php $this->out($lang['item.formsection.location']); ?></legend>
 
 	<dl class="form">
-
-	<?php
-	// @todo : Remove deprecated organisation and department settings
-
-	if (false) { ?>
-		<dt><?php Ecl_Helper_Html::formLabel('organisation', $lang['org.label']); ?></dt>
-		<dd>
-			<p class="note">If your catalogue contains items from other organisations or companies, use this field to identify them.</p>
-			<?php
-			$options = array('0' => '') + $this->model('organisationstore')->findAll()->toAssoc('id', 'name');
-			Ecl_Helper_Html::formSelect('organisation', $options, $item->organisation);
-			?>
-		</dd>
-
-		<?php
-
-		$allow_selectdept = false;
-		$allow_newdept = false;
-
-		$options = array();
-
-		// If Dept Admin
-		if ($this->model('security')->checkAuth(KC__AUTH_CANEDIT)) {
-			$allow_selectdept = true;
-
-			$dept_ids = $this->model('security')->findDeptsForAuth(KC__AUTH_CANEDIT);
-
-			if (!empty($dept_ids)) {
-				$options = $this->model('departmentstore')->find($dept_ids)->toAssoc('id', 'name');
-			}
-		}
-
-		// If System Admin
-		if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-			$allow_selectdept = true;
-			$allow_newdept = true;
-
-			$options = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
-			$options = array ('' => '') + $options;
-		}
-		?>
-
-		<dt><?php Ecl_Helper_Html::formLabel('department', $lang['dept.label'].' *'); ?></dt>
-		<dd>
-			<table class="layout">
-			<tr>
-				<?php
-				if (!$allow_selectdept) {
-					$dept =  $this->model('departmentstore')->find($item->department);
-					if ($dept) {
-						?>
-						<td>
-							<strong><?php $this->out($dept->name); ?></strong>
-							<br /><span class="note">(only administrators can change an item's <?php $this->out(strtolower($lang['dept.label'])); ?>)</span>
-						</td>
-						<?php
-					} else {
-						$this->out('Unknown '. strtolower($lang['dept.label']) .' (probably deleted?)');
-					}
-				} else {
-					$no_options = true;
-					if (!empty($options)) {
-						$no_options = false;
-						?>
-						<td style="padding-right: 2em;">
-							<label style="display: block;" for="department">Choose a home <?php $this->out(strtolower($lang['dept.label'])); ?> from the list</label>
-							<?php
-							Ecl_Helper_Html::formSelect('department', $options, $item->department);
-							?>
-						</td>
-						<?php
-					}
-				}
-
-				if ($allow_newdept) {
-					?>
-					<td>
-						<?php
-						if ($no_options) {
-							?>
-							<label style="display: block;" for="new_department"><?php $this->out(strtolower($lang['dept.label'])); ?> name</label>
-							<?php
-						} else {
-							?>
-							<label style="display: block;" for="new_department">&hellip;or use a new <?php $this->out(strtolower($lang['dept.label'])); ?> name</label>
-							<?php
-						}
-						Ecl_Helper_Html::formInput('new_department', 40, 250, $this->request()->post('new_department'));
-						?>
-					</td>
-					<?php
-				}
-				?>
-			</tr>
-			</table>
-
-		</dd>
-		<?php } ?>
 
 		<dt><?php Ecl_Helper_Html::formLabel('site', $lang['site.label']); ?></dt>
 		<dd>
@@ -932,7 +919,42 @@ if (!$new_item) {
 	<fieldset>
 		<legend><?php $this->out($lang['item.formsection.resources']); ?></legend>
 
-		<h2>Links</h2>
+		<?php
+		if (!$this->model('item.allow_embedded_content')) {
+			if (!empty($item->embedded_content)) {
+				?>
+				<div class="section" style="margin-bottom: 2em;">
+					<dl class="form">
+
+						<dt>Embedded HTML Content</dt>
+						<dd>
+							<?php $this->out($item->embedded_content); ?>
+							<p class="note">You are not permitted to edit this field.</p>
+						</dd>
+
+					</dl>
+				</div>
+				<?php
+			}
+		} else {
+			?>
+			<h2><?php $this->out($lang['item.form.embedded_content']); ?></h2>
+			<div class="section" style="margin-bottom: 2em;">
+				<dl class="form">
+
+					<dt>Embedded HTML Content</dt>
+					<dd>
+						<?php Ecl_Helper_Html::formTextarea('embedded_content', 80, 4, $item->embedded_content); ?>
+						<p class="note">Use this field to embed videos and other resources, e.g. YouTube videos, RSS feeds, Twitter updates, etc.</p>
+					</dd>
+
+				</dl>
+			</div>
+			<?php
+		}
+		?>
+
+		<h2><?php $this->out($lang['item.form.links']); ?></h2>
 		<div class="section" style="margin-bottom: 2em;">
 			<?php
 			$links = $this->model('itemlinkstore')->findForItem($item->id);
@@ -1075,8 +1097,33 @@ if (!$new_item) {
 			<p class="note">Upload files and images associated with this piece of equipment.</p>
 			<p class="note">If you upload a file with a name that already exists, it will overwrite the existing file.</p>
 
-			<p class="note">Your server limits uploads to a total of <?php echo Ecl_Helper_String::formatBytes($this->php_max_upload); ?> per "save".</p>
+			<p class="note">Your server limits uploads to a total of <em><?php echo Ecl_Helper_String::formatBytes($this->php_max_upload); ?></em> per "save".</p>
 			<input type="hidden" name="MAX_FILE_SIZE" value="<?php $this->out($this->php_max_upload); ?>" />
+
+
+			<?php
+			if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
+				?>
+				<p class="note">Images are limited to a maximum dimension of
+				<em><?php
+				if (null === $this->model('item.image.max_width')) {
+					echo 'any width';
+				} else {
+					echo $this->model('item.image.max_width') . ' pixels wide';
+				}
+				?></em>
+				by
+				<em><?php
+				if (null === $this->model('item.image.max_height')) {
+					echo 'any height';
+				} else {
+					echo $this->model('item.image.max_height') . ' pixels high';
+				}
+				?></em>
+				<br />Any images exceeding these dimensions will be automatically resized.
+				<?php
+			}
+			?>
 
 			<div id="upload">
 				<dl class="form">

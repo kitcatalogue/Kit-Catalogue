@@ -999,7 +999,7 @@ class Ecl_Helper_Html {
 			if ($self_close) {
 				return sprintf('<%1$s %2$s />', $tag, $attr);
 			} else {
-				return sprintf('<%1$s %3$s>%2$s</%1$s>', $tag, $content, $attr, 'X');
+				return sprintf('<%1$s %3$s>%2$s</%1$s>', $tag, $content, $attr);
 			}
 		}
 	}// /method
@@ -1124,17 +1124,34 @@ class Ecl_Helper_Html {
 	/**
 	 * Draw a table using the given array.
 	 *
-	 * It is assumed that each rows has the same number of columns.
+	 * This method will output <td> tags for each entry in the array.
+	 * If $use_headers is true, the first row of data will be output in <th> tags.
 	 *
 	 * @param  array  $array
-	 * @param  mixed  $attrs
+	 * @param  boolean  $use_headers  (optional) Use <th> tags for the first row.
+	 * @param  mixed  $attrs  (optional) HTML attributes for the <table> tag.
+	 *
+	 * @return  boolean  The operation was successful.
 	 */
-	public static function tabulate($array, $attr = '') {
+	public static function tabulate($array, $use_headers = false, $attr = '') {
 		if ( (!is_array($array)) || (empty($array)) ) { return false; }
 
 		$attr = self::convertAttrToHtml($attr);
 
 		printf('<table %1$s>', $attr);
+
+		if ($use_headers) {
+			echo("\n<tr>\n\t");
+			foreach($array[0] as $x => $value) {
+				$value = self::escape($value);
+				echo("<th>$value</th>");
+			}
+			echo("\n</tr>");
+
+			unset($array[0]);
+			if (empty($array)) { return true; }
+		}
+
 		foreach($array as $y => $row) {
 			echo("\n<tr>\n\t");
 			foreach($row as $x => $value) {
@@ -1144,6 +1161,7 @@ class Ecl_Helper_Html {
 			echo("\n</tr>");
 		}
 		echo("\n</table>\n");
+		return true;
 	}// /method
 
 

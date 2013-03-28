@@ -15,6 +15,8 @@ class Security {
 
 	protected $_perm_lookup = array();
 
+	protected $_ou_adminable = array();
+
 
 
 	/**
@@ -31,8 +33,30 @@ class Security {
 
 		$authorisations = $this->_sysauth->findForAgent($this->_user->username);
 		$this->_auth_lookup = Ecl_Helper_Array::extractGroupedValues($authorisations, 'auth', 'item');
-
 		if (is_null($this->_auth_lookup)) { $this->_auth_lookup = array(); }
+
+		// If there are some OU auths, fetch the sub-ou IDs as they are also adminable.
+		if ( (!empty($this->_auth_lookup)) && (array_key_exists(KC__AUTH_CANOUADMIN, $this->_auth_lookup)) ) {
+			$ou_tree = $this->_model->get('ou_tree');
+			if ($ou_tree) {
+				$org_auths = $this->_auth_lookup;
+
+				foreach($org_auths as $auth => $items) {
+					foreach($items as $item) {
+						if ('ou_' == substr($item, 0, 3)) {
+							$ou_id = substr($item, 3);
+							if (!in_array($ou_id, $this->_auth_lookup[$auth])) {
+								$ou_ids = $ou_tree->findSubRefsForRef($ou_id);
+								array_walk($ou_ids, function(&$v, $k) {
+									$v = "ou_{$v}";
+								});
+								$this->_auth_lookup[$auth] += $ou_ids;
+							}
+						}
+					}
+				}
+			}
+		}
 	}// /method
 
 
@@ -76,17 +100,17 @@ class Security {
 
 
 	/**
-	 * Check if the current user has the requested department and auth.
+	 * Check if the current user has the requested ou and auth.
 	 *
-	 * Convenience method that converts a department_id to a proper authorisation 'object'.
+	 * Convenience method that converts an ou_id to a proper authorisation 'object'.
 	 *
-	 * @param  integer  $dept_id
+	 * @param  integer  $ou_id
 	 * @param  string  $auth
 	 *
 	 * @return  boolean  The user has the auth on the requested object.
 	 */
-	public function checkDeptAuth($dept_id, $auth) {
-		return $this->checkObjectAuth("dept_{$dept_id}", $auth);
+	public function checkOUAuth($ou_id, $auth) {
+		return $this->checkObjectAuth("ou_{$ou_id}", $auth);
 	}/// method
 
 
@@ -141,8 +165,8 @@ class Security {
 				}
 
 				if ($new_item) {
-					// If user has ANY department editing rights
-					if ($this->checkAuth(KC__AUTH_CANEDIT)) {
+					// If user has ANY OU editing rights
+					if ($this->checkAuth(KC__AUTH_CANOUADMIN)) {
 						$perms['site.item.edit']  = true;
 					}
 				} else {
@@ -161,8 +185,8 @@ class Security {
 							$perms['item.files.view']        = true;
 							$perms['item.location.view']     = true;
 					} else {
-						// If user has editing rights for the item's department
-						if ($this->checkDeptAuth($item->department, KC__AUTH_CANEDIT)) {
+						// If user has editing rights for the item's OU
+						if ($this->checkOUAuth($item->ou_id, KC__AUTH_CANOUADMIN)) {
 							$perms['site.item.edit'] = true;
 						}
 					}
@@ -184,23 +208,23 @@ class Security {
 
 
 	/**
-	 * Find the departments the current user has the given auth for.
+	 * Find the ous the current user has the given auth for.
 	 *
 	 * @param  string  $auth
 	 *
 	 * @return  array  The department IDs
 	 */
-	public function findDeptsForAuth($auth) {
+	public function findOUsForAuth($auth) {
 		if (!isset($this->_auth_lookup[$auth])) { return array(); }
 
-		$dept_ids = array();
+		$ou_ids = array();
 		foreach($this->_auth_lookup[$auth] as $v) {
-			if (0 === strpos($v, 'dept_')) {
-				$dept_ids[] = (int) substr($v, 5);
+			if (0 === strpos($v, 'ou_')) {
+				$ou_ids[] = (int) substr($v, 3);
 			}
 		}
 
-		return $dept_ids;
+		return $ou_ids;
 	}
 
 

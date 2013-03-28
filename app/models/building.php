@@ -11,8 +11,13 @@ class Building {
 	public $code = '';
 	public $name = '';
 	public $site_id = null;
+
 	public $latitude = null;
 	public $longitude = null;
+
+	public $url = '';
+
+
 
 	public function __get($name) {
 		switch ($name) {

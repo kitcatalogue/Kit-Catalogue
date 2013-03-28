@@ -1,0 +1,42 @@
+<?php
+
+$user = $this->model('user');
+$lang = $this->model('lang');
+
+?>
+
+<h1><?php $this->out($lang['ou.label.plural']); ?></h1>
+
+<?php
+$organisational_units = $this->model('organisationalunitstore')->findTree();
+
+if (0 == $organisational_units->count()) {
+	?>
+	<p class="note">There are no <?php $this->out(strtolower($lang['ou.label.plural'])); ?> available so it is likely this catalogue is empty.</p>
+	<?php
+	return;
+}
+?>
+
+
+
+<p>The following is a list of all the <?php echo strtolower($lang['ou.label.plural']); ?> used in this catalogue.</p>
+
+<div id="tree">
+	<?php
+	$ou_list = $organisational_units->toArray();
+
+	$that = $this;
+	$count_property = ($that->model('user')->isAnonymous()) ? 'item_count_public' : 'item_count_internal' ;
+
+	$this->layout()->renderTree($ou_list, function($node) use ($that, $count_property) {
+		$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+		printf('<li><a href="/browse/ou-%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $node->id.'-'.urlencode($name), $node->$count_property);
+	});
+	?>
+
+</div>
+
+<?php
+
+

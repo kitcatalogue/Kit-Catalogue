@@ -14,7 +14,7 @@ if (!defined('KC_INSTALL_WIZARD')) { die('Install wizard steps cannot be called 
 
 <p>
 	To try and smooth this process, we've partitioned a lot of the Kit-Catalogue configuration and styling options
-	in to a special folder called "<em>local</em>".  The idea is simple...  You make all your configuration, CSS and layout
+	in to a special folder called "<em>local</em>".  The idea is simple... You make all your configuration, CSS and layout
 	changes in the <em>local</em> folder, and when it comes time to update to a new version, we don't overwrite the the
 	local information, so all your changes remain intact.
 </p>
@@ -23,8 +23,6 @@ if (!defined('KC_INSTALL_WIZARD')) { die('Install wizard steps cannot be called 
 	As far as configuration goes, all changes made in <em>local/local_config.php</em> will override those in the default
 	<em>app/config.php</em>.  To ensure your updates are not accidentally overwritten during an upgrade, <strong>only make changes in the <em>local</em> folder!</strong>
 </p>
-
-<p>The following checks ensure your local configuration is available.</p>
 
 
 
@@ -221,6 +219,7 @@ if (!file_exists($path)) {
 ?>
 
 
+
 <h2>Checking for a local layout template :  <em>local/layouts/&lt;layout-file&gt;</em></h2>
 <p>
 	A layout template provides greater styling control as it defines the headers, footers, menus and other HTML output that wraps each page.
@@ -242,7 +241,7 @@ if ( (isset($config['layout.template_file'])) && (!empty($config['layout.templat
 		</div>
 		<p>Your configuration contains the setting: <em>$config['layout.template_file'] = '<?php out($config['layout.template_file']); ?>'</em>
 		<p>We could not find the file at: <em><?php out($path); ?></em></p>
-		<p>Kit-Catalogue will not run if it cannot find your configuration file.
+		<p>Kit-Catalogue will not run if it cannot find your template file.
 			<br />Check the path, or disable the template by using: <em>$config['layout.template_file'] = null</em> in your configuration file.
 		<?php
 	} else {
@@ -258,8 +257,8 @@ if ( (isset($config['layout.template_file'])) && (!empty($config['layout.templat
 		<p class="title">You are not using a local layout template.</p>
 	</div>
 	<p>There's no problem with this, you will simply use the Kit-Catalogue default styles instead.
-	<p>To use a template, create a new layout in <em>local/layouts</em>.  It will be easier to copy the Kit-Catalogue
-		default layout, and	use that as the basis for your new one.</p>
+	<p>If you want to use your own template, create a new layout in <em>local/layouts</em>.  To get your started, you should copy the default Kit-Catalogue
+		layout template from: <em>app/layouts/kitcatalogue.phtml</em>.</p>
 	<p>To enable your new layout, add <em>$config['layout.template_file'] = '/local/layouts/&lt;filename&gt;'</em> to your local configuration.</p>
 	<p>You can read a little more on templates in <em>docs/local_settings.txt</em>.</p>
 	<?php

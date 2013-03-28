@@ -6,7 +6,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.1.0
+ * @version  1.2.0
  */
 class Ecl_Helper_Filesystem {
 
@@ -238,22 +238,30 @@ class Ecl_Helper_Filesystem {
 	 * Get the files within the given folder.
 	 *
 	 * @param  string  $path  The path of the folder to scan.
+	 * @param  string  $pattern  (optional) A regex pattern to whitelist files against. (default: '')
 	 *
-	 * @return  mixed  An array of filenames. On fail, null.
+	 * @return  array  An array of files.
 	 */
-	public static function getFiles($path) {
-		$files = null;
+	public static function getFiles($path, $pattern = '') {
+		$all_files = self::getFolderContents($path, true);
+		if (empty($all_files)) { return array(); }
 
-		$all_files = self::getFolderContents($path);
-		if ($all_files) {
+		$files = array();
+		if (empty($pattern)) {
 			foreach($all_files as $i => $name) {
 				if (!is_dir($path.'/'.$name)) {
 					$files[] = $name;
 				}
 			}
+		} else {
+			foreach($all_files as $i => $name) {
+				if ( (!is_dir($path.'/'.$name)) && (preg_match($pattern, $name)) ) {
+					$files[] = $name;
+				}
+			}
 		}
 		return $files;
-	}// /method
+	}
 
 
 

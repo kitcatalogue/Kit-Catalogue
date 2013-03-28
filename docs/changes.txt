@@ -13,12 +13,12 @@ recent versions of the software.
 --------------------------------------------------------------------------------
 v.1.2.0  (released TBC)
 
- 
 
-** Changed the Model field to be non-mandatory.
-** Added new organisational structure admin to replace organisation/department fields.
-** Added new organisational unit field to item records.
-** Removed department and organisation fields (use the new Organisational Unit field instead).
+
+IMPORTANT: Kit-Catalogue now uses a new upgrade process.
+When you have applied the updated code files you MUST run the upgrade wizard at: http://<your-catalogue/install/
+
+See /install/readme.txt for more information. 
 
 
 
@@ -33,26 +33,58 @@ Fixed AJAX calls not using HTTPS when required.
 
 == Administration
 
+Added new "embedded content" field to items, allowing direct inclusion of youtube videos, etc.
 Added new "link" resources to items.
+Added new organisational structure admin to replace organisation/department fields.
+Added new organisational unit field to item records.
+Added ability to create a new user and assign their password in one go.
+Added inventory report builder to OU admin role.
+
+Changed the item edit page to move mandatory fields nearer the top.
+Changed the Model field to be optional.
+Changed the title and manufacturer fields to be co-mandatory (at least one must be filled).
+
+Fixed deleting a user not deleting the corresponding permissions.
+Fixed the importer will now clean up its old temporary files.
+
+Improved the importer to accept all item fields and detect/correct column re-shuffles in CSV files.
+Improved the exporter to work around Excel having problems when opening CSV files with fields starting with punctuation characters. 
 
 
 == Config
 
+Added 'import.date_format_mdy' setting to control whether the importer should use US style dates.
+Added 'layout.date_format_report' setting to control the formatting of dates in the report builder.
+Added 'item.image.max_width' and 'item.image.max_height' settings to control auto-resizing of uploaded images.
+Added 'item.allow_embedded_content' setting to control whether you can add/view an item's embedded content like YouTube videos.
+Added 'search.include_ou' and 'search.include_ou_descendents' to control search results from hits on organisational unit names.
+Added 'menu.???' settings to control which menus are available and how they are labelled.
+Added 'help.???' settings to control what online help is available to administrators.
+Added 'admin.???' settings to control the use of "editor" users.
+
 Removed 'app.items_www' setting as it is no longer required.
 Removed 'app.api_www' setting as it is no longer required.
+Removed 'search.include_departments' setting as it is no longer required.
 
 
 == General
 
 Added reCAPTCHA option to enquiry forms to combat spam (config 'enquiry.use_recaptcha' and 'recaptcha.___' section)
 Added setting to log all enquiry form submissions - enabled by default (config: 'enquiry.log').
-Added further language override options.
+Added more language override options.
+Added a "Facilities" menu, which shows items that contain other items - disabled by default (config: 'menu.facility.enabled').
+Added a "Tags" menu, which shows items by tag - disabled by default (config: 'menu.tag.enabled').
+
 Changed the default label for an item's files to "resources".
+
 Fixed minor typo errors in the admin area.
 Fixed organisation logo not linking to organisational website (config 'org.www').
 Fixed searching with the common, but unneccesary, wildcard characters '*' and '%' returning no results.
-Fixed searching using a single character using all available memory for results.  Minimum search length is 2 characters.
-Fixed wikicode fields not showing lines beginning with a zero '0'.
+Fixed searching using a single character using all available memory for results.  Minimum search length is now 2 characters.
+Fixed wikicode fields not showing lines beginning with a zero character, '0'.
+
+Improved the search system.
+Improved the installation and upgrade process.
 
 
 

@@ -113,6 +113,11 @@ class Organisationalunitstore {
 		// Delete OU
 		$affected_count = $this->_db->delete('ou', "ou_id=$sql__id");
 
+		// Delete related user authorisations
+		// A quick and dirty abuse of the law of demeter
+		$sysauth = $this->_model->get('sysauth');
+		$sysauth->deleteForItem($id);
+
 		return ($affected_count>0);
 	}// /method
 
@@ -289,7 +294,7 @@ class Organisationalunitstore {
 	public function insert($object, $parent_id) {
 		$binds = $this->convertObjectToRow($object);
 
-		unset($binds['ou_id']);   // Don't insert the id, we want a new one
+		unset($binds['ou_id']);
 
 		$ou_tree = $this->_model->get('ou_tree');
 		$parent_node = $ou_tree->findForRef($parent_id);
@@ -316,6 +321,73 @@ class Organisationalunitstore {
 	 */
 	public function newOrganisationalunit() {
 		return new Organisationalunit();
+	}// /method
+
+
+
+	/**
+	 * Rebuild all the item counts per organisational unit.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function rebuildItemCounts() {
+
+		$visibility_types = array (
+			'internal' => '
+					SELECT ou_id, count(item_id) AS count
+					FROM item
+					GROUP BY ou_id
+					ORDER BY ou_id
+				' ,
+			'public' => '
+					SELECT ou_id, count(item_id) AS count
+					FROM item
+					WHERE visibility = \''. KC__VISIBILITY_PUBLIC .'\'
+					GROUP BY ou_id
+					ORDER BY ou_id
+				' ,
+		);
+
+
+		// Get all the counts for each OU
+		$update_info = null;
+
+		foreach($visibility_types as $type => $sql) {
+			$row_count = $this->_db->query($sql);
+
+			if ($row_count>0) {
+				$counts = $this->_db->getResultAssoc('ou_id', 'count');
+				if ($counts) {
+					foreach($counts as $ou_id => $item_count) {
+						$ou_id = (int) $ou_id;
+						$update_info[$ou_id][$type] = $item_count;
+					}
+				}
+			}
+		}
+
+
+		// Reset all the ou item counts to 0
+		$binds = array (
+			'item_count_internal'  => 0 ,
+			'item_count_public'    => 0 ,
+		);
+		$this->_db->update('ou', $binds);
+
+		// If there are counts to update in the database
+		if ($update_info) {
+
+			foreach($update_info as $ou_id => $counts) {
+				$binds = array (
+					'item_count_internal'  => (isset($counts['internal'])) ? $counts['internal'] : 0 ,
+					'item_count_public'    => (isset($counts['public'])) ? $counts['public'] : 0 ,
+				);
+
+				$this->_db->update('ou', $binds, "ou_id='$ou_id'");
+			}
+		}
+
+		return true;
 	}// /method
 
 

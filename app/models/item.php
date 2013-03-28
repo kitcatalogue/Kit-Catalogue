@@ -60,6 +60,7 @@ class Item {
 	public $visibility = 0;
 
 	public $image = '';
+	public $embedded_content = '';
 
 	public $manufacturer_website = '';
 	public $copyright_notice = '';
@@ -181,12 +182,15 @@ class Item {
 	public function validate(&$errors = null) {
 		$errors = null;
 
-		if (empty($this->manufacturer)) { $errors['manufacturer'] = 'Manufacturer is empty.'; }
-		if (empty($this->model)) { $errors['model'] = 'Model is empty'; }
-		if (empty($this->department)) { $errors['department'] = 'Department is empty.'; }
+		if ( (empty($this->item_title)) && (empty($this->manufacturer)) ) {
+			$errors['title'] = 'Title is empty. Either Title or Manufacturer must be supplied.';
+			$errors['manufacturer'] = 'Manufacturer is empty. Either Title or Manufacturer must be supplied.';
+		}
+
+		if (empty($this->ou)) { $errors['ou'] = 'Organisational Unit is empty.'; }
 
 		if (empty($this->contact_1_email)) { $errors['contact_1_email'] = 'Contact 1 Email is empty.'; }
-		//elseif (filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
+		//elseif (false === filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
 
 		if (!empty($errors)) { return false; }
 

@@ -1,0 +1,202 @@
+<?php
+
+echo('Nice');
+return;
+
+
+
+
+$lang = $this->model('lang');
+
+$output_fields = array (
+	'id'                => 'ID' ,
+	'name'              => 'Name' ,
+	'title'             => $lang['item.form.title'] ,
+	'manufacturer'      => $lang['item.form.manufacturer'] ,
+	'model'             => $lang['item.form.model'] ,
+	'short_description' => $lang['item.form.short_description'] ,
+	'full_description'  => $lang['item.form.full_description'] ,
+	'specification'     => $lang['item.form.specification'] ,
+	'upgrades'          => $lang['item.form.upgrades'] ,
+	'future_upgrades'   => $lang['item.form.future_upgrades'] ,
+	'acronym'           => $lang['item.form.acronym'] ,
+	'keywords'          => $lang['item.form.keywords'] ,
+	'tags'              => $lang['tag.label.plural'] ,
+	'category'          => $lang['cat.label.plural'] ,
+	'technique'         => $lang['item.form.technique'] ,
+	'usergroup'         => $lang['item.form.usergroup'] ,
+	'access'            => $lang['access.label'] ,
+	'portability'       => $lang['item.form.portability'] ,
+	'availability'      => $lang['item.form.availability'] ,
+	'visibility'        => $lang['item.form.visibility'] ,
+	'ou'                => $lang['ou.label'] ,
+	'site'              => $lang['site.label'] ,
+	'building'          => $lang['building.label'] ,
+	'room'              => $lang['item.form.room'] ,
+	'contact_1_name'    => $lang['item.form.contact_1_name'] ,
+	'contact_1_email'   => $lang['item.form.contact_1_email'] ,
+	'contact_2_name'    => $lang['item.form.contact_2_name'] ,
+	'contact_2_email'   => $lang['item.form.contact_2_email'] ,
+	'image'             => $lang['item.form.image'] ,
+	'quantity'          => $lang['item.form.quantity'] ,
+	'quantity_detail'   => $lang['item.form.quantity_detail'] ,
+	'PAT'               => $lang['item.form.PAT'] ,
+	'calibrated'        => $lang['item.form.calibrated'] ,
+	'last_calibration_date' => $lang['item.form.last_calibration_date'] ,
+	'next_calibration_date' => $lang['item.form.next_calibration_date'] ,
+	'asset_no'          => $lang['item.form.asset_no'] ,
+	'finance_id'        => $lang['item.form.finance_id'] ,
+	'serial_no'         => $lang['item.form.serial_no'] ,
+	'year_of_manufacture' => $lang['item.form.year_of_manufacture'] ,
+	'supplier'          => $lang['item.form.supplier'] ,
+	'date_of_purchase'  => $lang['item.form.date_of_purchase'] ,
+	'purchase_cost'     => $lang['item.form.cost'] ,
+	'replacement_cost'  => $lang['item.form.replacement_cost'] ,
+	'end_of_life'       => $lang['item.form.end_of_life'] ,
+	'maintenance'       => $lang['item.form.maintenance'] ,
+	'is_disposed_of'    => $lang['item.form.is_disposed_of'] ,
+	'date_disposed_of'  => $lang['item.form.date_disposed_of'] ,
+	//'archived'        => $lang['item.form.archived'] ,
+	//'date_archived'   => $lang['item.form.date_archived'] ,
+	'date_added'        => $lang['item.form.date_added'] ,
+	'date_updated'      => $lang['item.form.date_updated'] ,
+	'last_updated_by'   => 'Last Updated By' ,
+);
+
+
+$default_output_fields = array (
+	'id', 'name', 'manufacturer', 'model', 'ou', 'building', 'room', 'asset_no',
+	'category', 'contact_1_email', 'contact_2_email', 'last_updated_by' ,
+);
+
+
+$order_fields = array (
+	'name'                 => 'Name (title/manufacturer)' ,
+	'title'                => $lang['item.form.title'] ,
+	'manufacturer'         => $lang['item.form.manufacturer'] ,
+	'ou'                   => $lang['ou.label'] ,
+	'building'             => $lang['building.label'] ,
+	'room'                 => $lang['item.form.room'] ,
+	'supplier'             => $lang['item.form.supplier'] ,
+	'asset_no'             => $lang['item.form.asset_no'] ,
+	'finance_id'           => $lang['item.form.finance_id'] ,
+	'cost'                 => $lang['item.form.cost'] ,
+	'end_of_life'          => $lang['item.form.end_of_life'] ,
+	'year_of_manufacture'  => $lang['item.form.year_of_manufacture'] ,
+	'PAT'                  => $lang['item.form.PAT'] ,
+);
+
+
+$order_directions = array (
+	'asc'  => 'Ascending' ,
+	'desc' => 'Descending' ,
+);
+
+
+
+$this->layout()->appendSection('layout.head', <<< EndHtml
+<style type="text/css">
+
+	#outputfields checkbox_grid { width: 90%; }
+
+	#table_orderby td+td { padding-left: 4em; }
+	#table_orderby label { display: block; font-weight: bold; color: #000; }
+
+</style>
+EndHtml
+);
+
+?>
+
+
+<h1 class="green-bar">Item Reporting</h1>
+<p>Customise your item report using the options below.</p>
+
+
+<form action="<?php echo $this->router()->makeAbsoluteUri('/ouadmin/reports/items/show'); ?>" method="post">
+hi
+
+<fieldset>
+	<legend>Filtering Options</legend>
+	<p class="note">Use these filters to restrict items to those matching the specified properties.</p>
+	<dl class="form">
+
+		<dt><?php $this->out($lang['ou.label']); ?></dt>
+		<dd><?php $this->layout()->renderOUSelect('ou', $this->model('user')); ?></dd>
+
+		<dt><?php $this->out($lang['item.form.manufacturer']); ?></dt>
+		<dd><?php $this->layout()->renderManufacturerSelect('manufacturer'); ?></dd>
+
+		<dt><?php $this->out($lang['cat.label']); ?></dt>
+		<dd><?php $this->layout()->renderCategorySelect('category'); ?></dd>
+
+		<dt><?php $this->out($lang['building.label']); ?></dt>
+		<dd><?php $this->layout()->renderBuildingSelect('building'); ?></dd>
+
+	</dl>
+</fieldset>
+
+
+<fieldset>
+	<legend>Output Fields</legend>
+	<p class="note">Select which information you wish to output by ticking the appropriate boxes below.</p>
+	<div id="outputfields">
+		<?php
+		Ecl_Helper_Html::formCheckboxGrid('output', $output_fields, 5, $default_output_fields);
+		?>
+	</div>
+</fieldset>
+
+
+<fieldset>
+	<legend>Order By</legend>
+	<p class="note">You can order your results by up to three columns.</p>
+	<p class="note">An item's <em>name</em> is the title shown on the item's details page. Where an item has no "title" field, it uses "manufacturer model" instead.</p>
+	<table id="table_orderby">
+	<tr>
+		<td valign="top">
+			<label for="orderby_1">Order By</label>
+			<select name="orderby[1]" id="orderby_1">
+				<?php Ecl_Helper_Html::formOptions($order_fields, 'name'); ?>
+			</select>
+			<br />
+			<select name="orderdirection[1]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+		<td valign="top">
+			<label for="orderby_2">.. Then By</label>
+			<select name="orderby[2]" id="orderby_2">
+				<?php Ecl_Helper_Html::formOptions(array('' => '') + $order_fields); ?>
+			</select>
+			<br />
+			<select name="orderdirection[2]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+		<td valign="top">
+			<label for="orderby_3">.. Finally By</label>
+			<select name="orderby[3]" id="orderby_3">
+				<?php Ecl_Helper_Html::formOptions(array('' => '') + $order_fields); ?>
+			</select>
+			<br />
+			<select name="orderdirection[3]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+	</tr>
+	</table>
+</fieldset>
+
+
+<div class="button_bar">
+	<?php
+	Ecl_Helper_Html::formSubmit('submitview', 'View Report');
+	Ecl_Helper_Html::formSubmit('submitdownload', 'Download CSV');
+	?>
+</div>
+
+
+</form>
+
+

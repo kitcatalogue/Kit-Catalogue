@@ -19,24 +19,19 @@ $step = (int) $step;
 
 
 $available_steps = array (
-	'intro' ,
-	'server' ,
-	'config' ,
-	'application' ,
-	'database' ,
-	'authentication' ,
-	'finish' ,
+	'1_intro' ,
+	'2_server' ,
+	'3_config' ,
+	'4_application' ,
+	'5_database' ,
+	'6_authentication' ,
+	'7_finish' ,
 );
 
 
 
-if (isset($available_steps[$step])) {
-	$page = $available_steps[$step];
-} else {
-	$step = 0;
-	$page = 'intro';
-}
-
+$step = (isset($available_steps[$step])) ? $step : 0 ;
+$page = $available_steps[$step];
 
 
 $url = "installer.php?step={$step}";
@@ -53,30 +48,7 @@ $no_next = false;
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Kit-Catalogue : Installation</title>
 	<link href="../css/style.css" media="all" rel="stylesheet" type="text/css" />
-	<style type="text/css">
-
-	body { padding: 1.5em 1.5em 2em 1.5em; background-color: #fff; font-size: 14px; }
-
-	h2, h3, h4, h5, h6 { margin-left: -1em; color: #000; }
-	h2 { margin-top: 2em; }
-
-	.good { margin: 0.5em; padding: 0.4em; background-color: #cfc; border: 1px solid #090; border-radius: 10px; }
-	.bad { margin: 0.5em; padding: 0.4em; background-color: #fcc; border: 1px solid #900; border-radius: 10px; }
-	.warn { margin: 0.5em; padding: 0.4em; background-color: #ffc; border: 1px solid #990; border-radius: 10px; }
-
-	.title { margin: 0; }
-
-	.note { font-size: 0.875em; color: #666; }
-
-	a.hilight { color: #07f; }
-
-	div.prevnext { margin: 1.5em 2em 0 2em; padding-top: 0.7em; border-top: 1px dotted #ccc; font-size: 1.125em; font-weight: bold; }
-
-	table.valigntop td { vertical-align: top; }
-
-	#header { min-height: 80px; }
-
-	</style>
+	<link href="../css/installer.css" media="all" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
@@ -91,22 +63,21 @@ $no_next = false;
 
 <div id="main" class="grid_container">
 
-	<div style="margin: 0; padding: 0.3em 0.5em;">
-		<p><a href="index.php">&laquo; Back to the installation menu</a></p>
-	</div>
-
-	<div style="float: right; margin: 0; background-color: #eee; border: 1px solid #999;">
+	<div style="float: right; margin: 0.2em 0 0 0; background-color: #eee; border: 1px solid #999;">
 		<div><a style="display: inline-block; padding: 1em;" href="<?php echo $url; ?>">Refresh</a></div>
 	</div>
 
+	<div style="margin: 0; padding: 0 0.5em;">
+		<p><a href="index.php">&laquo; Back to the installation menu</a></p>
+	</div>
 
-	<h1 style="padding-top: 1em;">Installation Wizard &nbsp; (<?php out($page); ?>)</h1>
-	<hr style="clear: both;" />
+
+	<h1>Installation Wizard</h1>
 
 
 	<div style="margin: 2em;">
 		<?php
-		$filepath = realpath("./steps/{$page}.php");
+		$filepath = realpath("./install_steps/{$page}.php");
 		if (!file_exists($filepath)) {
 			?>
 			<div class="feedback feedback_error">
@@ -135,5 +106,8 @@ $no_next = false;
 	</div>
 
 </div>
+
+<div class="footer">&nbsp;</div>
+
 </body>
 </html>

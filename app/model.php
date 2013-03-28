@@ -29,17 +29,14 @@ $model->setDefaultFactory(function ($name, $model) {
 
 
 
-// Normalise config
-// Those config settings that have been deprecated over time are normalised here.
-if ( (!isset($config['app.email.owner'])) && (!isset($config['app.email'])) ) {
-	 $config['app.email.owner'] = $config['app.email'];
+if (isset($config)) {
+	$model->load($config);
 }
 
-$model->load($config);
 
-
-
-$model->setObject('lang', $lang);
+if (isset($lang)) {
+	$model->setObject('lang', $lang);
+}
 
 
 
@@ -62,6 +59,9 @@ $model->setFunction('ou_tree', function ($model) {
 		$object->name = $row['name'];
 		$object->url = $row['url'];
 
+		$object->item_count_internal = $row['item_count_internal'];
+		$object->item_count_public = $row['item_count_public'];
+
 		$object->tree_node_id = $row['tree_node_id'];
 		$object->tree_level = $row['tree_level'];
 		return $object;
@@ -71,11 +71,14 @@ $model->setFunction('ou_tree', function ($model) {
 });
 
 
+
 $model->setObject('request', Ecl::factory('Ecl_Request'));
 
 
 
-$model->setObject('router', $router);
+if (isset($router)) {
+	$model->setObject('router', $router);
+}
 
 
 
@@ -125,6 +128,7 @@ $model->setFunction('itemstore', function ($model) {
 });
 
 
+
 $model->setFunction('user', function ($model) {
 	$user = Ecl::factory('Ecl_User');
 
@@ -142,7 +146,7 @@ $model->setFunction('user', function ($model) {
 
 
 $model->setFunction('userstore', function ($model) {
-	return new Userstore($model->get('db'), $model->get('app.user_session_var'));
+	return new Userstore($model, $model->get('app.user_session_var'));
 });
 
 

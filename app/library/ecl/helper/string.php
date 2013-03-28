@@ -4,7 +4,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.2.0
+ * @version  1.3.0
  */
 class Ecl_Helper_String {
 
@@ -298,7 +298,7 @@ class Ecl_Helper_String {
 
 
 	/**
-	 * Get the ordinal value of the given integer.
+	 * Get the ordinal name of the given integer.
 	 *
 	 * e.g.
 	 *
@@ -340,7 +340,7 @@ class Ecl_Helper_String {
 	 * @return  mixed
 	 */
 	public static function parseBoolean($string, $default = false) {
-		$string = strtolower($string);
+		$string = strtolower(trim($string));
 		if (in_array($string, array ('1', 'yes', 'y', 'on'))) { return true; }
 		if (in_array($string, array ('0', 'no', 'n', 'off'))) { return false; }
 		return $default;
@@ -351,19 +351,25 @@ class Ecl_Helper_String {
 	/**
 	 * Get the datetime representation of the given text.
 	 *
-	 * All dates are assumed to be in european format (d/m/y).
+	 * If $format_mdy is false, then all dates are assumed to be in european format (d/m/y).
 	 * If $string is not a valid date, $default is returned.
 	 *
 	 * @param  string  $string
 	 * @param  mixed  $default
+	 * @param  boolean  $format_mdy  Use US style month-day-year format.  (default: false)
 	 *
 	 * @return  mixed
 	 */
-	public static function parseDate($string, $default) {
-		// strtotime can't do european dates with slashes, so if we detect
-		// "dd/mm/yyyy" force it to "dd-mm-yyyy" instead
-		if (preg_match('#\d{1,2}/\d{1,2}/(\d{4}|\d{2})#', $string)) {
-			$string = str_replace('/', '-', $string);
+	public static function parseDate($string, $default, $format_mdy = false) {
+		$string = trim($string);
+
+		// strtotime uses the date separator to decide the date format
+		// e.g.  x/y/z = m/d/y  while  x-y-z = d-m-y
+		// We force the date format we want by changing the separator.
+		if ($format_mdy) {
+			$string = str_replace(array('-', '.', ' '), '/', $string);
+		} else {
+			$string = str_replace(array('/', '.', ' '), '-', $string);
 		}
 
 		$date = strtotime($string);

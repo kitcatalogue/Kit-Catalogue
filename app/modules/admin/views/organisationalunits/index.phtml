@@ -6,8 +6,8 @@ $lower_ou_label = strtolower($lang['ou.label']);
 $lower_ou_label_plural = strtolower($lang['ou.label.plural']);
 
 
-
 $this->layout()->addGlobalJavascript();
+
 
 $this->layout()->appendSection('layout.head', '
 <script type="text/javascript">
@@ -15,9 +15,9 @@ $this->layout()->appendSection('layout.head', '
 $(document).ready( function() {
 
 	$.require([
-		"jquery.dump.js" ,
 		"ecl.js" ,
 	]);
+
 
 	jQuery.showmodal = function showmodal(obj) {
 		var fadespeed = 400;
@@ -222,7 +222,7 @@ $(document).ready( function() {
 
 
 	<?php
-	if ($this->organisationalunits->count()==0) {
+	if (0 == $this->organisationalunits->count()) {
 		?>
 		<p class="warning">No organisational units have been setup yet.</p>
 		<?php
@@ -232,51 +232,15 @@ $(document).ready( function() {
 			<?php
 			$ou_list = $this->organisationalunits->toArray();
 
-			function renderTree($tree, $callback = null, $current_level = null) {
-				if (null === $current_level) {
-					$current_level = -1;
-				} else {
-					$current_level = (int) $current_level;
-				}
-
-				$node = array_shift($tree);
-
-				$indent = str_repeat("\t", $node->tree_level);
-
-				if ($node->tree_level > $current_level) {
-					echo("\n{$indent}<ul>");
-				} elseif ($node->tree_level < $current_level) {
-					$closing_indent = str_repeat("\t", $current_level);
-					echo str_repeat("\n{$closing_indent}</ul>", $current_level - $node->tree_level);
-				}
-
-				echo "\n{$indent}";
-				if (is_callable($callback)) {
-					$callback($node);
-				} else {
-					$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
-					echo "<li>{$name}";
-				}
-
-				if (!empty($tree)) {
-					renderTree($tree, $callback, $node->tree_level);
-
-					if ($node->tree_level > $current_level) {
-						echo str_repeat("\n</ul>\n", $node->tree_level);
-					}
-				}
-
-				return true;
-			}
-
 			$that = $this;
-			renderTree($ou_list, function($node) use ($that) {
+			$this->layout()->renderTree($ou_list, function($node) use ($that) {
 				$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
 				if (0 == $node->tree_level) {
 					printf('<li data-ouid="%1$s"> %2$s ', $node->id, $that->escape($name));
 				} else {
 					printf('<li data-ouid="%1$s"><a class="tree_edit" href="#" title="edit unit"> %2$s </a>', $node->id, $that->escape($name));
 				}
+				echo '<span class="count">('. $node->item_count_internal .')</span>';
 				echo '<span class="treecontrols">';
 				echo '[<a class="tree_add" href="#" title="add child unit">add</a>] ';
 				echo '</span>';

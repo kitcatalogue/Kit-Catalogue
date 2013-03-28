@@ -101,6 +101,16 @@ $router->addRoute('*', 'tag/:tag/item/:itemname/:itemid', array(
 
 
 
+// Facilities
+
+$router->addRoute('*', 'facility/:item/:itemname/:itemid', array(
+	'controller'  => 'facility' ,
+	'action'      => 'viewitem' ,
+));
+
+
+
+
 // Resource / File
 
 $router->addRoute('*', 'resource/:id', array(
@@ -287,6 +297,16 @@ $router->addRoute('*', 'a-z/item/:itemname/:itemid' , array(
 $router->addRoute('*', 'enquiry/:itemid', array (
 	'controller'  => 'enquiry' ,
 	'action'      => 'index' ,
+));
+
+
+
+// OU Admin homepage
+
+$router->addRoute('*', 'ouadmin', array (
+	'controller'  => 'home' ,
+	'action'      => 'index' ,
+	'module'      => 'ouadmin' ,
 ));
 
 

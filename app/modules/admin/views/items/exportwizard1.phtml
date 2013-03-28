@@ -11,19 +11,31 @@ $lang = $this->model('lang');
 		<?php
 		Ecl_Helper_Html::form('exportform', $this->router()->makeAbsoluteUri('/admin/items/export/?step=2'), 'post', 'UTF-8');
 		?>
-
+		<p>Use the options below to determine which items you wish to export.</p>
 		<dl>
 
-			<dt><?php Ecl_Helper_Html::formLabel('ou', 'Select which items should be exported');?></dt>
+			<dt><?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label']);?></dt>
 			<dd>
 				<select name="ou" id="ou">
 					<?php
 					$ou_list = $this->model('organisationalunitstore')->findTree();
 					foreach($ou_list as $ou) {
-						printf('<option value="%1$s" %4$s>%3$s %2$s </option>', $ou->id, $this->escape($ou->name), str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level), ( ($ou->id==$item->ou) ? 'selected="selected"' : null) );
+						printf('<option value="%1$s">%3$s %2$s </option>', $ou->id, $this->escape($ou->name), str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level));
 					}
 					?>
 				</select>
+			</dd>
+
+			<dt><?php Ecl_Helper_Html::formLabel('visibility', $lang['item.form.visibility']);?></dt>
+			<dd>
+				<?php
+				$options = array(
+					''                      => 'Any Item' ,
+					KC__VISIBILITY_INTERNAL => 'Internal Only' ,
+					KC__VISIBILITY_PUBLIC   => 'Public Only' ,
+				);
+				Ecl_Helper_Html::formSelect('visibility', $options);
+				?>
 			</dd>
 
 			<dt>Options</dt>

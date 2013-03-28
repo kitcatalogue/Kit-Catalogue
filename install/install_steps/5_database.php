@@ -144,7 +144,7 @@ if (!$connected) {
 $installed_ok = false;
 if ( (isset($_POST['submitinstalldb'])) && (isset($_POST['confirminstalldb'])) ){
 
-	$path = "./install_db.sql";
+	$path = "./install_steps/install_db.sql";
 	if (!file_exists($path)) {
 		?>
 		<div class="bad">

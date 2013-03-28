@@ -37,6 +37,8 @@ class Ecl_Db_Mysql {
 
 	protected $_debug = false;   // debug mode - Echos verbose error messages
 
+	protected $_schema = null;   // Schema instance
+
 
 
 	/**
@@ -792,6 +794,12 @@ class Ecl_Db_Mysql {
 
 
 
+	public function getDatabaseName() {
+		return $this->_config['database'];
+	}
+
+
+
  	/**
 	 * Return the PHP timestamp represented by the given database formatted string
 	 *
@@ -906,6 +914,16 @@ class Ecl_Db_Mysql {
 
 
 
+	public function getSchema() {
+		if (!($this->_schema instanceof Ecl_Db_Mysql_Schema)) {
+			$this->_schema = new Ecl_Db_Mysql_Schema($this);
+		}
+
+		return $this->_schema;
+	}
+
+
+
 	/**
 	 * Return the last query run
 	 */
@@ -936,6 +954,12 @@ class Ecl_Db_Mysql {
 
 
 	/* Methods for preparing elements of an SQL query */
+
+
+	public function prepareFieldName($field) {
+		$field = str_replace(array('`', '\\', "\0"), '', $field);
+		return "`{$field}`";
+	}
 
 
 
@@ -1014,6 +1038,13 @@ class Ecl_Db_Mysql {
 			return '('. $this->prepareValue($values) .')';
 		}
 	}// /method
+
+
+
+	public function prepareTableName($table) {
+		$table = str_replace(array('`', '\\', "\0"), '', $table);
+		return "`{$table}`";
+	}
 
 
 

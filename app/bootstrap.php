@@ -43,8 +43,9 @@ define('KC__FEEDBACK_WARNING', 'feedback_warning');
 
 
 // Different user permissions/auths
-define('KC__AUTH_CANADMIN', 'can_admin');
-define('KC__AUTH_CANEDIT', 'can_edit');
+define('KC__AUTH_CANADMIN', 'can_admin');       // Sysadmin
+define('KC__AUTH_CANOUADMIN', 'can_ouadmin');   // OU specific admin
+define('KC__AUTH_CANEDIT', 'can_edit');         // Deprecated
 
 
 define('KC__OBJECT_SYSTEM', 'system');
@@ -112,6 +113,19 @@ if (file_exists($path)) { include($path); }
 
 
 // --------------------------------------------------------------------------------
+// Normalise Config
+
+
+// These config settings have been deprecated over time.
+// We normalise them here.
+
+if ( (!isset($config['app.email.owner'])) && (isset($config['app.email'])) ) {
+	 $config['app.email.owner'] = $config['app.email'];
+}
+
+
+
+// --------------------------------------------------------------------------------
 // Load Local Language File
 
 
@@ -127,6 +141,6 @@ if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
 	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
 }
 
-
+// @fix : OU route check
 
 ?>

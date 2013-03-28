@@ -20,7 +20,7 @@ foreach($this->items as $i => $item) {
 	if (0 === $i) { echo($csv_parser->generate( array(array_keys($row)))); }
 
 	// Output individual row
-	echo($csv_parser->generate(array($row) ));
+	echo($csv_parser->generate(array($row)));
 }
 
 

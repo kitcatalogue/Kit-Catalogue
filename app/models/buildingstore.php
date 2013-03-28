@@ -51,6 +51,7 @@ class Buildingstore {
 			'site_id'      => $object->site_id ,
 			'latitude'     => $object->latitude ,
 			'longitude'    => $object->longitude ,
+			'url'          => $object->url ,
 		);
 
 		return $row;
@@ -74,6 +75,7 @@ class Buildingstore {
 		$object->site_id = $row['site_id'];
 		$object->latitude = $row['latitude'];
 		$object->longitude = $row['longitude'];
+		$object->url = $row['url'];
 
 		return $object;
 	}// /method
@@ -160,6 +162,7 @@ class Buildingstore {
 	 */
 	public function findAllUsed($visibility = null) {
 
+		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
@@ -173,23 +176,23 @@ class Buildingstore {
 
 
 	/**
-	 * Find buildings for department.
+	 * Find buildings for OU.
 	 *
-	 * @param  string  $department_id  The department ID to check for.
+	 * @param  string  $ou_id  The OU ID to check for.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findForDepartment($department_id) {
+	public function findForOU($ou_id) {
 
 		$binds = array (
-			'department'  => $department_id ,
+			'ou_id'  => $ou_id ,
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT s.*
 			FROM building s
 				INNER JOIN item i ON s.building_id=i.building
-			WHERE i.building=:building
+			WHERE i.ou_id=:ou_id
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method

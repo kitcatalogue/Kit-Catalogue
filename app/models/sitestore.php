@@ -48,6 +48,7 @@ class Sitestore {
 		$row = array (
 			'site_id'  => $object->id ,
 			'name'     => $object->name ,
+			'url'      => $object->url ,
 		);
 
 		return $row;
@@ -67,6 +68,7 @@ class Sitestore {
 
 		$object->id = $row['site_id'];
 		$object->name = $row['name'];
+		$object->url = $row['url'];
 
 		return $object;
 	}// /method
@@ -155,6 +157,7 @@ class Sitestore {
 	 */
 	public function findAllUsed($visibility = null) {
 
+		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
@@ -168,23 +171,23 @@ class Sitestore {
 
 
 	/**
-	 * Find the sites used for equipment in a department.
+	 * Find the sites used for equipment in a OU.
 	 *
-	 * @param  string  $department_id  The department ID to check for.
+	 * @param  string  $ou_id  The OU ID to check for.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findForDepartment($department_id) {
+	public function findForOU($ou_id) {
 
 		$binds = array (
-			'department'  => $department_id ,
+			'ou_id'  => $ou_id ,
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT s.*
 			FROM site s
 				INNER JOIN item i ON s.site_id=i.site
-			WHERE i.site=:site
+			WHERE i.ou_id=:ou_id
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject') );
 	}// /method

@@ -608,13 +608,10 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			$this->response()->send();
 			return true;
 		} catch (Ecl_Response_Exception_HeadersSentException $e) {
-			// @debug :
 			Ecl::dump($e, 'Headers Already Sent');
 		} catch (Ecl_Response_Exception_InvalidHttpStatusCodeException $e) {
-			// @debug :
 			Ecl::dump($e, 'Invalid HTTP Status Code');
 		} catch (Exception $e) {
-			// @debug :
 			Ecl::dump($e, 'An unknown exception occured while outputting the response');
 		}
 

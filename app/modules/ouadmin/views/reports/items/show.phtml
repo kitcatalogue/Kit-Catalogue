@@ -1,0 +1,150 @@
+<?php
+if ($this->is_download) { $this->router()->layout(null); }
+
+
+$items = array();
+
+
+if (0 != count($this->items)) {
+
+	foreach($this->items as $item) {
+		$row = array();
+
+		foreach($this->output_fields as $v) {
+			$val = null;
+			if (!property_exists($item, $v)) {
+				switch ($v) {
+					case 'category':
+						$categories = $this->model('categorystore')->findForItem($item->id)->toAssoc('id', 'name');
+						$val = implode(', ', $categories);
+						break;
+					case 'name':
+						$val = $item->name;
+						break;
+					case 'tags':
+						$tags = $this->model('itemstore')->getItemTags($item->id);
+						$val = implode(', ', $tags);
+						break;
+					default:
+						break;
+				}
+			} else {
+				$val = $item->$v;
+
+				if (0 < strlen($v)) {
+					switch ($v) {
+						case 'access':
+							$val = $this->model('accesslevelstore')->lookupName($item->access);
+							break;
+						case 'building':
+							$val = $this->model('buildingstore')->lookupName($item->building);
+							break;
+						case 'ou':
+							$val = $this->model('organisationalunitstore')->lookupName($item->ou);
+							break;
+						case 'site':
+							$val = $this->model('sitestore')->lookupName($item->site);
+							break;
+						case 'supplier':
+							$val = $this->model('supplierstore')->lookupName($item->supplier);
+							break;
+						case 'visibility':
+							switch ($val) {
+								case 1:
+									$val = 'Public';
+									break;
+								case 2:
+									$val = 'Internal';
+									break;
+								case 3:
+									$val = 'Draft';
+									break;
+								default:
+									$val = 'unknown';
+									break;
+							}
+							break;
+						case 'date_added':
+						case 'date_updated':
+						case 'date_archived':
+						case 'date_purchased':
+						case 'date_disposed_of':
+						case 'end_of_life':
+						case 'last_calibration_date':
+						case 'next_calibration_date':
+						case 'PAT':
+							if (!empty($val)) {
+								$val = strip_tags(date($this->model('layout.date_format_report'), $val));
+							} else {
+								$val = null;
+							}
+							break;
+						default:
+							// Do nothing
+							break;
+					}
+				}
+			}
+			$row[$v] = $val;
+		}
+		$items[] = $row;
+	}
+
+}
+
+
+
+// Build headers
+$headers = array();
+foreach($this->output_fields as $k) {
+	$headers[] =  (array_key_exists($k, $this->available_output_fields)) ? $this->available_output_fields[$k] : 'unknown' ;
+}
+
+
+
+if ($this->is_download) {
+	// IE 8 over HTTPS fix
+	header("Cache-Control: private, max-age=15");
+	header("Pragma: ");
+
+	header("Content-Description: File Transfer");
+	header("Content-Disposition: attachment; filename=items_for_department.csv");
+	header('Content-Type: text/csv');
+
+	array_unshift($items, $headers);
+	if (!empty($items)) {
+		$csv_parser = Ecl::factory('Ecl_Parser_Csv');
+		echo $csv_parser->generate($items);
+	}
+	return;
+}
+
+$this->layout()->appendSection('layout.head', <<< EndHtml
+<style type="text/css">
+
+	body { width: 100% !important; }
+	#wrapper { width: 100% !important; }
+
+</style>
+EndHtml
+);
+?>
+
+
+<h1 class="green-bar">Items Report</h1>
+<p class="note">Generated at <?php $this->out(date('H:i, d-m-Y')); ?>.</p>
+<p class="note"><?php echo(count($items)); ?> found.</p>
+
+<?php
+if (empty($items)) {
+	?>
+	<p>No matching items were found.</p>
+	<?php
+	return;
+}
+
+
+array_unshift($items, $headers);
+Ecl_Helper_Html::tabulate($items, true, 'class="grid" style="font-size: 0.9em;"');
+
+

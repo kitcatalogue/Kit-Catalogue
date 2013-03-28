@@ -5,6 +5,8 @@ Kit-Catalogue Installation Instructions
 
 
 
+INSTALLING
+
 The installation wizard will guide you through the changes required to get
 Kit-Catalogue up and running at your institution.
 
@@ -12,11 +14,22 @@ To start the wizard, browse to your installation's  /install/  folder.
 
 
 
-NOTE : If you are upgrading an existing installation, unzip the contents of the latest
+UPGRADING?
+
+If you are upgrading an existing installation, unzip the contents of the latest
 and overwrite your existing Kit-Catalogue site.  You should then run the "upgrade"
 option in the installation wizard to ensure your database is fully updated too. 
 
+On existing installations, your installer should be disabled.
+To renable the installer, change your local config file and enable this setting:
 
+	$config['installer.enabled'] = true;
+
+You can now run the upgrade wizard by browsing to your installations /install/ folder.
+
+
+
+INSTALLING MANUALLY
 
 If you wish to bypass the wizard, then these are the basic things you should 
 do to get Kit-Catalogue working...

@@ -144,8 +144,8 @@ if (!empty($issues)) {
 	if (!empty($found_critical_columns)) {
 		?>
 		<div class="feedback feedback_error">
-		<p><strong>Critical issue found with: <em><?php $this->out(implode('</em>, <em>', $found_critical_columns)); ?></em>.</p>
-		<p>Such issues could cause your import to fail.  Please check your data carefully before proceeding.</strong></p>
+		<p class="title">Critical issue found with: <em><?php $this->out(implode('</em>, <em>', $found_critical_columns)); ?></em>.</p>
+		<p>Such issues could cause your import to fail.  Please check your data carefully before proceeding.</p>
 		</div>
 		<?php
 	} else {

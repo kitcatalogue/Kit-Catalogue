@@ -1,6 +1,9 @@
 <?php
 $building = $this->building;
+$lang = $this->model('lang');
 
+$building_label_lower = strtolower($lang['building.label']);
+$site_label_lower = strtolower($lang['site.label']);
 
 $this->layout()->addGlobalJavascript();
 
@@ -35,10 +38,10 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 <div id="delete_button_container"></div>
 
 
-<h1>Edit Building: <?php $this->out($building->name); ?></h1>
+<h1>Edit <?php echo $lang['building.label']; ?>: <?php $this->out($building->name); ?></h1>
 
 
-<p>Here you can edit this building, or transfer its items to another.</p>
+<p>Here you can edit this <?php echo $building_label_lower; ?>, or transfer its items to another.</p>
 <dl class="form">
 	<dt>Building Code</dt>
 	<dd><?php Ecl_Helper_Html::formInput('code', 20, 250, $building->code); ?></dd>
@@ -54,9 +57,9 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 		if (empty($sites)) {
 			?>
 			<p class="warning">
-				No campus sites have been setup yet.
+				No campus <?php echo $site_label_lower; ?> have been setup yet.
 				<br /><br />
-				Campus sites are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
+				Campus <?php echo $site_label_lower; ?> are not essential, but we advise taking the time to add them, especially for multi-campus institutions.
 			</p>
 			<?php
 		} else {
@@ -71,6 +74,9 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 	<dt><?php Ecl_Helper_Html::formLabel('longitude', 'Longitude'); ?></dt>
 	<dd><?php Ecl_Helper_Html::formInput('longitude', 10, 10, $building->longitude); ?></dd>
 
+	<dt><?php Ecl_Helper_Html::formLabel('url', 'URL'); ?></dt>
+	<dd><?php Ecl_Helper_Html::formInput('url', 50, 250, $building->url); ?></dd>
+
 </dl>
 
 <div>
@@ -78,13 +84,13 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 </div>
 
 <br />
-<h3>Items Listed</h3>
+<h3>Transfer Items</h3>
 <?php
 $items = $this->model('itemstore')->findForBuilding($building->id, KC__VISIBILITY_INTERNAL);
 
 if (0 < $items->count()) {
 	?>
-	<p>This building contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
+	<p>This <?php echo $building_label_lower; ?> contains <em><?php $this->out($items->count()); ?> item<?php echo ((1 < $items->count()) ? 's' : ''); ?></em> of equipment.</p>
 
 	<?php
 	/*
@@ -99,7 +105,7 @@ if (0 < $items->count()) {
 
 	if (!empty($options)) {
 		?>
-		<p>If you would like to transfer your items to a different building, please select a destination to transfer all items to.</p>
+		<p>If you would like to transfer your items to a different <?php echo $building_label_lower; ?>, please select a destination to transfer all items to.</p>
 		<?php
 		Ecl_Helper_Html::formSelect('destination', $options);
 		?>
@@ -109,20 +115,20 @@ if (0 < $items->count()) {
 		$cboxes[] = array (
 			'name'      => 'delete_on_transfer' ,
 			'id'        => 'delete_on_transfer' ,
-			'label'     => 'Delete current department after transfer' ,
+			'label'     => "Delete current $building_label_lower after transfer" ,
 			'value'     => '1' ,
 			'selected'  => false ,
 		);
 		Ecl_Helper_Html::formCheckboxTable($cboxes);
 		?>
-		<div style="text-align: right;">
+		<div>
 			<?php Ecl_Helper_Html::formSubmit('submittransfer', 'Transfer Items'); ?>
 		</div>
 		<?php
 	}
 } else {
 	?>
-	<p>This building is not associated with any items.</p>
+	<p>This <?php echo $building_label_lower; ?> is not associated with any items.</p>
 	<?php
 }
 ?>

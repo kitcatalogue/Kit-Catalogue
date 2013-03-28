@@ -33,11 +33,18 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 		$main_param = null;
 
 		$this->_fillParamVariables($selected_params, $uri_params, $main_param);
+		$selected_params['visibility'] = $user->param('visibility');
 
 		$this->view()->main_param = $main_param;
 		$this->view()->selected_params = $selected_params;
-		$this->View()->uri_params = $uri_params;
-		$this->view()->items = $this->model('itemstore')->findForSearchParams($selected_params, $user->param('visibility'));
+		$this->view()->uri_params = $uri_params;
+
+		if (array_key_exists('ou', $selected_params)) {
+			$selected_params['ou_id'] =  $this->model('ou_tree')->findSubRefsForRef($selected_params['ou']);
+			unset($selected_params['ou']);
+		}
+		$this->view()->items = $this->model('itemstore')->findForSearchParams($selected_params);
+
 		$this->view()->render('browse_view');
 	}// /method
 
@@ -103,6 +110,10 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 							$uri_params['department'] = urlencode($param);
 							$selected_params['department'] = (int) $bits[1];
 							break;
+						case strtolower('ou'):
+							$uri_params['ou'] = urlencode($param);
+							$selected_params['ou'] = (int) $bits[1];
+							break;
 						case strtolower($lang['item.form.manufacturer']):
 							$uri_params['manufacturer'] = urlencode($param);
 							unset($bits[0]);
@@ -123,6 +134,15 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 				}
 			}
 		}// /foreach
+
+
+		if ($this->model('app.use_ou_tree')) {
+			unset($uri_params['department']);
+			unset($selected_params['department']);
+		} else {
+			unset($uri_params['ou']);
+			unset($selected_params['ou']);
+		}
 	}
 
 

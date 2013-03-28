@@ -158,14 +158,12 @@ class Categorystore {
 	public function findAllUsed($visibility = null) {
 
 		switch ($visibility) {
-			case KC__VISIBILITY_INTERNAL:
-				$where_clause = "WHERE item_count_internal>'0'";
-				break;
 			case KC__VISIBILITY_PUBLIC:
 				$where_clause = "WHERE item_count_public>'0'";
 				break;
+			case KC__VISIBILITY_INTERNAL:
 			default:
-				$where_clause = null;
+				$where_clause = "WHERE item_count_internal>'0'";
 				break;
 		}// /switch
 
@@ -204,6 +202,8 @@ class Categorystore {
 
 	/**
 	 * Find categories for department.
+	 *
+	 * @fix : Deprecated - remove in favour of findForOU() later!
 	 *
 	 * @param  string  $department_id  The department ID to check for.
 	 * @param  integer  $visibility
@@ -252,6 +252,35 @@ class Categorystore {
 		", $binds);
 
 		return $this->_db->getObject(array($this, 'convertRowToObject') );
+	}// /method
+
+
+
+	/**
+	 * Find categories for OU.
+	 *
+	 * @param  integer  $ou_id  The OU ID to check for.
+	 * @param  integer  $visibility
+	 *
+	 * @return  mixed  An array of objects.  On fail, null.
+	 */
+	public function findForOU($ou_id, $visibility) {
+
+		$binds = array (
+			'ou_id'  => $ou_id ,
+		);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
+
+		return $this->_db->newRecordset("
+			SELECT DISTINCT c.*
+			FROM category c
+				INNER JOIN item_category ic ON c.category_id=ic.category_id
+				INNER JOIN item i ON ic.item_id=i.item_id
+			WHERE i.ou_id=:ou_id $where_clause
+			ORDER BY name ASC
+		", $binds, array($this, 'convertRowToObject'));
 	}// /method
 
 
