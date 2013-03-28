@@ -12,11 +12,8 @@
 class Ecl_Helper_Html {
 
 
-<<<<<<< HEAD
 	protected static $_unique_ids = array();
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 	/**
 	 * Constructor
@@ -941,7 +938,6 @@ class Ecl_Helper_Html {
 
 
 
-<<<<<<< HEAD
 	public static function formSubmitUnique($name, $value, $attr = null) {
 		$html_id = self::_getUniqueHtmlId($name);
 		$value = self::escape($value);
@@ -952,8 +948,6 @@ class Ecl_Helper_Html {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Draw a <textarea> tag.
 	 *
@@ -1005,11 +999,7 @@ class Ecl_Helper_Html {
 			if ($self_close) {
 				return sprintf('<%1$s %2$s />', $tag, $attr);
 			} else {
-<<<<<<< HEAD
 				return sprintf('<%1$s %3$s>%2$s</%1$s>', $tag, $content, $attr);
-=======
-				return sprintf('<%1$s %3$s>%2$s</%1$s>', $tag, $content, $attr, 'X');
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 		}
 	}// /method
@@ -1134,7 +1124,6 @@ class Ecl_Helper_Html {
 	/**
 	 * Draw a table using the given array.
 	 *
-<<<<<<< HEAD
 	 * This method will output <td> tags for each entry in the array.
 	 * If $use_headers is true, the first row of data will be output in <th> tags.
 	 *
@@ -1145,20 +1134,11 @@ class Ecl_Helper_Html {
 	 * @return  boolean  The operation was successful.
 	 */
 	public static function tabulate($array, $use_headers = false, $attr = '') {
-=======
-	 * It is assumed that each rows has the same number of columns.
-	 *
-	 * @param  array  $array
-	 * @param  mixed  $attrs
-	 */
-	public static function tabulate($array, $attr = '') {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		if ( (!is_array($array)) || (empty($array)) ) { return false; }
 
 		$attr = self::convertAttrToHtml($attr);
 
 		printf('<table %1$s>', $attr);
-<<<<<<< HEAD
 
 		if ($use_headers) {
 			echo("\n<tr>\n\t");
@@ -1172,8 +1152,6 @@ class Ecl_Helper_Html {
 			if (empty($array)) { return true; }
 		}
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		foreach($array as $y => $row) {
 			echo("\n<tr>\n\t");
 			foreach($row as $x => $value) {
@@ -1183,10 +1161,7 @@ class Ecl_Helper_Html {
 			echo("\n</tr>");
 		}
 		echo("\n</table>\n");
-<<<<<<< HEAD
 		return true;
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -1217,7 +1192,6 @@ class Ecl_Helper_Html {
 
 
 
-<<<<<<< HEAD
 	protected static function _getUniqueHtmlId($name) {
 		if (!array_key_exists($name, self::$_unique_ids)) {
 			self::$_unique_ids[$name] = 0;
@@ -1229,7 +1203,5 @@ class Ecl_Helper_Html {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 }// /class
 ?>

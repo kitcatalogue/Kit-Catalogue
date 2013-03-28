@@ -12,11 +12,6 @@ class Controller_Customfield extends Ecl_Mvc_Controller {
 			$this->router()->action('index', 'signin');
 			return;
 		}
-<<<<<<< HEAD
-=======
-
-		//$this->layout()->addBreadcrumb('Browse by ', $this->router()->makeAbsoluteUri('/item/'));
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -48,7 +43,6 @@ class Controller_Customfield extends Ecl_Mvc_Controller {
 
 
 
-<<<<<<< HEAD
 	public function actionViewitem() {
 		$field_id = $this->param('fieldid');
 		$value = $this->param('fieldvalue');
@@ -82,8 +76,6 @@ class Controller_Customfield extends Ecl_Mvc_Controller {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	public function actionViewvalue() {
 		$field_id = $this->param('fieldid');
 		$value = $this->param('fieldvalue');
@@ -95,12 +87,6 @@ class Controller_Customfield extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-<<<<<<< HEAD
-=======
-		$this->layout()->addBreadcrumb("Browse by {$field->name}", $this->router()->makeAbsoluteUri("/customfield/{$field->slug}"));
-		$this->layout()->addBreadcrumb("{$value}", $this->router()->makeAbsoluteUri("/customfield/{$field->slug}/". urlencode($value)));
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->view()->customfield = $field;
 		$this->view()->value = $value;
 		$this->view()->items = $this->model('itemstore')->findForCustomFieldValue($field->id, $value, $this->model('user')->param('visibility'));

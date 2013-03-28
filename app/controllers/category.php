@@ -14,11 +14,7 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return;
 		}
 
-<<<<<<< HEAD
 		$this->router()->layout()->addBreadcrumb($this->model()->lang['cat.label.plural'], $this->router()->makeAbsoluteUri('/'. $this->model()->lang['cat.route'].'/'));
-=======
-		$this->router()->layout()->addBreadcrumb($this->model()->lang['cat.label.plural'], $this->router()->makeAbsoluteUri('/category/'));
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -43,11 +39,6 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-<<<<<<< HEAD
-=======
-		$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"));
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->view()->category = $category;
 		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
 
@@ -76,22 +67,9 @@ class Controller_Category extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-<<<<<<< HEAD
 		$this->view()->category = $category;
 		$this->view()->item = $item;
 
-=======
-
-		$url_category = urlencode(strtolower($category->name));
-		$this->router()->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"));
-		$this->router()->layout()->addBreadcrumb($item->manufacturer.' '.$item->model, $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}/item/{$item->url_suffix}"));
-
-
-		$this->view()->category = $category;
-		$this->view()->item = $item;
-
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$this->view()->render('category_viewitem');
 	}// /method
 

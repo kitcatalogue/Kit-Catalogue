@@ -15,10 +15,7 @@ $this->model('db')->query("
 	SELECT item_id, manufacturer, model, acronym, department_id, building_id, room, visibility, contact_1_email, contact_2_email, date_updated
 	FROM `item`
 	WHERE department_id=:department
-<<<<<<< HEAD
 	ORDER BY room ASC
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 ", $binds);
 
 
@@ -56,14 +53,10 @@ if (!empty($items_temp)) {
 
 
 if ($this->is_download) {
-<<<<<<< HEAD
 	// IE 8 over HTTPS fix
 	header("Cache-Control: private, max-age=15");
 	header("Pragma: ");
 
-=======
-	header("Cache-Control: public");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	header("Content-Description: File Transfer");
 	header("Content-Disposition: attachment; filename=items_for_department.csv");
 	header('Content-Type: text/csv');

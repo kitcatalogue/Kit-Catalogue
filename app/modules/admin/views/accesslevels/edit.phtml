@@ -3,20 +3,12 @@ $accesslevel = $this->accesslevel;
 
 
 $this->layout()->addGlobalJavascript();
-<<<<<<< HEAD
 
 $this->layout()->appendSection('layout.head', <<<EndJS
-=======
-$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-ui-1.8.17.custom.min.js'));
-$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/jquery-ui/jquery-ui-1.8.17.custom.css'));
-
-$this->layout()->appendSection('layout.head', '
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <script type="text/javascript">
 
 	$(document).ready(function() {
 
-<<<<<<< HEAD
 		var del_button = $('<input type="submit" name="submitdelete" value="Delete Access Level" />');
 		del_button.click(function () {
 			return confirm('Please confirm that you want to delete this access level.\\n\\nThis operation cannot be undone.');
@@ -47,52 +39,6 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 <div id="delete_button_container"></div>
 
 
-=======
-		var del_button = $("<div style=\"margin-bottom: 1em;\"><a href=\"#\">Delete Access Level</a></div>");
-		del_button.click(function () {
-			$(\'#dialog-access\').html(\'' . $accesslevel->name . '\');
-			$(\'#dialog\').dialog(\'open\');
-		});
-		$("#delete_button_container").append(del_button);
-
-		$( "#dialog:ui-dialog" ).dialog( "destroy" );
-		$(\'#dialog\').dialog({
-            modal: true,
-            autoOpen: false,
-            width: 400,
-            modal: true,
-            resizable: false,
-            buttons: {
-                "Delete": function() {
-                	$(\'#submitdelete\').val(\'1\');
-                    $(\'#accesslevelform\').submit();
-                },
-                "Cancel": function() {
-                    $(this).dialog("close");
-                }
-            }
-        });
-	});
-
-</script>
-');
-?>
-
-
-
-<h1 class="green-bar">Edit Access Level: <?php $this->out($accesslevel->name); ?></h1>
-<p>Here you can edit this access level.</p>
-
-<div id="delete_button_container"></div>
-
-
-<?php
-Ecl_Helper_Html::form('accesslevelform', $this->request()->uri());
-Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());
-Ecl_Helper_Html::formHidden('submitdelete', '');
-?>
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <dl class="form">
 	<dt>Access Level Name</dt>
 	<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $accesslevel->name); ?></dd>
@@ -109,11 +55,4 @@ Ecl_Helper_Html::formHidden('submitdelete', '');
 Ecl_Helper_Html::formClose();
 ?>
 
-<<<<<<< HEAD
-=======
-<div id="dialog" title="Verify Delete Access Level">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 0 0;"></span>Please confirm that this access level will be deleted.</p><p>Any Items associated with this access level will remain, but no longer be registered with the access level.</p><p>This operation cannot be undone.</p>
-	<p id="dialog-access"></p>
-</div>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 

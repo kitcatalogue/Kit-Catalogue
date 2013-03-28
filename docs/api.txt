@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 * * * * * * * * * * * * * * * * *
   Kit-Catalogue API (open data)
@@ -91,16 +90,3 @@ external systems to harvest information about specific collections of items, or
 those not marked as fully public.
 
 
-=======
-
-* * * * * * * * * * * * * * *
-Kit-Catalogue API (open data)
-* * * * * * * * * * * * * * *
-
-
-
-Due to time constraints, we have dropped the API and open data features for now.
-It's something we're very keen to add in a future release, however.
-
-We'll announce more news on this when we have it. 
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

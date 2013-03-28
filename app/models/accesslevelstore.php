@@ -168,7 +168,6 @@ class Accesslevelstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Find the access levels used for equipment in an OU.
 	 *
 	 * @param  string  $ou_id  The OU ID to check for.
@@ -179,29 +178,13 @@ class Accesslevelstore {
 
 		$binds = array (
 			'ou_id'  => $ou_id ,
-=======
-	 * Find the access levels used for equipment in a department.
-	 *
-	 * @param  string  $department_id  The department ID to check for.
-	 *
-	 * @return  mixed  An array of objects.  On fail, null.
-	 */
-	public function findForDepartment($department_id) {
-
-		$binds = array (
-			'department_id'  => $department_id ,
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT a.*
 			FROM access a
 				INNER JOIN item i ON a.access_id=i.access
-<<<<<<< HEAD
 			WHERE i.ou_id=:ou_id
-=======
-			WHERE i.department=:department_id
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject') );
 	}// /method
@@ -240,7 +223,6 @@ class Accesslevelstore {
 	* This method uses caching to speed up subsequent lookups, so will be faster if you need more than one.
 	*
 	* @param  integer  $access_level_id
-<<<<<<< HEAD
 	* @param  string  $default  (optional) The default name to return.
 	*
 	* @return  string  The access level.  On fail, ''.
@@ -250,16 +232,6 @@ class Accesslevelstore {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
 		return (isset($this->_lookup[$access_level_id])) ? $this->_lookup[$access_level_id] : $default ;
-=======
-	*
-	* @return  string  The Access Level.  On fail, ''.
-	*/
-	public function lookupName($access_level_id) {
-		if (null === $this->_lookup) {
-			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
-		}
-		return (isset($this->_lookup[$access_level_id])) ? $this->_lookup[$access_level_id] : '' ;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 

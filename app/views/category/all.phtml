@@ -5,11 +5,7 @@ $lang = $this->model('lang');
 
 ?>
 
-<<<<<<< HEAD
 <h1><?php $this->out($lang['cat.label.plural']); ?></h1>
-=======
-<h1>Categories</h1>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 <?php
 if ($this->categories->count()==0) {
@@ -35,11 +31,7 @@ if ($this->categories->count()>0) {
 	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['cat.label.plural'])); ?> used in this catalogue.</p>
 
 	<div id="categories">
-<<<<<<< HEAD
 		<table class="layout" style="width: 900px; margin: 1em auto;">
-=======
-		<table class="layout" style="width: 900px; margin: 0 auto;">
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		<tr>
 		<?php
 		foreach($chunks as $chunk) {
@@ -49,7 +41,6 @@ if ($this->categories->count()>0) {
 					<ul>
 						<?php
 						foreach($chunk as $i => $category) {
-<<<<<<< HEAD
 							if (false) {
 								?>
 								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->slug}"); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
@@ -57,10 +48,6 @@ if ($this->categories->count()>0) {
 							}
 							?>
 							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".urlencode($category->name)); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
-=======
-							?>
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}"); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 							<?php
 						}
 						?>

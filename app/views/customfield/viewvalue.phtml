@@ -1,5 +1,4 @@
 <?php
-<<<<<<< HEAD
 
 
 $url_value = urlencode($this->value);
@@ -7,8 +6,6 @@ $this->layout()->addBreadcrumb("Browse by {$this->customfield->name}", $this->ro
 $this->layout()->addBreadcrumb($this->value, $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}/{$url_value}"));
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
 	$back_url = base64_encode($this->request()->relativeUri());
@@ -30,16 +27,10 @@ if (0 == $count) {
 	?>
 	<p class="note"><strong><?php $this->out($count); ?> found</strong> matching "<?php $this->out($this->value); ?>".</p>
 
-<<<<<<< HEAD
 	<ul class="item-list">
 		<?php
 		$url_value = urlencode($this->value);
 		$url_stub = $this->router()->makeAbsoluteUri("/customfield/{$this->customfield->slug}/{$url_value}/item/");
-=======
-	<ul id="item-list">
-		<?php
-		$url_stub = $this->router()->makeAbsoluteUri('/item/');
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		foreach($this->items as $item) {
 			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
 		}

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 * * * * * * * * * * * * * * * *
   Kit-Catalogue Installation
@@ -17,22 +16,3 @@ readme file:
 	/install/readme.txt
 
 
-=======
-
-* * * * * * * * * * * * * * *
-Kit-Catalogue Installation
-* * * * * * * * * * * * * * *
-
-
-For full installation instructions, please follow the installation wizard
-by browsing to:
-
-	/install/
-
-Alternatively, you can follow the basic installation instructions in the
-readme file:
-
-	/install/readme.txt
-
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

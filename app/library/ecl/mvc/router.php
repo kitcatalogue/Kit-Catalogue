@@ -269,10 +269,7 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 		}// /while (routes to process)
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		// If there's no params, then there was a problem routing the request
 		if (!$params) {
 			return $this->_dispatchAction('404', 'error');
@@ -376,7 +373,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 	 * If $relative_url is ommited, then the router's base URI will be returned.
 	 *
 	 * @param  string  $relative_url  (optional)  (default: null)
-<<<<<<< HEAD
 	 * @param  boolean  $https  (optional)  (default: false)
 	 *
 	 * @return  string  The new absolute URL.
@@ -393,17 +389,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			$url = preg_replace('#^http:#', 'https:', $url);
 		}
 		return $url;
-=======
-	 *
-	 * @return  string  The new absolute URL.
-	 */
-	public function makeAbsoluteUri($relative_url = null) {
-		// If the relative URL needs a leading '/', add one
-		if ('/' == substr($relative_url, 0, 1)) {
-			$relative_url = substr($relative_url, 1);
-		}
-		return $this->baseUri() . $relative_url;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -558,11 +543,7 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 		$view_name = strtolower($view_name);
 		$include_path = $this->mvcRoot();
 
-<<<<<<< HEAD
 		if (null === $module_name) {
-=======
-		if (empty($module_name)) {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			$module_name = $this->getCurrentModule();
 		}
 
@@ -615,10 +596,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			$this->action('exception', 'error', '');
 		}
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		// Output whatever we've responded with
 		try {
 			// If using a layout
@@ -628,7 +605,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 			} else {
 				$this->response()->content(ob_get_clean());
 			}
-<<<<<<< HEAD
 			$this->response()->send();
 			return true;
 		} catch (Ecl_Response_Exception_HeadersSentException $e) {
@@ -636,19 +612,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 		} catch (Ecl_Response_Exception_InvalidHttpStatusCodeException $e) {
 			Ecl::dump($e, 'Invalid HTTP Status Code');
 		} catch (Exception $e) {
-=======
-
-			$this->response()->send();
-			return true;
-		} catch (Ecl_Response_Exception_HeadersSentException $e) {
-			// @debug :
-			Ecl::dump($e, 'Headers Already Sent');
-		} catch (Ecl_Response_Exception_InvalidHttpStatusCodeException $e) {
-			// @debug :
-			Ecl::dump($e, 'Invalid HTTP Status Code');
-		} catch (Exception $e) {
-			// @debug :
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			Ecl::dump($e, 'An unknown exception occured while outputting the response');
 		}
 

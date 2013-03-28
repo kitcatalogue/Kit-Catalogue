@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 * * * * * * * * * * *
   Credits & Thanks
@@ -37,44 +36,4 @@ Dhru Shah and Michael Clark @ University of Nottingham
 - Numerous suggestions for improvements, plenty of additional testing, and
   patiently waiting while we put everything into place.
 
-=======
-
-* * * * * * * * *
-Credits & Thanks
-* * * * * * * * *
-
-
-For information on the Kit-Catalogue project team, please see our website:
-
-	http://kit-catalogue.lboro.ac.uk/project/projectpages/team.php
-
-
-The Kit-Catalogue team is also grateful for the help and assistance the
-community can provide - not to mention your patience and understanding.
-
-Below are the names of those in the community who have donated their
-valuable time and effort to the project - Thank you!
-
-We hope to see this list of names grow along with the project..
-
-
-
-Chris Gutteridge @ Southampton Univesity
-- For some useful pointers on supporting customisation in open source systems,
-  and advice on linked data.
-
-
-Luke Taylor @ Bristol University
-- Invaluable help debugging the installation process on Apache.
-
-
-Bruce Rodger @ University of Strathclyde
-- Help improving the install wizard and documentation.
-
-
-Dhru Shah and Michael Clark @ University of Nottingham
-- Numerous suggestions for improvements, plenty of additional testing, and
-  patiently waiting while we put everything into place.
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
   

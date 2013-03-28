@@ -36,13 +36,9 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 			// Unsuccessful, go back to login page
 			$this->response()->setRedirect($this->model('app.www'). '/signin/?msg=failed');
 		} else {
-<<<<<<< HEAD
 			// Successful
 
 			session_regenerate_id();
-=======
-			$this->model('userstore')->setUserSession($user_info);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 			if ($this->model('signin.log')) {
 				$this->model('db')->insert('log_signin', array (
@@ -52,7 +48,6 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 				));
 			}
 
-<<<<<<< HEAD
 			$user_info['params'] = array();
 
 
@@ -66,9 +61,6 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 			$this->model('userstore')->setUserSession($user_info);
 
 			$this->response()->setRedirect($this->router()->makeAbsoluteUri('/', $this->model('app.use_https')));
-=======
-			$this->response()->setRedirect($this->model('app.www'));
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		}
 	}// /method
 

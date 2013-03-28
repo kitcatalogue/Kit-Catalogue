@@ -58,7 +58,6 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 
 
 
-<<<<<<< HEAD
 	public function actionFindou() {
 		if (!$this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 			$this->reply->setFail('Access denied');
@@ -82,7 +81,5 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 }// /class
 ?>

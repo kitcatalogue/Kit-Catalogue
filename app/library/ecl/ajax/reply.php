@@ -8,11 +8,7 @@
  *
  * @package  Ecl
  * @static
-<<<<<<< HEAD
  * @version  1.0.2
-=======
- * @version  1.0.0
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 Class Ecl_Ajax_Reply {
 
@@ -140,11 +136,7 @@ Class Ecl_Ajax_Reply {
 	 */
 	public function status($status = null) {
 		if (func_num_args()>0) {
-<<<<<<< HEAD
 			if (in_array($status, array (self::STATUS_FAIL, self::STATUS_OK))) {
-=======
-			if (!in_array($status, array (self::STATUS_FAIL, self::STATUS_OK))) {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				$this->_status = $status;
 			}
 		}
@@ -154,21 +146,13 @@ Class Ecl_Ajax_Reply {
 
 
 	public function setFail($message = null, $code = null) {
-<<<<<<< HEAD
 		return $this->setStatus(self::STATUS_FAIL, $message, $code);
-=======
-		return $this->setStatus(self::STATUS_FAIL, $code, $message);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
 
 	public function setOk($message = null) {
-<<<<<<< HEAD
 		return $this->setStatus(self::STATUS_OK, $message, null);
-=======
-		return $this->setStatus(self::STATUS_OK, null, $message);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -224,11 +208,7 @@ Class Ecl_Ajax_Reply {
 	 * Return the JSON representation of this reply.
 	 *
 	 * The "_status" entry is ALWAYS returned.
-<<<<<<< HEAD
 	 * The "_id", "_code" and "_message" entries appear only if not empty.
-=======
-	 * The "_id", "_code" and "_message" entries only appear if not empty.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 *
 	 * Any data keys that clash with one of the 'official' entries above, will be overriden.
 	 * e.g. data['_status'] = 'something' WILL be replaced by the correct 'ok' or 'fail'.

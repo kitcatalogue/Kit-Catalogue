@@ -1,9 +1,6 @@
 <?php
-<<<<<<< HEAD
 $lang = $this->model('lang');
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $this->layout()->addGlobalJavascript();
 $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/common.css'));
 $this->layout()->appendSection('layout.head', '
@@ -11,12 +8,8 @@ $this->layout()->appendSection('layout.head', '
 
 	#csvtable tr td { vertical-align: top; }
 
-<<<<<<< HEAD
 	#csvtable tr.ignored td { height: 1em !important; overflow: none; background-color: #d61; color: #333; }
 	#csvtable td.issue { background-color: #f99; color: #333; }
-=======
-	#csvtable tr.ignored td { height: 1em !important; overflow: none; background-color: #fdd; color: #aaa; }
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 </style>
 <script type="text/javascript">
@@ -53,33 +46,20 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 <ul>
 	<li>Empty rows are ignored.</li>
 	<li>All text is converted to UTF-8.</li>
-<<<<<<< HEAD
 	<li>New <?php $this->out(strtolower($lang['cat.label.plural'])); ?>, <?php $this->out(strtolower($lang['ou.label.plural'])); ?>, contacts, etc, will be automatically added, where required.</li>
 	<li>As well as the mandatory information, other important fields will be prompted for if missing from the spreadsheet.</li>
 	<li>Any <?php $this->out(strtolower($lang['item.form.visibility'])); ?> other than "public" will be reset to "internal".</li>
-=======
-	<li>New categories, departments, contacts, etc, will be automatically added, where required.</li>
-	<li>As well as the mandatory information, other important fields will be prompted for if missing from the spreadsheet.</li>
-	<li>Any visibility other than "public" will be reset to "internal".</li>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 </ul>
 
 
 <br />
 <h2>Imported Data</h2>
 <p>The first row (in grey) contains the field names the importer expects.  This will be the standard Item fields, plus any Custom Fields you have defined.</p>
-<<<<<<< HEAD
 <p>Below that is the data from your spreadsheet, with the leftmost column containing the row number.</p>
 <p>The importer will map columns names automatically, so if you have re-ordered them they will be shown in their proper locations below.</p>
 
 <dl class="form">
 	<dt><?php Ecl_Helper_Html::formLabel('ignore_rows', 'Header rows to ignore ', 'style="display: inline; font-weight: bold;"'); ?>
-=======
-
-<p>Below that is the data from your spreadsheet.  If your data contains header rows, exclude them here:</p>
-<dl class="form">
-	<dt><?php Ecl_Helper_Html::formLabel('ignore_rows', 'Rows to ignore ', 'style="display: inline; font-weight: bold;"'); ?>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<dd>
 		<?php
 		Ecl_Helper_Html::formSelect('ignore_rows', array (
@@ -95,7 +75,6 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 	</dd>
 </dl>
 
-<<<<<<< HEAD
 <?php
 	//Ecl::dump($this->datacsv);
 ?>
@@ -125,22 +104,6 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 			} else {
 				$issues[$h]['missing'] = true;
 				echo('<td class="issue">[missing]</td>');
-=======
-<div class="scrollable" style="width: auto; height: 35em; margin-top: 0.5em; padding: 0; overflow:auto; border: 1px solid #666;">
-	<table id="csvtable" class="grid" style="margin: 0;">
-	<?php
-	foreach($this->datacsv as $y => $row) {
-		echo("\n<tr>\n\t");
-		if ($y==0) {
-			foreach($row as $x => $value) {
-				$value = Ecl_Helper_Html::escape($value);
-				echo("<th>$value</th>");
-			}
-		} else {
-			foreach($row as $x => $value) {
-				$value = Ecl_Helper_Html::escape($value);
-				echo("<td>$value</td>");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 		}
 		echo("\n</tr>");
@@ -150,7 +113,6 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 </div>
 
 
-<<<<<<< HEAD
 
 <?php
 if (!empty($issues)) {
@@ -195,9 +157,6 @@ if (!empty($issues)) {
 ?>
 
 <div class="button_bar" style="margin-top: 1em;">
-=======
-<div class="button_bar">
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<?php
 	Ecl_Helper_Html::formSubmit('submitback', '&lt; Back');
 	Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
@@ -207,10 +166,6 @@ if (!empty($issues)) {
 
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 <?php Ecl_Helper_Html::formClose(); ?>
 
 

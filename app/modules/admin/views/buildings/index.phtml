@@ -48,12 +48,9 @@
 			<?php Ecl_Helper_Html::formSubmit('submitadd', 'Add New Building'); ?>
 		</div>
 
-<<<<<<< HEAD
 		<?php
 		Ecl_Helper_Html::formClose();
 		?>
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	</div>
 
 
@@ -68,14 +65,9 @@
 		?>
 		<ul>
 			<?php
-<<<<<<< HEAD
 			$edit_stub = $this->router()->makeAbsoluteUri('/admin/buildings/edit/');
 			foreach($this->buildings as $i => $building) {
 				$edit_url = "{$edit_stub}{$building->id}";
-=======
-			foreach($this->buildings as $i => $building) {
-				$edit_url = $this->router()->makeAbsoluteUri("/admin/buildings/edit/{$building->id}");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				printf('<li><a href="%2$s">%1$s%3$s</a></li>', Ecl_Helper_Html::escape($building->name), $edit_url, ( !empty($building->code) ? " &nbsp;({$building->code})" : '' ) );
 			}
 			?>

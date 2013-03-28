@@ -4,11 +4,7 @@
  *
  * @package  Ecl
  * @static
-<<<<<<< HEAD
  * @version  1.3.0
-=======
- * @version  1.2.0
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 class Ecl_Helper_String {
 
@@ -265,7 +261,6 @@ class Ecl_Helper_String {
 
 
 
-<<<<<<< HEAD
 	public static function formatBytes($bytes) {
 		if ($bytes < 1024) { return $bytes . 'B'; }
 		elseif ($bytes < 1048576) { return round($bytes / 1024, 2) . 'KB'; }
@@ -277,8 +272,6 @@ class Ecl_Helper_String {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Check if the given string is UTF-8.
 	 *
@@ -305,11 +298,7 @@ class Ecl_Helper_String {
 
 
 	/**
-<<<<<<< HEAD
 	 * Get the ordinal name of the given integer.
-=======
-	 * Get the ordinal value of the given integer.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 *
 	 * e.g.
 	 *
@@ -351,11 +340,7 @@ class Ecl_Helper_String {
 	 * @return  mixed
 	 */
 	public static function parseBoolean($string, $default = false) {
-<<<<<<< HEAD
 		$string = strtolower(trim($string));
-=======
-		$string = strtolower($string);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		if (in_array($string, array ('1', 'yes', 'y', 'on'))) { return true; }
 		if (in_array($string, array ('0', 'no', 'n', 'off'))) { return false; }
 		return $default;
@@ -366,16 +351,11 @@ class Ecl_Helper_String {
 	/**
 	 * Get the datetime representation of the given text.
 	 *
-<<<<<<< HEAD
 	 * If $format_mdy is false, then all dates are assumed to be in european format (d/m/y).
-=======
-	 * All dates are assumed to be in european format (d/m/y).
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * If $string is not a valid date, $default is returned.
 	 *
 	 * @param  string  $string
 	 * @param  mixed  $default
-<<<<<<< HEAD
 	 * @param  boolean  $format_mdy  Use US style month-day-year format.  (default: false)
 	 *
 	 * @return  mixed
@@ -390,16 +370,6 @@ class Ecl_Helper_String {
 			$string = str_replace(array('-', '.', ' '), '/', $string);
 		} else {
 			$string = str_replace(array('/', '.', ' '), '-', $string);
-=======
-	 *
-	 * @return  mixed
-	 */
-	public static function parseDate($string, $default) {
-		// strtotime can't do european dates with slashes, so if we detect
-		// "dd/mm/yyyy" force it to "dd-mm-yyyy" instead
-		if (preg_match('#\d{1,2}/\d{1,2}/(\d{4}|\d{2})#', $string)) {
-			$string = str_replace('/', '-', $string);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		}
 
 		$date = strtotime($string);

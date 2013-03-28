@@ -4,11 +4,7 @@ $lang = $this->model('lang');
 if ($this->model('security')->checkAuth(array(KC__AUTH_CANADMIN, KC__AUTH_CANEDIT))) {
 	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
 	$back_url = base64_encode($this->request()->relativeUri());
-<<<<<<< HEAD
 	$editlink = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
-=======
-	$editlink = sprintf('<h4><a href="%1$s?backlink=%2$s">add an item &raquo;</a></h4>', $edit_url, $back_url);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 } else {
 	$editlink = '';
 }
@@ -18,7 +14,6 @@ $selected_category_id = (is_object($this->category)) ? $this->category->id : nul
 <h1><?php $this->out($this->department->name); ?></h1>
 
 <?php
-<<<<<<< HEAD
 echo $editlink;
 
 if (!$this->items) {
@@ -28,24 +23,11 @@ if (!$this->items) {
 } else {
 	?>
 	<p class="note">The following items are listed under this <?php $this->out(strtolower($lang['dept.label'])); ?> and <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
-=======
-if (!$this->items) {
-	?>
-	<p class="note">There are no items of equipment or facilities associated with this <?php $this->out(strtolower($lang['dept.label'])); ?> and <?php $this->out(strtolower($lang['cat.label'])); ?>.</p> <?php echo $editlink; ?>
-	<?php
-} else {
-	?>
-	<p class="note">The following items are listed under this <?php $this->out(strtolower($lang['dept.label'])); ?> and <?php $this->out(strtolower($lang['cat.label'])); ?>.</p> <?php echo $editlink; ?>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<?php
 }
 ?>
 
-<<<<<<< HEAD
 <div id="categories" class="side-bar">
-=======
-<div id="categories" class="white-box" style="float: left; width: 15em; margin-right: 1.5em;">
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<h4>Available <?php $this->out($lang['cat.label.plural']); ?></h4><?php
 	if (!$this->categories) {
 		?>
@@ -58,26 +40,15 @@ if (!$this->items) {
 			if ($selected_category_id === null) {
 				printf('<li class="active"><a href="#">%1$s</a></li>', 'Show All Items');
 			} else {
-<<<<<<< HEAD
 				printf('<li><a href="%2$s">%1$s</a></li>', 'Show All Items', $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}"));
 			}
 
 			$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}/category/");
-=======
-				printf('<li><a href="%2$s">%1$s</a></li>', 'Show All Items', $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->url_suffix}"));
-			}
-
-			$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->url_suffix}/category/");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			foreach($this->categories as $category) {
 				if ($selected_category_id == $category->id) {
 					printf('<li class="active"><a href="#">%1$s</a></li>', $this->escape($category->name));
 				} else {
-<<<<<<< HEAD
 					printf('<li><a href="%2$s">%1$s</a></li>', $this->escape($category->name), "{$url_stub}{$category->slug}");
-=======
-					printf('<li><a href="%2$s">%1$s</a></li>', $this->escape($category->name), "{$url_stub}{$category->url_suffix}");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				}
 			}?>
 		</ul>
@@ -101,19 +72,11 @@ if ( 0 == count($this->items)) {
 	<?php
 } else {
 	?>
-<<<<<<< HEAD
 	<ul class="item-list">
 		<?php
 		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->slug}/item/");
 		foreach($this->items as $item) {
 			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}", array('department'));
-=======
-	<ul id="item-list">
-		<?php
-		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$this->department->url_suffix}/item/");
-		foreach($this->items as $item) {
-			$this->layout()->renderItemInList($item, "{$url_stub}{$item->url_suffix}");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		}
 		?>
 	</ul>

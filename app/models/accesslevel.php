@@ -14,12 +14,9 @@ class Accesslevel {
 
 	public function __get($name) {
 		switch ($name) {
-<<<<<<< HEAD
 			case 'idslug':
 				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
 				break;
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			case 'url_suffix':
 			case 'slug':
 				return preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) ."/{$this->id}";

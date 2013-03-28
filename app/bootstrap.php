@@ -43,14 +43,9 @@ define('KC__FEEDBACK_WARNING', 'feedback_warning');
 
 
 // Different user permissions/auths
-<<<<<<< HEAD
 define('KC__AUTH_CANADMIN', 'can_admin');       // Sysadmin
 define('KC__AUTH_CANOUADMIN', 'can_ouadmin');   // OU specific admin
 define('KC__AUTH_CANEDIT', 'can_edit');         // Deprecated
-=======
-define('KC__AUTH_CANADMIN', 'can_admin');
-define('KC__AUTH_CANEDIT', 'can_edit');
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 define('KC__OBJECT_SYSTEM', 'system');
@@ -62,21 +57,14 @@ define('KC__VISIBILITY_INTERNAL', 2);
 define('KC__VISIBILITY_DRAFT', 3);
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 // Different category code types
 define('KC__VOCABULARY_CPV', 'cpv');
 
 
-<<<<<<< HEAD
 // Define user parameters
 define('KC__USER_HASITEMS', 'user_has_items');
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 // --------------------------------------------------------------------------------
 // Setup LDAP basics if extension not installed
@@ -125,7 +113,6 @@ if (file_exists($path)) { include($path); }
 
 
 // --------------------------------------------------------------------------------
-<<<<<<< HEAD
 // Normalise Config
 
 
@@ -139,8 +126,6 @@ if ( (!isset($config['app.email.owner'])) && (isset($config['app.email'])) ) {
 
 
 // --------------------------------------------------------------------------------
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 // Load Local Language File
 
 
@@ -152,18 +137,10 @@ if (file_exists($path)) { include($path); }
 // Some of the language definitions MUST obey certain rules.
 
 // Ensure the 'dept.route' is valid
-<<<<<<< HEAD
-=======
-//Ecl::dump($lang['dept.route']);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
 	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
 }
 
-<<<<<<< HEAD
 // @fix : OU route check
-=======
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 ?>

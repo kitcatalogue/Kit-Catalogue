@@ -14,11 +14,7 @@
 
 // Setting this to false will lockout the installation wizard.
 // Even if you have deleted your /install/ folder, you should set this to false as if you
-<<<<<<< HEAD
 // later upgrade or reinstall Kit-Catalogue a new /install/ folder will be created.
-=======
-// later upgrade or reinstall it will recreate a new /install/ folder.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $config['install.enabled'] = true;
 
 
@@ -49,7 +45,6 @@ $config['org.logo'] = '';
 
 // Enable debugging mode.
 // When enabled, verbose error messages and other system features useful for testing are activated.
-<<<<<<< HEAD
 // WARNING : We advise disabling this setting on a public-facing site.
 $config['app.debug'] = false;
 
@@ -63,14 +58,6 @@ $config['app.use_https'] = false;
 // e.g. http://www.example.com/catalogue
 // DO NOT include a trailing slash '/'
 // For SSL, use a URL like: https://www.example.com/catalogue
-=======
-// WARNING : We advised disabling this setting on a public-facing site.
-$config['app.debug'] = false;
-
-// The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
-// e.g. http://www.example.com/catalogue
-// DO NOT include a trailing slash '/'
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $config['app.www'] = '';
 
 // The title of your Kit-Catalogue installation
@@ -78,10 +65,7 @@ $config['app.www'] = '';
 $config['app.title'] = 'Our Kit-Catalogue';
 
 // The introductory text to show on the home page.
-<<<<<<< HEAD
 // The text will be interpreted as HTML.
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $config['app.intro'] = "A catalogue of all the equipment and facilities available at our institution.";
 
 // The contact email address of the catalogue webmaster
@@ -109,24 +93,16 @@ $config['db.database'] = 'kitcatalogue';
 /*
  * Sign-In Settings
  *
-<<<<<<< HEAD
  * Note: You can use a local-plugin function to override, or provide fall-back for, the built-in
-=======
- * Note: You can use a local-plugin function to override, or provide fall-back for,  the built-in
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  * authentication methods below.
  *
  * To override completely, set the "signin.use_ldap" and "signin.use_database" settings to false in local_config.php
  * and provide your own plugin function.
  *
  * To provide a custom fall-back, leave the settings enabled and your plugin function will be called if LDAP and Kit-Catalogue
-<<<<<<< HEAD
  * database authentication fail.
  *
  * See docs/plugins.txt for more information.
-=======
- * database authentication fail.  See docs/plugins.txt for more information.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 
 // Enable LDAP / Active Directory authentication
@@ -177,7 +153,6 @@ $config['layout.template_file'] = '';
 // Should the system automatically include local/css/local.css
 $config['layout.use_local_css'] = true;
 
-<<<<<<< HEAD
 // Should the system automatically include local/local_head.html
 // Use this setting and the local_head.html file to include scripts (such as Google Analytics)
 $config['layout.use_local_head'] = true;
@@ -185,8 +160,6 @@ $config['layout.use_local_head'] = true;
 // Show the sign-in prompt to anonymous users
 $config['layout.signin_prompt_enabled'] = true;
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 /*
@@ -199,7 +172,6 @@ $config['log.item_view'] = true;
 
 
 /*
-<<<<<<< HEAD
  * Item Enquiries
  */
 
@@ -319,16 +291,3 @@ $config['data.licence_name'] = 'UK Open Government Licence';
 $config['data.licence_link'] = 'http://www.nationalarchives.gov.uk/doc/open-government-licence/';
 
 
-=======
- * Linked Data and API Settings
- */
-
-// Enable the API and make it available to the public (see docs/api.txt for more info)
-// At the moment there is no API, so this setting is disabled by default.
-// For now, enabling it has no effect.
-$config['api.enabled'] = false;
-
-
-
-?>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd

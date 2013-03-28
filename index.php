@@ -33,7 +33,6 @@ $router->actionDefault('index');
 
 
 // --------------------------------------------------------------------------------
-<<<<<<< HEAD
 // Setup model
 
 
@@ -41,30 +40,10 @@ include($config['app.include_root'].'/model.php');
 
 
 $router->model($model);
-=======
-// Setup layout
-
-
-include($config['app.include_root'].'/classes/kc_layout.php');
-$router->layout(new Kc_Layout());
-
-if (empty($config['layout.template_file'])) {
-	$router->layout()->setTemplate('kitcatalogue');
-} else {
-	$layout_template_file = $config['app.local_root'].DIRECTORY_SEPARATOR.$config['layout.template_file'];
-	if (!file_exists($layout_template_file)) {
-		die("The configuration file defined a non-existent template in 'layout.template_file'.");
-	} else {
-		$router->layout()->setTemplateFile($layout_template_file);
-	}
-}
-$router->layout()->addBreadcrumb('Home', $config['app.www']);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
 // --------------------------------------------------------------------------------
-<<<<<<< HEAD
 // Setup routing instructions
 
 
@@ -85,20 +64,10 @@ if ($model->get('request')->isSecure()) {
 }
 
 include($config['app.include_root'].'/routes.php');
-=======
-// Setup model
-
-
-include($config['app.include_root'].'/model.php');
-
-
-$router->model($model);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
 // --------------------------------------------------------------------------------
-<<<<<<< HEAD
 // Setup layout
 
 
@@ -116,13 +85,6 @@ if (empty($config['layout.template_file'])) {
 	}
 }
 $router->layout()->addBreadcrumb('Home', $router->makeAbsoluteUri('/'));
-=======
-// Setup routing instructions
-
-
-include($config['app.include_root'].'/routes.php');
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 // --------------------------------------------------------------------------------

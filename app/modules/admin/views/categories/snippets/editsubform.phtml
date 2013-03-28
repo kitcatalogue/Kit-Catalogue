@@ -71,24 +71,13 @@ if (!empty($cpv_codes)) {
 	<div id="cpv_listall" style="width: 750px; height: 15em; overflow: auto; margin: 1em 0 0 2em; padding: 0.5em; border: 1px solid #666;">
 		<table class="checkbox_grid rowhover">
 		<?php
-<<<<<<< HEAD
-=======
-
-		// @fix : only show enabled subsections of the CPV codes
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		foreach($cpv_codes as $i => $cpv_code) {
 			$html__id = Ecl_Helper_Html::escape("cpv_{$cpv_code->id}");
 			?>
 			<tr data-cpvid="<?php $this->out($cpv_code->id); ?>">
 				<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('cpv_code[]', $html__id, $cpv_code->id); ?></td>
-<<<<<<< HEAD
 				<th class="name"><?php Ecl_Helper_Html::formLabel($html__id, $cpv_code->name, 'class="normal"'); ?></th>
 				<th><?php Ecl_Helper_Html::formLabel($html__id, "({$cpv_code->id})", 'class="normal"'); ?></th>
-=======
-				<th class="name"><?php Ecl_Helper_Html::formLabel($html__id, $cpv_code->name, 'class="normal"'); ?></td>
-				<th><?php Ecl_Helper_Html::formLabel($html__id, "({$cpv_code->id})", 'class="normal"'); ?></td>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			</tr>
 			<?php
 		}

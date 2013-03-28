@@ -11,11 +11,7 @@
 
 $.fn.dump = function() {
    return $.dump(this);
-<<<<<<< HEAD
 };
-=======
-}
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 $.dump = function(object) {
    var recursion = function(obj, level) {
@@ -149,17 +145,10 @@ $.dump = function(object) {
       }
 
       return 'Unknown';
-<<<<<<< HEAD
    };
 
    return recursion(object);
 };
-=======
-   }
-
-   return recursion(object);
-}
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 function trim(str) {
    return ltrim(rtrim(str));

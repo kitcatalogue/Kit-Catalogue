@@ -29,7 +29,6 @@ $model->setDefaultFactory(function ($name, $model) {
 
 
 
-<<<<<<< HEAD
 if (isset($config)) {
 	$model->load($config);
 }
@@ -70,13 +69,6 @@ $model->setFunction('ou_tree', function ($model) {
 
 	return $ou_tree;
 });
-=======
-$model->load($config);
-
-
-
-$model->setObject('lang', $lang);
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 
@@ -84,15 +76,12 @@ $model->setObject('request', Ecl::factory('Ecl_Request'));
 
 
 
-<<<<<<< HEAD
 if (isset($router)) {
 	$model->setObject('router', $router);
 }
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $model->setFunction('db', function ($model) {
 	$db = Ecl::factory('Ecl_Db_Mysql', array (
 		'host'      => $model->get('db.host') ,
@@ -104,13 +93,10 @@ $model->setFunction('db', function ($model) {
 
 	$db->setDebug( (bool) $model->get('app.debug', false));
 
-<<<<<<< HEAD
 	// We use SET NAMES too, in case our PHP version is one of the buggy ones
 	$db->setCharset('utf8');
 	$db->execute('SET NAMES utf8');
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	return $db;
 });
 
@@ -142,10 +128,7 @@ $model->setFunction('itemstore', function ($model) {
 });
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 $model->setFunction('user', function ($model) {
 	$user = Ecl::factory('Ecl_User');
 
@@ -163,11 +146,7 @@ $model->setFunction('user', function ($model) {
 
 
 $model->setFunction('userstore', function ($model) {
-<<<<<<< HEAD
 	return new Userstore($model, $model->get('app.user_session_var'));
-=======
-	return new Userstore($model->get('db'), $model->get('app.user_session_var'));
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 });
 
 

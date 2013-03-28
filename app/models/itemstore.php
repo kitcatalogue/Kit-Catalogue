@@ -18,11 +18,8 @@ class Itemstore {
 	protected $_model = null;
 	protected $_db = null;
 
-<<<<<<< HEAD
 	protected $_cache_customfield_names = null;
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
@@ -42,7 +39,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Build a query suitable for searching the given parameters, and order the results accordingly.
 	 *
 	 * @param  array  $params
@@ -288,8 +284,6 @@ class Itemstore {
 
 
 	/**
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Convert the domain object to a database row
 	 *
 	 * @param  object  $object  The object.
@@ -297,11 +291,7 @@ class Itemstore {
 	 * @return  array  The row representing the object.
 	 */
 	public function convertObjectToRow($object) {
-<<<<<<< HEAD
 		return array (
-=======
-		$row = array (
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			'item_id' => $object->id ,
 
 			'title' => $object->title ,
@@ -312,18 +302,14 @@ class Itemstore {
 			'full_description' => $object->full_description ,
 			'specification' => $object->specification ,
 
-<<<<<<< HEAD
 			'upgrades'        => $object->upgrades ,
 			'future_upgrades' => $object->future_upgrades ,
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			'acronym' => $object->acronym ,
 			'keywords' => $object->keywords ,
 
 			'technique' => $object->technique ,
 
-<<<<<<< HEAD
 			'availability' => $object->availability ,
 			'restrictions' => $object->restrictions ,
 
@@ -336,13 +322,6 @@ class Itemstore {
 
 			'ou_id' => $object->ou ,
 
-=======
-			'availability'   => $object->availability ,
-
-			'department_id'  => $object->department ,
-			'usergroup'      => $object->usergroup ,
-			'access_id'      => $object->access ,
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 			'site_id'      => $object->site ,
 			'building_id'  => $object->building ,
@@ -357,20 +336,11 @@ class Itemstore {
 
 			'image' => $object->image ,
 
-<<<<<<< HEAD
 			'embedded_content' => $object->embedded_content,
 
 			'manufacturer_website' => $object->manufacturer_website ,
 			'copyright_notice' => $object->copyright_notice ,
 
-=======
-			'manufacturer_website' => $object->manufacturer_website ,
-			'copyright_notice' => $object->copyright_notice ,
-
-			'date_added' => $this->_db->formatDate($object->date_added) ,
-			'date_updated' => $this->_db->formatDate($object->date_updated) ,
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			'training_required' => $object->training_required ,
 			'training_provided' => $object->training_provided ,
 
@@ -383,7 +353,6 @@ class Itemstore {
 			'last_calibration_date' => $this->_db->formatDate($object->last_calibration_date, true) ,
 			'next_calibration_date' => $this->_db->formatDate($object->next_calibration_date, true) ,
 
-<<<<<<< HEAD
 			'date_added' => $this->_db->formatDate($object->date_added) ,
 			'date_updated' => $this->_db->formatDate($object->date_updated) ,
 			'last_updated_username' => $object->last_updated_username ,
@@ -411,19 +380,6 @@ class Itemstore {
 
 			'is_parent' => (int) $object->is_parent ,
 		);
-=======
-			'asset_no' => $object->asset_no ,
-			'finance_id' => $object->finance_id ,
-			'serial_no' => $object->serial_no ,
-			'year_of_manufacture' => $object->year_of_manufacture ,
-			'supplier_id' => $object->supplier ,
-			'date_of_purchase' => $this->_db->formatDate($object->date_of_purchase, true) ,
-
-			'archived' => (int) $object->archived ,
-		);
-
-		return $row;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -448,19 +404,15 @@ class Itemstore {
 		$object->full_description = $row['full_description'];
 		$object->specification = $row['specification'];
 
-<<<<<<< HEAD
 		$object->upgrades = $row['upgrades'];
 		$object->future_upgrades = $row['future_upgrades'];
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$object->acronym = $row['acronym'];
 		$object->keywords = $row['keywords'];
 
 		$object->technique = $row['technique'];
 
 		$object->availability = $row['availability'];
-<<<<<<< HEAD
 		$object->restrictions = $row['restrictions'];
 
 		$object->usergroup = $row['usergroup'];
@@ -471,12 +423,6 @@ class Itemstore {
 
 		$object->organisation = $row['organisation'];   // @todo : Deprecated - to be removed
 		$object->department = $row['department_id'];    // @todo : Deprecated - to be removed
-=======
-
-		$object->department = $row['department_id'];
-		$object->usergroup = $row['usergroup'];
-		$object->access = $row['access_id'];
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
@@ -491,11 +437,8 @@ class Itemstore {
 
 		$object->image = $row['image'];
 
-<<<<<<< HEAD
 		$object->embedded_content = $row['embedded_content'];
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$object->manufacturer_website = $row['manufacturer_website'];
 		$object->copyright_notice = $row['copyright_notice'];
 
@@ -511,15 +454,10 @@ class Itemstore {
 		$object->last_calibration_date = (is_null($row['last_calibration_date'])) ? null : strtotime($row['last_calibration_date']) ;
 		$object->next_calibration_date = (is_null($row['next_calibration_date'])) ? null : strtotime($row['next_calibration_date']) ;
 
-<<<<<<< HEAD
 		$object->date_added = (is_null($row['date_added'])) ? null : strtotime($row['date_added']);
 		$object->date_updated = (is_null($row['date_updated'])) ? null : strtotime($row['date_updated']);
 		$object->last_updated_username = $row['last_updated_username'];
 		$object->last_updated_email = $row['last_updated_email'];
-=======
-		$object->date_added = (is_null($row['date_added'])) ? null : strtotime($row['date_added']); ;
-		$object->date_updated = (is_null($row['date_updated'])) ? null : strtotime($row['date_updated']); ;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$object->asset_no = $row['asset_no'];
 		$object->finance_id = $row['finance_id'];
@@ -528,7 +466,6 @@ class Itemstore {
 		$object->supplier = $row['supplier_id'];
 		$object->date_of_purchase = (is_null($row['date_of_purchase'])) ? null : strtotime($row['date_of_purchase']) ;
 
-<<<<<<< HEAD
 		$object->cost = $row['cost'];
 		$object->replacement_cost = $row['replacement_cost'];
 		$object->end_of_life = (is_null($row['end_of_life'])) ? null : strtotime($row['end_of_life']);
@@ -543,9 +480,6 @@ class Itemstore {
 		$object->comments = $row['comments'];
 
 		$object->is_parent = (bool) $row['is_parent'];
-=======
-		$object->archived = (bool) $row['archived'];
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		return $object;
 	}// /method
@@ -634,17 +568,11 @@ class Itemstore {
 	 */
 	public function getVisibilitySqlCondition($visibility, $table_alias = '') {
 		$table_alias = (!empty($table_alias)) ? "{$table_alias}." : null ;
-<<<<<<< HEAD
 		if (empty($visibility)) {
 			return '';
 		}  elseif (KC__VISIBILITY_PUBLIC == $visibility) {
 			return "{$table_alias}visibility='$visibility'";
 		}  elseif (KC__VISIBILITY_INTERNAL == $visibility) {
-=======
-		if (KC__VISIBILITY_PUBLIC == $visibility) {
-			return "{$table_alias}visibility='$visibility'";
-		} else {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			return '';
 		}
 	}// /method
@@ -656,11 +584,7 @@ class Itemstore {
 	 *
 	 * @param  mixed  $id  The ID, or array of IDs, to find.
 	 *
-<<<<<<< HEAD
 	 * @return  mixed  The object, or recordset of objects, requested.  On fail, null.
-=======
-	 * @return  mixed  The object, or array of objects, requested.  On fail, null.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 */
 	public function find($id) {
 		if (is_array($id)) {
@@ -685,7 +609,6 @@ class Itemstore {
 	/**
 	 * Find all items.
 	 *
-<<<<<<< HEAD
 	 * @param  mixed  $visibility  (optional)
 	 *
 	 * @return  object  An Ecl_Db_Recordset of objects requested.
@@ -719,12 +642,6 @@ class Itemstore {
 		");
 
 		return ($this->_db->hasResult()) ? $this->_db->getResultAssoc('tag', 'item_count') : array() ;
-=======
-	 * @return  object  An Ecl_Db_Recordset of objects requested.
-	 */
-	public function findAll() {
-		return $this->_find();
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -734,15 +651,9 @@ class Itemstore {
 	 *
 	 * @param  integer  $visibility
 	 *
-<<<<<<< HEAD
 	 * @return  Array  An array of techniques.
 	 */
 	public function findAllTechniques($visibility = null) {
-=======
-	 * @return  Array  An array of email addresses.
-	 */
-	public function findAllTechniques() {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$sql = "
 			SELECT DISTINCT technique
 			FROM `item`
@@ -757,31 +668,20 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Find all the distinct contact emails for all equipment.
-=======
-	 * Find all the distinct manufacturers for all equipment.
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 *
 	 * @param  integer  $visibility
 	 *
 	 * @return  Array  An array of email addresses.
 	 */
-<<<<<<< HEAD
 	public function findAllContacts($visibility) {
 
 		// @idea : Move to own model?
-=======
-	public function findAllManufacturers($visibility) {
-
-		// @todo : Move to own model?
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
 
 		$sql = "
-<<<<<<< HEAD
 			SELECT DISTINCT contact_1_email AS contact_email
 			FROM `item`
 			WHERE contact_1_email<>'' $sql__vis_condition
@@ -790,12 +690,6 @@ class Itemstore {
 			FROM `item`
 			WHERE contact_2_email<>'' $sql__vis_condition
 			ORDER BY contact_email
-=======
-			SELECT DISTINCT manufacturer
-			FROM `item`
-			WHERE manufacturer<>'' $sql__vis_condition
-			ORDER BY manufacturer
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		";
 
 		$this->_db->query($sql);
@@ -805,7 +699,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Get the file types available.
 	 *
 	 * @return  mixed  The array of objects requested.
@@ -833,37 +726,15 @@ class Itemstore {
 	public function findAllManufacturers($visibility) {
 
 		// @idea : Move to own model?
-=======
-	 * Find all the distinct contact emails for all equipment.
-	 *
-	 * @param  integer  $visibility
-	 *
-	 * @return  Array  An array of email addresses.
-	 */
-	public function findAllContacts($visibility) {
-
-		// @todo : Move to own model?
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		if ($sql__vis_condition) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
 
 		$sql = "
-<<<<<<< HEAD
 			SELECT DISTINCT manufacturer
 			FROM `item`
 			WHERE manufacturer<>'' $sql__vis_condition
 			ORDER BY manufacturer
-=======
-			SELECT DISTINCT contact_1_email AS contact_email
-			FROM `item`
-			WHERE contact_1_email<>'' $sql__vis_condition
-			UNION DISTINCT
-			SELECT DISTINCT contact_2_email AS contact_email
-			FROM `item`
-			WHERE contact_2_email<>'' $sql__vis_condition
-			ORDER BY contact_email
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		";
 
 		$this->_db->query($sql);
@@ -872,7 +743,6 @@ class Itemstore {
 
 
 
-<<<<<<< HEAD
 	public function findAllParents($exclude_item_id = null, $visibility = null) {
 		$exclude_item_id = (int) $exclude_item_id;
 
@@ -905,24 +775,6 @@ class Itemstore {
 					ELSE manufacturer
 				END ASC, model, acronym
 		", null, array($this, 'convertRowToObject'));
-=======
-	/**
-	* Get the file types available.
-	*
-	* @return  mixed  The array of objects requested.
-	*/
-	public function findAllFileTypes() {
-
-		// @todo : Move to own model?
-
-		$this->_db->query("
-				SELECT *
-				FROM file_type
-				ORDER BY name
-			");
-
-		return ($this->_db->hasResult()) ? $this->_db->getResultAssoc('file_type_id', 'name') : array() ;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -1148,7 +1000,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Find any items relating to the tag specified.
 	 *
 	 * @param  string  $tag  The tag to find.
@@ -1157,16 +1008,6 @@ class Itemstore {
 	 * @return  mixed  The recordset requested.
 	 */
 	public function findForTag($tag, $visibility) {
-=======
-	 * Find any items relating to the custom field specified.
-	 *
-	 * @param  integer  $field_id  The custom field id to find.
- 	 * @param  integer  $visibility
-	 *
-	 * @return  mixed  The array of objects requested.  On fail, null.
-	 */
-	public function findForTags($tag, $visibility) {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$binds = array (
 			'tag'  => $tag ,
 		);
@@ -1177,11 +1018,8 @@ class Itemstore {
 			WHERE tag=:tag
 		', $binds);
 
-<<<<<<< HEAD
 		if (!$this->_db->hasResult()) { return new Ecl_Db_Emptyrecordset($this->_db, $this->_db->getSql()); }
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$tag_id = $this->_db->getValue();
 
 		$binds = array (
@@ -1207,7 +1045,6 @@ class Itemstore {
 	}// /method
 
 
-<<<<<<< HEAD
 
 	public function findParents($id) {
 		$sql__id = $this->_db->prepareValue( (int) $id);
@@ -1226,8 +1063,6 @@ class Itemstore {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Find items for the given contact person.
 	 *
@@ -1236,13 +1071,8 @@ class Itemstore {
 	 * @return  object  An Ecl_Db_Recordset of objects requested.
 	 */
 	public function findForContact($email) {
-<<<<<<< HEAD
 		$sql__contact = $this->_db->prepareValue($email);
 		return $this->_find("contact_1_email=$sql__contact OR contact_2_email=$sql__contact");
-=======
-		$sql__contact = $this->_db->prepareValue($person_id);
-		return $this->_find("staff_contact=$sql__contact");
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -1256,15 +1086,9 @@ class Itemstore {
 	 *
 	 * @return  mixed  The array of objects requested.  On fail, null.
 	 */
-<<<<<<< HEAD
 	public function findForDepartmentCategory($department_id, $category_id = null, $visibility = null) {
 		$binds = array (
 			'department'  => $department_id ,
-=======
-	public function findForDepartmentCategory($department_id, $category_id = null, $visibility) {
-		$binds = array (
-			'department'   => $department_id ,
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		$join_clause = null;
@@ -1326,7 +1150,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Find all items in the organisation specified.
 	 *
 	 * @param  mixed  $organisation_id  The organisation, or array of organisations, to find.
@@ -1435,8 +1258,6 @@ class Itemstore {
 
 
 	/**
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Find all items in the site specified.
 	 *
 	 * @param  mixed  $site_id  The site, or array of sites, to find.
@@ -1563,23 +1384,15 @@ class Itemstore {
 	 *
 	 * @param  string  $keywords  The terms to search for.
 	 * @param  integer  $visibility  The visibility of the items to search for.
-<<<<<<< HEAD
 	 * @param  boolean  $whole_term_only  Only the entire keyword string is searched for. (default: false)
 	 *
 	 * @return  mixed  The RecordSet of objects found.  On fail, null.
 	 */
 	public function searchItems($keywords, $visibility, $whole_term_only = false) {
-=======
-	 *
-	 * @return  mixed  The array of objects found.  On fail, null.
-	 */
-	public function searchItems($keywords, $visibility) {
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$items = null;
 
 		$keywords = trim($keywords);
 
-<<<<<<< HEAD
 		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
 		// Remove common wildcard characters
@@ -1674,66 +1487,21 @@ class Itemstore {
 					INNER JOIN item_category ic ON ic.item_id=i.item_id
 					INNER JOIN category c ON c.category_id=ic.category_id
 				WHERE ($sql__conditions)
-=======
-		// @todo : Add category and tag searching
-
-		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
-
-		// Split the keywords depending on whether they're too small for MySQL's FULLTEXT search
-		$small_keywords = array();
-		$big_keywords = array();
-		$terms = explode(' ', $keywords);
-
-		foreach($terms as $term) {
-			$term = trim($term);
-			if (strlen($term) <= 3) {
-				$small_keywords[] = "%$term%";
-			} else {
-				$big_keywords[] = $term;
-			}
-		}
-
-
-		$queries = array();
-
-		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility, 'i');
-		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
-
-
-		if (!empty($big_keywords)) {
-			$sql__keywords = $this->_db->prepareValue($keywords);
-			$sql__matchclause = "MATCH (title, manufacturer, model, technique, acronym, keywords, full_description) AGAINST ($sql__keywords IN BOOLEAN MODE)";
-
-			$queries[] = "
-				SELECT DISTINCT *
-				FROM item
-				WHERE $sql__matchclause
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 					$sql__vis_condition
 			";
 		}
 
 
-<<<<<<< HEAD
 		// Search the custodian information
 		if ($this->_model->get('search.include_custodians')) {
 			$fields = array('contact_1_name', 'contact_1_email', 'contact_2_name', 'contact_2_email');
 			$conditions = array();
 			foreach($fields as $field) {
 				$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
-=======
-		if (!empty($small_keywords)) {
-
-			$fields = array('title', 'manufacturer', 'model', 'full_description', 'acronym', 'technique', 'keywords');
-			$conditions = array();
-			foreach($fields as $field) {
-				$conditions[] = $this->_db->prepareFilter($field, $small_keywords, 'OR', 'LIKE');
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 			$sql__conditions = implode("\n OR " , $conditions);
 
 			$queries[] = "
-<<<<<<< HEAD
 				SELECT DISTINCT i.*, 3 AS search_relevancy
 				FROM item i
 				WHERE ($sql__conditions)
@@ -1818,16 +1586,10 @@ class Itemstore {
 				FROM item i
 					INNER JOIN item_custom icf ON icf.item_id=i.item_id
 				WHERE ($sql__conditions)
-=======
-				SELECT DISTINCT *
-				FROM item
-				WHERE $sql__conditions
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 					$sql__vis_condition
 			";
 		}
 
-<<<<<<< HEAD
 
 
 		if (1 >= count($queries)) {
@@ -1863,23 +1625,6 @@ class Itemstore {
 		$unique_ids = null;
 
 		return new Ecl_Db_Arrayrecordset($unique_rows, array($this, 'convertRowToObject'));
-=======
-		if (1 >= count($queries)) {
-			$sql = $queries[0];
-		} else {
-			$sql = $this->_db->unionise($queries, 'DISTINCT');
-		}
-
-		$sql .= "
-			ORDER BY
-			CASE
-				WHEN title<>'' THEN title
-				ELSE manufacturer
-			END ASC, model, acronym
-		";
-
-		return $this->_db->newRecordset($sql, null, array($this, 'convertRowToObject'));
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	}// /method
 
 
@@ -1917,7 +1662,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Set the child items associated with the given item.
 	 *
 	 * @param  integer  $item_id
@@ -1982,8 +1726,6 @@ class Itemstore {
 
 
 	/**
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Set the tags associated with the given item.
 	 *
 	 * Passing an empty $tags array will effectively delete all existing item-tag links.
@@ -1995,7 +1737,6 @@ class Itemstore {
 	 */
 	public function setItemTags($item_id, $tags) {
 		$tags = array_map('trim', (array) $tags);
-<<<<<<< HEAD
 		$tags = array_unique($tags);
 
 
@@ -2072,47 +1813,15 @@ class Itemstore {
 		}
 
 
-=======
-
-		$sql__item_id = $this->_db->prepareValue($item_id);
-
-
-		// Delete existing tags
-		$this->_db->delete('item_tag', "item_id=$sql__item_id");
-
-		// Create new tags as required
-		if (empty($tags)) { return true; }
-
-		$binds = null;
-		foreach($tags as $tag) {
-			$tag = trim($tag);
-			if (!empty($tag)) {
-				$binds[] = array (
-					'tag'  => $tag ,
-				);
-			}
-		}
-
-		if (!empty($binds)) {
-			$this->_db->insertMulti('tag', $binds, true);
-		}
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		// Create new item-tag links
 		$sql__tag_set = $this->_db->prepareSet($tags);
 
 		$this->_db->execute("
 			INSERT INTO `item_tag` (item_id, tag_id)
-<<<<<<< HEAD
 			SELECT $sql__item_id AS item_id, MIN(tag_id)
 			FROM tag
 			WHERE tag IN $sql__tag_set
 			GROUP BY tag
-=======
-			SELECT $sql__item_id AS item_id, tag_id
-			FROM `tag`
-			WHERE tag IN $sql__tag_set
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		");
 
 		return true;
@@ -2213,7 +1922,6 @@ class Itemstore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Transfer all items from the source organisation, to the target.
 	 *
 	 * The target organisation ID is not checked for validity.
@@ -2235,8 +1943,6 @@ class Itemstore {
 
 
 	/**
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Transfer all items from the source site, to the target.
 	 *
 	 * The target site ID is not checked for validity.
@@ -2269,7 +1975,6 @@ class Itemstore {
 
 		$id = $this->_db->prepareValue($item->id);
 
-<<<<<<< HEAD
 		$user = $this->_model->get('user');
 
 		unset($binds['date_added']);
@@ -2292,13 +1997,6 @@ class Itemstore {
 		}
 
 
-=======
-		unset($binds['date_added']);
-		$binds['date_updated'] = $this->_db->formatDate(time());
-
-		$affected_count = $this->_db->update('item', $binds, "item_id=$id");
-
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		return ($affected_count>0);
 	}// /method
 
@@ -2461,18 +2159,10 @@ class Itemstore {
 
 		if (null === $order_by) {
 			$order_by = "
-<<<<<<< HEAD
 				CASE
 					WHEN title<>'' THEN title
 					ELSE manufacturer
 				END ASC, model, acronym
-=======
-				ORDER BY
-					CASE
-						WHEN title<>'' THEN title
-						ELSE manufacturer
-					END ASC, model, acronym
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			";
 		}
 

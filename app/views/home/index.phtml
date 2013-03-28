@@ -9,30 +9,18 @@ $lang = $this->model('lang');
 <?php
 if (!Ecl::isEmpty($this->model('app.intro'))) {
 	?>
-<<<<<<< HEAD
 	<p class="note" style="font-size: 1.1em;"><?php echo $this->model('app.intro'); ?></p>
-=======
-	<p class="note" style="font-size: 1.1em;"><?php $this->out($this->model('app.intro')); ?></p>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	<?php
 }
 ?>
 
-<<<<<<< HEAD
 <ul id="homepage-list" class="cf">
 	<li id="browse-categories">
 		<h2><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/"); ?>">Browse by <?php $this->out($lang['cat.label']); ?></a></h2>
-=======
-<h2>Quick links</h2>
-<ul id="homepage-list" class="cf">
-	<li id="browse-categories">
-		<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">Browse by <?php $this->out($lang['cat.label']); ?></a></h2>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		<?php
 		$categories = $this->model('categorystore')->findUsedRanked(5, $user->param('visibility'));
 		if ($categories) {
 			?>
-<<<<<<< HEAD
 			<ul class="item-meta">
 				<?php
 				$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label']). '-');
@@ -51,16 +39,6 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 				}
 				?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/"); ?>">more&hellip;</a></li>
-=======
-			<ul class="item-meta"><?php
-				foreach($categories as $category) {
-					$url = $this->router()->makeAbsoluteUri("/category/{$category->url_suffix}");
-					$count = $category->getItemCount($user->param('visibility'));?>
-					<li><a href="<?php echo $url; ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li><?php
-				}
-				?>
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/category/'); ?>">more&hellip;</a></li>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			</ul>
 			<?php
 		}
@@ -71,7 +49,6 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 		<?php
 		$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
 		if ($departments) {?>
-<<<<<<< HEAD
 		<ul class="item-meta">
 			<?php
 			$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label']). '-');
@@ -86,14 +63,6 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 				$count = (!$user->isAnonymous()) ? $department->item_count_internal : $department->item_count_public ;
 				?>
 				<li><a href="<?php echo "{$url}{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
-=======
-		<ul class="item-meta"><?php
-			foreach($departments as $department) {
-				$url = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->url_suffix}");
-				$count = $department->getItemCount($user->param('visibility'));
-				?>
-				<li><a href="<?php echo $url; ?>"><strong><?php $this->out($department->name) ?></strong> <span class="count">(<?php $this->out($count) ?>)</span></a></li>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 				<?php
 			}
 		}
@@ -112,19 +81,11 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 			?>
 			<li class="browse-customfield">
 				<h2><a href="<?php echo $url_stub; ?>">Browse by <?php $this->out($block->block_to_find_name); ?></a></h2>
-<<<<<<< HEAD
 				<ul class="item-meta">
 					<?php
 					foreach($records as $record) {
 						?>
 						<li><a href="<?php echo($url_stub . urlencode($record['value']) ); ?>"><strong><?php $this->out(ucwords($record['value'])); ?></strong> <span class="count">(<?php $this->out($record['count']); ?>)</span></a></li>
-=======
-				<ul>
-					<?php
-					foreach($records as $record) {
-						?>
-						<li><a href="<?php echo($url_stub . urlencode($record['value']) ); ?>"><?php $this->out(ucwords($record['value'])); ?> (<?php $this->out($record['count']); ?>)</a></li>
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 						<?php
 					}
 					?>

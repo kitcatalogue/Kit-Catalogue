@@ -16,11 +16,8 @@ class Sitestore {
 	// Private Properties
 	protected $_db = null;
 
-<<<<<<< HEAD
 	protected $_lookup = null;
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 
 	/**
@@ -51,10 +48,7 @@ class Sitestore {
 		$row = array (
 			'site_id'  => $object->id ,
 			'name'     => $object->name ,
-<<<<<<< HEAD
 			'url'      => $object->url ,
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		return $row;
@@ -74,10 +68,7 @@ class Sitestore {
 
 		$object->id = $row['site_id'];
 		$object->name = $row['name'];
-<<<<<<< HEAD
 		$object->url = $row['url'];
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 
 		return $object;
 	}// /method
@@ -166,10 +157,7 @@ class Sitestore {
 	 */
 	public function findAllUsed($visibility = null) {
 
-<<<<<<< HEAD
 		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
@@ -183,7 +171,6 @@ class Sitestore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Find the sites used for equipment in a OU.
 	 *
 	 * @param  string  $ou_id  The OU ID to check for.
@@ -194,29 +181,13 @@ class Sitestore {
 
 		$binds = array (
 			'ou_id'  => $ou_id ,
-=======
-	 * Find the sites used for equipment in a department.
-	 *
-	 * @param  string  $department_id  The department ID to check for.
-	 *
-	 * @return  mixed  An array of objects.  On fail, null.
-	 */
-	public function findForDepartment($department_id) {
-
-		$binds = array (
-			'department'  => $department_id ,
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT s.*
 			FROM site s
 				INNER JOIN item i ON s.site_id=i.site
-<<<<<<< HEAD
 			WHERE i.ou_id=:ou_id
-=======
-			WHERE i.site=:site
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject') );
 	}// /method
@@ -249,7 +220,6 @@ class Sitestore {
 
 
 	/**
-<<<<<<< HEAD
 	 * Lookup the name of a site using its ID.
 	 *
 	 * Use find() if you only want a single lookup.
@@ -270,8 +240,6 @@ class Sitestore {
 
 
 	/**
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	 * Insert a new site.
 	 *
 	 * @param  object  $object  The Site to create.

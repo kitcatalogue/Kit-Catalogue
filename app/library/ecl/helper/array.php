@@ -4,11 +4,7 @@
  *
  * @package  Ecl
  * @static
-<<<<<<< HEAD
  * @version  1.4.0
-=======
- * @version  1.1.0
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
  */
 class Ecl_Helper_Array {
 
@@ -28,7 +24,6 @@ class Ecl_Helper_Array {
 
 
 
-<<<<<<< HEAD
 	public static function changeValueCase($array, $case = CASE_LOWER) {
 		if (CASE_UPPER == $case) {
 			return array_map('strtoupper', $array);
@@ -39,8 +34,6 @@ class Ecl_Helper_Array {
 
 
 
-=======
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 	/**
 	 * Convert an array to an assoc-array, where the key is also the value.
 	 *
@@ -121,19 +114,11 @@ class Ecl_Helper_Array {
 
 		if ($row_objects) {
 			foreach($array as $i => $array_row) {
-<<<<<<< HEAD
 				$assoc_array[$array_row->$key_column] = $array_row;
 			}
 		} else {
 			foreach($array as $i => $array_row) {
 				$assoc_array["{$array_row[$key_column]}"] = $array_row;
-=======
-				$assoc_array[$array_row->$key_index] = $array_row;
-			}
-		} else {
-			foreach($array as $i => $array_row) {
-				$assoc_array["{$array_row[$key_index]}"] = $array_row;
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 		}
 		return $assoc_array;
@@ -167,11 +152,7 @@ class Ecl_Helper_Array {
 			}
 		} else {
 			foreach($array as $i => $array_row) {
-<<<<<<< HEAD
 				$extracted_column[] = $array_row[$column];
-=======
-				$extracted_column[] = $array_row["$column"];
->>>>>>> 593f5496075bbdb70e356142caa3cdea7c0271dd
 			}
 		}
 		return $extracted_column;
