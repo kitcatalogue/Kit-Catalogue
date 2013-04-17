@@ -4,8 +4,8 @@
 * * * * * * * * * * * * * * * *
 
 
-For full installation instructions, please follow the installation wizard
-by browsing to:
+For full installation or upgrade instructions, please follow the installation
+wizard by browsing to:
 
 	/install/
 

@@ -31,7 +31,8 @@ if (0 == $organisational_units->count()) {
 
 	$this->layout()->renderTree($ou_list, function($node) use ($that, $count_property) {
 		$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
-		printf('<li><a href="/browse/ou-%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $node->id.'-'.urlencode($name), $node->$count_property);
+		$url = $that->router()->makeAbsoluteUri('/browse/ou-'.urlencode($node->id).'-'.urlencode($name));
+		printf('<li><a href="%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $url, $node->$count_property);
 	});
 	?>
 

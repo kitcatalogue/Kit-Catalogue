@@ -52,6 +52,7 @@ CREATE TABLE `building` (
   `building_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
   `name` varchar(250) NOT NULL DEFAULT '',
+  `url` varchar(250) NOT NULL DEFAULT '',
   `site_id` int(10) unsigned DEFAULT NULL,
   `latitude` varchar(15) DEFAULT NULL,
   `longitude` varchar(15) DEFAULT NULL,
@@ -167,6 +168,8 @@ CREATE TABLE `file_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+
 /*!40000 ALTER TABLE `file_type` DISABLE KEYS */;
 INSERT INTO `file_type` (`file_type_id`,`name`) VALUES 
  (0,'Miscellaneous'),
@@ -224,6 +227,7 @@ CREATE TABLE `item` (
   `usergroup` varchar(250) DEFAULT '',
   `access_id` int(10) unsigned DEFAULT NULL,
   `portability` varchar(250) DEFAULT NULL,
+  `ou_id` int(10) unsigned DEFAULT '0',
   `organisation` int(10) unsigned DEFAULT NULL,
   `site_id` int(10) unsigned DEFAULT NULL,
   `building_id` int(10) unsigned DEFAULT NULL,
@@ -264,6 +268,7 @@ CREATE TABLE `item` (
   `archived` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `date_archived` datetime DEFAULT NULL,
   `is_parent` tinyint(3) unsigned DEFAULT '0',
+  `embedded_content` text,
   PRIMARY KEY (`item_id`),
   KEY `department` (`department_id`),
   KEY `manufacturer` (`manufacturer`),
@@ -333,6 +338,21 @@ CREATE TABLE `item_custom` (
 
 
 --
+-- Definition of table `item_editor`
+--
+
+DROP TABLE IF EXISTS `item_editor`;
+CREATE TABLE `item_editor` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(10) unsigned NOT NULL,
+  `username` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+--
 -- Table structure for table `item_file`
 --
 
@@ -352,6 +372,23 @@ CREATE TABLE `item_file` (
 
 
 --
+-- Definition of table `item_link`
+--
+
+DROP TABLE IF EXISTS `item_link`;
+CREATE TABLE `item_link` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_id` int(10) unsigned NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `url` varchar(250) NOT NULL,
+  `file_type` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `item_id` (`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+--
 -- Table structure for table `item_tag`
 --
 
@@ -364,6 +401,29 @@ CREATE TABLE `item_tag` (
   PRIMARY KEY (`item_id`,`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+--
+-- Definition of table `log_enquiry`
+--
+
+DROP TABLE IF EXISTS `log_enquiry`;
+CREATE TABLE `log_enquiry` (
+  `log_enquiry_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date_enquiry` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `item_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `item_name` varchar(250) NOT NULL DEFAULT '',
+  `user_name` varchar(250) NOT NULL DEFAULT '',
+  `user_email` varchar(250) NOT NULL DEFAULT '',
+  `user_phone` varchar(20) NOT NULL DEFAULT '',
+  `user_org` varchar(250) NOT NULL DEFAULT '',
+  `user_role` varchar(250) NOT NULL DEFAULT '',
+  `user_deadline` varchar(50) NOT NULL DEFAULT '',
+  `enquiry_type` varchar(15) NOT NULL DEFAULT '',
+  `enquiry_text` mediumtext,
+  PRIMARY KEY (`log_enquiry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -444,6 +504,74 @@ CREATE TABLE `organisation` (
 
 
 --
+-- Definition of table `ou`
+--
+
+DROP TABLE IF EXISTS `ou`;
+CREATE TABLE `ou` (
+  `ou_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `url` varchar(250) DEFAULT NULL,
+  `item_count_internal` int(10) unsigned DEFAULT '0',
+  `item_count_public` int(10) unsigned DEFAULT '0',
+  PRIMARY KEY (`ou_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+--
+-- INSERT root OU record (tree record is inserted later) 
+--
+
+REPLACE INTO `ou` (ou_id, name, url)
+VALUES (1, 'Catalogue', '');
+
+
+
+--
+-- Definition of table `ou_tree`
+--
+
+DROP TABLE IF EXISTS `ou_tree`;
+CREATE TABLE `ou_tree` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tree_left` int(10) unsigned NOT NULL,
+  `tree_right` int(10) unsigned NOT NULL,
+  `tree_level` int(10) unsigned NOT NULL,
+  `name` varchar(250) DEFAULT '',
+  `ref` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tree_left` (`tree_left`),
+  KEY `tree_right` (`tree_right`),
+  KEY `tree_level` (`tree_level`),
+  KEY `ref` (`ref`)
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+
+
+
+--
+-- INSERT OU tree root node
+--
+
+REPLACE INTO `ou_tree` (id, tree_left, tree_right, tree_level, name, ref)
+VALUES (1, 1, 2, 0, 'Catalogue', 1);
+
+
+
+--
+-- Definition of table `ou_tree_label`
+--
+
+DROP TABLE IF EXISTS `ou_tree_label`;
+CREATE TABLE `ou_tree_label` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+
+--
 -- Table structure for table `site`
 --
 
@@ -453,6 +581,7 @@ DROP TABLE IF EXISTS `site`;
 CREATE TABLE `site` (
   `site_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL DEFAULT '',
+  `url` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`site_id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

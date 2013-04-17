@@ -27,6 +27,8 @@ To renable the installer, change your local config file and enable this setting:
 
 You can now run the upgrade wizard by browsing to your installations /install/ folder.
 
+Remember to disable the installer again when you're done!
+
 
 
 INSTALLING MANUALLY
@@ -39,7 +41,6 @@ do to get Kit-Catalogue working...
 Kit-Catalogue zip-file into a new website, or sub-folder of an existing website.
  
 
-
 (2) If this is a fresh installation, you will need to enable your local folder.
 To do this, rename the  /new_local/  folder to  /local/
 
@@ -50,13 +51,11 @@ you define in your local folder. This should smooth future upgrades, and
 reduce the work required to keep Kit-Catalogue up-to-date.
 
 
-
 (3) Create a  /writable/  folder, and give PHP write permissions to it.
 This folder will be used for uploading and importing items, images and 
 associated resources.
 
 Kit-Catalogue will also use it for cache files and intermediate processing steps.
-
 
 
 (4) Make sure Apache is configured with mod_rewrite enabled.
@@ -72,8 +71,19 @@ Ensure that mod_rewrite is enabled by uncommenting this line:
 	LoadModule rewrite_module modules/mod_rewrite.so
 
 
+(5) Kit-Catalogue now defaults to using PHP's Mysqli extension, which is normally
+installed and enabled by default.  You can opt to use the older, and soon to be 
+deprecated mysql extension by altering your db configuration in the Kit-Catalogue
+local config file.
 
-(5) Kit-Catalogue comes with a built in user account called "admin", with the
+
+(6) Install and load the database tables into your MySQL database by running the
+database script file:
+
+	install/install_steps/install_db.sql
+
+
+(7) Kit-Catalogue comes with a built in user account called "admin", with the
 following details:
 
 username: admin
@@ -89,8 +99,7 @@ Even if you are not using the database authentication (e.g. just using LDAP
 authentication) you should change the default admin password! 
 
 
-
-(6) For security reasons, once you have installed Kit-Catalogue and made sure
+(8) For security reasons, once you have installed Kit-Catalogue and made sure
 it is all working properly, you should edit your local config and disable the
 installer using this setting.
 

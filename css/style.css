@@ -793,6 +793,7 @@ div.images img { border: 1px solid #EFEFEF; }
 div.extra-image img { opacity: 0.6; filter: alpha(opacity=60); /* For IE8 and earlier */ }
 div.extra-image img:hover { opacity: 1; filter: alpha(opacity=100); /* For IE8 and earlier */ }
 
+
 .item-description,
 .item-specification,
 .item-embedded-content { margin-left: 1em; margin-bottom: 1em; }
@@ -834,8 +835,8 @@ div.extra-image img:hover { opacity: 1; filter: alpha(opacity=100); /* For IE8 a
 
 .item-children ul.item-list { margin: 0; }
 
-
-.item-date-updated { margin-top: 1em; border-top: 1px solid #ccc; }
+.item-id { margin-top: 1em; border-top: 1px solid #ccc;  }
+.item-date-updated { }
 
 
 .socialnetworkbuttons { clear: both; float: left; margin-top: 2em; }

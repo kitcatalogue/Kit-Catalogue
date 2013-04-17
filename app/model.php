@@ -34,6 +34,48 @@ if (isset($config)) {
 }
 
 
+
+$model->setFunction('db', function ($model) {
+
+	$db_class = ($model->get('db.use_mysqli')) ? 'Ecl_Db_Mysql' : 'Ecl_Db_Legacy_Mysql' ;
+
+	$db = Ecl::factory($db_class, array (
+		'host'      => $model->get('db.host') ,
+		'port'      => $model->get('db.port') ,
+		'username'  => $model->get('db.username') ,
+		'password'  => $model->get('db.password') ,
+		'database'  => $model->get('db.database') ,
+	));
+
+	$db->setDebug( (bool) $model->get('app.debug', false));
+
+	// We use SET NAMES too, in case our PHP version is one of the buggy ones
+	$db->setCharset('utf8');
+	$db->execute('SET NAMES utf8');
+	return $db;
+});
+
+
+
+$model->setFunction('fieldview', function($model) {
+	require($model->get('app.include_root') . '/models/fieldview.php');
+
+	$user = $model->get('user');
+
+	$field_view = new FieldView(array(
+		'user' => $user ,
+	));
+	require(dirname(__FILE__). '/field_view.php');
+
+
+	$path = $model->get('app.local_root').'/local_field_view.php';
+	if (file_exists($path)) { include($path); }
+
+	return $field_view;
+});
+
+
+
 if (isset($lang)) {
 	$model->setObject('lang', $lang);
 }
@@ -79,26 +121,6 @@ $model->setObject('request', Ecl::factory('Ecl_Request'));
 if (isset($router)) {
 	$model->setObject('router', $router);
 }
-
-
-
-$model->setFunction('db', function ($model) {
-	$db = Ecl::factory('Ecl_Db_Mysql', array (
-		'host'      => $model->get('db.host') ,
-		'port'      => $model->get('db.port') ,
-		'username'  => $model->get('db.username') ,
-		'password'  => $model->get('db.password') ,
-		'database'  => $model->get('db.database') ,
-	));
-
-	$db->setDebug( (bool) $model->get('app.debug', false));
-
-	// We use SET NAMES too, in case our PHP version is one of the buggy ones
-	$db->setCharset('utf8');
-	$db->execute('SET NAMES utf8');
-
-	return $db;
-});
 
 
 

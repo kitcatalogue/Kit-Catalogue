@@ -3,7 +3,7 @@
 
 if (!empty($this->main_param)) {
 	$first_uri_param = (isset($this->uri_params[$this->main_param])) ? $this->uri_params[$this->main_param] : '' ;
-	$this->layout()->addBreadcrumb("Browse by {$this->main_param}", $this->router()->makeAbsoluteUri("/browse/{$first_uri_param}") );
+	$this->layout()->addBreadcrumb('Browse Items', $this->router()->makeAbsoluteUri("/browse/{$first_uri_param}") );
 } else {
 	$this->layout()->addBreadcrumb('Browse Items', $this->router()->makeAbsoluteUri('/browse/') );
 }

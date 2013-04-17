@@ -361,11 +361,29 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 					// Process Editors
 					if ($this->model('admin.item.editors.enabled')) {
+						$new_editors = $this->request()->post('new_editors');
+						if (!empty($new_editors)) {
+							$editors = explode("\n", $new_editors);
+							foreach($editors as $username) {
+								$username = trim($username);
+								if (!empty($username)) {
+									$editor = $this->model('itemeditorstore')->newItemEditor();
+									$editor->item_id = $item->id;
+									$editor->username = $username;
+									$this->model('itemeditorstore')->insert($editor);
+								}
+							}
+						}
+						$editors = null;
 
-						$new_editor_username = '';
-						$new_editor_email = '';
 
-
+						$remove_editors = $this->request()->post('remove_editors');
+						if (!empty($remove_editors)) {
+							foreach($remove_editors as $editor) {
+								$this->model('itemeditorstore')->deleteEditorFromItem($editor, $item->id);
+							}
+						}
+						$remove_editors = null;
 					}
 
 

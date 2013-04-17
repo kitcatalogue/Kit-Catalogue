@@ -775,7 +775,6 @@ Class Ecl_Tree_Manager {
 		if ($this->isDescendedFrom($node, $new_parent)) { return false; }
 
 		$subtree = $this->findTree($node);
-		$node_count = count($subtree);
 
 		$this->deleteSubtree($node);
 
@@ -818,6 +817,12 @@ Class Ecl_Tree_Manager {
 		$binds = (array) $node;
 
 		$affected_count = $this->_db->update($this->_table, $binds, "id={$sql__node_id}");
+
+		// Force a re-ordering of the affected nodes, in case the name ordering is different
+		$parent = $this->findParent($node, true);
+		$subtree = $this->findTree($node, true);
+		$this->deleteSubtree($node);
+		$this->addSubtree($parent, $subtree);
 
 		return ($affected_count>0);
 	}

@@ -29,11 +29,11 @@ class Controller_Ouadmin_Reports extends Ecl_Mvc_Controller {
 
 
 
-	public function actionItems() {
+	public function actionInventory() {
 		$lang = $this->model('lang');
 
 
-		$this->layout()->addBreadcrumb('Items', $this->router()->makeAbsoluteUri('/ouadmin/reports/items/'));
+		$this->layout()->addBreadcrumb('Inventory', $this->router()->makeAbsoluteUri('/ouadmin/reports/inventory/'));
 
 
 		$this->view()->available_output_fields = array (
@@ -111,7 +111,7 @@ class Controller_Ouadmin_Reports extends Ecl_Mvc_Controller {
 		// If GET, show the report form
 		if ($this->request()->isGet()) {
 			$this->view()->orderby_fields = $orderby_fields;
-			$this->view()->render('reports_items_index');
+			$this->view()->render('reports_inventory_index');
 			return;
 		}
 
@@ -152,7 +152,7 @@ class Controller_Ouadmin_Reports extends Ecl_Mvc_Controller {
 		$this->view()->is_download = ($this->request()->post('submitdownload', false));
 		$this->view()->items = $this->model('itemstore')->findForSearchParams($params, $order_by);
 		$this->view()->output_fields = (array) $this->request()->post('output');
-		$this->view()->render("reports_items_{$report_id}");
+		$this->view()->render("reports_inventory_{$report_id}");
 	}// /method
 
 

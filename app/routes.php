@@ -65,8 +65,12 @@ $router->addRoute('*', 'support', array(
 
 // Search
 
+$router->addRoute('*', 'search/item/:itemid' , array(
+	'controller'  => 'search' ,
+	'action'      => 'viewitem' ,
+));
 
-$router->addRoute('*', 'search/item/:itemname/:itemid' , array(
+$router->addRoute('*', 'search/item/:itemid/:itemname' , array(
 	'controller'  => 'search' ,
 	'action'      => 'viewitem' ,
 ));
@@ -80,7 +84,12 @@ $router->addRoute('*', 'search/' , array(
 
 // My Profile
 
-$router->addRoute('*', 'myprofile/items/:itemname/:itemid', array(
+$router->addRoute('*', 'myprofile/items/:itemid', array(
+	'controller'  => 'myprofile' ,
+	'action'      => 'viewitem' ,
+));
+
+$router->addRoute('*', 'myprofile/items/:itemid/:itemname', array(
 	'controller'  => 'myprofile' ,
 	'action'      => 'viewitem' ,
 ));
@@ -94,7 +103,12 @@ $router->addRoute('*', 'tag/:tag', array(
 	'action'      => 'view' ,
 ));
 
-$router->addRoute('*', 'tag/:tag/item/:itemname/:itemid', array(
+$router->addRoute('*', 'tag/:tag/item/:itemid', array(
+	'controller'  => 'tag' ,
+	'action'      => 'viewitem' ,
+));
+
+$router->addRoute('*', 'tag/:tag/item/:itemid/:itemname', array(
 	'controller'  => 'tag' ,
 	'action'      => 'viewitem' ,
 ));
@@ -103,11 +117,16 @@ $router->addRoute('*', 'tag/:tag/item/:itemname/:itemid', array(
 
 // Facilities
 
-$router->addRoute('*', 'facility/:item/:itemname/:itemid', array(
+$router->addRoute('*', 'facility/:itemid', array(
 	'controller'  => 'facility' ,
 	'action'      => 'viewitem' ,
 ));
 
+
+$router->addRoute('*', 'facility/:itemid/:itemname', array(
+	'controller'  => 'facility' ,
+	'action'      => 'viewitem' ,
+));
 
 
 
@@ -122,25 +141,29 @@ $router->addRoute('*', 'resource/:id', array(
 
 // Item
 
+$router->addRoute('*', 'item/:itemid', array(
+	'controller'  => 'item' ,
+	'action'      => 'view' ,
+));
+
 $router->addRoute('*', 'item/:itemname/:itemid', array(
 	'controller'  => 'item' ,
 	'action'      => 'view' ,
 ));
 
-$router->addRoute('*', 'item/:itemname/:itemid/file/:filename', array(
-	'controller'  => 'item' ,
-	'action'      => 'downloadfile' ,
-));
-
-$router->addRoute('*', 'item/:itemname/:itemid/image/:image', array(
+$router->addRoute('*', 'item/:itemid/image/:filename', array(
 	'controller'  => 'item' ,
 	'action'      => 'downloadimage' ,
+));
+
+$router->addRoute('*', 'item/:itemid/file/:filename', array(
+	'controller'  => 'item' ,
+	'action'      => 'downloadfile' ,
 ));
 
 
 
 // Department
-
 
 $router->addRoute('*', $model->lang['dept.route'] , array(
 	'controller'  => 'department' ,
@@ -164,7 +187,6 @@ $router->addRoute('*', $model->lang['dept.route'].'/:deptname/:deptid/item/:item
 
 
 // Custom Field
-
 
 $router->addRoute('*', 'customfield/:fieldname/:fieldid/:fieldvalue/item/:itemname/:itemid', array(
 	'controller'  => 'customfield' ,
@@ -276,6 +298,11 @@ $router->addRoute('*', 'id/:action/:id/:name', array (
 
 $router->addRoute('*', 'id/:action/:id', array (
 	'controller' => 'id' ,
+));
+
+$router->addRoute('*', 'id/item/:itemid/image/:filename', array(
+'controller'  => 'item' ,
+'action'      => 'downloadimage' ,
 ));
 
 

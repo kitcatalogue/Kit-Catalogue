@@ -112,11 +112,13 @@ class Item {
 
 
 	public function __get($name) {
-
 		switch ($name) {
 			case 'idslug':
 				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
 				break;
+			case 'imageslug':
+					return "{$this->id}/image/{$this->image}";
+					break;
 			case 'last_update':
 				return (empty($this->date_updated)) ? $this->date_added : $this->date_updated ;
 				break;

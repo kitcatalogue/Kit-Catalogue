@@ -63,6 +63,10 @@ if (file_exists($path)) {
 	<th>currently set to</th>
 </tr>
 <tr>
+	<td class="name">db.use_mysqli</td>
+	<td><?php out(($config['db.use_mysqli'] ? 'true' : 'false' )); ?></td>
+</tr>
+<tr>
 	<td class="name">db.host</td>
 	<td><?php out($config['db.host']); ?></td>
 </tr>
@@ -88,11 +92,83 @@ if (file_exists($path)) {
 </table>
 
 
+<h2>Checking PHP database extensions</h2>
+
+<p>Kit-Catalogue now uses PHP's MySQLi extension by default, though you can change to the older MySQL extension if you wish.
+	The following table shows which extensions are available on your server. You can control which extension your catalogue
+	will use by changing the <em>db.use_mysqli</em> configuration setting.</p>
+
+<table class="grid valigntop">
+<tr>
+	<th>extension</th>
+	<th>available</th>
+</tr>
+<tr>
+	<td class="name">Mysqli (default)</td>
+	<td><?php
+		$is_mysqli = (function_exists('mysqli_connect'));
+		echo ($is_mysqli ? 'Yes' : 'No');
+		?>
+	</td>
+</tr>
+<tr>
+	<td class="name">Mysql (deprecated)</td>
+	<td><?php
+		$is_mysql = (function_exists('mysql_connect'));
+		echo ($is_mysql ? 'Yes' : 'No');
+		?>
+	</td>
+</tr>
+</table>
+
+<br />
+
+<?php
+if ($config['db.use_mysqli']) {
+	if ($is_mysqli) {
+		?>
+		<div class="good">
+			<p class="title">You have opted to use the MySQLi extension.</p>
+			<p>This is the recommended PHP extension to use for database access.</p>
+		</div>
+		<?php
+	} else {
+		?>
+		<div class="bad">
+			<p class="title">Warning - You have opted to use the MySQLi extension, but it does not appear to be available.</p>
+		</div>
+		<?php
+	}
+} else {
+	if ($is_mysql) {
+		?>
+		<div class="warn">
+			<p class="title">You have opted to use the old MySQL extension.</p>
+			<p>This extension should work fine, but it is being deprecated and removed from PHP in a future upgrade.</p>
+			<p>For more information, visit: <a href="http://www.php.net/manual/en/mysqlinfo.api.choosing.php">http://www.php.net/manual/en/mysqlinfo.api.choosing.php</a></p>
+			<p>If possible, we recommend you switch to using MySQLi.</p>
+		</div>
+		<?php
+	} else {
+		?>
+		<div class="bad">
+			<p class="title">Warning - You have opted to use the old MySQL extension, but it does not appear to be available.</p>
+			<p>This extension is being deprecated and removed from PHP in a future upgrade.</p>
+			<p>For more information, visit: <a href="http://www.php.net/manual/en/mysqlinfo.api.choosing.php">http://www.php.net/manual/en/mysqlinfo.api.choosing.php</a></p>
+			<p>If possible, we recommend you switch to using MySQLi.</p>
+		</div>
+		<?php
+	}
+}
+?>
 
 <h2>Checking connection to database server</h2>
 
 <p>Using the configuration settings above, we will check that Kit-Catalogue can connect to your database server.</p>
 <?php
+
+$db_class = ($config['db.use_mysqli']) ? 'Ecl_Db_Mysql' : 'Ecl_Db_Legacy_Mysql' ;
+
 $db = Ecl::factory('Ecl_Db_Mysql', array (
 	'host'      => $config['db.host'] ,
 	'port'      => $config['db.port'] ,

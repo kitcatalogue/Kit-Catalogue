@@ -2,13 +2,11 @@
 $lang = $this->model('lang');
 
 
-
+$title = 'Browse Items';
 if (!empty($this->main_param)) {
-	$title = "Browse by {$this->main_param}";
 	$first_uri_param = (isset($this->uri_params[$this->main_param])) ? $this->uri_params[$this->main_param] : '' ;
 	$this->layout()->addBreadcrumb($title, $this->router()->makeAbsoluteUri("/browse/{$first_uri_param}") );
 } else {
-	$title = 'Browse Items';
 	$this->layout()->addBreadcrumb($title, $this->router()->makeAbsoluteUri('/browse/') );
 }
 

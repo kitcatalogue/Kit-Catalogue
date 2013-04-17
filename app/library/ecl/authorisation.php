@@ -183,7 +183,7 @@ class Ecl_Authorisation {
 			WHERE item IN $sql__item_set
 		";
 
-		$this->_db->execute($sql, $bind);
+		$this->_db->execute($sql);
 
 		return true;
 	}// /method

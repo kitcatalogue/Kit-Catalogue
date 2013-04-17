@@ -85,15 +85,26 @@ class Itemstore {
 		}
 
 
+		if (isset($params['building_id'])) {
+			$sql_set = $this->_db->prepareSet($params['building_id']);
+			$where_conditions[] = "(i.building_id IN $sql_set)";
+			unset($params['building_id']);
+		}
+
+
 		if (isset($params['ou_id'])) {
 			$sql_set = $this->_db->prepareSet($params['ou_id']);
-			$where_conditions[] = "(ou_id IN $sql_set)";
+			$where_conditions[] = "(i.ou_id IN $sql_set)";
 			unset($params['ou_id']);
 		}
 
 
 		// @todo : Deprecated - remove
-		if (isset($params['department'])) { unset($params['department']); }
+		if (isset($params['department'])) {
+			$binds['department_id'] = $params['department'];
+			$where_conditions[] = '(i.department_id=:department_id)';
+			unset($params['department']);
+		}
 
 
 		foreach($params as $k => $v) {
@@ -747,12 +758,12 @@ class Itemstore {
 		$exclude_item_id = (int) $exclude_item_id;
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
-		if (!empty($sql__vis_condition)) { $sql__vis_condition .= ' AND'; }
+		if (!empty($sql__vis_condition)) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
 
 		if ($exclude_item_id) {
-			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}'");
+			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}' {$sql__vis_condition}");
 		} else {
-			return $this->_find("is_parent='1'");
+			return $this->_find("is_parent='1' {$sql__vis_condition}");
 		}
 	}// /method
 
@@ -1293,6 +1304,43 @@ class Itemstore {
 
 
 	/**
+	 * Find items associated with the given user.
+	 *
+	 * Finds custodial items and items the user is editor for.
+	 *
+	 * @param  object  $user  The user to find.
+	 *
+	 * @return  object  An Ecl_Db_Recordset of objects requested.
+	 */
+	public function findForUser($user) {
+		$binds = array (
+			'username' => $user->username,
+			'email'    => $user->email,
+			);
+
+		return $this->_db->newRecordset("
+			(
+				SELECT *
+				FROM item
+				WHERE contact_1_email=:email OR contact_2_email=:email
+			)
+			UNION DISTINCT
+			(
+				SELECT i.*
+				FROM item i
+				INNER JOIN item_editor ie ON ie.item_id=i.item_id AND ie.username=:username
+			)
+			ORDER BY
+			CASE
+			  WHEN title<>'' THEN title
+			  ELSE manufacturer
+			  END ASC, model, acronym
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
 	 * Find the A-to-Z alphabetic list of manufactuers used in the catalogue
 	 *
 	 * All numbers and punctuation found as the first character of a manufacturer's name will cause the 'Other'
@@ -1313,24 +1361,22 @@ class Itemstore {
 			ORDER BY letter
 		");
 
-		if ($row_count>0) {
-			$atoz = $this->_db->getColumn();
+		if (0 == $row_count) { return array(); }
 
-			$org_count = count($atoz);
-			$atoz = array_filter($atoz, function ($v) {
-				$ord = ord($v);
-				return ( ($ord>=65) && ($ord<=90) );
-			});
+		$atoz = $this->_db->getColumn();
 
-			if (count($atoz)<$org_count) {
-				$atoz = array_merge($atoz);
-				$atoz[] = 'Other';
-			}
+		$org_count = count($atoz);
+		$atoz = array_filter($atoz, function ($v) {
+			$ord = ord($v);
+			return ( ($ord>=65) && ($ord<=90) );
+		});
 
-			return $atoz;
-		} else {
-			return array();
+		if (count($atoz)<$org_count) {
+			$atoz = array_merge($atoz);
+			$atoz[] = 'Other';
 		}
+
+		return $atoz;
 	}// /method
 
 
@@ -1428,6 +1474,16 @@ class Itemstore {
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
 
+		// If the search term is an integer then search for matching Item ID
+		if (is_numeric($keywords)) {
+			$sql__id = $this->_db->prepareValue((int) $keywords);
+			$queries[] = "
+				SELECT DISTINCT i.*, 50 AS search_relevancy
+				FROM item i
+				WHERE (item_id=$sql__id)
+					$sql__vis_condition
+			";
+		}
 
 		// Whole term searching on major fields
 		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords');

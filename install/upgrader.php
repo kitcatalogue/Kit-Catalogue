@@ -25,7 +25,8 @@ $dir = ('prev' == $dir) ? 'prev' : 'next' ;
 $available_steps = array (
 	'1_intro' ,
 	'2_database' ,
-	'3_finish' ,
+	'3_upgradenotes' ,
+	'4_finish' ,
 );
 
 

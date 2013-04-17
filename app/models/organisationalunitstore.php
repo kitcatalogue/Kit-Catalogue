@@ -52,6 +52,9 @@ class Organisationalunitstore {
 			'ou_id'  => $object->id ,
 			'name'   => $object->name ,
 			'url'    => $object->url ,
+
+			'item_count_internal'  => $object->item_count_internal ,
+			'item_count_public'    => $object->item_count_public ,
 		);
 
 		return $row;
@@ -73,7 +76,10 @@ class Organisationalunitstore {
 		$object->name = $row['name'];
 		$object->url = $row['url'];
 
-		$object->tree_level = $row['tree_level'];
+		$object->item_count_internal = $row['item_count_internal'];
+		$object->item_count_public = $row['item_count_public'];
+
+		$object->tree_level = (array_key_exists('tree_level', $row)) ? $row['tree_level'] : null ;
 
 		return $object;
 	}// /method
@@ -114,7 +120,6 @@ class Organisationalunitstore {
 		$affected_count = $this->_db->delete('ou', "ou_id=$sql__id");
 
 		// Delete related user authorisations
-		// A quick and dirty abuse of the law of demeter
 		$sysauth = $this->_model->get('sysauth');
 		$sysauth->deleteForItem($id);
 
@@ -249,6 +254,45 @@ class Organisationalunitstore {
 	 */
 	public function findTree() {
 		return $this->_model->get('ou_tree')->fetchTreeLinked();
+	}// /method
+
+
+
+	/**
+	 * Find the requested number of OUs, ranked by item usage, for the given visibility.
+	 *
+	 * @param  integer  $num  The number of results to return.
+	 * @param  integer  $visibility  (optional) The item visibility to check.
+	 *
+	 * @return  mixed  An array of objects.  On fail, null.
+	 */
+	public function findUsedRanked($num = 0, $visibility = null) {
+
+		$num = (int) $num;
+		$limit_clause = ($num>0) ? "LIMIT $num" : null ;
+
+		switch ($visibility) {
+			case KC__VISIBILITY_INTERNAL:
+				$where_clause = 'WHERE item_count_internal>0';
+				$order_clause = 'ORDER BY item_count_internal DESC, name ASC';
+				break;
+			case KC__VISIBILITY_PUBLIC:
+				$where_clause = 'WHERE item_count_public>0';
+				$order_clause = 'ORDER BY item_count_public DESC, name ASC';
+				break;
+			default:
+				$where_clause = null;
+				$order_clause = 'ORDER BY name ASC';
+				break;
+		}// /switch
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM ou
+			$where_clause
+			$order_clause
+			$limit_clause
+		", null, array($this, 'convertRowToObject'));
 	}// /method
 
 
@@ -421,7 +465,7 @@ class Organisationalunitstore {
 
 		if ($affected_count > 0) {
 			$ou_tree = $this->_model->get('ou_tree');
-			$node = $ou_tree->findForRef($object->ou_id);
+			$node = $ou_tree->findForRef($object->id);
 			if ($node) {
 				$node->name = $binds['name'];
 				$ou_tree->update($node);

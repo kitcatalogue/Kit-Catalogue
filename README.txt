@@ -17,3 +17,6 @@ location, handbook, access requirements, usage data and photos.
 For more information and installation instructions, please read the help 
 files in the /docs/ folder.
 
+The user manual is available online at:
+http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/
+

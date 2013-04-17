@@ -25,7 +25,8 @@ $available_steps = array (
 	'4_application' ,
 	'5_database' ,
 	'6_authentication' ,
-	'7_finish' ,
+	'7_installnotes' ,
+	'8_finish' ,
 );
 
 

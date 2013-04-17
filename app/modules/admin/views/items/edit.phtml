@@ -134,6 +134,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 
 		<dt><?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *'); ?></dt>
 		<dd>
+			<p class="note">Where in the organisational tree does this item reside.</p>
 			<?php
 			if (!$this->layout()->renderOUSelect('ou', $item->ou)) {
 				$ou_name = $this->model('organisationalunitstore')->lookupName($item->ou);
@@ -285,33 +286,21 @@ if ($this->model('admin.item.editors.enabled')) {
 
 		<dl class="form">
 
-			<dt>Add A New Editor</dt>
+			<?php
+			if ($this->model('security')->checkItemPermission($item, 'item.editors.edit')) {
+				?>
+
+			<dt>Add New Editors</dt>
 			<dd>
-				<table class="layout">
-				<tr>
-					<th>Username</th>
-					<th style="padding-left: 2em;">&hellip;or email address</th>
-					<th>&nbsp;</th>
-				</tr>
-				<tr>
-					<td>
-						<?php
-						Ecl_Helper_Html::formInput('new_editor_username', 20, 50, '');
-						?>
-					</td>
-					<td style="padding-left: 2em;">
-						<?php
-						Ecl_Helper_Html::formInput('new_editor_email', 40, 250, '');
-						?>
-					</td>
-					<td style="padding-left: 2em;">
-						<?php
-						Ecl_Helper_Html::formButton('add_editor', 'add_editor', 'Add');
-						?>
-					</td>
-				</tr>
-				</table>
+				<p class="note">Enter the username of each new editor, one per line.</p>
+				<?php
+				Ecl_Helper_Html::formTextarea('new_editors', 20, 3, '');
+				?>
 			</dd>
+
+				<?php
+			}
+			?>
 
 			<dt>Current Editors For This Item</dt>
 			<?php
@@ -324,11 +313,37 @@ if ($this->model('admin.item.editors.enabled')) {
 				?>
 				<dd>
 					<?php
-					$options = array();
-					foreach($editors as $editor) {
-						$options[$editor->id] = $editor->toString();
+					if ($this->model('security')->checkItemPermission($item, 'item.editors.edit')) {
+						?>
+						<p class="note">To remove an editor tick the appropriate box.</p>
+						<table class="grid">
+						<tr>
+							<th style="text-align: center;">username</th>
+							<th style="text-align: center;">remove?</th>
+						</tr>
+						<?php
+						$i = 0;
+						foreach($editors as $editor) {
+							$i++;
+							printf('<tr><td class="name"><label for="remove_editors_%1$s">%2$s</label></td><td class="checkbox"><input type="checkbox" name="remove_editors[]" id="remove_editors_%3$s" value="%1$s" /></td></tr>', $this->escape($editor->id), $this->escape($editor->username), $i);
+						}
+						?>
+						</table>
+						<?php
+					} else {
+						?>
+						<table class="grid">
+						<tr>
+							<th style="text-align: center;">username</th>
+						</tr>
+						<?php
+						foreach($editors as $editor) {
+							printf('<tr><td class="name">%1$s</td></tr>', $this->escape($editor->username));
+						}
+						?>
+						</table>
+						<?php
 					}
-					Ecl_Helper_Html::formCheckboxGrid('editors', $options);
 					?>
 				</dd>
 				<?php

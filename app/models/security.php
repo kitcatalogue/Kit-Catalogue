@@ -13,9 +13,9 @@ class Security {
 
 	protected $_auth_lookup = array();
 
-	protected $_perm_lookup = array();
+	protected $_editor_lookup = null;
 
-	protected $_ou_adminable = array();
+	protected $_perm_lookup = array();
 
 
 
@@ -50,7 +50,11 @@ class Security {
 								array_walk($ou_ids, function(&$v, $k) {
 									$v = "ou_{$v}";
 								});
-								$this->_auth_lookup[$auth] += $ou_ids;
+								foreach($ou_ids as $ou_id_to_add) {
+									if (!in_array($ou_id_to_add, $this->_auth_lookup[$auth])) {
+										$this->_auth_lookup[$auth][] = $ou_id_to_add;
+									}
+								}
 							}
 						}
 					}
@@ -131,6 +135,7 @@ class Security {
 				return true;
 			}
 
+
 			$new_item = (empty($item->id));
 
 			/*
@@ -144,55 +149,67 @@ class Security {
 
 			// Set the default permissions
 			$perms = array(
-				'site.item.edit'  => false ,
-
-				'item.accesslevel.view'   => false ,
-				'item.customfields.view'  => false ,
-				'item.files.view'         => false ,
-				'item.location.view'      => false ,
+				'site.item.edit'    => false ,
+				'item.editors.edit' => false ,
 			);
 
 
 			// If user has signed in, set the default viewing permissions
 			if (!$this->_user->isAnonymous()) {
-				// Hide items that are 'draft' unless user is
-				// the custodian
-				if ($item->visibility != 3) {
-					$perms['item.accesslevel.view']  = true;
-					$perms['item.customfields.view'] = true;
-					$perms['item.files.view']        = true;
-					$perms['item.location.view']     = true;
-				}
 
 				if ($new_item) {
 					// If user has ANY OU editing rights
 					if ($this->checkAuth(KC__AUTH_CANOUADMIN)) {
-						$perms['site.item.edit']  = true;
+						$perms['site.item.edit'] = true;
 					}
 				} else {
 					// If user is the item custodian (has the same email address)
-					if (
-						(!empty($this->_user->email))
-						&& (
-							(strtolower($this->_user->email) == strtolower($item->contact_1_email))
-							|| (strtolower($this->_user->email) == strtolower($item->contact_2_email))
-							)
-						) {
-							$perms['site.item.edit']  = true;
+					if (!empty($this->_user->email)) {
 
-							$perms['item.accesslevel.view']  = true;
-							$perms['item.customfields.view'] = true;
-							$perms['item.files.view']        = true;
-							$perms['item.location.view']     = true;
-					} else {
-						// If user has editing rights for the item's OU
-						if ($this->checkOUAuth($item->ou_id, KC__AUTH_CANOUADMIN)) {
+						$user_email = strtolower($this->_user->email);
+
+						if  (
+							$this->_model->get('admin.item.edit.contact_1')
+							&& ($user_email == strtolower($item->contact_1_email))
+							) {
+							$perms['site.item.edit'] = true;
+						} elseif (
+							$this->_model->get('admin.item.edit.contact_2')
+							&& ($user_email == strtolower($item->contact_2_email))
+							) {
 							$perms['site.item.edit'] = true;
 						}
 					}
 				}
 
 			}
+
+
+			// If user has editing rights for the item's OU
+
+			$ou_perm = "ou_{$item->ou}";
+			if ($this->checkOUAuth($item->ou, KC__AUTH_CANOUADMIN)) {
+				$perms['site.item.edit'] = true;
+			}
+
+
+			// If item-editors are disabled, deny access
+			if ($this->_model->get('admin.item.editors.enabled')) {
+				$this->loadEditorLookup();
+
+				if (in_array($item->id, $this->_editor_lookup)) {
+					$perms['site.item.edit'] = true;
+				}
+
+				if (!$this->_model->get('admin.item.editors.adminonly')) {
+					$perms['item.editors.edit'] = true;
+				} elseif  ($this->checkOUAuth($item->ou_id, KC__AUTH_CANOUADMIN)) {
+					$perms['item.editors.edit'] = false;
+				}
+			} else {
+				$perms['item.editors.edit'] = false;
+			}
+
 
 			// Set the item final permissions
 			$this->_perm_lookup[$item->id] = $perms;
@@ -225,6 +242,17 @@ class Security {
 		}
 
 		return $ou_ids;
+	}
+
+
+
+	public function loadEditorLookup() {
+		if (!is_array($this->_editor_lookup)) {
+			$item_editor_store = $this->_model->get('itemeditorstore');
+			$editors = $item_editor_store->findForUsername($this->_user->username)->toArray();
+			$this->_editor_lookup = Ecl_Helper_Array::extractColumn($editors, 'item_id', true);
+		}
+		return true;
 	}
 
 

@@ -51,7 +51,7 @@ class Ecl_Db_Migrator {
 			SELECT version
 			FROM `db_migration`
 		");
-		return ($this->_db->hasResult()) ? $this->_db->getValue() : 0 ;
+		return (int) ($this->_db->hasResult()) ? $this->_db->getValue() : 0 ;
 	}
 
 

@@ -106,6 +106,46 @@ $migrator = new Ecl_Db_Migrator($db, $db->getSchema(), array (
 		'model' => $model,
 		),
 ));
+
+
+// Normalise version scheme
+// Convert the old system_information.database_version number into a db_migration number
+
+$migration_version = $migrator->getCurrentVersion();
+
+if (0 == $migration_version) {
+	$db->query("
+		SELECT value
+		FROM `system_info`
+		WHERE name='database_version'
+	");
+
+	$old_version = (string) $db->getValue();
+
+	switch($old_version) {
+		case '0.9.7':
+			$new_version = '1';
+			break;
+		case '0.9.8':
+			$new_version = '2';
+			break;
+		case '1.1.0':
+			$new_version = '3';
+			break;
+		case '':
+		default:
+			$new_version = 0;
+			break;
+	}
+
+	if ($new_version > 0) {
+		$db->update('db_migration', array(
+			'version' => $new_version,
+		));
+	}
+}
+
+
 $patches = $migrator->listLatestMigrations();
 
 if (empty($patches)) {

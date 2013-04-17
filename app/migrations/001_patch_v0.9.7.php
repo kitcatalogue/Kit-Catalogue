@@ -91,7 +91,6 @@ class Patch_v0_9_7 extends Ecl_Db_Migration {
 
 
 		// Changes to system_authorisation (Set to UTF8 and apply max key-size fix)
-
 		$this->_db->execute("
 			ALTER TABLE `system_authorisation`
 				MODIFY COLUMN `agent` VARCHAR(250) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,

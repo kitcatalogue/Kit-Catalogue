@@ -1,5 +1,5 @@
 <?php
-class Patch_v1_2_0 extends Ecl_Db_Migration {
+class Patch_v2_0_0 extends Ecl_Db_Migration {
 
 
 	/* --------------------------------------------------------------------------------
@@ -23,8 +23,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 
 
 
-		// Changes to building table
-
 		$this->_schema->patchTable('building', array (
 			'url' => array (
 				'type'    => 'varchar(250)',
@@ -34,8 +32,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 		));
 
 
-
-		// Changes to item table
 
 		$this->_schema->patchTable('item', array (
 			'ou_id' => array (
@@ -51,7 +47,17 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 
 
 
-		// Changes to table `item`
+		$this->_db->execute("
+			CREATE TABLE IF NOT EXISTS `item_editor` (
+			  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			  `item_id` int(10) unsigned NOT NULL,
+			  `username` varchar(50) NOT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `item_id` (`item_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		");
+
+
 
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS `item_link` (
@@ -66,8 +72,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 		");
 
 
-
-		// Definition of table `log_enquiry`
 
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS `log_enquiry` (
@@ -88,8 +92,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 		");
 
 
-
-		// Create ou_tree
 
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS  `ou_tree` (
@@ -114,8 +116,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 
 
 
-		// Create ou_tree_label
-
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS `ou_tree_label` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -134,8 +134,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 		");
 
 
-
-		// Create ou table
 
 		$this->_db->execute("
 			CREATE TABLE IF NOT EXISTS  `ou` (
@@ -192,6 +190,7 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 				}
 			}
 		}
+
 
 		// Copy existing departments to OUs
 
@@ -262,8 +261,6 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 
 
 
-		// Changes to table `site`
-
 		$this->_schema->patchTable('site', array (
 			'url' => array (
 				'type'    => 'varchar(250)',
@@ -274,12 +271,10 @@ class Patch_v1_2_0 extends Ecl_Db_Migration {
 
 
 
-		// Set system information settings
-
 		$this->_db->replaceMulti('system_info', array (
 			array (
 				'name'  => 'database_version',
-				'value' => '1.2.0',
+				'value' => '2.0.0',
 				),
 			array (
 				'name'  => 'database_updated',

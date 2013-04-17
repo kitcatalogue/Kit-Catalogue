@@ -20,7 +20,7 @@ $status = (true === $this->model('api.public.enabled')) ? 'available' : 'unavail
 	<?php
 	foreach($this->available_calls as $url => $desc) {
 		?>
-		<dt><?php printf('<a href="%1$s">%1$s</a>', $url); ?></dt>
+		<dt><?php printf('<a href="%1$s">%1$s</a>', "{$this->api_root}{$url}"); ?></dt>
 		<dd><?php $this->out($desc); ?></dd>
 		<?php
 	}
@@ -29,8 +29,14 @@ $status = (true === $this->model('api.public.enabled')) ? 'available' : 'unavail
 </dl>
 
 
-<h3>Data Licence</h3>
-<?php $this->render('snippets_licenceinfo'); ?>
+<?php
+if (true === $this->model('data.licence_enabled')) {
+	?>
+	<h3>Data Licence</h3>
+	<?php
+	$this->render('snippets_licenceinfo');
+}
+?>
 
 <?php $this->render('api_snippets_formatinfo'); ?>
 

@@ -10,7 +10,6 @@ class Itemeditor {
 	public $id = null;
 	public $item_id = null;
 	public $username = '';
-	public $email = '';
 
 
 
@@ -25,25 +24,6 @@ class Itemeditor {
 /* --------------------------------------------------------------------------------
  * Public Methods
  */
-
-
-
-	public function toString() {
-		$string = '';
-
-		if (!empty($this->username)) {
-			$string .= "user: {$this->username}";
-		}
-
-		if (!empty($this->email)) {
-			if (!empty($string)) {
-				$string .= ', ';
-			}
-			$string .= "email: {$this->email}";
-		}
-
-		return (!empty($string)) ? $string : 'unknown editor' ;
-	}
 
 
 

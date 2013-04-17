@@ -45,7 +45,6 @@ class Itemeditorstore {
 			'id'       => $object->id ,
 			'item_id'  => $object->item_id ,
 			'username' => $object->username ,
-			'email'    => $object->email ,
 		);
 	}// /method
 
@@ -64,7 +63,6 @@ class Itemeditorstore {
 		$object->id = $row['id'];
 		$object->item_id = $row['item_id'];
 		$object->username = $row['username'];
-		$object->email = $row['email'];
 
 		return $object;
 	}// /method
@@ -147,6 +145,29 @@ class Itemeditorstore {
 			SELECT *
 			FROM `item_editor`
 			WHERE item_id=:item_id
+			ORDER BY username
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
+	 * Find the editors associated with the given username.
+	 *
+	 * @param  string  $username
+	 *
+	 * @return  array  Array of editors.
+	 */
+	public function findForUsername($username) {
+		$binds = array(
+			'username'  => $username ,
+		);
+
+		return $this->_db->newRecordset("
+			SELECT *
+			FROM `item_editor`
+			WHERE username=:username
+			ORDER BY item_id
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
 

@@ -29,7 +29,7 @@ if (0 == $count) {
 		<?php
 		$url_stub = $this->router()->makeAbsoluteUri("/tag/{$url_tag}/item/");
 		foreach($this->items as $item) {
-			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->idslug}");
 		}
 		?>
 	</ul>

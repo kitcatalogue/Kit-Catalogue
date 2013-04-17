@@ -45,30 +45,53 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 		?>
 	</li>
 	<li id="browse-departments">
-		<h2><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">Browse by <?php $this->out($lang['dept.label']); ?></a></h2>
 		<?php
-		$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
-		if ($departments) {?>
-		<ul class="item-meta">
+		if ($this->model('app.use_ou_tree')) {
+			?>
+			<h2><a href="<?php echo $this->router()->makeAbsoluteUri('/ou/'); ?>">Browse by <?php $this->out($lang['ou.label']); ?></a></h2>
 			<?php
-			$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label']). '-');
-			foreach($departments as $department) {
-				if (false) {
-					$url = $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/{$department->slug}");
-					$count = $department->getItemCount($user->param('visibility'));
-					?>
-					<li><a href="<?php echo $url; ?>"><strong><?php $this->out($department->name) ?></strong> <span class="count">(<?php $this->out($count) ?>)</span></a></li>
+			$ous = $this->model('organisationalunitstore')->findUsedRanked(5, $user->param('visibility'));
+			?>
+			<ul class="item-meta">
+			<?php
+			if ($ous) {?>
 					<?php
+					$url = $this->router()->makeAbsoluteUri('/browse/ou-');
+					foreach($ous as $ou) {
+						$count = (!$user->isAnonymous()) ? $ou->item_count_internal : $ou->item_count_public ;
+						?>
+						<li><a href="<?php echo "{$url}{$ou->id}-".urlencode($ou->name); ?>"><strong><?php $this->out($ou->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<?php
+					}
 				}
-				$count = (!$user->isAnonymous()) ? $department->item_count_internal : $department->item_count_public ;
 				?>
-				<li><a href="<?php echo "{$url}{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">more&hellip;</a></li>
+			</ul>
+			<?php
+		} else {
+			?>
+			<h2><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">Browse by <?php $this->out($lang['dept.label']); ?></a></h2>
+			<?php
+			$departments = $this->model('departmentstore')->findUsedRanked(5, $user->param('visibility'));
+			?>
+			<ul class="item-meta">
 				<?php
-			}
+				if ($departments) {?>
+					<?php
+					$url = $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['dept.label']). '-');
+					foreach($departments as $department) {
+						$count = (!$user->isAnonymous()) ? $department->item_count_internal : $department->item_count_public ;
+						?>
+						<li><a href="<?php echo "{$url}{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<?php
+					}
+				}
+				?>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">more&hellip;</a></li>
+			</ul>
+			<?php
 		}
 		?>
-			<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['dept.route']}/"); ?>">more&hellip;</a></li>
-		</ul>
 	</li>
 
 

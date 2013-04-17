@@ -170,6 +170,18 @@ $(document).ready( function() {
 
 <h1>Administer <?php $this->out($lang['ou.label.adminsection']); ?></h1>
 
+<?php
+if (!$this->model('app.use_ou_tree')) {
+	?>
+	<div class="feedback_box feedback_warning">
+		<p class="title">The organisational tree is currently disabled for your catalogue.</p>
+		<p>To enable the tree, change your configuration settings to <em>$config['app.use_ou_tree'] = true;</em></p>
+	</div>
+	<?php
+}
+?>
+
+
 <div class="cf">
 
 	<p>Below is the <?php echo strtolower($lang['ou.label.adminsection']); ?> for this catalogue. Click on a unit's name to edit it, or use add button to add another sub-unit.</p>

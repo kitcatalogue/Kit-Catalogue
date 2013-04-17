@@ -15,6 +15,8 @@ class Ecl_Db_Mysql_Schema {
 
 	protected $_default_charset = 'utf8';
 
+	protected $_use_info_schema = false;   // Hard-coded to false, to support versions less than MySQL v5.0
+
 
 
 	/**
@@ -28,22 +30,49 @@ class Ecl_Db_Mysql_Schema {
 
 
 
-
 	/* --------------------------------------------------------------------------------
 	 * Public Methods
 	 */
 
 
 
-	/**
-	 * Add the given fields definitions to the table.
-	 *
-	 * @param  array  $fields
-	 *
-	 * @return  boolean  The operation was successful.
-	 */
-	public function addFields($table, $fields) {
+	public function addIndex($table, $indexes) {
+		if ($this->_use_info_schema) {
+			$binds = array (
+				'database' => $this->_db->getDatabaseName(),
+				'table'    => $table,
+				'index'    => $index,
+			);
 
+			$this->_db->query("
+				SELECT COUNT(*)
+				FROM information_schema.statistics
+				WHERE table_schema=:database
+					AND table_name=:table
+					AND index_name=:index
+				", $binds);
+
+			if (0 == $this->_db->getValue()) { return false; }
+		} else {
+			$table_name = $this->_db->prepareTableName($table);
+			$this->_db->query("
+				SHOW INDEXES FROM {$table_name}
+			");
+
+			$indexes = $this->_db->getColumn(2);
+			if (!in_array($index, $indexes)) {
+				return false;
+			}
+		}
+
+		$sql__table = $this->_db->prepareTableName($table);
+		$sql__index = $this->_db->prepareFieldName($index);
+
+		$this->_db->execute("
+			ALTER TABLE $sql__table ADD INDEX $sql__index;
+		");
+
+		return true;
 	}
 
 
@@ -55,6 +84,10 @@ class Ecl_Db_Mysql_Schema {
 
 		if ($drop_if_exists) {
 			$this->_db->execute("DROP TABLE IF EXISTS $sql__table");
+		} else {
+			if($this->tableExists($table)) {
+				return $this->morphTable($table, $fields);
+			}
 		}
 
 		// Process Fields
@@ -121,15 +154,27 @@ class Ecl_Db_Mysql_Schema {
 			'index'    => $index,
 		);
 
-		$this->_db->query("
-			SELECT COUNT(*)
-			FROM information_schema.statistics
-			WHERE table_schema=:database
-				AND table_name=:table
-				AND index_name=:index
-			", $binds);
+		if ($this->_use_info_schema) {
+			$this->_db->query("
+				SELECT COUNT(*)
+				FROM information_schema.statistics
+				WHERE table_schema=:database
+					AND table_name=:table
+					AND index_name=:index
+				", $binds);
 
-		if (0 == $this->_db->getValue()) { return false; }
+			if (0 == $this->_db->getValue()) { return false; }
+		} else {
+			$table_name = $this->_db->prepareTableName($table);
+			$this->_db->query("
+				SHOW INDEXES FROM {$table_name}
+			");
+
+			$indexes = $this->_db->getColumn(2);
+			if (!in_array($index, $indexes)) {
+				return false;
+			}
+		}
 
 		$sql__table = $this->_db->prepareTableName($table);
 		$sql__index = $this->_db->prepareFieldName($index);
@@ -173,20 +218,26 @@ class Ecl_Db_Mysql_Schema {
 	 * @return  array  Assoc-array of field information. On fail, empty array.
 	 */
 	public function getFieldInfo($table, $verbose = true) {
-		$this->_db->query("
-			SELECT COLUMN_NAME    as 'Field',
-			       COLUMN_TYPE    as 'Type',
-			       IS_NULLABLE    as 'Null',
-			       COLUMN_KEY     as 'Key',
-			       COLUMN_DEFAULT as 'Default',
-			       EXTRA          as 'Extra'
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_SCHEMA=:database
-				AND TABLE_NAME=:table
-		", array (
-			'database' => $this->_db->getDatabaseName() ,
-			'table'    => $table ,
-		));
+		if ($this->_use_info_schema) {
+			$this->_db->query("
+				SELECT COLUMN_NAME    as 'Field',
+				       COLUMN_TYPE    as 'Type',
+				       IS_NULLABLE    as 'Null',
+				       COLUMN_KEY     as 'Key',
+				       COLUMN_DEFAULT as 'Default',
+				       EXTRA          as 'Extra'
+				FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE TABLE_SCHEMA=:database
+					AND TABLE_NAME=:table
+			", array (
+				'database' => $this->_db->getDatabaseName() ,
+				'table'    => $table ,
+			));
+		} else {
+			$table_name = $this->_db->prepareTableName($table);
+			$database_name = $this->_db->getDatabaseName();
+			$this->_db->query("SHOW COLUMNS FROM {$database_name}.{$table_name}");
+		}
 
 		if (!$this->_db->hasResult()) { return array(); }
 
@@ -244,8 +295,10 @@ class Ecl_Db_Mysql_Schema {
 	 * Change the entire table structure to match the given field definitions.
 	 *
 	 * If changes are required, the necessary ALTER TABLE statement will be executed.
+	 * Fields not included in the $fields definition will be removed, fields that don't
+	 * exist will be created.
 	 * Indices are not affected.
-	 * @see patchTable()
+	 * To partial updates to certain fields @see patchTable()
 	 *
 	 * @param  string  $table  The table to morph.
 	 * @param  array  $fields  Array of field information.
@@ -259,7 +312,7 @@ class Ecl_Db_Mysql_Schema {
 
 		$org_fields = $this->getFieldInfo($table, true);
 		if (empty($org_fields)) {
-			return $this->create($table, $fields, $indexes);
+			return $this->createTable($table, $fields);
 		}
 
 
@@ -267,13 +320,8 @@ class Ecl_Db_Mysql_Schema {
 		$changes = array();
 		$sql__columns = '';
 
+		$fields_to_keep = array();
 
-		foreach($org_fields as $name => $field) {
-			if (!array_key_exists($name, $fields)) {
-				$sql__name = $this->_db->prepareFieldName($name);
-				$changes[] = "DROP COLUMN $sql__name";
-			}
-		}
 
 		foreach($fields as $name => $field) {
 			$field_sql = $this->_getSqlForField(array ($name => $field));
@@ -283,20 +331,30 @@ class Ecl_Db_Mysql_Schema {
 				$location = ' AFTER '. $this->_db->prepareFieldName($field['after']);
 			}
 
+			$fields_to_keep[] = $name;
+
 			if (!array_key_exists($name, $org_fields)) {
 				$changes[] = "ADD COLUMN $field_sql $location";
 			} else {
-				if (empty($rename)) {
+				if (array_key_exists('rename', $field)) {
+					if (!array_key_exists($field['rename'], $org_fields)) {
+						$fields_to_keep[] = $rename;   // Protect the renamed field from being dropped
+						$field_sql = $this->_getSqlForField(array($name => $org_fields[$name]), $field['rename']);
+						$changes[] = "CHANGE COLUMN $field_sql $location";
+					}
+				} else {
 					if ($field_sql != $this->_getSqlForField(array($name => $org_fields[$name]))) {
 						$changes[] = "MODIFY COLUMN $field_sql $location";
 					}
-				} else {
-					if ($field_sql != $this->_getSqlForField(array($name => $org_fields[$name]), $rename)) {
-						$changes[] = "CHANGE COLUMN $field_sql $location";
-					}
 				}
 			}
+		}// /foreach(given field)
 
+		foreach($org_fields as $name => $field) {
+			if (!in_array($name, $fields_to_keep)) {
+				$sql__name = $this->_db->prepareFieldName($name);
+				$changes[] = "DROP COLUMN $sql__name";
+			}
 		}
 
 
@@ -304,6 +362,7 @@ class Ecl_Db_Mysql_Schema {
 
 
 		if (empty($sql__definitions)) { return true; }
+
 
 		$this->_db->execute("
 			ALTER TABLE $sql__table
@@ -316,10 +375,11 @@ class Ecl_Db_Mysql_Schema {
 
 
 	/**
-	 * Change the table structure to the given partial field definitions.
+	 * Change the table structure using the given partial field definitions.
 	 *
 	 * This is similar to morphTable() but does not drop columns not included in the field definitions.
 	 * If changes are required, the necessary ALTER TABLE statement will be executed.
+	 * You can rename fields using the 'rename' setting.
 	 * Indices are not affected.
 	 * @see morphTable()
 	 *
@@ -351,21 +411,15 @@ class Ecl_Db_Mysql_Schema {
 				$location = ' AFTER '. $this->_db->prepareFieldName($field['after']);
 			}
 
-			$rename = '';
-			if (array_key_exists('rename', $field)) {
-				$rename = $this->_db->prepareFieldName($field['rename']);
-			}
-
 			if (!array_key_exists($name, $org_fields)) {
 				$changes[] = "ADD COLUMN $field_sql $location";
 			} else {
-				if (empty($rename)) {
+				if (array_key_exists('rename', $field)) {
+					$field_sql = $this->_getSqlForField(array($name => $org_fields[$name]), $field['rename']);
+					$changes[] = "CHANGE COLUMN $field_sql $location";
+				} else {
 					if ($field_sql != $this->_getSqlForField(array($name => $org_fields[$name]))) {
 						$changes[] = "MODIFY COLUMN $field_sql $location";
-					}
-				} else {
-					if ($field_sql != $this->_getSqlForField(array($name => $org_fields[$name]), $rename)) {
-						$changes[] = "CHANGE COLUMN $field_sql $location";
 					}
 				}
 			}
@@ -406,15 +460,23 @@ class Ecl_Db_Mysql_Schema {
 
 
 	public function tableExists($table) {
-		$this->_db->query("
-			SELECT TABLE_NAME AS table_name
-			FROM INFORMATION_SCHEMA.COLUMNS
-			WHERE TABLE_SCHEMA=:database
-				AND TABLE_NAME=:table
-		", array (
-			'database' => $this->_db->getDatabaseName() ,
-			'table'    => $table ,
-		));
+		if ($this->_use_info_schema) {
+			$this->_db->query("
+				SELECT TABLE_NAME AS table_name
+				FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE TABLE_SCHEMA=:database
+					AND TABLE_NAME=:table
+			", array (
+				'database' => $this->_db->getDatabaseName() ,
+				'table'    => $table ,
+			));
+		} else {
+			$this->_db->query("
+				SHOW TABLES LIKE :table
+			", array (
+				'table' => $table ,
+			));
+		}
 
 		return ($this->_db->hasResult());
 	}

@@ -23,7 +23,6 @@ $(document).ready( function() {
 			$("body").prepend("<div id=\"modalwindow_mask\"></div>");
 		}
 		
-		//$("#lightbox_list").html("");
 		if (0 == $("#lightbox_list").html().length) {
 			$.each(image_list, function(index, value) {
 				var img = $('<img width="80" height="80" />').attr("src", value);
@@ -41,6 +40,7 @@ $(document).ready( function() {
 		var win_width = $(window).width();
 		var win_height = $(window).height();
 	
+		
 		var mask_width = (doc_width > win_width) ? doc_width : win_width ;
 		var mask_height = (doc_height > win_height) ? doc_height : win_height ;
 	
@@ -48,11 +48,36 @@ $(document).ready( function() {
 			"width" : mask_width,
 			"height": mask_height
 		}).fadeTo(fadespeed, 0.80).show();
+
+		
+		var lightbox_width = (win_width > 604) ? 604 : win_width - 20 ;
+		var lightbox_height = (win_height > 704) ? 704 : win_height - 40 ;
 		
 		lightbox.css({
-			"top" : 20 ,
-			"left": (win_width/2) - (lightbox.width()/2)
+			"height": lightbox_height ,
+			"width" : lightbox_width ,
+			"top"   : 20 ,
+			"left"  : (win_width/2) - (lightbox.width()/2) ,
 		}).addClass("modalwindow_active").fadeIn(fadespeed).show();
+		
+		
+		var imgcontainer_width = lightbox_width;
+		var imgcontainer_height = lightbox_height - 140;
+
+		$('#lightbox_imagecontainer').css({
+			"height": imgcontainer_height ,
+			"width" : imgcontainer_width ,
+		});
+		
+		$('#lightbox_image').css({
+			"max-height": imgcontainer_height - 4 ,
+			"max-width" : imgcontainer_width - 4 ,
+		});
+		
+		$('#lightbox_list').css({
+			"max-width" : imgcontainer_width + 4 ,
+		});
+	
 	}
 	
 	
@@ -83,20 +108,56 @@ $(document).ready( function() {
 		var obj = $(".modalwindow_active");
 	
 		if (obj.length > 0) {
+			
+			var fadespeed = 400;
+			
 			var doc_width = $(document).width();
 			var doc_height = $(document).height();
 	
 			var win_width = $(window).width();
 			var win_height = $(window).height();
 	
+			
 			var mask_width = (doc_width > win_width) ? doc_width : win_width ;
 			var mask_height = (doc_height > win_height) ? doc_height : win_height ;
-	
+				
 			$("#modalwindow_mask").css({
-				"width" : mask_width,
-				"height": mask_height
+				"width" : mask_width ,
+				"height": mask_height ,
 			});
 	
+			
+			var lightbox = $('#lightbox');
+	
+			var lightbox_width = (win_width > 604) ? 604 : win_width - 20 ;
+			var lightbox_height = (win_height > 704) ? 704 : win_height - 20 ;
+			
+			lightbox.css({
+				"height": lightbox_height ,
+				"width" : lightbox_width ,
+				"top"   : 20 ,
+				"left"  : (win_width/2) - (lightbox_width/2) ,
+			});
+			
+			
+			var imgcontainer_width = lightbox_width;
+			var imgcontainer_height = lightbox_height - 140;
+
+			$('#lightbox_imagecontainer').css({
+				"height": imgcontainer_height ,
+				"width" : imgcontainer_width ,
+			});
+			
+			$('#lightbox_image').css({
+				"max-height": imgcontainer_height - 4 ,
+				"max-width" : imgcontainer_width - 4 ,
+			});
+			
+			$('#lightbox_list').css({
+				"max-width" : imgcontainer_width + 4 ,
+			});
+			
+			
 			obj.css({
 				"top" : 20 ,
 				"left": (win_width/2) - (obj.width()/2)

@@ -21,15 +21,16 @@ $config['install.enabled'] = false;
 
 
 // IMPORTANT
-// When updating to v1.2.0, your existing departments and organisations will be copied to your
-// catalogue's new organisational tree structure. The catalogue will continue to support
-// your separate organisation and department records to a limited degree while you check through
-// the organisational tree, and configure it to your requirements.
+// When updating to v2.0.0, your existing departments and organisations will be copied to your
+// catalogue's new organisational tree structure.
 //
-// We plan to remove the separate department and organisation records in a future update.
+// This initial structure will be pretty flat in nature, so if you want to delay using the
+// organisational tree while your catalogue admins build your full tree, change this setting
+// to false.
 //
-// When you're ready to make the switch to using the new OU Tree, change this setting to true.
-$config['app.use_ou_tree'] = false;
+// We plan to remove the separate department and organisation records entirely in a future update,
+// so you should switch to using the organisational tree soon.
+$config['app.use_ou_tree'] = true;
 
 
 
@@ -76,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.0.beta-7';
+$config['app.version'] = '2.0.0';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -118,6 +119,12 @@ $config['app.user_session_var'] = '_user_data';
  * Database connection settings for MySQL
  */
 
+// Enabled use of the more modern MySQLi extension for database access.
+// If disabled the old, and soon to be deprecated, PHP MySQL extension will be used.
+// We recommend you ensure MySQLi is installed on your server, and leave this enabled.
+$config['db.use_mysqli'] = true;
+
+// Database connection settings
 $config['db.host'] = 'localhost';
 $config['db.port'] = 3308;
 $config['db.username'] = 'kc-username';

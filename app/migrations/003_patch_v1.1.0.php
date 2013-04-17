@@ -18,9 +18,13 @@ class Patch_v1_1_0 extends Ecl_Db_Migration {
 
 		// Changes item table
 
-		$this->_db->execute("
-			ALTER TABLE `item` DROP INDEX `textsearch`;
-		");
+		try {
+			$this->_db->execute("
+				ALTER TABLE `item` DROP INDEX `textsearch`;
+			");
+		} catch (\Exception $e) {
+			// Do nothing
+		}
 
 		$this->_db->execute("
 			ALTER TABLE `item`
@@ -42,12 +46,15 @@ class Patch_v1_1_0 extends Ecl_Db_Migration {
 				ADD COLUMN `comments` TEXT DEFAULT NULL AFTER `date_disposed_of`;
 		");
 
-		$this->_db->execute("
-			ALTER TABLE `item`
-				ADD INDEX `is_disposed_of`(`is_disposed_of`),
-				ADD INDEX `is_parent`(`is_parent`);
-		");
-
+		try {
+			$this->_db->execute("
+				ALTER TABLE `item`
+					ADD INDEX `is_disposed_of`(`is_disposed_of`),
+					ADD INDEX `is_parent`(`is_parent`);
+			");
+		} catch (\Exception $e) {
+			// Do nothing
+		}
 
 
 		// Create item_child table
@@ -84,7 +91,7 @@ class Patch_v1_1_0 extends Ecl_Db_Migration {
 		// create organisation table
 
 		$this->_db->execute("
-			CREATE TABLE `organisation` (
+			CREATE TABLE IF NOT EXISTS `organisation` (
 				`organisation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`name` varchar(250) NOT NULL DEFAULT '',
 				PRIMARY KEY (`organisation_id`),

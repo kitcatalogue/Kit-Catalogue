@@ -15,9 +15,9 @@ if (count($this->items) == 0) {
 
 		<ul class="item-list">
 		<?php
-		$url_stub = $this->router()->makeAbsoluteUri("/facility/item/");
+		$url_stub = $this->router()->makeAbsoluteUri("/facility/");
 		foreach($this->items as $item) {
-			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->idslug}");
 		}
 		?>
 	</ul>

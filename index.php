@@ -87,6 +87,7 @@ if (empty($config['layout.template_file'])) {
 $router->layout()->addBreadcrumb('Home', $router->makeAbsoluteUri('/'));
 
 
+
 // --------------------------------------------------------------------------------
 // Setup any plugins defined in the local plugins folder and add them to the model
 

@@ -108,7 +108,7 @@ if ($this->is_download) {
 	header("Pragma: ");
 
 	header("Content-Description: File Transfer");
-	header("Content-Disposition: attachment; filename=items_for_department.csv");
+	header("Content-Disposition: attachment; filename=inventory.csv");
 	header('Content-Type: text/csv');
 
 	array_unshift($items, $headers);
@@ -131,7 +131,7 @@ EndHtml
 ?>
 
 
-<h1 class="green-bar">Items Report</h1>
+<h1 class="green-bar">Inventory Report</h1>
 <p class="note">Generated at <?php $this->out(date('H:i, d-m-Y')); ?>.</p>
 <p class="note"><?php echo(count($items)); ?> found.</p>
 

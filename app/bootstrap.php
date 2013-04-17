@@ -79,41 +79,14 @@ if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
 
 
 // --------------------------------------------------------------------------------
-// Load Application Default Config
+// Load Application Config
 
 
 require(dirname(__FILE__). '/config.php');
 
 
-
-// --------------------------------------------------------------------------------
-// Initialise the ECL framework
-
-
-require($config['app.include_root'] .'/library/ecl.php');
-
-
-
-// --------------------------------------------------------------------------------
-// Load Application Default Language
-
-
-$lang = Ecl::factory('Ecl_Dictionary');
-require(dirname(__FILE__). '/language.php');
-
-
-
-// --------------------------------------------------------------------------------
-// Load Local Config
-
-
 $path = $config['app.local_root'].'/local_config.php';
 if (file_exists($path)) { include($path); }
-
-
-
-// --------------------------------------------------------------------------------
-// Normalise Config
 
 
 // These config settings have been deprecated over time.
@@ -126,21 +99,32 @@ if ( (!isset($config['app.email.owner'])) && (isset($config['app.email'])) ) {
 
 
 // --------------------------------------------------------------------------------
-// Load Local Language File
+// Initialise the ECL framework
+
+
+require($config['app.include_root'] .'/library/ecl.php');
+
+
+
+// --------------------------------------------------------------------------------
+// Load Language Config
+
+
+$lang = Ecl::factory('Ecl_Dictionary');
+require(dirname(__FILE__). '/language.php');
 
 
 $path = $config['app.local_root'].'/local_language.php';
 if (file_exists($path)) { include($path); }
 
 
-
 // Some of the language definitions MUST obey certain rules.
 
 // Ensure the 'dept.route' is valid
+// @todo : Deprecated - remove
 if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
 	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
 }
 
-// @fix : OU route check
 
 ?>

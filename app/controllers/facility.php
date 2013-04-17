@@ -13,7 +13,7 @@ class Controller_Facility extends Ecl_Mvc_Controller {
 			return;
 		}
 
-		$this->layout()->addBreadcrumb($this->model('lang')->get('facility.label.plural'), $this->router()->makeAbsoluteUri('/tag/'));
+		$this->layout()->addBreadcrumb($this->model('lang')->get('facility.label.plural'), $this->router()->makeAbsoluteUri('/facility/'));
 	}// /method
 
 
