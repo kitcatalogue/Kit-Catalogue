@@ -50,7 +50,7 @@ class Controller_Admin_Sites extends Ecl_Mvc_Controller {
 				$new_id = $this->model('sitestore')->insert($new_site);
 
 				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The campus site '{$new_site->name} has been added");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The campus site '{$new_site->name}' has been added");
 				} else {
 					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new campus site.');
 				}
@@ -118,9 +118,10 @@ class Controller_Admin_Sites extends Ecl_Mvc_Controller {
 					$errors = false;
 
 					$site->name = $this->request()->post('name');
-					if (empty($site->name)) {
-						$errors[] = 'You must provide a name for the campus site.';
-					}
+					$site->url = $this->request()->post('url');
+
+					if (empty($site->name)) { $errors[] = 'You must provide a name for the campus site.'; }
+
 
 					if ($errors) {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);

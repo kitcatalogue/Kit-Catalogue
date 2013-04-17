@@ -3,7 +3,7 @@
  * MySQL Database Class
  *
  * @package  Ecl
- * @version  6.3.0
+ * @version  7.0.0
  */
 class Ecl_Db_Mysql {
 
@@ -11,7 +11,7 @@ class Ecl_Db_Mysql {
 
 
 	// Private properties
-	protected $_connection = null;   // DB Connection object
+	protected $_mysqli = null;   // DB Connection object
 
 	/**
 	 * Configuration info of server to connect to
@@ -23,7 +23,6 @@ class Ecl_Db_Mysql {
         'password'     => null ,
         'database'     => null ,
         'persistent'   => false ,                   // Use persistant connection (default: false)
-        'client_flags' => MYSQL_CLIENT_COMPRESS ,   // Client Flags if any
     );
 
 	protected $_sql = null;   // Last query run
@@ -36,6 +35,8 @@ class Ecl_Db_Mysql {
 	protected $_use_error_exceptions = false;   // Use exceptions when encountering errors
 
 	protected $_debug = false;   // debug mode - Echos verbose error messages
+
+	protected $_schema = null;   // Schema instance
 
 
 
@@ -69,7 +70,6 @@ class Ecl_Db_Mysql {
 		$this->_sql = null;
 		$this->_query_info = null;
 		$this->_error = null;
-
 		$this->_result_set = null;
 
 		return true;
@@ -83,7 +83,7 @@ class Ecl_Db_Mysql {
 	 * @return  boolean  Returns true in all cases.
 	 */
 	public function close() {
-		$this->_connection = null;
+		$this->_mysqli = null;
 		$this->clear();
 	} // /method
 
@@ -95,30 +95,23 @@ class Ecl_Db_Mysql {
 	 * @return  boolean  Connection was successful
 	 */
 	public function connect() {
-		if ($this->_connection) { return true; }
+		if ($this->_mysqli) { return true; }
 
 		// Connect to server
-		if ($this->_config['persistent']) {
-			$this->_connection = @mysql_pconnect("{$this->_config['host']}:{$this->_config['port']}", $this->_config['username'], $this->_config['password'], (!$reuse_connection), $this->_config['client_flags']);
-		} else {
-			$this->_connection = @mysql_connect("{$this->_config['host']}:{$this->_config['port']}", $this->_config['username'], $this->_config['password'], (!$reuse_connection), $this->_config['client_flags']);
-		}
+		$host_prefix = ($this->_config['persistent']) ? 'p:' : '' ;
+		$port = (int) $this->_config['port'];
 
-		// Check connection
-		if (!$this->_connection) {
+		$this->_mysqli = new mysqli("{$host_prefix}{$this->_config['host']}", $this->_config['username'], $this->_config['password'], $this->_config['database'], $port);
+
+		if (!$this->_mysqli) {
 			$this->_throwError('Connecting to Database');
-			return false;
 		}
 
-		// Select database
-		$result = @mysql_select_db($this->_config['database'], $this->_connection);
-
-		if ($result) {
-			return true;
-		} else {
-			$this->_throwError('Selecting Database');
-			return false;
+		if ($this->_mysqli->connect_errno) {
+			$this->_throwError("Connecting to Database : {$this->_mysqli->connect_errno}");
 		}
+
+		return true;
 	} // /method
 
 
@@ -437,15 +430,17 @@ class Ecl_Db_Mysql {
 	 * @return  mixed  The array of values for the column (0-based). On fail, null.
 	 */
  	public function getColumn($column = 0)	{
-		$result = null;
+ 		if (!$this->hasResult()) { return null; }
+
+ 		$result = null;
 
 		// If we want a numeric index, find it
 		if (is_int($column)) {
-			while ( $row = @mysql_fetch_row($this->_result_set) ) {
+			while ( $row = $this->_result_set->fetch_row() ) {
 				$result[] = $row[$column];
 			}
 		} else {
-			while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+			while ( $row = $this->_result_set->fetch_assoc() ) {
 				$result[] = $row[$column];
 			}
 		}
@@ -466,6 +461,7 @@ class Ecl_Db_Mysql {
 	 */
  	public function getColumnDistinct($column = 0)	{
 		$columns = $this->getColumn($column);
+		if (empty($columns)) { return null; }
 		return array_values( array_intersect_key($columns, array_unique(array_map('strtolower', $columns)) ) );
 	}// /method
 
@@ -479,7 +475,7 @@ class Ecl_Db_Mysql {
 	public function getColumnNames() {
 		if (!$this->hasResult()) { return null; }
 		$row = $this->getRow();
-		@mysql_data_seek($this->_result_set);
+		$this->_result_set->data_seek(0);
 		return ($row) ? array_keys($row) : null ;
 	}// /method
 
@@ -510,8 +506,8 @@ class Ecl_Db_Mysql {
 		if (!$this->hasResult()) { return null; }
 
 		$result = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row = $this->_result_set->fetch_assoc() ) {
 			$result[] = $row;
 		}
 		return $result;
@@ -541,16 +537,16 @@ class Ecl_Db_Mysql {
 		if (!in_array($key_field, $cols)) { return null; }
 
 		$new_array = null;
-		@mysql_data_seek($this->_result_set, 0);
+		$this->_result_set->data_seek(0);
 		// If we want assoc k => v
 		if ($value_field) {
 			if (!in_array($value_field, $cols)) { return null; }
-			while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+			while ( $row = $this->_result_set->fetch_assoc() ) {
 				$new_array[$row[$key_field]] = $row[$value_field];
 			}
 		} else {
 			// Convert rows to associative rows
-			while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+			while ( $row = $this->_result_set->fetch_assoc() ) {
 				$new_array[$row[$key_field]] = $row;
 			}
 		}
@@ -573,8 +569,8 @@ class Ecl_Db_Mysql {
 		if (!in_array($key_field, $this->getColumnNames())) { return null; }
 
 		$new_array = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row = $this->_result_set->fetch_assoc() ) {
 			$new_array[$row[$key_field]] = call_user_func($converter_callback, $row);
 		}
 		return $new_array;
@@ -603,8 +599,8 @@ class Ecl_Db_Mysql {
 		if (!in_array($key_field, $this->getColumnNames())) { return null; }
 
 		$new_array = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row = $this->_result_set->fetch_assoc() ) {
 			$new_array[$row[$key_field]][] = $row;
 		}
 		return $new_array;
@@ -634,8 +630,8 @@ class Ecl_Db_Mysql {
 		if (!in_array($key_field, $this->getColumnNames())) { return null; }
 
 		$new_array = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row =$this->_result_set->fetch_assoc() ) {
 			$new_array[$row[$key_field]][] = call_user_func($converter_callback, $row);;
 		}
 		return $new_array;
@@ -667,8 +663,8 @@ class Ecl_Db_Mysql {
 		if (!in_array($value_field, $cols)) { return null; }
 
 		$new_array = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row = $this->_result_set->fetch_assoc() ) {
 			$new_array[$row[$key_field]][] = $row[$value_field];
 		}
 		return $new_array;
@@ -687,8 +683,8 @@ class Ecl_Db_Mysql {
 		if (!$this->hasResult()) { return null; }
 
 		$objects = null;
-		@mysql_data_seek($this->_result_set, 0);
-		while ( $row = @mysql_fetch_assoc($this->_result_set) ) {
+		$this->_result_set->data_seek(0);
+		while ( $row = $this->_result_set->fetch_assoc() ) {
 			$objects[] = call_user_func($converter_callback, $row);
 		}
 		return $objects;
@@ -697,14 +693,14 @@ class Ecl_Db_Mysql {
 
 
 	/**
-	 * Get a MySQL resource representing the query result.
+	 * Get a MySQLi object representing the query result.
 	 *
 	 * @return  mixed  A MySQL result resource. On fail, null.
 	 */
 	public function getResultResource() {
 		if (!$this->hasResult()) { return null; }
 
-		@mysql_data_seek($this->_result_set, 0);
+		$this->_result_set->data_seek(0);
 		return $this->_result_set;
 	}// /method
 
@@ -720,8 +716,8 @@ class Ecl_Db_Mysql {
 	public function getRow($row = 0) {
 		if (!$this->hasResult()) { return null; }
 
-		@mysql_data_seek($this->_result_set, (int) $row);
-		$row = @mysql_fetch_assoc($this->_result_set);
+		$this->_result_set->data_seek((int) $row);
+		$row = $this->_result_set->fetch_assoc();
 		return ($row) ? $row : null ;
 	}// /method
 
@@ -738,9 +734,11 @@ class Ecl_Db_Mysql {
  	public function getValue($column = 0, $row = 0) {
  		if (!$this->hasResult()) { return null; }
 
- 		@mysql_data_seek($this->_result_set, 0);
-		$value = @mysql_result($this->_result_set, $row, $column);
-		return ($value) ? $value : null ;
+ 		$row = $this->getRow($row);
+ 		if (is_int($column)) {
+			$row = array_values($row);
+ 		}
+ 		return (array_key_exists($column, $row)) ? $row[$column] : null ;
 	}// /method
 
 
@@ -751,7 +749,7 @@ class Ecl_Db_Mysql {
 	 * @return  boolean  There is a result-set.
 	 */
 	public function hasResult() {
-		return (is_resource($this->_result_set)) && (mysql_num_rows($this->_result_set)>0);
+		return (!is_null($this->_result_set)) && ($this->_result_set->num_rows>0);
 	}// /method
 
 
@@ -768,8 +766,8 @@ class Ecl_Db_Mysql {
 	 * @return  string  The escaped string.
 	 */
 	public function escapeString($str) {
-		if (!$this->_connection) { $this->connect(); }
-		return mysql_real_escape_string($str);
+		if (!$this->_mysqli) { $this->connect(); }
+		return $this->_mysqli->real_escape_string($str);
 	}// /method
 
 
@@ -792,6 +790,12 @@ class Ecl_Db_Mysql {
 
 
 
+	public function getDatabaseName() {
+		return $this->_config['database'];
+	}
+
+
+
  	/**
 	 * Return the PHP timestamp represented by the given database formatted string
 	 *
@@ -809,7 +813,7 @@ class Ecl_Db_Mysql {
 	 * @return  string  The last error message encountered
 	 */
 	public function getError() {
-		return ($this->_connection) ? mysql_error($this->_connection) : 'No MySQL Connection';
+		return ($this->_mysqli) ? $this->_mysqli->error : 'No MySQL Connection';
 	}// /method
 
 
@@ -820,7 +824,7 @@ class Ecl_Db_Mysql {
 	 * @return  integer  If a new ID was added, returns (int). If not applicable, returns 0
 	 */
 	public function getInsertId() {
-		return ($this->_connection) ? mysql_insert_id($this->_connection) : 0 ;
+		return ($this->_mysqli) ? $this->_mysqli->insert_id : 0 ;
 	}// /method
 
 
@@ -831,7 +835,7 @@ class Ecl_Db_Mysql {
 	 * @return  integer  The number of rows affected
 	 */
 	public function getNumAffected() {
-		return ($this->_connection) ? mysql_affected_rows($this->_connection) : 0 ;
+		return ($this->_mysqli) ? $this->_mysqli->affected_rows : 0 ;
 	}// /method
 
 
@@ -842,7 +846,7 @@ class Ecl_Db_Mysql {
 	 * @return  integer  The number of columns in the results returned
 	 */
 	public function getNumColumns() {
-		return ($this->_result_set) ? mysql_num_fields($this->_result_set) : 0;
+		return ($this->_result_set) ? $this->_result_set->field_count : 0;
 	}// /method
 
 
@@ -853,7 +857,7 @@ class Ecl_Db_Mysql {
 	 * @return  integer  The number of rows returned
 	 */
 	public function getNumRows() {
-		return ($this->_result_set) ? mysql_num_rows($this->_result_set) : 0 ;
+		return ($this->_result_set) ? $this->_result_set->num_rows : 0 ;
 	}// /method
 
 
@@ -870,19 +874,19 @@ class Ecl_Db_Mysql {
 
 
 		if ($this->_result_set) {
-			$this->_query_info['rows'] = (int) mysql_num_rows($this->_result_set);
-			$this->_query_info['columns'] = (int) mysql_num_fields($this->_result_set);
+			$this->_query_info['rows'] = (int) $this->_result_set->num_rows;
+			$this->_query_info['columns'] = (int) $this->_result_set->field_count;
 		}
 
-		if ($this->_connection) {
-			$this->_query_info['affected'] = (int) mysql_affected_rows($this->_connection);
+		if ($this->_mysqli) {
+			$this->_query_info['affected'] = (int) $this->_mysqli->affected_rows;
 			// Only try and get an insert-id if affected rows > 0
 			// Will hopefully stop any 'permanent' connection problems with incorrect insert-ids being returned on query-fail
-			$this->_query_info['insert_id'] = ($this->_query_info['affected']>0) ? mysql_insert_id($this->_connection) : 0 ;
+			$this->_query_info['insert_id'] = ($this->_query_info['affected']>0) ? $this->_mysqli->insert_id : 0 ;
 		}
 
 		// Get full mysql_info (if possible)
-		$str_info = @mysql_info($this->_connection);
+		$str_info = @$this->_mysqli->info();
 		if ($str_info) {
 			ereg("Records: ([0-9]*)", $str_info, $records);
 			ereg("Duplicates: ([0-9]*)", $str_info, $duplicates);
@@ -903,6 +907,16 @@ class Ecl_Db_Mysql {
 
 		return $this->_query_info;
 	}// /method
+
+
+
+	public function getSchema() {
+		if (!($this->_schema instanceof Ecl_Db_Mysql_Schema)) {
+			$this->_schema = new Ecl_Db_Mysql_Schema($this);
+		}
+
+		return $this->_schema;
+	}
 
 
 
@@ -936,6 +950,12 @@ class Ecl_Db_Mysql {
 
 
 	/* Methods for preparing elements of an SQL query */
+
+
+	public function prepareFieldName($field) {
+		$field = str_replace(array('`', '\\', "\0"), '', $field);
+		return "`{$field}`";
+	}
 
 
 
@@ -1017,6 +1037,13 @@ class Ecl_Db_Mysql {
 
 
 
+	public function prepareTableName($table) {
+		$table = str_replace(array('`', '\\', "\0"), '', $table);
+		return "`{$table}`";
+	}
+
+
+
 	/**
 	 * Prepare a value for putting into the database
 	 *
@@ -1030,6 +1057,21 @@ class Ecl_Db_Mysql {
 		// Performs a MySQL enquoting. Every value can be enclosed in quotes except NULL
 		return (null === $value) ? 'NULL' : '\''. $this->escapeString($value) .'\'';
 	}// /method
+
+
+
+	/**
+	 * Set the connect to use the given charset
+	 *
+	 * @param  string  $charset
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function setCharset($charset) {
+		if (empty($charset)) { return false; }
+		if (!$this->connect()) { $this->_throwError('No Connection'); }
+		return $this->_mysqli->set_charset($charset);
+	}
 
 
 
@@ -1056,9 +1098,14 @@ class Ecl_Db_Mysql {
 	/**
 	 * Set debug mode
 	 * When in debug mode, detailed error reports are echoed
+	 *
+	 * @param  boolean  Debug mode to use.
+	 *
+	 * @return  boolean  True in all cases.
 	 */
 	public function setDebug($on) {
 		$this->_debug = (bool) $on;
+		return true;
 	}// /method
 
 
@@ -1101,10 +1148,10 @@ class Ecl_Db_Mysql {
 
 		// Run the query
 		if (!$this->connect()) { $this->_throwError('No Connection'); }
-		$this->_result_set = @mysql_query($sql, $this->_connection) or $this->_throwError('Querying database');
+		$this->_result_set = $this->_mysqli->query($sql) or $this->_throwError('Querying database');
 
 		// Process the results, if any
-		if (!$this->_result_set) {
+		if (!$store_result || !is_object($this->_result_set)) {
 			$this->_result_set = null;
 			return false;
 		} else {
@@ -1124,13 +1171,13 @@ class Ecl_Db_Mysql {
 	protected function _throwError($err_msg) {
 		if ($this->_debug) {
 			if ($this->_use_error_exceptions) {
-				if ($this->_connection) {
+				if ($this->_mysqli) {
 					throw new Exception("MySQL DB Error ({$this->_config['database']}@{$this->_config['host']}). $err_msg :: ". $this->getError());
 				} else {
 					throw new Exception("MySQL DB Error (no connection). $err_msg :: ". $this->getError());
 				}
 			} else {
-				if ($this->_connection) {
+				if ($this->_mysqli) {
 					die("<hr />MySQL DB Error ({$this->_config['database']}@{$this->_config['host']})<hr />$err_msg :: ". $this->getError() .'<hr />'. $this->getSql() .'<hr />');
 				} else {
 					die("<hr />MySQL DB Error (no connection)<hr />$err_msg :: ". mysql_error() .'<hr />'. $this->getSql() .'<hr />');

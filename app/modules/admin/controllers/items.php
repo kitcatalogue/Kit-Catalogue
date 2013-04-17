@@ -1,7 +1,4 @@
 <?php
-/*
- * @todo : Perform automatic clean up of upload and processing files
- */
 class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 	const IMPORT_USEBLANK = '__useblank__';
@@ -47,46 +44,11 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 
 
-	public function zactionCustomise() {
-		$this->router()->layout()->addBreadcrumb('Custom Fields', $this->router()->makeAbsoluteUri('/admin/items/customise/'));
-
-
-		if ($this->request()->isPost()) {
-			$errors = false;
-
-			if (!$this->model('user')->checkSessionKey($this->request()->post('session_key'))) {
-				$errors[] = 'The form details supplied appear to be forged.';
-			}
-
-			$customfield = $this->model('customfieldstore')->newCustomfield();
-
-			$customfield->name = $this->request()->post('name');
-			if (empty($customfield->name)) {
-				$errors[] = 'You must provide a name for your new field.';
-			}
-
-			if ($errors) {
-				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);
-			} else {
-				$new_id = $this->model('customfieldstore')->insert($customfield);
-
-				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The field '{$customfield->name}' has been added");
-				} else {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an error adding the field.  Check the field name is unique and try again.');
-				}
-			}
-		}
-
-		$this->view()->custom_fields = $this->model('customfieldstore')->findAll();
-		$this->view()->render('items_customise');
-	}// /method
-
-
-
 	public function actionEdit() {
+		$lang = $this->model('lang');
 
 		$saved_ok = false;
+		$added_ok = false;
 
 		$item_id = $this->param('id');
 
@@ -126,14 +88,14 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		$backlink = $this->router()->makeAbsoluteUri(base64_decode($this->request()->get('backlink')));
 
-
 		if ($this->request()->post('submitdelete')) {
 			if (!$new_item) {
 				$this->model('itemstore')->delete($item->id);
 
 				// Rebuild cached item counts
 				$this->model('categorystore')->rebuildItemCounts();
-				$this->model('departmentstore')->rebuildItemCounts();
+				$this->model('organisationalunitstore')->rebuildItemCounts();
+				$this->model('supplierstore')->rebuildItemCounts();
 			}
 			$this->layout()->clearBreadcrumbs(2);
 			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The item has been deleted');
@@ -159,6 +121,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 			$errors = false;
 			$saved_ok = false;
+			$added_ok = false;
 
 			// Check if an over-sized file has been posted
 			if ( empty($_POST) && empty($_FILES) ) {
@@ -190,6 +153,32 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			$item->title = $this->request()->post('title');
 			$item->manufacturer = $this->request()->post('manufacturer');
 			$item->model = $this->request()->post('model');
+
+
+			// OU
+			$can_change_ou = false;
+
+			$allow_any_ou = false;
+			$valid_ou = array();
+
+			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+				$can_change_ou = true;
+				$allow_any_ou = true;
+			} elseif ($this->model('security')->checkOUAuth($item->ou, KC__AUTH_CANOUADMIN)) {
+				$can_change_ou = true;
+				$allow_any_ou = false;
+				$valid_ou = $this->model('security')->findOUsForAuth(KC__AUTH_CANOUADMIN);
+			}
+
+			if ($can_change_ou) {
+				$ou_id = $this->request()->post('ou');
+				if ( ($allow_any_ou) || (in_array($ou_id, $valid_ou)) ) {
+					$item->ou = $ou_id;
+				} else {
+					$errors[] = "You are not authorised to associate items with the selected {$lang['ou.label']}.";
+				}
+			}
+
 
 			$item->short_description = $this->request()->post('short_description');
 			$item->full_description = $this->request()->post('full_description');
@@ -251,65 +240,25 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			$email = $this->request()->post('contact_1_email');
 			$item->contact_1_email = (!empty($email)) ? $email : trim($this->request()->post('new_contact_1_email', '')) ;
 
+
 			$item->contact_2_name = $this->request()->post('contact_2_name');
 
 			$email = $this->request()->post('contact_2_email');
 			$item->contact_2_email = (!empty($email)) ? $email : trim($this->request()->post('new_contact_2_email', '')) ;
 
 
-			// Location
+			$allow_all_ou = false;
 
-			$allow_newdept = false;
-			$allow_selectdept = false;
-			$allow_anydept = false;
-
-			$dept_ids = array();
-
-			// If Dept Admin
-			if ($this->model('security')->checkAuth(KC__AUTH_CANEDIT)) {
-				$allow_selectdept = true;
-
-				$dept_ids = $this->model('security')->findDeptsForAuth(KC__AUTH_CANEDIT);
-			}
-
-			// If System Admin
 			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-				$allow_newdept = true;
-				$allow_selectdept = true;
-				$allow_anydept = true;
+				$allow_all_ou = true;
+			} elseif ($this->model('security')->checkOUAuth($item->ou, KC__AUTH_CANOUADMIN)) {
+				$allow_select_ou = true;
+				$allow_all_ou = false;
+				$valid_ou = $this->model('security')->findOUsForAuth(KC__AUTH_CANOUADMIN);
 			}
 
-			if ($allow_selectdept) {
-				$dept_id = $this->request()->post('department');
-				if ( ($allow_anydept) || (in_array($dept_id, $dept_ids)) ) {
-					$item->department = $dept_id;
-				} else {
-					$errors[] = "You are not authorised to associate items with the selected {$this->model->lang['dept.label']}";
-				}
-			}
 
-			$item->organisation = $this->request()->post('organisation');
-
-			if ($allow_newdept) {
-				$new_dept = trim($this->request()->post('new_department'));
-				if (!empty($new_dept)) {
-					$department = $this->model('departmentstore')->findForName($new_dept);
-					if ($department) {
-						$item->department = $department->id;
-					} else {
-						// Create new department, and use it
-						$department = $this->model('departmentstore')->newDepartment();
-						$department->name = $new_dept;
-						$new_id = $this->model('departmentstore')->insert($department);
-						if (!$new_id) {
-							$errors[] = "Unable to create new {$this->model->lang['dept.label']} : '{$new_dept}'";
-						} else {
-							$item->department = $new_id;
-						}
-					}
-				}
-			}
-
+			// Location
 			$item->site = $this->request()->post('site');
 			$item->building = $this->request()->post('building');
 			$item->room = $this->request()->post('room');
@@ -363,21 +312,18 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 			$item->comments = $this->request()->post('comments');
 
-			$item->copyright_notice = $this->request()->post("copyright_notice");
+			$item->copyright_notice = $this->request()->post('copyright_notice');
+
+			if ($this->model('item.allow_embedded_content')) {
+				$item->embedded_content = $this->request()->post('embedded_content');
+			}
 
 
 			// Validate the new item
-			// Parent/facility items only require a department and visibility.
-			if ($item->is_parent) {
-				if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this facility.'; }
-				if (empty($item->department)) { $errors[] = 'You must select the department in which this facility resides.'; }
-			} else {
-				if (empty($item->manufacturer)) { $errors[] = 'You must supply a manufacturer\'s name.'; }
-				if (empty($item->model)) { $errors[] = 'You must supply a model name or number.'; }
-				if (empty($item->visibility)) { $errors[] = 'You must select the visibility level of this item.'; }
-				if (empty($item->contact_1_email)) { $errors[] = 'You must enter at least the first staff contact\'s email address.'; }
-				if (empty($item->department)) { $errors[] = 'You must select the department in which this item resides.'; }
-			}
+			if ( (empty($item->manufacturer)) && (empty($item->title)) ) { $errors[] = "You must supply either the item's {$lang['item.form.title']} or {$lang['item.form.manufacturer']}."; }
+			if (empty($item->ou)) { $errors[] = "You must select the {$lang['ou.label']} in which this item resides."; }
+			if (empty($item->visibility)) { $errors[] = "You must select the {$lang['item.form.visibility']} of this item."; }
+			if (empty($item->contact_1_email)) { $errors[] = "'You must enter at least the {$lang['item.form.contact_1']} email address."; }
 
 			// Save the item information
 			if ($errors) {
@@ -393,6 +339,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Your new item could not be created.');
 					} else {
 						$continue_saving = true;
+						$added_ok = true;
+
 						$item->id = $id;
 						$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your new item has been created.');
 					}
@@ -410,6 +358,35 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$item_path = $this->model()->get('app.upload_root'). '/items'. $item->getFilePath();
 
 				if ($continue_saving) {
+
+					// Process Editors
+					if ($this->model('admin.item.editors.enabled')) {
+						$new_editors = $this->request()->post('new_editors');
+						if (!empty($new_editors)) {
+							$editors = explode("\n", $new_editors);
+							foreach($editors as $username) {
+								$username = trim($username);
+								if (!empty($username)) {
+									$editor = $this->model('itemeditorstore')->newItemEditor();
+									$editor->item_id = $item->id;
+									$editor->username = $username;
+									$this->model('itemeditorstore')->insert($editor);
+								}
+							}
+						}
+						$editors = null;
+
+
+						$remove_editors = $this->request()->post('remove_editors');
+						if (!empty($remove_editors)) {
+							foreach($remove_editors as $editor) {
+								$this->model('itemeditorstore')->deleteEditorFromItem($editor, $item->id);
+							}
+						}
+						$remove_editors = null;
+					}
+
+
 					// Process Categories
 					$categories = $this->request()->post('category');
 
@@ -457,6 +434,55 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					$this->model('itemstore')->setItemParents($item->id, $parents);
 
 
+
+					/*
+					 * Process Links
+					 */
+
+					// Link changes
+					$links = $this->request()->post('link');
+					if ($links) {
+						foreach($links as $id => $link_info) {
+							$link = $this->model('itemlinkstore')->find($id);
+							if ( (!empty($link)) && ($link->item_id==$item->id) ){
+								$link->name = $link_info['name'];
+								$link->url = $link_info['url'];
+								$link->type = $link_info['type'];
+
+								if (!empty($link->url)) {
+									$this->model('itemlinkstore')->update($link);
+								}
+							}
+						}
+					}
+
+					// Add new links
+					$new_links = $this->request()->post('newlink');
+					if (!empty($new_links)) {
+						foreach($new_links as $link_info) {
+							$newlink = new Itemlink();
+							$newlink->item_id = $item->id;
+							$newlink->type = 0;
+							$newlink->name = $link_info['name'];
+							$newlink->url = $link_info['url'];
+
+							if (!empty($newlink->url)) {
+								$this->model('itemlinkstore')->insert($newlink);
+							}
+						}
+					}
+
+
+					// Delete links
+					$delete_links = $this->request()->post('delete_link');
+					if (!empty($delete_links)) {
+						foreach($delete_links as $link_id) {
+							$this->model('itemlinkstore')->deleteLinkFromItem($link_id, $item->id);
+						}
+					}
+
+
+
 					/*
 					 * Process Files
 					 */
@@ -475,7 +501,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 
 					// Deletions
-					$deletes = $this->request()->post('delete');
+					$deletes = $this->request()->post('delete_file');
 					if (!empty($deletes)) {
 						foreach($deletes as $filename) {
 							$this->model('itemstore')->deleteFile($item, $filename);
@@ -521,6 +547,11 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						foreach($files as $file) {
 							$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
 							if (in_array($extension, $image_ext)) {
+								if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
+									$img = Ecl_Image::createFromFile("{$item_path}/{$file->filename}");
+									$img->resizeWithinLimits($this->model('item.image.max_width'), $this->model('item.image.max_height'));
+									$img->save();
+								}
 								$image_files[] = $file;
 							}
 						}
@@ -544,7 +575,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 					// Rebuild cached item counts
 					$this->model('categorystore')->rebuildItemCounts();
-					$this->model('departmentstore')->rebuildItemCounts();
+					$this->model('organisationalunitstore')->rebuildItemCounts();
 					$this->model('supplierstore')->rebuildItemCounts();
 
 					//Final update of item
@@ -566,6 +597,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		$this->view()->item_path = $item_path;
 		$this->view()->backlink = $backlink;
 		$this->view()->saved_ok = $saved_ok;
+		$this->view()->added_ok = $added_ok;
 		$this->view()->php_max_upload = $uploader->getPhpUploadMaxSize();
 		$this->view()->render('items_edit');
 	}
@@ -595,12 +627,13 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				break;
 			// ----------------------------------------------------------------
 			case 2 :
-				$department_id = $this->request()->post('department');
-				if (empty($department_id)) {
-					$this->view()->items = $this->model('itemstore')->findAll();
-				} else {
-					$this->view()->items = $this->model('itemstore')->findForDepartmentCategory($department_id, null);
-				}
+				$ou_id = $this->request()->post('ou');
+				$visibility = $this->request()->post('visibility', null);
+				$options = $this->request()->post('options');
+
+				$include_subtree = (in_array('include_subtree', $options));
+
+				$this->view()->items = $this->model('itemstore')->findForOU($ou_id, $include_subtree, $visibility);
 				$this->view()->render('items_exportwizard2');
 				break;
 			default:
@@ -637,6 +670,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 
 		if ($this->request()->isGet()) {
+			$this->_deleteOldImportFiles();
 			$this->view()->render('items_importwizard1');
 			return;
 		}
@@ -657,7 +691,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			'access'          => 'accesslevelstore' ,
 			'building'        => 'buildingstore' ,
 			'category'        => 'categorystore' ,
-			'department'      => 'departmentstore' ,
+			'ou'              => 'organisationalunitstore' ,
 			'site'            => 'sitestore' ,
 			'supplier'        => 'supplierstore' ,
 		);
@@ -672,6 +706,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		switch ($step) {
 			// ----------------------------------------------------------------
 			case 1 :
+				// We only call this if it's a POST.  See above for GET...
 				$this->view()->render('items_importwizard1');
 				break;
 			// ----------------------------------------------------------------
@@ -707,9 +742,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				}
 
 
-				// Add proper headers to the CSV data
-				$datacsv = array_merge(array ($this->_getRowHeaders()), $datacsv);
-
+				$this->view()->expected_headers = Ecl_Helper_Array::changeValueCase($this->_getRowHeaders(), CASE_LOWER);
 				$this->view()->datacsv = $datacsv;
 				$this->view()->filename = basename($datafilename);
 				$this->view()->ignore_rows = $this->request()->post('ignore_rows', 1);
@@ -755,78 +788,70 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 				// Begin the import.
 				$standard_columns = (array) $this->_getStandardRowHeaders();
-				$standard_columns_count = count($standard_columns);
+
+				$standard_keys = Ecl_Helper_Array::changeValueCase($standard_columns, CASE_LOWER);
 
 				$custom_columns = Ecl_Helper_Array::extractColumn($this->model('customfieldstore')->findAll()->toArray(), 'name', true);
-
-				$column_count = $standard_columns_count + count($custom_columns);
 
 
 				$items = array();    // Assoc-array of items being imported and their 'issues'
 				$are_issues = false;
 
+				$date_format_mdy = (true === $this->model('import.date_format_mdy'));
+
+
 				foreach($datacsv as $i => $row) {
 
-					// Make sure the rows are of the correct length
-					$row = array_pad($row, $column_count, '');
-
-					$issues = null;
+					$temp = array_fill_keys($standard_keys, '');
+					$row = array_merge($temp, $row);
 
 					$item = $this->model('itemstore')->newItem();
 
+					$issues = null;
+					$custom_fields = null;
 
 					// Process each column in turn
 
-					$item->title = Ecl_Helper_String::parseString($row[0], 250);
-					$item->manufacturer = Ecl_Helper_String::parseString($row[1], 100);
-					if (empty($item->manufacturer)) {
-						$issues['manufacturer'] = '';
+					$item->title = Ecl_Helper_String::parseString($row['item_title'], 250);
+					$item->manufacturer = Ecl_Helper_String::parseString($row['manufacturer'], 100);
+
+					if ( (empty($item->title)) && (empty($item->manufacturer)) ) {
+						$issues['title'] = '';
 					}
 
-					$item->model = Ecl_Helper_String::parseString($row[2], 100);
-					if (empty($item->model)) {
-						$issues['model'] = '';
-					}
+					$item->model = Ecl_Helper_String::parseString($row['model'], 100);
 
+					$item->short_description = Ecl_Helper_String::parseString($row['short_description'], 250);
+					$item->full_description = Ecl_Helper_String::parseString($row['full_description'], 65535);
+					$item->specification = Ecl_Helper_String::parseString($row['specification'], 65535);
+					$item->upgrades = Ecl_Helper_String::parseString($row['upgrades'], 250);
+					$item->future_upgrades = Ecl_Helper_String::parseString($row['future_upgrades'], 250);
+					$item->acronym = Ecl_Helper_String::parseString($row['acronym'], 15);
+					$item->keywords = Ecl_Helper_String::parseString($row['keywords'], 250);
 
-					$item->short_description = Ecl_Helper_String::parseString($row[3], 250);
-					$item->full_description = Ecl_Helper_String::parseString($row[4], 65535);
-					$item->specification = Ecl_Helper_String::parseString($row[5], 65535);
-
-					$item->acronym = Ecl_Helper_String::parseString($row[6], 15);
-					$item->keywords = Ecl_Helper_String::parseString($row[7], 250);
-
-					// 8 = category
-					$temp = Ecl_Helper_String::parseString($row[8], 250);
-					$temp_id = (array_search(strtolower($temp), $lookups['category']));
-					if (false === $temp_id) {
-						$issues['category'] = $temp;
+					// Tags
+					// @todo : Import tags
+					$temp = Ecl_Helper_String::parseString($row['tags'], 250);
+					if (empty($temp)) {
+						$item->tags = '';
 					} else {
-						$item->category = $temp_id;
+						$item->tags = explode(',', $row['tags']);
 					}
 
-					// 9 = technique
-					$temp = Ecl_Helper_String::parseString($row[9], 100);
+					// Technique
+					$temp = Ecl_Helper_String::parseString($row['technique'], 100);
 					if (empty($temp)) {
 						$issues['technique'] = '';
 					} else {
 						$item->technique = $temp;
 					}
 
-					// 10 = department
-					// We process department here so it is checked first of all
-					$temp = Ecl_Helper_String::parseString($row[10], 250);
-					$temp_id = (array_search(strtolower($temp), $lookups['department']));
-					if (false === $temp_id) {
-						$issues['department'] = $temp;
-					} else {
-						$item->department = $temp_id;
-					}
+					$item->availability = Ecl_Helper_String::parseString($row['availability'], 250);
+					$item->restrictions = Ecl_Helper_String::parseString($row['restrictions'], 250);
+					$item->usergroup = Ecl_Helper_String::parseString($row['usergroup'], 250);
 
-					$item->usergroup = Ecl_Helper_String::parseString($row[11], 250);
-
-					// 12 = access
-					$temp = Ecl_Helper_String::parseString($row[12], 250);
+					// Access
+					$temp = Ecl_Helper_String::parseString($row['access'], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['access']));
 					if (false === $temp_id) {
 						$issues['access'] = $temp;
@@ -834,18 +859,28 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->access = $temp_id;
 					}
 
-					$item->availability = Ecl_Helper_String::parseString($row[13], 250);
+					$item->portability = Ecl_Helper_String::parseString($row['portability'], 250);
 
-					// 14 = visibility
-					$visibility = Ecl_Helper_String::parseString($row[14], 10);
-					if ('public' == strtolower($visibility)) {
-						$item->visibility = KC__VISIBILITY_PUBLIC;
+					// Category
+					$temp = Ecl_Helper_String::parseString($row['category'], 250);
+					$temp_id = (array_search(strtolower($temp), $lookups['category']));
+					if (false === $temp_id) {
+						$issues['category'] = $temp;
 					} else {
-						$item->visibility = KC__VISIBILITY_INTERNAL;
+						$item->category = $temp_id;
 					}
 
-					// 15 = site
-					$temp = Ecl_Helper_String::parseString($row[15], 250);
+					// OU
+					$temp = Ecl_Helper_String::parseString($row['organisational_unit'], 250);
+					$temp_id = (array_search(strtolower($temp), $lookups['ou']));
+					if (false === $temp_id) {
+						$issues['ou'] = $temp;
+					} else {
+						$item->ou = $temp_id;
+					}
+
+					// Site
+					$temp = Ecl_Helper_String::parseString($row['site'], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['site']));
 					if (false === $temp_id) {
 						$issues['site'] = $temp;
@@ -853,8 +888,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->site = $temp_id;
 					}
 
-					// 16 = building
-					$temp = Ecl_Helper_String::parseString($row[16], 250);
+					// Building
+					$temp = Ecl_Helper_String::parseString($row['building'], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['building']));
 					if (false === $temp_id) {
 						$issues['building'] = $temp;
@@ -862,32 +897,39 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->building = $temp_id;
 					}
 
-					$item->room = Ecl_Helper_String::parseString($row[17], 250);
+					$item->room = Ecl_Helper_String::parseString($row['room'], 250);
 
-					$item->contact_1_name = Ecl_Helper_String::parseString($row[18], 250);
+					$item->contact_1_name = Ecl_Helper_String::parseString($row['contact_1_name'], 250);
 
-					$item->contact_1_email = Ecl_Helper_String::parseString($row[19], 250);
+					$item->contact_1_email = Ecl_Helper_String::parseString($row['contact_1_email'], 250);
 					if (empty($item->contact_1_email)) {
 						$issues['contact_1_email'] = '';
 					}
 
-					$item->contact_2_name = Ecl_Helper_String::parseString($row[20], 250);
-					$item->contact_2_email = Ecl_Helper_String::parseString($row[21], 250);
+					$item->contact_2_name = Ecl_Helper_String::parseString($row['contact_2_name'], 250);
+					$item->contact_2_email = Ecl_Helper_String::parseString($row['contact_2_email'], 250);
 
-					$item->manufacturer_website = preg_replace("/^https?:\/\/(.+)$/i","\\1", trim($row[22]));
-					$item->copyright_notice = Ecl_Helper_String::parseString($row[23], 250);
+					// Visibility
+					$visibility = Ecl_Helper_String::parseString($row['visibility'], 10);
+					if ('public' == strtolower($visibility)) {
+						$item->visibility = KC__VISIBILITY_PUBLIC;
+					} else {
+						$item->visibility = KC__VISIBILITY_INTERNAL;
+					}
 
-					$item->training_required = Ecl_Helper_String::parseBoolean($row[24], null);
-					$item->training_provided = Ecl_Helper_String::parseBoolean($row[25], null);
+					$item->manufacturer_website = preg_replace("/^https?:\/\/(.+)$/i","\\1", trim($row['manufacturer_website']));
+					$item->copyright_notice = Ecl_Helper_String::parseString($row['copyright_notice'], 250);
 
-					$item->quantity = Ecl_Helper_String::parseString($row[26], 5);
-					$item->quantity_detail = Ecl_Helper_String::parseString($row[27], 250);
+					$item->training_required = Ecl_Helper_String::parseBoolean($row['training_required'], null);
+					$item->training_provided = Ecl_Helper_String::parseBoolean($row['training_provided'], null);
 
-					$item->PAT = Ecl_Helper_String::parseDate($row[28], null);
+					$item->quantity = Ecl_Helper_String::parseString($row['quantity'], 5);
+					$item->quantity_detail = Ecl_Helper_String::parseString($row['quantity_detail'], 250);
 
-					$item->calibrated = $row[29];
+					$item->PAT = Ecl_Helper_String::parseDate($row['pat'], null, $date_format_mdy);
 
-					$temp = strtolower($row[29]);
+					// Calibrated
+					$temp = strtolower($row['calibrated']);
 					switch ($temp) {
 						case Item::CALIB_YES:
 						case Item::CALIB_NO:
@@ -899,16 +941,16 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 							break;
 					}
 
-					$item->last_calibration_date = Ecl_Helper_String::parseDate($row[30], null);
-					$item->next_calibration_date = Ecl_Helper_String::parseDate($row[31], null);
+					$item->last_calibration_date = Ecl_Helper_String::parseDate($row['last_calibration_date'], null, $date_format_mdy);
+					$item->next_calibration_date = Ecl_Helper_String::parseDate($row['next_calibration_date'], null, $date_format_mdy);
 
-					$item->asset_no = Ecl_Helper_String::parseString($row[32], 50);
-					$item->finance_id = Ecl_Helper_String::parseString($row[33], 50);
-					$item->serial_no = Ecl_Helper_String::parseString($row[34], 50);
-					$item->year_of_manufacture = Ecl_Helper_String::parseString($row[35], 4);
+					$item->asset_no = Ecl_Helper_String::parseString($row['asset_no'], 50);
+					$item->finance_id = Ecl_Helper_String::parseString($row['finance_id'], 50);
+					$item->serial_no = Ecl_Helper_String::parseString($row['serial_no'], 50);
+					$item->year_of_manufacture = Ecl_Helper_String::parseString($row['year_of_manufacture'], 4);
 
-					// 36 = supplier
-					$temp = Ecl_Helper_String::parseString($row[36], 250);
+					// Supplier
+					$temp = Ecl_Helper_String::parseString($row['supplier'], 250);
 					$temp_id = (array_search(strtolower($temp), $lookups['supplier']));
 					if (false === $temp_id) {
 						$issues['supplier'] = $temp;
@@ -916,15 +958,33 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						$item->supplier_id = $temp_id;
 					}
 
-					$item->date_of_purchase = Ecl_Helper_String::parseDate($row[37], null);
+					$item->date_of_purchase = Ecl_Helper_String::parseDate($row['date_of_purchase'], null, $date_format_mdy);
+					$item->cost = Ecl_Helper_String::parseString($row['purchase_cost'], 100);
+					$item->replacement_cost = Ecl_Helper_String::parseString($row['replacement_cost'], 100);
+					$item->end_of_life = Ecl_Helper_String::parseDate($row['end_of_life'], null, $date_format_mdy);
+					$item->maintenance = Ecl_Helper_String::parseString($row['maintenance'], 100);
 
+					// Is Disposed Of
+					$temp = Ecl_Helper_String::parseString($row['is_disposed_of'], 100);
+					switch ($temp) {
+						case Item::DISPOSED_NO:
+						case Item::DISPOSED_SCRAP:
+						case Item::DISPOSED_SOLD:
+							$item->is_disposed_of = $temp;
+							break;
+						default:
+							$item->is_disposed_of = Item::DISPOSED_NO;
+							break;
+					}
+
+					$item->date_disposed_of = Ecl_Helper_String::parseDate($row['date_disposed_of'], null, $date_format_mdy);
+					$item->comments = Ecl_Helper_String::parseString($row['comments'], 65500);
 
 					// Process Custom Fields
-					$custom_fields = null;
-					$field_num = $standard_columns_count;
-					foreach($custom_columns as $j => $header) {
-						$custom_fields[$header] = (isset($row[$field_num])) ? Ecl_Helper_String::parseString($row[$field_num], 250) : null ;
-						$field_num++;
+					foreach($custom_columns as $j => $field) {
+						if (array_key_exists($field, $row)) {
+							$custom_fields[$field] = Ecl_Helper_String::parseString($row[$field], 250);
+						}
 					}
 
 
@@ -959,12 +1019,15 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					 */
 					$lookups = array();
 					foreach($lookup_models as $lookup_name => $model_name) {
-						$list = $this->model($model_name)->findAll()->toAssoc('id', 'name');
-
-						// If the lookup allows blanks for this value, add that as an option
-						if (in_array($lookup_name, array('department')) ) {
+						if (in_array($lookup_name, array('ou')) ) {
+							$ou_list = $this->model('organisationalunitstore')->findTree();
+							$list = array();
+							foreach($ou_list as $ou) {
+								$list[$ou->id] = str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level) . $ou->name;
+							}
 							$list = array(self::IMPORT_USEWILLFAIL => '-- select a value --') + $list;
 						} else {
+							$list = $this->model($model_name)->findAll()->toAssoc('id', 'name');
 							$list = array(self::IMPORT_USEBLANK => '-- leave blank --') + $list;
 						}
 
@@ -1037,7 +1100,6 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 							switch ($k) {
 								case 'manufacturer':
-								case 'model':
 								case 'technique':
 									$item->$k = $value;
 									break;
@@ -1048,6 +1110,9 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 									} else {
 										$item->contact_1_email = $value;
 									}
+									break;
+								case 'tags':
+									// Do nothing, process them later
 									break;
 								default:
 									if (self::IMPORT_USEBLANK == $value) {
@@ -1101,6 +1166,10 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 							$successful_items[$item->id] = $item->name;
 
+							// Set tags
+							if (!empty($item->tags)) {
+								$this->model('itemstore')->setItemTags($item->id, $item->tags);
+							}
 
 							// Set custom fields
 							$custom = array();
@@ -1128,7 +1197,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 				// Rebuild the item counts
 				$this->model('categorystore')->rebuildItemCounts();
-				$this->model('departmentstore')->rebuildItemCounts();
+				$this->model('organisationalunitstore')->rebuildItemCounts();
 				$this->model('supplierstore')->rebuildItemCounts();
 
 
@@ -1168,73 +1237,77 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 
 
-	/**
-	 * Read the contents of a CSV file, process it, and convert it to an array.
-	 *
-	 * @param  string  $filepath  The file to process.
-	 *
-	 * @return  array  An array of data.
-	 */
-	protected function _readCsvFile($filepath) {
-		if (!file_exists($filepath)) { return null; }
+	protected function _deleteOldImportFiles() {
+		$upload_path = $this->model()->get('app.upload_root') .DIRECTORY_SEPARATOR. 'data';
+		$processing_path = $this->model()->get('app.upload_root') .DIRECTORY_SEPARATOR. 'processing';
 
-		$csv_parser = Ecl::factory('Ecl_Parser_Csv');
-		$data_csv = file_get_contents($filepath);
-		$data_csv = utf8_encode($data_csv);
-		$data_csv = $csv_parser->parse($data_csv);
+		$old_files = Ecl_Helper_Filesystem::getFilesOlderThan($upload_path, 24*60*60);
+		foreach($old_files as $filename) {
+			Ecl_Helper_Filesystem::deleteFile($upload_path .'/'. $filename);
+		}
 
-		$data_csv = Ecl_Helper_array::removeEmptyRows($data_csv);
+		$old_files = Ecl_Helper_Filesystem::getFilesOlderThan($processing_path, 24*60*60);
+		foreach($old_files as $filename) {
+			Ecl_Helper_Filesystem::deleteFile($processing_path .'/'. $filename);
+		}
 
-
-		// The merging-upwards of partial rows (where manufacturer is blank) has been
-		// removed to avoid confusion. Items MUST now exist in a single row of the spread sheet.
-		// $data_csv = Ecl_Helper_Array::mergePartialRows($data_csv, 1, "\n");
-
-		return $data_csv;
-	}// /method
+		return true;
+	}
 
 
 
 	protected function _getStandardRowHeaders() {
-		return array (
-			'item_title',
-			'manufacturer',
-			'model',
-			'short_description',
-			'full_description',
-			'specification',
-			'acronym',
-			'keywords',
-			'category',
-			'technique',
-			'department',
-			'usergroup',
-			'access',
-			'availability',
-			'visibility',
-			'site',
-			'building',
-			'room',
-			'contact_1_name',
-			'contact_1_email',
-			'contact_2_name',
-			'contact_2_email',
-			'manufacturer_website',
-			'copyright_notice',
-			'training_required',
-			'training_provided',
-			'quantity',
-			'quantity_detail',
-			'PAT',
-			'calibrated',
-			'last_calibration_date',
-			'next_calibration_date',
-			'asset_no',
-			'finance_id',
-			'serial_no',
-			'year_of_manufacture',
-			'supplier',
-			'date_of_purchase',
+		return array(
+			'item_title' ,
+			'manufacturer' ,
+			'model' ,
+			'short_description' ,
+			'full_description' ,
+			'specification' ,
+			'upgrades' ,
+			'future_upgrades' ,
+			'acronym' ,
+			'keywords' ,
+			'tags' ,
+			'technique' ,
+			'availability' ,
+			'restrictions' ,
+			'usergroup' ,
+			'access' ,
+			'portability' ,
+			'category' ,
+			'organisational_unit' ,
+			'site' ,
+			'building' ,
+			'room' ,
+			'contact_1_name' ,
+			'contact_1_email' ,
+			'contact_2_name' ,
+			'contact_2_email' ,
+			'visibility' ,
+			'manufacturer_website' ,
+			'copyright_notice' ,
+			'training_required' ,
+			'training_provided' ,
+			'quantity' ,
+			'quantity_detail' ,
+			'PAT' ,
+			'calibrated' ,
+			'last_calibration_date' ,
+			'next_calibration_date' ,
+			'asset_no' ,
+			'finance_id' ,
+			'serial_no' ,
+			'year_of_manufacture' ,
+			'supplier' ,
+			'date_of_purchase' ,
+			'purchase_cost' ,
+			'replacement_cost' ,
+			'end_of_life' ,
+			'maintenance' ,
+			'is_disposed_of' ,
+			'date_disposed_of' ,
+			'comments' ,
 		);
 	}// /method
 
@@ -1282,10 +1355,10 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				return $this->model('categorystore')->insert($category);
 				break;
 			// ----------------------------------------
-			case 'department':
-				$dept = $this->model('departmentstore')->newDepartment();
-				$dept->name = $value;
-				return $this->model('departmentstore')->insert($dept);
+			case 'organisational_unit':
+				$ou = $this->model('organisationalunitstore')->newDepartment();
+				$ou->name = $value;
+				return $this->model('organisationalunitstore')->insert($ou, 1);
 				break;
 			// ----------------------------------------
 			case 'site':
@@ -1304,6 +1377,33 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				break;
 		}
 
+	}// /method
+
+
+
+	/**
+	 * Read the contents of a CSV file, process it, and convert it to an array.
+	 *
+	 * @param  string  $filepath  The file to process.
+	 *
+	 * @return  array  An array of data.
+	 */
+	protected function _readCsvFile($filepath) {
+		if (!file_exists($filepath)) { return null; }
+
+		$csv_parser = Ecl::factory('Ecl_Parser_Csv', array (
+			'parse.assoc' => true ,
+			'parse.keep_header_row' => true ,
+			'parse.assoc_lower_case' => true ,
+		));
+
+		$data_csv = file_get_contents($filepath);
+		$data_csv = utf8_encode($data_csv);
+		$data_csv = $csv_parser->parse($data_csv);
+
+		$data_csv = Ecl_Helper_array::removeEmptyRows($data_csv);
+
+		return $data_csv;
 	}// /method
 
 

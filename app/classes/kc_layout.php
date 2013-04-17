@@ -89,7 +89,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
 		} else {
 			$image_alt = $item->name;
-			$image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
+			$image = $this->router()->makeAbsoluteUri("/item/{$item->imageslug}");
 		}
 		?>
 		<li class="item" id="item-<?php $this->out($item->id); ?>">
@@ -119,11 +119,13 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					if ( (!in_array('manufacturer', $hide_properties)) && (!empty($item->manufacturer)) ) {
 						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['item.label.manufacturer'], $this->escape($item->manufacturer));
 					}
+
 					if ( (!in_array('technique', $hide_properties)) && (!empty($item->technique)) ) {
 						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['item.label.technique'], $this->escape($item->technique));
 					}
-					if ( (!in_array('department', $hide_properties)) && (!empty($item->department)) ) {
-						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['dept.label'], $this->escape($this->model('departmentstore')->lookupName($item->department)));
+
+					if ( (!in_array('ou', $hide_properties)) && (!empty($item->ou)) ) {
+						printf('<li><strong>%1$s:</strong> %2$s</li>', $lang['ou.label'], $this->escape($this->model('organisationalunitstore')->lookupName($item->ou)));
 					}
 					?>
 				</ul>
@@ -137,6 +139,11 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 	public function renderItemInFull($item, $goto_url = '') {
 		$this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/print.css'),'print');
+		$this->layout()->addGlobalJavascript();
+
+		if ($this->model('item.allow_lightbox')) {
+			$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_lightbox.js'));
+		}
 
 		$user = $this->model('user');
 		$lang = $this->model('lang');
@@ -149,8 +156,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			$image = $this->router()->makeAbsoluteUri('/images/system/no_image.jpg');
 		} else {
 			$no_image = false;
-			$image_alt = $item->manufacturer .' '. $item->model;
-			$image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$item->image}");
+			$image_alt = $item->name;
+			$image = $this->router()->makeAbsoluteUri("/item/{$item->imageslug}");
 		}
 
 		$files = $this->model('itemstore')->findFilesForItem($item);
@@ -169,6 +176,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				}
 			}
 		}
+
+
+		$links = $this->model('itemlinkstore')->findForItem($item->id)->toArray();
 
 
 		if ($this->model('log.item_view')) {
@@ -199,6 +209,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		function isSensibleDate($date) {
 			return (!empty($date)) && ($date > strtotime('1970-01-02 00:00:00'));
 		}
+
+
+
+		$permalink = $this->router()->makeAbsoluteUri("/id/item/{$item->idslug}");
 		?>
 
 		<div class="item">
@@ -226,19 +240,25 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				<?php
 				$manufacturer_website = '';
 
-				if (!empty($item->manufacturer_website)) {
-					$start_url = '';
-					if ( (substr($item->manufacturer_website, 0, 7)!='http://')
-						&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
-							$start_url = 'http://';
+				if ($this->model('fieldview')->show('item.manufacturer_website')) {
+					if (!empty($item->manufacturer_website)) {
+						$start_url = '';
+						if ( (substr($item->manufacturer_website, 0, 7)!='http://')
+							&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
+								$start_url = 'http://';
+						}
+						$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', htmlentities("{$start_url}{$item->manufacturer_website}"));
 					}
-					$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', htmlentities("{$start_url}{$item->manufacturer_website}"));
 				}
 				drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
 
-				drawField($lang['item.label.model'], $this->escape($item->model));
-				drawField($lang['item.label.acronym'], $this->escape($item->acronym));
+				if ($this->model('fieldview')->show('item.model')) {
+					drawField($lang['item.label.model'], $this->escape($item->model));
+				}
 
+				if ($this->model('fieldview')->show('item.acronym')) {
+					drawField($lang['item.label.acronym'], $this->escape($item->acronym));
+				}
 				?>
 				</table>
 
@@ -257,67 +277,83 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 					<div class="usage">
 						<?php
-							if (!empty($item->department)) {
-							echo '<h2>'. $this->model('departmentstore')->lookupName($item->department). '</h2>';
-						}?>
+						if (!empty($item->ou)) {
+							echo '<h2>'. $this->model('organisationalunitstore')->lookupName($item->ou). '</h2>';
+						}
+						?>
 						<table class="layout fields">
 						<?php
 
-						drawField($lang['item.label.availability'], $this->escape($item->availability));
-						drawField($lang['item.label.restrictions'], $this->escape($item->restrictions));
-						drawField($lang['item.label.portability'], $this->escape($item->portability));
+						if ($this->model('fieldview')->show('item.availability')) {
+							drawField($lang['item.label.availability'], $this->escape($item->availability));
+						}
+						if ($this->model('fieldview')->show('item.restrictions')) {
+							drawField($lang['item.label.restrictions'], $this->escape($item->restrictions));
+						}
 
-						if ($this->model('security')->checkItemPermission($item, 'item.accesslevel.view')) {
+						if ($this->model('fieldview')->show('item.portability')) {
+							drawField($lang['item.label.portability'], $this->escape($item->portability));
+						}
+
+						if ($this->model('fieldview')->show('item.accesslevel')) {
 							$access = $this->escape($this->model('accesslevelstore')->lookupName($item->access));
 							drawField($lang['access.label'], $this->escape($access));
+						}
 
+						if ($this->model('fieldview')->show('item.usergroup')) {
 							drawField($lang['item.label.usergroup'], $this->escape($item->usergroup));
 						}
 
 
-
-						$details = '';
-						if (true === $item->training_required) {
-							if (true === $item->training_provided) {
-								$details = 'Training is required to use this item and we can arrange this if needed.';
-							} elseif (false === $item->training_provided) {
-								$details = 'Although training is required to use this item, we cannot arrange it for you.';
-							} else {
-								$details = 'Training is required to use this item.';
+						if ($this->model('fieldview')->show('item.training')) {
+							$details = '';
+							if (true === $item->training_required) {
+								if (true === $item->training_provided) {
+									$details = 'Training is required to use this item and we can arrange this if needed.';
+								} elseif (false === $item->training_provided) {
+									$details = 'Although training is required to use this item, we cannot arrange it for you.';
+								} else {
+									$details = 'Training is required to use this item.';
+								}
+							} elseif(false === $item->training_required) {
+								$details = 'No special training required.';
 							}
-						} elseif(false === $item->training_required) {
-							$details = 'No special training required.';
-						}
-						drawField($lang['item.label.training'], $details);
-
-
-						switch($item->calibrated) {
-							case Item::CALIB_YES:
-								$details = 'Yes, this item is calibrated.';
-								if (isSensibleDate($item->last_calibration_date)) {
-									$details .= '<br />Last Calibration: '. date($this->model('layout.date_format'), $item->last_calibration_date);
-								}
-								if (isSensibleDate($item->next_calibration_date)) {
-									$details .= '<br />Next Calibration: '. date($this->model('layout.date_format'), $item->next_calibration_date);
-								}
-								break;
-							case Item::CALIB_NO:
-								$details = 'No, this item is not calibrated.';
-							case Item::CALIB_AUTO:
-								$details = 'This item is automatically calibrated.';
-							default:
-								$details = '';
-								break;
-						}
-						drawField($lang['item.label.calibrated'], $details);
-
-						// @todo : Show quantity and description
-						if (1 < $item->quantity) {
-						drawField($lang['item.label.quantity'], $item->quantity .'.<br />'. $this->escape($item->quantity_detail));
+							drawField($lang['item.label.training'], $details);
 						}
 
-						if (isSensibleDate($item->PAT)) {
-							drawField($lang['item.label.PAT'], date($this->model('layout.date_format'), $item->PAT));
+						if ($this->model('fieldview')->show('item.calibrated')) {
+							switch($item->calibrated) {
+								case Item::CALIB_YES:
+									$details = 'Yes, this item is calibrated.';
+									if (isSensibleDate($item->last_calibration_date)) {
+										$details .= '<br />Last Calibration: '. date($this->model('layout.date_format'), $item->last_calibration_date);
+									}
+									if (isSensibleDate($item->next_calibration_date)) {
+										$details .= '<br />Next Calibration: '. date($this->model('layout.date_format'), $item->next_calibration_date);
+									}
+									break;
+								case Item::CALIB_NO:
+									$details = 'No, this item is not calibrated.';
+								case Item::CALIB_AUTO:
+									$details = 'This item is automatically calibrated.';
+								default:
+									$details = '';
+									break;
+							}
+
+							drawField($lang['item.label.calibrated'], $details);
+						}
+
+						if ($this->model('fieldview')->show('item.quantity')) {
+							if (1 < $item->quantity) {
+								drawField($lang['item.label.quantity'], $item->quantity .'.<br />'. $this->escape($item->quantity_detail));
+							}
+						}
+
+						if ($this->model('fieldview')->show('item.PAT')) {
+							if (isSensibleDate($item->PAT)) {
+								drawField($lang['item.label.PAT'], date($this->model('layout.date_format'), $item->PAT));
+							}
 						}
 						?>
 						</table>
@@ -338,7 +374,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
-							drawField($lang['item.label.contact_1'], $contact_link);
+							if ($this->model('fieldview')->show('item.contact_1')) {
+								drawField($lang['item.label.contact_1'], $contact_link);
+							}
 
 							// Contact 2
 							$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
@@ -350,7 +388,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
-							drawField($lang['item.label.contact_2'], $contact_link);
+							if ($this->model('fieldview')->show('item.contact_2')) {
+								drawField($lang['item.label.contact_2'], $contact_link);
+							}
 						} else {
 							if ($this->model('enquiry.enabled')) {
 								$enquiry_form_link = $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}");
@@ -359,13 +399,17 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 									$contact_email = (!empty($item->contact_1_email)) ? $item->contact_1_email : '' ;
 									$contact_name = (!empty($item->contact_1_name)) ? $item->contact_1_name : $contact_email ;
 									if (!empty($contact_name)) {
-										drawField($lang['item.label.contact_1'], $contact_name);
+										if ($this->model('fieldview')->show('item.contact_1')) {
+											drawField($lang['item.label.contact_1'], $contact_name);
+										}
 									}
 
 									$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
 									$contact_name = (!empty($item->contact_2_name)) ? $item->contact_2_name : $contact_email ;
 									if (!empty($contact_name)) {
-										drawField($lang['item.label.contact_2'], $contact_name);
+										if ($this->model('fieldview')->show('item.contact_2')) {
+											drawField($lang['item.label.contact_2'], $contact_name);
+										}
 									}
 								}
 								drawField('', sprintf('<a href="%1$s">%2$s</a>', $enquiry_form_link, 'Enquire about this item'));
@@ -380,7 +424,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 								} else {
 									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 								}
-								drawField($lang['item.label.contact_1'], $contact_link);
+
+								if ($this->model('fieldview')->show('item.contact_1')) {
+									drawField($lang['item.label.contact_1'], $contact_link);
+								}
 
 								// Contact 2
 								$contact_email = (!empty($item->contact_2_email)) ? $item->contact_2_email : '' ;
@@ -392,37 +439,65 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 								} else {
 									$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 								}
-								drawField($lang['item.label.contact_2'], $contact_link);
+
+								if ($this->model('fieldview')->show('item.contact_2')) {
+									drawField($lang['item.label.contact_2'], $contact_link);
+								}
 							}
 						}
 
 
-
-						if (!empty($item->organisation)) {
-							$org = $this->model('organisationstore')->find($item->organisation);
-							if ($org) {
-								drawField($lang['org.label'], $this->escape($org->name));
+						// @todo : Deprecated, remove organisation 'else' below
+						if ($this->model('app.use_ou_tree')) {
+							if ($this->model('fieldview')->show('item.ou')) {
+								$ou = $this->model('organisationalunitstore')->find($item->ou);
+								if ($ou) {
+									if (empty($ou->url)) {
+										drawField($lang['ou.label'], $this->model('organisationalunitstore')->lookupName($item->ou));
+									} else {
+										drawField($lang['ou.label'], sprintf('<a href="%1$s">%2$s</a>', $ou->url, $this->escape($ou->name)));
+									}
+								}
+							}
+						} else {
+							if (!empty($item->organisation)) {
+								$org = $this->model('organisationstore')->find($item->organisation);
+								if ($org) {
+									drawField($lang['org.label'], $this->escape($org->name));
+								}
 							}
 						}
 
-						if ($this->model('security')->checkItemPermission($item, 'item.location.view')) {
+
+						if ($this->model('fieldview')->show('item.site')) {
 							if (!empty($item->site)) {
 								$site = $this->model('sitestore')->find($item->site);
 								if ($site) {
-									drawField($lang['site.label'], $this->escape($site->name));
+									if (empty($site->url)) {
+										drawField($lang['site.label'], $this->escape($site->name));
+									} else {
+										drawField($lang['site.label'], sprintf('<a href="%1$s">%2$s</a>', $site->url, $this->escape($site->name)));
+									}
 								}
 							}
+						}
 
+						if ($this->model('fieldview')->show('item.building')) {
 							if (!empty($item->building)) {
 								$building = $this->model('buildingstore')->find($item->building);
 								if ($building) {
-									drawField($lang['building.label'], $this->escape($building->name));
+									if (empty($building->url)) {
+										drawField($lang['building.label'], $this->escape($building->name));
+									} else {
+										drawField($lang['building.label'], sprintf('<a href="%1$s">%2$s</a>', $building->url, $this->escape($building->name)));
+									}
 								}
 							}
-
-							drawField($lang['item.label.room'], $this->escape($item->room));
 						}
 
+						if ($this->model('fieldview')->show('item.room')) {
+							drawField($lang['item.label.room'], $this->escape($item->room));
+						}
 						?>
 						</table>
 
@@ -446,53 +521,108 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						<?php
 					}
 
-					if (!empty($item->specification)) {
-						$this->outf($lang['item.label.specification'], '<h2>%s</h2>');
-						?>
-						<div class="item-specification">
-							<?php
-							$text = $wiki_parser->parse($this->escape($item->specification));
-							$text = str_replace(
-								array('<h1>', '</h1>', '<h2>', '</h2>'),
-								array('<h3>', '</h3>', '<h3>', '</h3>'),
-								$text
-								);
-							echo $text;
+					if ($this->model('fieldview')->show('item.specification')) {
+						if (!empty($item->specification)) {
+							$this->outf($lang['item.label.specification'], '<h2>%s</h2>');
 							?>
-						</div>
-						<?php
+							<div class="item-specification">
+								<?php
+								$text = $wiki_parser->parse($this->escape($item->specification));
+								$text = str_replace(
+									array('<h1>', '</h1>', '<h2>', '</h2>'),
+									array('<h3>', '</h3>', '<h3>', '</h3>'),
+									$text
+									);
+								echo $text;
+								?>
+							</div>
+							<?php
+						}
+					}
+
+					if ($this->model('fieldview')->show('item.upgrades')) {
+						if (!empty($item->upgrades)) {
+							$this->outf($lang['item.label.upgrades'], '<h2>%s</h2>');
+							?>
+							<div class="item-description">
+								<?php $this->out($item->upgrades); ?>
+							</div>
+							<?php
+						}
+					}
+
+					if ($this->model('fieldview')->show('item.future_upgrades')) {
+						if (!empty($item->upgrades)) {
+							$this->outf($lang['item.label.future_upgrades'], '<h2>%s</h2>');
+							?>
+							<div class="item-description">
+								<?php $this->out($item->future_upgrades); ?>
+							</div>
+							<?php
+						}
+					}
+
+					if ($this->model('fieldview')->show('item.embedded_content')) {
+						if ( ($this->model('item.allow_embedded_content')) && (!empty($item->embedded_content)) ) {
+							$this->outf($lang['item.label.embedded_content'], '<h2>%s</h2>');
+							?>
+							<div class="item-embedded-content">
+								<?php echo $item->embedded_content; ?>
+							</div>
+							<?php
+						}
 					}
 
 
 
+
 					/*
-					 * Show Available Files
+					 * Show Available Resources
 					 */
-					if ( ($this->model('security')->checkItemPermission($item, 'item.files.view')) && (!empty($other_files)) ) {
-						$grouped_files = null;
+
+					if ( ($this->model('fieldview')->show('item.resources'))
+						&& ( (!empty($other_files)) || (!empty($links)) )
+						) {
+
+						$this->outf($lang['item.label.resources'], '<h2>%s</h2>');
+
+						$grouped_files = array();
+
+						foreach($links as $link) {
+							$grouped_files[$link->type][] = $link;
+						}
 
 						foreach($other_files as $file) {
 							$grouped_files[$file->type][] = $file;
 						}
 
 						$types = $this->model('itemstore')->findAllFileTypes();
-
-						$this->outf($lang['item.label.files'], '<h2>%s</h2>');
 						?>
-						<div class="item-files">
+						<div class="item-resources">
 							<?php
 							foreach($grouped_files as $file_type => $file_group) {
-								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Files' ;
+								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Resources' ;
 								?>
 								<h4><?php $this->out($type_name); ?></h4>
 								<ul>
 									<?php
-									foreach($file_group as $file) {
-										$file_url = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/file/{$file->filename}");
-										$display_name = (empty($file->name)) ? $file->filename : $file->name ;
-										?>
-										<li><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
-										<?php
+									foreach($file_group as $resource) {
+										if ($resource instanceof Itemfile) {
+											$file_url = $this->router()->makeAbsoluteUri("/item/{$item->id}/file/{$resource->filename}");
+											$display_name = (empty($resource->name)) ? $resource->filename : $resource->name ;
+											?>
+											<li class="file"><a href="<?php echo $file_url; ?>"><?php $this->out($display_name); ?></a></li>
+											<?php
+										} else {
+											$start_url = '';
+											if ( (substr($resource->url, 0, 7)!='http://')
+												&& (substr($resource->url, 0, 8)!='https://') ) {
+													$start_url = 'http://';
+											}
+											?>
+											<li class="link"><a href="<?php echo $start_url.$resource->url; ?>" target="_blank"><?php $this->out($resource->name); ?></a></li>
+											<?php
+										}
 									}
 									?>
 								</ul>
@@ -509,7 +639,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 
 					// Custom fields
-					if ($this->model('security')->checkItemPermission($item, 'item.customfield.view')) {
+					if ($this->model('fieldview')->show('item.custom')) {
 						$custom_fields = $this->model('itemstore')->getItemCustomFields($item->id);
 						if (!empty($custom_fields)) {
 							$fields = $this->model('customfieldstore')->findAll();
@@ -559,7 +689,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 					$children = null;
 
 
-
+					printf('<p class="note item-id">Item ID #<span class="meta-item-id">%1$s</span>.</p>', $this->escape($item->id));
 					if (isSensibleDate($item->date_updated)) {
 						printf('<p class="note item-date-updated">%s: %s</p>', $lang['item.label.date_updated'], date($this->model('layout.date_format'), $item->date_updated));
 					}
@@ -581,16 +711,16 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						<?php
 					} else {
 						?>
-						<a href="<?php echo $image; ?>" target="_blank"><img src="<?php echo $image; ?>" width="252" alt="<?php $this->out($image_alt); ?>" /></a>
+						<a href="<?php echo $image; ?>" target="_blank"><img id="main-image" src="<?php echo $image; ?>" width="252" alt="<?php $this->out($image_alt); ?>" /></a>
 						<?php
 					}
 
 					foreach($image_files as $i => $file) {
 						if ($file->filename != $item->image) {
-							$extra_image = $this->router()->makeAbsoluteUri("/item/{$item->url_suffix}/image/{$file->filename}");
+							$extra_image = $this->router()->makeAbsoluteUri("/item/{$item->id}/image/{$file->filename}");
 							?>
 							<div class="extra-image">
-								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="80" height="80" alt="" /></a>
+								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="68" height="68" alt="" /></a>
 							</div>
 							<?php
 						}
@@ -650,30 +780,32 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				$facilities = null;
 
 
-				$tags = $this->model('itemstore')->getItemTags($item->id);
-				if (count($tags)>0) {
-					?>
-					<div class="side-bar tags">
-						<h4>Tags</h4>
-						<ul>
-							<?php
-							foreach($tags as $i => $tag) {
-								?>
-								<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
+				if ($this->model('fieldview')->show('item.tags')) {
+					$tags = $this->model('itemstore')->getItemTags($item->id);
+					if (count($tags)>0) {
+						?>
+						<div class="side-bar tags">
+							<h4>Tags</h4>
+							<ul>
 								<?php
-							}
-							?>
-						</ul>
-					</div>
-					<?php
+								foreach($tags as $i => $tag) {
+									?>
+									<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
+									<?php
+								}
+								?>
+							</ul>
+						</div>
+						<?php
+					}
+					$tags = null;
 				}
-				$tags = null;
 				?>
 
 				<div class="side-bar">
 					<h4>Permanent Link</h4>
 					<ul>
-						<li><a href="<?php echo $this->router()->makeAbsoluteUri("/id/item/{$item->idslug}"); ?>"># Permalink</a></li>
+						<li><a href="<?php echo $permalink; ?>">Direct Permalink</a></li>
 					</ul>
 				</div>
 
@@ -691,7 +823,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				if (
 					(KC__VISIBILITY_PUBLIC == $item->visibility)
 					|| ($this->model('socialnetwork.allow_googleplus'))
-					|| ($this->model('socialnetwork.twitter'))
+					|| ($this->model('socialnetwork.allow_twitter'))
 					) {
 					?>
 					<div class="socialnetworkbuttons">
@@ -726,8 +858,150 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		</div>
 
 		<?php
+		if ($this->model('item.allow_lightbox')) {
+			?>
+			<div id="lightbox" class="window">
+				<div id="lightbox_top"><a class="modalwindow_close" href="#" title="close window">close</a></div>
+				<div id="lightbox_imagecontainer"><a id="lightbox_link" href="#" target="_blank"><img id="lightbox_image" src="ajax-loader.gif"></a></div>
+				<div id="lightbox_list"></div>
+			</div>
+			<?php
+		}
+		?>
+
+		<?php
 		return true;
-   }
+	}
+
+
+
+	public function renderBuildingSelect($html_id, $selected_building = null) {
+		$all_buildings = $this->model('buildingstore')->findAllUsed()->toAssoc('id', 'name');
+		$all_buildings = array('' => '') + (array) $all_buildings;
+		Ecl_Helper_Html::formSelect($html_id, $all_buildings, $selected_building);
+		return true;
+	}
+
+
+
+	public function renderCategorySelect($html_id, $selected_category = null) {
+		$all_categories = $this->model('categorystore')->findAllUsed()->toAssoc('id', 'name');
+		$all_categories = array('' => '') + (array) $all_categories;
+		Ecl_Helper_Html::formSelect($html_id, $all_categories, $selected_category);
+		return true;
+	}
+
+
+
+	public function renderContactSelect($html_id, $selected_contact = null) {
+		$all_contacts = $this->model('itemstore')->findAllContacts(KC__VISIBILITY_INTERNAL);
+		array_unshift($all_contacts, '');
+		$all_contacts = Ecl_Helper_Array::duplicateValueAsKey($all_contacts);
+		Ecl_Helper_Html::formSelect($html_id, $all_contacts, $selected_contact);
+		return true;
+	}
+
+
+
+	public function renderManufacturerSelect($html_id, $selected_manufacturer = null) {
+		$all_manufacturers = $this->model('itemstore')->findAllManufacturers(KC__VISIBILITY_INTERNAL);
+		$all_manufacturers = Ecl_Helper_Array::duplicateValueAsKey($all_manufacturers);
+		$all_manufacturers = array('' => '') + (array) $all_manufacturers;
+		Ecl_Helper_Html::formSelect($html_id, $all_manufacturers, $selected_manufacturer);
+		return true;
+	}
+
+
+
+	public function renderOUSelect($html_id, $selected_ou = null) {
+		$allow_select_ou = false;
+		$allow_all_ou = false;
+		$valid_ou = array();
+
+		if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+			$allow_select_ou = true;
+			$allow_all_ou = true;
+		} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
+			$allow_select_ou = true;
+			$allow_all_ou = false;
+			$valid_ou = $this->model('security')->findOUsForAuth(KC__AUTH_CANOUADMIN);
+		}
+
+		if (!$allow_select_ou) {
+			return false;
+		} else {
+			?>
+			<select name="<?php echo $html_id; ?>" id="<?php echo $html_id; ?>">
+				<?php
+				$ou_list = $this->model('organisationalunitstore')->findTree();
+
+				foreach($ou_list as $ou) {
+					printf('<option value="%1$s" %4$s %5$s> %3$s %2$s </option>',
+						$ou->id,
+						$this->escape($ou->name),
+						str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $ou->tree_level),
+						( ($ou->id==$selected_ou) ? 'selected="selected"' : null),
+						( ($allow_all_ou || (in_array($ou->id, $valid_ou))) ? null : 'disabled="disabled"')
+					);
+				}
+				?>
+			</select>
+			<?php
+			return true;
+		}
+	}
+
+
+
+	public function renderTree($tree, $callback = null, $current_level = null) {
+		if (null === $current_level) {
+			$current_level = -1;
+		} else {
+			$current_level = (int) $current_level;
+		}
+
+		$node = array_shift($tree);
+
+		$indent = str_repeat("\t", $node->tree_level);
+
+		if ($node->tree_level > $current_level) {
+			echo("\n{$indent}<ul>");
+		} elseif ($node->tree_level < $current_level) {
+			$closing_indent = str_repeat("\t", $current_level);
+			echo str_repeat("\n{$closing_indent}</ul>", $current_level - $node->tree_level);
+		}
+
+		echo "\n{$indent}";
+		if (is_callable($callback)) {
+			$callback($node);
+		} else {
+			$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+			echo "<li>{$name}";
+		}
+
+		if (!empty($tree)) {
+			$this->renderTree($tree, $callback, $node->tree_level);
+
+			if ($node->tree_level > $current_level) {
+				echo str_repeat("\n</ul>\n", $node->tree_level);
+			}
+		}
+
+		return true;
+	}
+
+
+
+	public function renderVisibilitySelect($html_id, $selected_visibility = null) {
+		$options = array (
+			''                      => 'Any Visibility' ,
+			KC__VISIBILITY_PUBLIC   => 'Public only' ,
+			KC__VISIBILITY_INTERNAL => 'Internal only' ,
+		);
+
+		Ecl_Helper_Html::formSelect($html_id, $options);
+		return true;
+	}
 
 
 

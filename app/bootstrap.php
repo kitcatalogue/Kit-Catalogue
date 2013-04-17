@@ -43,8 +43,9 @@ define('KC__FEEDBACK_WARNING', 'feedback_warning');
 
 
 // Different user permissions/auths
-define('KC__AUTH_CANADMIN', 'can_admin');
-define('KC__AUTH_CANEDIT', 'can_edit');
+define('KC__AUTH_CANADMIN', 'can_admin');       // Sysadmin
+define('KC__AUTH_CANOUADMIN', 'can_ouadmin');   // OU specific admin
+define('KC__AUTH_CANEDIT', 'can_edit');         // Deprecated
 
 
 define('KC__OBJECT_SYSTEM', 'system');
@@ -78,10 +79,22 @@ if (!defined('LDAP_OPT_PROTOCOL_VERSION')) {
 
 
 // --------------------------------------------------------------------------------
-// Load Application Default Config
+// Load Application Config
 
 
 require(dirname(__FILE__). '/config.php');
+
+
+$path = $config['app.local_root'].'/local_config.php';
+if (file_exists($path)) { include($path); }
+
+
+// These config settings have been deprecated over time.
+// We normalise them here.
+
+if ( (!isset($config['app.email.owner'])) && (isset($config['app.email'])) ) {
+	 $config['app.email.owner'] = $config['app.email'];
+}
 
 
 
@@ -94,39 +107,24 @@ require($config['app.include_root'] .'/library/ecl.php');
 
 
 // --------------------------------------------------------------------------------
-// Load Application Default Language
+// Load Language Config
 
 
 $lang = Ecl::factory('Ecl_Dictionary');
 require(dirname(__FILE__). '/language.php');
 
 
-
-// --------------------------------------------------------------------------------
-// Load Local Config
-
-
-$path = $config['app.local_root'].'/local_config.php';
-if (file_exists($path)) { include($path); }
-
-
-
-// --------------------------------------------------------------------------------
-// Load Local Language File
-
-
 $path = $config['app.local_root'].'/local_language.php';
 if (file_exists($path)) { include($path); }
-
 
 
 // Some of the language definitions MUST obey certain rules.
 
 // Ensure the 'dept.route' is valid
+// @todo : Deprecated - remove
 if (preg_match('/[^a-zA-Z0-9]/', $lang['dept.route'])) {
 	die('Error - The following setting is invalid: $lang[\'dept.route\'] = \''. $lang['dept.route'] .'\'');
 }
-
 
 
 ?>

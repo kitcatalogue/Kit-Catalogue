@@ -193,6 +193,32 @@ $config['enquiry.send_to'] = '';
 // This setting will also work with the $config['enquiry.send_to'] setting.
 $config['enquiry.bcc'] = '';
 
+// Activate the recaptcha spam protection on enquiry forms
+// If enabled, you must provide your recaptcha information below.
+$config['enquiry.use_recaptcha'] = false;
+
+// Log any enquiries made through the enquiry form.
+$config['enquiry.log'] = true;
+
+
+
+/*
+ * reCAPTCHA Settings
+ *
+ * If you're using reCAPTCHA with your enquiry forms, you must sign up for a reCAPTCHA API key
+ * for your local installation.
+ *
+ * Visit: http://recaptcha.net to sign up, and for more information.
+ */
+
+// The public key you were given as part of the reCAPTCHA registration.
+// It will be used to identify your visitors to the reCAPTCHA API.
+$config['recaptcha.public_key'] = '';
+
+// The private key you were given as part of the reCAPTCHA registration.
+// It will be used to identify your Kit-Catalogue system to the reCAPTCHA API.
+$config['recaptcha.private_key'] = '';
+
 
 
 /*

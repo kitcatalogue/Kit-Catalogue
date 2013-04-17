@@ -1,7 +1,7 @@
 <?php
 $lang = $this->model('lang');
 ?>
-<h1>All Tags</h1>
+<h1><?php $this->out($lang['tag.label.plural']); ?></h1>
 
 <?php
 if (count($this->tags) == 0) {

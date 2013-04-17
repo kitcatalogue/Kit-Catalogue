@@ -42,7 +42,7 @@ class Controller_Item extends Ecl_Mvc_Controller {
 	public function actionDownloadimage () {
 		$item = $this->model('itemstore')->find($this->param('itemid'));
 
-		$filename = $this->param('image');
+		$filename = $this->param('filename');
 
 		if (empty($item)) {
 			$this->router()->action('404', 'error');

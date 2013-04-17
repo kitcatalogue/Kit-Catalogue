@@ -1,5 +1,7 @@
 <?php
-
+$lang = $this->model('lang');
+$ou_label_lower = strtolower($lang['ou.label']);
+$ou_plural_lower = strtolower($lang['ou.label.plural']);
 
 $user = $this->user;
 $new_user = $this->new_user;
@@ -23,6 +25,11 @@ if ($this->model('user')->username != $user->username) {
 		});
 
 	</script>
+	<style type="text/css">
+
+		:checked + label { font-weight: bold; }
+
+	</style>
 EndJS
 	);
 }
@@ -89,14 +96,13 @@ if (!$new_user) {
 	$this->render('users_snippets_editsubform');
 	?>
 
-	<div style="margin-bottom: 20px">
-		<?php Ecl_Helper_Html::formSubmit('submitsave1', 'Save Changes'); ?>
+	<div style="margin: 0 0 20px 10em;">
+		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
 	</div>
 
 	<h3>Permissions</h3>
 	<fieldset>
 		<legend>System-wide Permissions</legend>
-		<h2>System-wide Permissions</h2>
 		<div class="section">
 			<?php
 			$available_perms = array (
@@ -136,30 +142,80 @@ if (!$new_user) {
 
 
 	<fieldset>
-		<legend>Department Specific Permissions</legend>
-		<h2>Department Specific Permissions</h2>
-		<?php
-		$departments = $this->model('departmentstore')->findAll();
-		if (0 == $departments->count()) {
-			?>
-			<p class="warning">
-				No departments have been created.
-			</p>
+		<legend>Specific Permissions</legend>
+		<p class="note">Permissions specific to units within your <?php $this->out(strtolower($lang['ou.label.adminsection'])); ?>.
+		<p class="note">If you grant permission to a higher <?php echo $this->out($ou_label_lower); ?>, it will automatically include all 'child' <?php echo $this->out($ou_plural_lower); ?>.</p>
+
+		<div id="tree" style="padding: 0.4em; background-color: #fff; ">
 			<?php
-		} else {
-			$available_depts = $departments->toAssoc('id', 'name');
-			$available_auths = array();
-			foreach($available_depts as $id => $name) {
-				$available_auths["dept_{$id}"] = $name;
+			$ou_list = $this->model('organisationalunitstore')->findTree()->toArray();
+			if (empty($ou_list)) {
+				?>
+				<p class="warning">
+					No <?php echo $this->out($ou_label_lower); ?> have been created.
+				</p>
+				<?php
+			} else {
+
+				function renderTree($tree, $callback = null, $current_level = null) {
+					if (null === $current_level) {
+						$current_level = -1;
+					} else {
+						$current_level = (int) $current_level;
+					}
+
+					$node = array_shift($tree);
+
+					$indent = str_repeat("\t", $node->tree_level);
+
+					if ($node->tree_level > $current_level) {
+						echo("\n{$indent}<ul>");
+					} elseif ($node->tree_level < $current_level) {
+						$closing_indent = str_repeat("\t", $current_level);
+						echo str_repeat("\n{$closing_indent}</ul>", $current_level - $node->tree_level);
+					}
+
+					echo "\n{$indent}";
+					if (is_callable($callback)) {
+						$callback($node);
+					} else {
+						$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+						echo "<li>{$name}";
+					}
+
+					if (!empty($tree)) {
+						renderTree($tree, $callback, $node->tree_level);
+
+						if ($node->tree_level > $current_level) {
+							echo str_repeat("\n</ul>\n", $node->tree_level);
+						}
+					}
+
+					return true;
+				}
+
+				$curr_auths = $this->model('sysauth')->findItemsForAgent($user->username);
+				if (empty($curr_auths)) { $curr_auths = array(); }
+
+				$that = $this;
+				renderTree($ou_list, function($node) use ($that, $curr_auths) {
+					$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
+					if (0 == $node->tree_level) {
+						printf('<li> %1$s ', $that->escape($name));
+					} else {
+						echo '<li> ';
+						Ecl_Helper_Html::formCheckbox('permissions[]', 'permission_'.$node->id, "ou_{$node->id}", (in_array("ou_{$node->id}", $curr_auths)));
+						Ecl_Helper_Html::formLabel('permission_'.$node->id, $that->escape($name));
+					}
+				});
 			}
-
-			$user_auths = $this->model('sysauth')->findForAgent($user->username);
-			$curr_auths = Ecl_Helper_Array::extractColumn($user_auths, 'item');
-
-			Ecl_Helper_Html::formCheckboxGrid('auth_dept', $available_auths, 1, $curr_auths);
-		}
-		?>
+			?>
+		</div>
 	</fieldset>
+
+	<div class="button_bar">
+		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	</div>
 
 </div>
 

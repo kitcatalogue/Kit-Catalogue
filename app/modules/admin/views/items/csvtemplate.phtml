@@ -1,12 +1,13 @@
 <?php
 $this->router()->layout(null);
 
+// IE 8 over HTTPS fix
+header("Cache-Control: private, max-age=15");
+header("Pragma: ");
 
-header("Cache-Control: public");
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename=kitcatalogue_template.csv");
 header('Content-Type: text/csv');
-
 
 echo(implode(', ', $this->row_headers) ."\n");
 ?>

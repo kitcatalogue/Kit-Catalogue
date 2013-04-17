@@ -159,34 +159,10 @@ class Organisationstore {
 
 		return $this->_db->newRecordset("
 			SELECT o.*
-			FROM organisation o INNER JOIN item i ON o.organisation_id=i.site_id
+			FROM organisation o INNER JOIN item i ON o.organisation_id=i.organisation_id
 			WHERE (i.visibility & $sql__visibility)=$sql__visibility
 			ORDER BY o.name ASC
 		", null, array($this, 'convertRowToObject') );
-	}// /method
-
-
-
-	/**
-	 * Find the organisations used for equipment in a department.
-	 *
-	 * @param  string  $department_id  The department ID to check for.
-	 *
-	 * @return  mixed  An array of objects.  On fail, null.
-	 */
-	public function findForDepartment($department_id) {
-
-		$binds = array (
-			'department'  => $department_id ,
-		);
-
-		return $this->_db->newRecordset("
-			SELECT DISTINCT o.*
-			FROM organisation o
-				INNER JOIN item i ON o.organisation_id=i.organisation
-			WHERE i.organisation=:organisation
-			ORDER BY name ASC
-		", $binds, array($this, 'convertRowToObject') );
 	}// /method
 
 
@@ -196,7 +172,7 @@ class Organisationstore {
 	 *
 	 * @param  string  $name
 	 *
-	 * @return  mixed  An array of objects.  On fail, null.
+	 * @return  mixed  The Organisation.  On fail, null.
 	 */
 	public function findForName($name) {
 
@@ -212,6 +188,32 @@ class Organisationstore {
 		", $binds);
 
 		return $this->_db->getObject(array($this, 'convertRowToObject') );
+	}// /method
+
+
+
+	/**
+	 * Find an existing organisation with the given name, or create a new one with the name.
+	 *
+	 * If $org_to_create is given, then it will be inserted and returned as the new organisation.
+	 * If it is left empty, then a new organisation will be created.
+	 * Any newly created organisation will use the given name.
+	 *
+	 * @param  string  $name
+	 * @param  mixed  $org_to_create  (optional)
+	 *
+	 * @return  object  The Organisation
+	 */
+	public function findOrCreateForName($name, $org_to_create = null) {
+		$org = $this->findForName($name);
+		if (!empty($org)) { return $org; }
+
+		if (empty($org_to_create)) {
+			$org = $this->newOrganisation();
+		}
+		$org->name = $name;
+		$org->id = $this->insert($org);
+		return $org;
 	}// /method
 
 

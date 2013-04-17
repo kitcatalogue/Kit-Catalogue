@@ -44,7 +44,7 @@ if (0 == $count) {
 		<?php
 		$url_stub = $this->router()->makeAbsoluteUri('/search/item/');
 		foreach($this->items as $item) {
-			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}?q={$url_query}");
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->idslug}?q={$url_query}");
 		}
 		?>
 	</ul>

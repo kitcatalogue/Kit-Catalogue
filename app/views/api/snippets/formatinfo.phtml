@@ -6,16 +6,23 @@
 <h3>Available Formats</h3>
 
 <p>
-	To switch output formats, provide an appropriate file extension in the url.
-	<br />e.g. http://kc-dev.lboro.ac.uk/api/public/items/index.json
+	To switch output formats, add the appropriate file extension to the url:
+	<br />
+	<br />e.g. &nbsp; <?php echo $this->api_root; ?>/items/index.<em>csv</em>
+	<br />or  &nbsp;  &nbsp; <?php echo $this->api_root; ?>/items/index.<em>json</em>
 </p>
 
-<p>The supported file exensions, and their respective output formats are:</p>
+<p>The following output formats are supported for the given file exensions:</p>
 <table class="formats">
 <tr>
 	<th>File<br />Extension</th>
 	<th>Mime Type</th>
 	<th>Description</th>
+</tr>
+<tr>
+	<td class="fileext">.csv</td>
+	<td class="mimetype">text/csv</td>
+	<td class="desc">CSV output.</td>
 </tr>
 <tr>
 	<td class="fileext">.html</td>
@@ -26,6 +33,11 @@
 	<td class="fileext">.json</td>
 	<td class="mimetype">application/json</td>
 	<td class="desc">JSON format.<br /><em>This is the default output format.</em></td>
+</tr>
+<tr>
+	<td class="fileext">.xml</td>
+	<td class="mimetype">application/xml</td>
+	<td class="desc">XML output.</td>
 </tr>
 <?php
 if (false) {
@@ -39,11 +51,6 @@ if (false) {
 		<td class="fileext">.ttl</td>
 		<td class="mimetype">text/turtle</td>
 		<td class="desc">RDF Turtle output.</td>
-	</tr>
-	<tr>
-		<td class="fileext">.xml</td>
-		<td class="mimetype">application/xml</td>
-		<td class="desc">XML output.</td>
 	</tr>
 	<?php
 }

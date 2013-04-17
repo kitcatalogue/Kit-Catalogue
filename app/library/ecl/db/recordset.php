@@ -29,7 +29,7 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 	protected $_position = 0;   // Current iterator position
 
-	protected $_row = false;   // The current row data
+	protected $_row = null;   // The current row data
 
 	protected $_row_function = null;   // Row conversion function (called on each row returned)
 
@@ -54,7 +54,7 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 	public function __destruct() {
-		if (is_resource($this->_result_set)) { mysql_free_result($this->_result_set); }
+		if (is_object($this->_result_set)) { $this->_result_set->free(); }
 	}// /method
 
 
@@ -75,10 +75,10 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 		if (!is_null($this->_count)) {
 			return $this->_count;
 		} else {
-			if (!is_resource($this->_result_set)) {
+			if (!is_object($this->_result_set)) {
 				$this->_count = 0;
 			} else {
-				$this->_count = (int) mysql_num_rows($this->_result_set);
+				$this->_count = (int) $this->_result_set->num_rows;
 			}
 		}
 		return $this->_count;
@@ -108,7 +108,7 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 		if (!$this->_executed) { $this->_execute(); }
 		if ($this->_result_set) {
 			$this->_position++;
-			$this->_row = mysql_fetch_assoc($this->_result_set);
+			$this->_row = $this->_result_set->fetch_assoc();
 			return true;
 		}
 		return false;
@@ -140,8 +140,8 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 		if (!$this->_executed) { $this->_execute(); }
 		if (!$this->offsetExists($offset)) { return null; }
 
-		@mysql_data_seek($this->_result_set, $offset);
-		$this->_row = mysql_fetch_assoc($this->_result_set);
+		@$this->_result_set->data_seek($offset);
+		$this->_row = $this->_result_set->fetch_assoc();
 
 		if ($this->_row_function) {
 			$func = $this->_row_function;
@@ -157,8 +157,8 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 		if (!$this->_executed) { $this->_execute(); }
 		if ($this->_result_set) {
 			$this->_position = 0;
-			@mysql_data_seek($this->_result_set, 0);
-			$this->_row = mysql_fetch_assoc($this->_result_set);
+			$this->_result_set->data_seek(0);
+			$this->_row = $this->_result_set->fetch_assoc();
 			return true;
 		}
 		return false;
@@ -168,7 +168,7 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 	public function valid() {
 		if (!$this->_executed) { $this->_execute(); }
-		return ($this->_row!==false);
+		return (null !== $this->_row);
 	}// /method
 
 
@@ -189,12 +189,13 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 		if (isset($row)) {
 			$this->_column_names = array_keys( (array) $row);
 		} else {
-			$field_count = mysql_num_fields($this->_result_set);
+			$field_count = $this->_result_set->field_count;
 			if ($field_count==0) {
-
+				return array();
 			} else {
-				for($i=0; $i<$field_count; $i++) {
-					$this->_column_names[] = mysql_field_name($this->_result_set, $i);
+				$fields = $this->_result_set->fetch_fields();
+				foreach($fields as $field) {
+					$this->_column_names[] = $field->name;
 				}
 			}
 		}

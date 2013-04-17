@@ -11,6 +11,98 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.2.0.0  (released 16-04-2013)
+
+
+
+IMPORTANT: Kit-Catalogue now uses a new upgrade process.
+When you have applied the updated code files you MUST run the upgrade wizard at: http://<your-catalogue>/install/
+
+See /install/readme.txt for more information. 
+
+By default, Kit-Catalogue now uses the MySQLi extension for database access.  If you want to keep using the older
+and soon to be deprecated, Mysql extension, add $config['db.use_mysqli'] = false; to your local config.
+
+
+== Security
+
+Fixed user permissions not being deleted when a user was removed in the administration area. 
+Fixed HTTPS not being used for CSS/javascript files, if user visited a HTTPS url without being logged in.
+Fixed IE8 not downloading CSV files when browsing over HTTPS.  
+Fixed titles of internal-only child items appearing on parent item records (access to the actual items was still blocked).  
+Fixed AJAX calls not using HTTPS when required.
+
+
+== Administration
+
+Added new "embedded content" field to items, allowing direct inclusion of youtube videos, etc.
+Added new "link" resources to items.
+Added new organisational structure admin to replace organisation/department fields.
+Added new organisational unit field to item records.
+Added ability to create a new user and assign their password in one go.
+Added inventory report builder.
+Added item editor functionality, so non-custodians can be given editing rights to individual items.
+
+Changed the item edit page to move mandatory fields nearer the top.
+Changed the Model field to be optional.
+Changed the title and manufacturer fields to be semi-mandatory (at least one must be filled).
+
+Fixed the importer so it will now clean up its old temporary files.
+
+Improved the importer to accept all item fields and detect/correct column re-shuffles in CSV files.
+Improved the exporter to work around Excel having problems when opening CSV files with fields starting with punctuation characters. 
+
+
+== API
+
+CSV output now available.
+XML output now available.
+
+
+== Config
+
+Added 'import.date_format_mdy' setting to control whether the importer should use US style dates.
+Added 'layout.date_format_report' setting to control the formatting of dates in the report builder.
+Added 'item.image.max_width' and 'item.image.max_height' settings to control auto-resizing of uploaded images.
+Added 'item.allow_embedded_content' setting to control whether you can add/view an item's embedded content like YouTube videos.
+Added 'search.include_ou' and 'search.include_ou_descendents' to control search results from hits on organisational unit names.
+Added 'menu.__' settings to control which menus are available and how they are labelled.
+Added 'help.__' settings to control what online help is available to administrators.
+Added 'admin.__' settings to control the editing of items and "editor" users.
+Added 'db.use_mysqli' setting to toggle using mysqli or the older mysql extension (IMPORTANT: this defaults to using mysqli).
+
+Removed 'app.items_www' setting as it is no longer required.
+Removed 'app.api_www' setting as it is no longer required.
+Removed 'search.include_departments' setting as it is no longer required.
+
+
+== General
+
+Added reCAPTCHA option to enquiry forms to combat spam (config 'enquiry.use_recaptcha' and 'recaptcha.__' section)
+Added setting to log all enquiry form submissions - enabled by default (config: 'enquiry.log').
+Added more language override options.
+Added a "Facilities" menu, which shows items that contain other items - disabled by default (config: 'menu.facility.enabled').
+Added a "Tags" menu, which shows items by tag - disabled by default (config: 'menu.tag.enabled').
+Added field view configuration, for controlling which fields are visible on your catalogue front-end website (ignored by API).
+Added item's ID number to detail page.
+Added ID number field to the item search.
+
+Changed the default label for an item's files to "resources".
+Changed the MySQL implementation to use the MySQLi extension instead of the original, and soon to be deprecated, MySQL extension. 
+
+Fixed minor typo errors in the admin area.
+Fixed organisation logo not linking to organisational website (config 'org.www').
+Fixed searching with the common, but unneccesary, wildcard characters '*' and '%' returning no results.
+Fixed searching using a single character using all available memory for results.  Minimum search length is now 2 characters.
+Fixed wikicode fields not showing lines beginning with a zero character, '0'.
+
+Improved the search system generally.
+Improved the installation and upgrade process.
+Improved the standardisation of URL formats across the catalogue.
+
+
+
+--------------------------------------------------------------------------------
 v.1.1.4  (released 26-10-2012)
 
 
@@ -19,14 +111,21 @@ v.1.1.4  (released 26-10-2012)
 Added option to enable HTTPS encryption for users browsing internally (config 'app.use_https').
 
 
+== General
+
+Fixed problem with enquiry form email messages. 
+Fixed errors on some pages when using renamed category labels.
+
+
 
 --------------------------------------------------------------------------------
-v.1.1.3  (restricted release)
+v.1.1.3  (limited release)
 
 
 == Security
 
 Added ability to move your writable folder out of your document root.
+Added option to enable HTTPS encryption for users browsing internally (config 'app.use_https').
 Fixed images being directly referenced, they are now accessed via the system only.
 Fixed users with blank email addresses being linked to items with blank contact details.
 

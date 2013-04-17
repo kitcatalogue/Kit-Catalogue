@@ -29,30 +29,17 @@ $model->setDefaultFactory(function ($name, $model) {
 
 
 
-// Normalise config
-// Those config settings that have been deprecated over time are normalised here.
-if ( (!isset($config['app.email.owner'])) && (!isset($config['app.email'])) ) {
-	 $config['app.email.owner'] = $config['app.email'];
+if (isset($config)) {
+	$model->load($config);
 }
-
-$model->load($config);
-
-
-
-$model->setObject('lang', $lang);
-
-
-
-$model->setObject('request', Ecl::factory('Ecl_Request'));
-
-
-
-$model->setObject('router', $router);
 
 
 
 $model->setFunction('db', function ($model) {
-	$db = Ecl::factory('Ecl_Db_Mysql', array (
+
+	$db_class = ($model->get('db.use_mysqli')) ? 'Ecl_Db_Mysql' : 'Ecl_Db_Legacy_Mysql' ;
+
+	$db = Ecl::factory($db_class, array (
 		'host'      => $model->get('db.host') ,
 		'port'      => $model->get('db.port') ,
 		'username'  => $model->get('db.username') ,
@@ -62,10 +49,78 @@ $model->setFunction('db', function ($model) {
 
 	$db->setDebug( (bool) $model->get('app.debug', false));
 
+	// We use SET NAMES too, in case our PHP version is one of the buggy ones
+	$db->setCharset('utf8');
 	$db->execute('SET NAMES utf8');
-
 	return $db;
 });
+
+
+
+$model->setFunction('fieldview', function($model) {
+	require($model->get('app.include_root') . '/models/fieldview.php');
+
+	$user = $model->get('user');
+
+	$field_view = new FieldView(array(
+		'user' => $user ,
+	));
+	require(dirname(__FILE__). '/field_view.php');
+
+
+	$path = $model->get('app.local_root').'/local_field_view.php';
+	if (file_exists($path)) { include($path); }
+
+	return $field_view;
+});
+
+
+
+if (isset($lang)) {
+	$model->setObject('lang', $lang);
+}
+
+
+
+$model->setFunction('organisationalunitstore', function($model) {
+	return new Organisationalunitstore($model, $model->get('db'));
+});
+
+
+
+$model->setFunction('ou_tree', function ($model) {
+	$ou_tree = new Ecl_Tree_Manager($model->get('db'), 'ou_tree', array (
+		'ordered' => true ,
+	));
+
+	$ou_tree->setLinkedTable('ou', 'ou_id');
+
+	$ou_tree->setRowFunction( function($row) {
+		$object = new StdClass();
+		$object->id = $row['ou_id'];
+		$object->name = $row['name'];
+		$object->url = $row['url'];
+
+		$object->item_count_internal = $row['item_count_internal'];
+		$object->item_count_public = $row['item_count_public'];
+
+		$object->tree_node_id = $row['tree_node_id'];
+		$object->tree_level = $row['tree_level'];
+		return $object;
+	});
+
+	return $ou_tree;
+});
+
+
+
+$model->setObject('request', Ecl::factory('Ecl_Request'));
+
+
+
+if (isset($router)) {
+	$model->setObject('router', $router);
+}
 
 
 
@@ -95,6 +150,7 @@ $model->setFunction('itemstore', function ($model) {
 });
 
 
+
 $model->setFunction('user', function ($model) {
 	$user = Ecl::factory('Ecl_User');
 
@@ -112,7 +168,7 @@ $model->setFunction('user', function ($model) {
 
 
 $model->setFunction('userstore', function ($model) {
-	return new Userstore($model->get('db'), $model->get('app.user_session_var'));
+	return new Userstore($model, $model->get('app.user_session_var'));
 });
 
 

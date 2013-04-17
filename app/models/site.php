@@ -9,6 +9,7 @@ class Site {
 	// Public Properties
 	public $id = null;        // The internal ID (numeric)
 	public $name = '';        // The name
+	public $url = '';
 
 
 

@@ -1,0 +1,39 @@
+/**
+ * Kit-Catalogue Installer Stylesheet.
+ *
+ * @version 1.0.0
+ */
+
+
+
+body { padding: 1.5em 1.5em 2em 1.5em; background-color: #fff; font-size: 14px; }
+
+h1 { clear: both; padding-bottom: 0.2em; border-bottom: 2px solid #000; }
+h2, h3, h4, h5, h6 { margin-left: -1em; color: #000; }
+h2 { margin-top: 2em; }
+
+ol { margin-left: 2em; list-style: decimal; }
+ol li { line-height: 2em; }
+
+
+.good { margin: 0.5em; padding: 0.4em; background-color: #cfc; border: 1px solid #090; border-radius: 10px; }
+.bad { margin: 0.5em; padding: 0.4em; background-color: #fcc; border: 1px solid #900; border-radius: 10px; }
+.warn { margin: 0.5em; padding: 0.4em; background-color: #ffc; border: 1px solid #990; border-radius: 10px; }
+
+.installwarning { clear: both; margin-top: 5em; font-size: 0.9em; }
+
+.title { margin: 0; font-weight: bold; }
+
+.note { font-size: 0.875em; color: #666; }
+
+a.hilight { color: #07f; }
+
+
+div.prevnext { margin: 1.5em 2em 0 2em; padding-top: 0.7em; border-top: 1px dotted #ccc; font-size: 1.125em; font-weight: bold; }
+
+table.valigntop td { vertical-align: top; }
+
+#header { min-height: 80px; }
+	
+	
+	

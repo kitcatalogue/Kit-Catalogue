@@ -5,6 +5,8 @@
  * Future updates to Kit-Catalogue may overwrite this config file.
  *
  * Do not edit the settings in here, instead edit and override the settings in local/local_language.php
+ *
+ * To control the top-menu text, override the 'menu.<?>.label' settings in your local configuration file.
  */
 
 
@@ -58,19 +60,30 @@ $lang['dept.label.plural'] = 'Departments';
 
 
 /*
+ * Facility
+ */
+
+$lang['facility.label'] = 'Facility';
+$lang['facility.label.plural'] = 'Facilities';
+
+
+
+/*
  * Item Form Fields (as used in the item editor)
  * Some fields use the labels defined elsewhere, e.g. 'cat.label' or 'dept.label'.
  */
 
 $lang['item.formsection.main'] = 'Main Details';
+$lang['item.formsection.description'] = 'Description';
 $lang['item.formsection.parent'] = 'Parent Facility';
 $lang['item.formsection.categorisation'] = 'Categorisation';
 $lang['item.formsection.access'] = 'Access & Usage';
 $lang['item.formsection.contact'] = 'Contact Information';
-$lang['item.formsection.location'] = 'Location';
+$lang['item.formsection.editors'] = 'Editors';
+$lang['item.formsection.location'] = 'Physical Location';
 $lang['item.formsection.asset'] = 'Asset & Finance Information';
 $lang['item.formsection.custom'] = 'Custom Fields';
-$lang['item.formsection.files'] = 'Images & Files';
+$lang['item.formsection.resources'] = 'Resources';
 
 
 
@@ -110,10 +123,17 @@ $lang['item.form.next_calibration_date'] = 'Next Calibration Date';
 $lang['item.form.quantity'] = 'Quantity';
 $lang['item.form.quantity_detail'] = 'Quantity Detail';
 
+$lang['item.form.contact'] = 'Staff Contact';   // Used as a generic label for contact information
 
 $lang['item.form.contact_1'] = 'First Staff Contact';
+$lang['item.form.contact_1_name'] = 'First Contact Name';
+$lang['item.form.contact_1_email'] = 'First Contact Email';
 $lang['item.form.contact_2'] = 'Second Staff Contact';
+$lang['item.form.contact_2_name'] = 'Second Contact Name';
+$lang['item.form.contact_2_email'] = 'Second Contact Email';
 
+
+$lang['item.form.image'] = 'Image';
 
 $lang['item.form.room'] = 'Room';
 
@@ -135,12 +155,22 @@ $lang['item.form.is_disposed_of'] = 'Has Been Disposed Of';
 $lang['item.form.date_disposed_of'] = 'Date Disposed Of';
 
 $lang['item.form.archived'] = 'Archived';
+$lang['item.form.date_archived'] = 'Date Archived';
 
 $lang['item.form.comments'] = 'Comments';
 
-$lang['item.form.files'] = 'Additional Files';
+$lang['item.form.files'] = 'Additional Files & Documentation';
 
 $lang['item.form.copyright_notice'] = 'Copyright Notice';
+
+$lang['item.form.date_added'] = 'Date Added';
+$lang['item.form.date_updated'] = 'Date Last Updated';
+$lang['item.form.last_updated_username'] = 'Last Updated Username ';
+$lang['item.form.last_updated_email'] = 'Last Updated Email';
+
+$lang['item.form.embedded_content'] = 'Embedded Content';
+
+$lang['item.form.links'] = 'Links';
 
 
 
@@ -207,17 +237,18 @@ $lang['item.label.maintenance'] = 'Maintenance';
 $lang['item.label.is_disposed_of'] = 'Disposed of';
 $lang['item.label.date_disposed_of'] = 'Date Disposed of';
 
+$lang['item.label.archived'] = 'Archived';
+$lang['item.label.date_archived'] = 'Date Archived';
 
-$lang['item.label.files'] = 'Additional Files';
+$lang['item.label.resources'] = 'Additional Resources';
 
 $lang['item.label.copyright_notice'] = '';
 
-$lang['item.form.archived'] = 'Archived';
-$lang['item.form.date_archived'] = 'Date Archived';
+$lang['item.label.embedded_content'] = 'Embedded Content';
+
+$lang['item.label.links'] = 'Links';
 
 $lang['item.label.date_updated'] = 'Last Updated';
-
-
 
 
 
@@ -227,6 +258,16 @@ $lang['item.label.date_updated'] = 'Last Updated';
 
 $lang['org.label'] = 'Organisation';
 $lang['org.label.plural'] = 'Organisations';
+
+
+
+/*
+ * Organisational Units
+ */
+
+$lang['ou.label.adminsection'] = 'Organisational Structure';
+$lang['ou.label'] = 'Organisational Unit';
+$lang['ou.label.plural'] = 'Organisational Units';
 
 
 

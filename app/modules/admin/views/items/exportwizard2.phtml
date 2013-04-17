@@ -1,8 +1,10 @@
 <?php
 $this->router()->layout(null);
 
+// IE 8 over HTTPS fix
+header("Cache-Control: private, max-age=15");
+header("Pragma: ");
 
-header("Cache-Control: public");
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename=kitcatalogue_export.csv");
 header('Content-Type: text/csv');
@@ -18,7 +20,7 @@ foreach($this->items as $i => $item) {
 	if (0 === $i) { echo($csv_parser->generate( array(array_keys($row)))); }
 
 	// Output individual row
-	echo($csv_parser->generate(array($row) ));
+	echo($csv_parser->generate(array($row)));
 }
 
 

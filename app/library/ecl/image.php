@@ -10,6 +10,8 @@ class Ecl_Image {
 	// Private Properties
 	protected $_image = null;   // The image resource
 
+	protected $_filename = null;
+
 	protected $_width = null;
 	protected $_height = null;
 
@@ -18,8 +20,16 @@ class Ecl_Image {
 	/**
 	 * Constructor
 	 *
+	 * @see createFromFile()
+	 * @see createFromImage()
+	 * @see createFromString()
 	 */
-	public function __construct() {
+	protected function __construct($resource) {
+		if (!is_resource($resource)) { return false; }
+
+		$this->_image = $resource;
+		$this->_width = imagesx($this->_image);
+		$this->_height = imagesy($this->_image);
 	}// /->__construct()
 
 
@@ -83,20 +93,18 @@ class Ecl_Image {
 
 
 	/**
-	 * Load this image from the given file.
+	 * Create an image instance from the given file.
 	 *
 	 * @param  string  $filename  The file to load.
 	 *
-	 * @return  boolean  The operation was successful.
+	 * @return  object  The image object. On fail, null.
 	 */
-	public function fromFile($filename) {
-
-		$this->clear();
+	public static function createFromFile($filename) {
 
 		if (!file_exists($filename)) { return false; }
 
 		$info = @getimagesize($filename);
-		if (!$info) { return false; }
+		if (!$info) { return null; }
 
 		$image_functions = array (
 			IMAGETYPE_GIF   => 'imagecreatefromgif' ,
@@ -106,17 +114,18 @@ class Ecl_Image {
 			IMAGETYPE_XBM   => 'imagecreatefromwxbm' ,
 		);
 
-		if (!array_key_exists($info[2], $image_functions)) { return false; }
+		if (!array_key_exists($info[2], $image_functions)) { return null; }
 
-		if (!function_exists($image_functions[$info[2]])) { return false; }
+		if (!function_exists($image_functions[$info[2]])) { return null; }
 
 		// Get the image resource
-		$this->_image = $image_functions[$info[2]]($filename);
+		$img_resource = $image_functions[$info[2]]($filename);
+		if (!$img_resource) { return null; }
 
-		$this->_width = $info[0];
-		$this->_height = $info[1];
+		$img = self::createFromImage($img_resource);
+		$img->setFilename($filename);
 
-		return true;
+		return $img;
 	}// /method
 
 
@@ -126,43 +135,28 @@ class Ecl_Image {
 	 *
 	 * @param  resource  $img  The image to load.
 	 *
-	 * @return  boolean  The operation was successful
+	 * @return  object  The image object. On fail, null.
 	 */
-	public function fromImage($img) {
-		if (!is_resource($img)) { return false; }
-
-		// Get the image resource
-		$this->_image = $img;
-		$this->_width = imagesx($this->_image);
-		$this->_height = imagesy($this->_image);
-
-		return true;
+	public static function createFromImage($resource) {
+		if (!is_resource($resource)) { return null; }
+		return new static($resource);
 	}// /method
 
 
 
 	/**
-	 * Load this image from the string representation.
+	 * Create an image instance from a string representation.
 	 *
 	 * @param  string  $string  The image as a raw string.
 	 *
-	 * @return  boolean  The operation was successful.
+	 * @return  object  The image object. On fail, null.
 	 */
-	public function fromString($string) {
+	public static function createFromString($string) {
 
-		$this->clear();
+		$img_resource = imagecreatefromstring($string);
+		if (!$img) { return null; }
 
-		$img = imagecreatefromstring($string);
-
-		if (!$img) { return false; }
-
-		// Get the image resource
-		$this->_image = $img;
-
-		$this->_width = imagesx($this->_image);
-		$this->_height = imagesy($this->_image);
-
-		return true;
+		return self::createFromResource($img_resourcE);
 	}// /method
 
 
@@ -283,7 +277,7 @@ class Ecl_Image {
 			// Resize the image
 			imagecopyresampled($target, $source, 0, 0, 0, 0, $new_width, $new_height, $old_width, $old_height);
 
-			imagedestory($source);
+			imagedestroy($source);
 
 			$this->_image = $target;
 
@@ -362,6 +356,13 @@ class Ecl_Image {
 
 
 
+	public function setFilename($filename) {
+		$this->_filename = $filename;
+		return true;
+	}
+
+
+
 	/**
 	 * Returns the Data URL equivalent for the current image contents in jpeg format.
 	 *
@@ -382,6 +383,38 @@ class Ecl_Image {
 		}
 		return $data;
 	}// /method
+
+
+
+	/**
+	 * Save the image back to its original filename.
+	 *
+	 * If the image was not created using ->fromFile() then this method will fail.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+	public function save() {
+		if (empty($this->_filename)) { return false; }
+
+		$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($this->_filename));
+		switch($extension) {
+			case 'gif':
+				$this->saveGif($this->_filename);
+				break;
+			case 'jpg':
+			case 'jpeg':
+				$this->saveJpeg($this->_filename);
+				break;
+			case 'png':
+				$this->savePng($this->_filename);
+				break;
+			default:
+				return false;
+				break;
+		}
+
+		return true;
+	}
 
 
 

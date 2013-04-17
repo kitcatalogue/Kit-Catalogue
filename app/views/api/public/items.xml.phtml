@@ -1,0 +1,9 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'application/xml');
+
+
+echo("<?xml version=\"1.0\"?>\n");
+$this->render('api_snippets_items.xml');
+
+

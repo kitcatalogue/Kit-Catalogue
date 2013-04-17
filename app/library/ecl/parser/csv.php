@@ -5,24 +5,29 @@
  * Can only handle CSV files where all data is enclosed in the appropriate chars (e.g. "abcd","efgh")
  *
  * @package  Ecl
- * @version  1.1.0
+ * @version  2.0.0
  */
 class Ecl_Parser_Csv {
 
 	// Private Properties
 
-	private $_use_field_headers = false;
+	protected $_config = array (
+		'parse.assoc'             => false ,
+		'parse.keep_header_row'   => false ,
+		'parse.assoc_lower_case'  => false ,
+	);
 
-	private $_col_encloser  = '"';
-	private $_col_separator  = ',';
-	private $_row_separator  = "\n";
+	protected $_col_encloser  = '"';
+	protected $_col_separator  = ',';
+	protected $_row_separator  = "\n";
 
 
 
 	/**
 	 * Constructor
 	 */
-	public function __construct() {
+	public function __construct($config) {
+		$this->setConfig($config);
 	}// /method
 
 
@@ -175,7 +180,7 @@ class Ecl_Parser_Csv {
 
 
 		// If we want to use field headers, apply them now
-		if ($this->_use_field_headers) {
+		if ($this->_config['parse.assoc']) {
 			$array = $this->_applyFieldHeaders($array);
 		}
 
@@ -241,20 +246,12 @@ class Ecl_Parser_Csv {
 
 
 
-	/**
-	 * Flag whether to use the first row of CSV data for column headers.
-	 *
-	 * Causes the parse() method to output an assoc-array, instead of a numerically indexed 2D array.
-	 * The first row of csv data will be used for headers, and will not appear as a row in the results.
-	 *
-	 * @param  boolean  $use_headers  Should the parse() use headers? (default: false)
-	 *
-	 * @return  boolean  The operation was successful.
-	 */
-	public function setUseFieldHeaders($use_headers = false) {
-		$this->_use_field_headers = ($use_headers == true);
+	public function setConfig($config = array()) {
+		if ( (is_array($config)) && (!empty($config)) ) {
+			$this->_config = array_merge($this->_config, $config);
+		}
 		return true;
-	}// /method
+	}
 
 
 
@@ -285,7 +282,17 @@ class Ecl_Parser_Csv {
 		}
 
 		$fields = $array[0];
-		unset($array[0]);
+		if (!$this->_config['parse.keep_header_row']) {
+			unset($array[0]);
+		}
+
+		if ($this->_config['parse.assoc_lower_case']) {
+			array_walk($fields, function(&$v, $k) {
+				$v = strtolower(trim($v));
+			});
+		} else {
+			array_walk($fields, 'trim');
+		}
 
 		$fields_count = count($fields);
 

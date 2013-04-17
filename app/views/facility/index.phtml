@@ -1,0 +1,26 @@
+<?php
+$lang = $this->model('lang');
+?>
+<h1><?php $this->out($lang['facility.label.plural']); ?></h1>
+
+<?php
+if (count($this->items) == 0) {
+	?>
+	<p>No <?php $this->out(strtolower($lang['facility.label.plural'])); ?> are listed in this catalogue.</p>
+	<?php
+} else {
+	?>
+	<p class="note">A <?php $this->out(strtolower($lang['facility.label'])); ?> is associated with a number of other items. For example, a clean room could contain several independent items of equipment.</p>
+	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['facility.label.plural'])); ?> listed in this catalogue.
+
+		<ul class="item-list">
+		<?php
+		$url_stub = $this->router()->makeAbsoluteUri("/facility/");
+		foreach($this->items as $item) {
+			$this->layout()->renderItemInList($item, "{$url_stub}{$item->idslug}");
+		}
+		?>
+	</ul>
+	<?php
+}
+?>

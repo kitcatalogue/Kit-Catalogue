@@ -1,0 +1,42 @@
+<h1>Administration Options</h1>
+
+<table class="layout" style="width: 100%;">
+<tr>
+	<td>
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Item administration</h4>
+
+			<p>The ability for you to import items will be added in a future release.</p>
+		<?php
+		if (false) {
+			?>
+			<p class="note">To add or edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">add item</a> and <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
+
+			<ul style="margin-top: 1em;">
+				<li>
+					<a href="<?php echo $this->router()->makeAbsoluteUri('/ouadmin/items/import/'); ?>">Import CSV</a>
+					<p class="note">Import new items from a CSV file.</p>
+				</li>
+			</ul>
+			<?php
+		}
+		?>
+		</div>
+
+	</td>
+	<td style="width: 50%;">
+		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+			<h4>Reports &amp; Analytics</h4>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/ouadmin/reports/inventory/'); ?>">Inventory Reports</a></li>
+			</ul>
+		</div>
+	</td>
+	<td>
+		&nbsp;
+	</td>
+
+</tr>
+</table>
+
+

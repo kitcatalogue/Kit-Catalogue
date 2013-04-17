@@ -383,8 +383,6 @@ class Ecl_Http_Request {
 		$request_string = implode("\r\n", $lines);
 		$request_string .= $content;
 
-		// @debug : Ecl::dump($request_string, 'Request String', true);
-
 		return $request_string;
 	}// /method
 

@@ -28,6 +28,9 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 		$item = $this->model('itemstore')->find($this->param('itemid'));
 		$backlink = base64_decode($this->request()->get('backlink'));
 
+		$recaptcha_error = null;
+
+
 		if (empty($item)) {
 			$this->router()->action('error', '404');
 			return true;
@@ -78,6 +81,17 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 
 			if (empty($form['type'])) { $errors[] = 'You must select the type of enquiry you\'re making.'; }
 			if (empty($form['body'])) { $errors[] = 'You must enter some text for your enquiry.'; }
+
+
+			if ($this->model('enquiry.use_recaptcha')) {
+				require_once($this->model('app.include_root').'/library/recaptcha/recaptchalib.php');
+				$resp = recaptcha_check_answer($this->model('recaptcha.private_key'), $this->model('app.www'), $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
+
+				if (!$resp->is_valid) {
+					$recaptcha_error = $resp->error;
+					$errors[] = 'The anti-spam text you entered was incorrect.';
+				  }
+			}
 
 
 			$mail = Ecl::factory('Ecl_Mail');
@@ -136,6 +150,24 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 			} else {
 				mail($to, $subject, $body, $headers);
 
+				if ($this->model('enquiry.log')) {
+					$binds = array (
+						'date_enquiry'  => date('c') ,
+						'item_id'       => $item->id ,
+						'item_name'     => $item->name ,
+						'user_name'     => $form['name'] ,
+						'user_email'    => $form['email'] ,
+						'user_phone'    => $form['phone'] ,
+						'user_org'      => $form['org'] ,
+						'user_role'     => $form['role'] ,
+						'user_deadline' => $form['deadline'] ,
+						'enquiry_type'  => $form['type'] ,
+						'enquiry_text'  => $form['body'] ,
+					);
+
+					$this->model('db')->insert('log_enquiry', $binds);
+				}
+
 				$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'Your enquiry has been sent.', '<p>You should shortly receive a confirmation of your enquiry via email.</p><p>You can now <a href="'. $this->router()->makeAbsoluteUri($backlink).'">return to the catalogue</a>.</p>');
 			}
 
@@ -145,6 +177,7 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 		$this->view()->backlink = $backlink;
 		$this->view()->item = $item;
 		$this->view()->form = $form;
+		$this->view()->recaptcha_error = $recaptcha_error;
 
 		$this->view()->render('enquiry_index');
 	}// /method

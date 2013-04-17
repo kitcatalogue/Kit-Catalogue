@@ -39,6 +39,128 @@ class Itemstore {
 
 
 	/**
+	 * Build a query suitable for searching the given parameters, and order the results accordingly.
+	 *
+	 * @param  array  $params
+	 * @param  array  $order_by
+	 *
+	 * @return  string  The SQL requested. On fail, empty string.
+	 */
+	public function buildSearchQuery($params, $order_by = array('name' => 'ASC')) {
+		if (!is_array($params)) { return ''; }
+
+		$filter_join_map = array (
+			'category'  => 'INNER JOIN item_category ic ON i.item_id=ic.item_id ' ,
+		);
+
+		$order_join_map = array (
+			'building'  => 'LEFT JOIN building b ON i.building_id=b.building_id ' ,
+			'category'  => 'LEFT JOIN item_category ic ON i.item_id=ic.item_id ' ,
+			'ou'        => 'LEFT JOIN ou ON i.ou_id=ou.ou_id ' ,
+			'site'      => 'LEFT JOIN site ON i.item_id=s.site_id' ,
+			'supplier'  => 'LEFT JOIN supplier s ON i.supplier_id=s.supplier_id ' ,
+		);
+
+		$joins = array();
+
+		$sql__join_clause = '';
+		$sql__where_clause = '';
+		$sql__orderby_clause = '';
+
+
+		$where_conditions = array();
+		$binds = array();
+
+		if (isset($params['category'])) {
+			$binds['category_id'] = $params['category'];
+			$joins['category'] = $filter_join_map['category'] . ' AND ic.category_id=:category_id';
+			unset($params['category']);
+		}
+
+
+		if (isset($params['contact'])) {
+			$binds['contact'] = $params['contact'];
+			$where_conditions[] = "(contact_1_email=:contact OR contact_2_email=:contact)";
+			unset($params['contact']);
+		}
+
+
+		if (isset($params['building_id'])) {
+			$sql_set = $this->_db->prepareSet($params['building_id']);
+			$where_conditions[] = "(i.building_id IN $sql_set)";
+			unset($params['building_id']);
+		}
+
+
+		if (isset($params['ou_id'])) {
+			$sql_set = $this->_db->prepareSet($params['ou_id']);
+			$where_conditions[] = "(i.ou_id IN $sql_set)";
+			unset($params['ou_id']);
+		}
+
+
+		// @todo : Deprecated - remove
+		if (isset($params['department'])) {
+			$binds['department_id'] = $params['department'];
+			$where_conditions[] = '(i.department_id=:department_id)';
+			unset($params['department']);
+		}
+
+
+		foreach($params as $k => $v) {
+			$sql_val = $this->_db->prepareValue($v);
+			$where_conditions[] = "($k=$sql_val)";
+		}
+
+
+		$where_conditions = implode(' AND ', $where_conditions);
+		if (!empty($where_conditions)) { $sql__where_clause = "WHERE $where_conditions"; }
+
+
+		// Process orderby
+		if (empty($order_by)) {	$order_by = array('name' => 'ASC');	}
+
+		$order_by_parts = array();
+
+		$orderby_map = array(
+			'name'      => "CASE WHEN title<>'' THEN title ELSE manufacturer END" ,
+			'building'  => 'b.name' ,
+			'ou'        => 'ou.name' ,
+			'supplier'  => 's.name' ,
+		);
+
+		foreach($order_by as $field => $direction) {
+			$direction = ('DESC' == strtoupper($direction)) ? 'DESC' : 'ASC' ;
+
+			if (array_key_exists($field, $orderby_map)) {
+				if ( (!array_key_exists($field, $joins)) && (array_key_exists($field, $order_join_map)) ) {
+					$joins[$field] = $order_join_map[$field];
+				}
+				$field = $orderby_map[$field];
+			}
+			$order_by_parts[] = "$field $direction";
+		}
+
+		$sql__orderby_clause = 'ORDER BY '. implode(', ', $order_by_parts);
+
+
+		// Process joins
+		if (!empty($joins)) {
+			$sql__join_clause = implode("\n", $joins);
+		}
+
+		return $this->_db->prepareQuery("
+			SELECT i.*
+			FROM item i
+				$sql__join_clause
+			$sql__where_clause
+			$sql__orderby_clause
+		", $binds);
+	}
+
+
+
+	/**
 	 * Convert the domain object to an export row.
 	 *
 	 * This method converts the object to a row of data suitable for inclusion in
@@ -84,8 +206,6 @@ class Itemstore {
 
 			'technique' => $object->technique ,
 
-			'department'  => $this->_model->get('departmentstore')->lookupName($object->department, 'Unknown') ,
-
 			'usergroup'   => $object->usergroup ,
 
 			'access'      => $this->_model->get('accesslevelstore')->lookupName($object->access, '') ,
@@ -96,7 +216,8 @@ class Itemstore {
 
 			'visibility'  => $object->visibility ,
 
-			'organisation' => $this->_model->get('organisationstore')->lookupName($object->organisation, '') ,
+			'ou' => $this->_model->get('organisationalunitstore')->lookupName($object->ou, '') ,
+
 			'site'         => $this->_model->get('sitestore')->lookupName($object->site, '') ,
 			'building'     => $this->_model->get('buildingstore')->lookupName($object->building, '') ,
 			'room'         => $object->room ,
@@ -132,7 +253,7 @@ class Itemstore {
 			'supplier_id'          => $this->_model->get('supplierstore')->lookupName($object->supplier, '') ,
 			'date_of_purchase'     => $this->_db->formatDate($object->date_of_purchase, true) ,
 
-			'cost' => $object->cost ,
+			'purchase_cost' => $object->cost ,
 			'replacement_cost' => $object->replacement_cost ,
 			'end_of_life' => $this->_db->formatDate($object->end_of_life, true) ,
 			'maintenance' => $object->maintenance ,
@@ -159,6 +280,14 @@ class Itemstore {
 				$row[$customfield->name] = (array_key_exists($customfield->id, $customfield_values)) ? $customfield_values[$customfield->id] : '' ;
 			}
 		}
+
+		// Excel will screw up the display of fields starting with some characters
+		// so values with non-alphanumeric characters are prefixed with a space.
+		array_walk($row, function(&$v) {
+			if ( (strlen($v)>0) && (!ctype_alnum($v[0])) ) {
+				$v = ' '. $v;
+			}
+		});
 
 		return $row;
 	}// /method
@@ -195,12 +324,16 @@ class Itemstore {
 			'availability' => $object->availability ,
 			'restrictions' => $object->restrictions ,
 
-			'department_id'  => $object->department ,
 			'usergroup'      => $object->usergroup ,
 			'access_id'      => $object->access ,
 			'portability'    => $object->portability ,
 
-			'organisation' => $object->organisation ,
+			'department_id'  => $object->department ,   // @todo : Deprecated - remove
+			'organisation' => $object->organisation ,   // @todo : Deprecated - remove
+
+			'ou_id' => $object->ou ,
+
+
 			'site_id'      => $object->site ,
 			'building_id'  => $object->building ,
 			'room'         => $object->room ,
@@ -213,6 +346,8 @@ class Itemstore {
 			'visibility'  => $object->visibility ,
 
 			'image' => $object->image ,
+
+			'embedded_content' => $object->embedded_content,
 
 			'manufacturer_website' => $object->manufacturer_website ,
 			'copyright_notice' => $object->copyright_notice ,
@@ -291,12 +426,15 @@ class Itemstore {
 		$object->availability = $row['availability'];
 		$object->restrictions = $row['restrictions'];
 
-		$object->department = $row['department_id'];
 		$object->usergroup = $row['usergroup'];
 		$object->access = $row['access_id'];
 		$object->portability = $row['portability'];
 
-		$object->organisation = $row['organisation'];
+		$object->ou = $row['ou_id'];
+
+		$object->organisation = $row['organisation'];   // @todo : Deprecated - to be removed
+		$object->department = $row['department_id'];    // @todo : Deprecated - to be removed
+
 		$object->site = $row['site_id'];
 		$object->building = $row['building_id'];
 		$object->room = $row['room'];
@@ -309,6 +447,8 @@ class Itemstore {
 		$object->visibility = $row['visibility'];
 
 		$object->image = $row['image'];
+
+		$object->embedded_content = $row['embedded_content'];
 
 		$object->manufacturer_website = $row['manufacturer_website'];
 		$object->copyright_notice = $row['copyright_notice'];
@@ -439,9 +579,11 @@ class Itemstore {
 	 */
 	public function getVisibilitySqlCondition($visibility, $table_alias = '') {
 		$table_alias = (!empty($table_alias)) ? "{$table_alias}." : null ;
-		if (KC__VISIBILITY_PUBLIC == $visibility) {
+		if (empty($visibility)) {
+			return '';
+		}  elseif (KC__VISIBILITY_PUBLIC == $visibility) {
 			return "{$table_alias}visibility='$visibility'";
-		} else {
+		}  elseif (KC__VISIBILITY_INTERNAL == $visibility) {
 			return '';
 		}
 	}// /method
@@ -612,25 +754,32 @@ class Itemstore {
 
 
 
-	public function findAllParents($exclude_item_id = null) {
+	public function findAllParents($exclude_item_id = null, $visibility = null) {
 		$exclude_item_id = (int) $exclude_item_id;
 
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		if (!empty($sql__vis_condition)) { $sql__vis_condition = ' AND '. $sql__vis_condition; }
+
 		if ($exclude_item_id) {
-			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}'");
+			return $this->_find("is_parent='1' AND item_id<>'{$exclude_item_id}' {$sql__vis_condition}");
 		} else {
-			return $this->_find("is_parent='1'");
+			return $this->_find("is_parent='1' {$sql__vis_condition}");
 		}
 	}// /method
 
 
 
-	public function findChildren($id) {
+	public function findChildren($id, $visibility = null) {
 		$sql__id = $this->_db->prepareValue( (int) $id);
+
+		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
+		$where_clause = (!empty($sql__vis_condition)) ? "WHERE {$sql__vis_condition}" : null ;
 
 		return $this->_db->newRecordset("
 			SELECT i.*
 			FROM item i
 				INNER JOIN item_child ic ON i.item_id=ic.child_item_id AND ic.item_id=$sql__id
+			$where_clause
 			ORDER BY
 				CASE
 					WHEN title<>'' THEN title
@@ -1047,71 +1196,74 @@ class Itemstore {
 
 
 	/**
-	 * Find any items matching the given parameters.
+	 * Find any items in the department and category specified.
 	 *
-	 * Parameters are matched using "AND".
-	 * e.g.
-	 * array (
-	 *   'department'  => 1 ,
-	 *   'manufacturer'  => 'IBM' ,
-	 * )
-	 *
-	 * will only find items manufactured by IBM that are also in department 1.
-	 *
-	 * @param  array  $params  Assoc array of parameters.
+	 * @param  integer  $ou_id  The OU to find.
+	 * @param  boolean  $include_descendents  Include items from descendent OUs.
  	 * @param  integer  $visibility
 	 *
 	 * @return  mixed  The array of objects requested.  On fail, null.
 	 */
-	public function findForSearchParams($params, $visibility) {
-		if (!is_array($params)) { return array(); }
+	public function findForOU($ou_id, $include_descendents = true, $visibility = null) {
 
-		$binds = array();
+		$ou_list = array($ou_id);
 
-		$join_clause = '';
-		$where_clause = '';
-		$where_conditions = array();
+		if ($include_descendents) {
+			$node = $this->_model->get('ou_tree')->findForRef($ou_id);
+			if (!$node) { return array(); }
 
+			$descendent_ou_list = $this->_model->get('ou_tree')->findDescendentRefs($node);
 
-		if (isset($params['category'])) {
-			$binds['category_id'] = $params['category'];
-			$join_clause .= 'INNER JOIN item_category ic ON i.item_id=ic.item_id  AND ic.category_id=:category_id';
+			$ou_list = array_merge($ou_list, (array) $descendent_ou_list);
 		}
 
-		if (isset($params['department'])) {
-			$sql_val = $this->_db->prepareValue($params['department']);
-			$where_conditions[] = "(department_id=$sql_val)";
-		}
-
-		if (isset($params['manufacturer'])) {
-			$sql_val = $this->_db->prepareValue($params['manufacturer']);
-			$where_conditions[] = "(manufacturer=$sql_val)";
-		}
-
-		if (isset($params['technique'])) {
-			$sql_val = $this->_db->prepareValue($params['technique']);
-			$where_conditions[] = "(technique=$sql_val)";
-		}
+		$sql__ou_set = $this->_db->prepareSet($ou_list);
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
-		if (!empty($sql__vis_condition)) {
-			$where_conditions[] = $sql__vis_condition;
-		}
-
-		$where_conditions = implode(' AND ', $where_conditions);
-		if (!empty($where_conditions)) { $where_clause = "WHERE $where_conditions"; }
+		$where_clause = (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
 
 		return $this->_db->newRecordset("
 			SELECT i.*
 			FROM item i
-				$join_clause
-			$where_clause
+			WHERE ou_id IN $sql__ou_set
+				$where_clause
 			ORDER BY
 				CASE
 					WHEN title<>'' THEN title
 					ELSE manufacturer
 				END ASC, model, acronym
-		", $binds, array($this, 'convertRowToObject'));
+		", null, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
+	 * Find any items matching the given parameters.
+	 *
+	 * Parameters are matched using "AND".
+	 * e.g.
+	 * array (
+	 *   'ou'            => 4 ,
+	 *   'manufacturer'  => 'IBM' ,
+	 * )
+	 *
+	 * will only find items manufactured by IBM that are also in organisational unit 4.
+	 *
+	 * @param  array  $params  Assoc array of parameters.
+ 	 * @param  mixed  $order_by  Assoc array of order parameters and directions.
+	 *
+	 * @return  mixed  The array of objects requested.  On fail, null.
+	 */
+	public function findForSearchParams($params, $order_by = array('name' => 'asc'), $row_function = null) {
+		$query = $this->buildSearchQuery($params, $order_by);
+
+		if (empty($query)) { return array(); }
+
+		if (null === $row_function) {
+			$row_function = array($this, 'convertRowToObject');
+		}
+
+		return $this->_db->newRecordset($query, null, $row_function);
 	}// /method
 
 
@@ -1152,6 +1304,43 @@ class Itemstore {
 
 
 	/**
+	 * Find items associated with the given user.
+	 *
+	 * Finds custodial items and items the user is editor for.
+	 *
+	 * @param  object  $user  The user to find.
+	 *
+	 * @return  object  An Ecl_Db_Recordset of objects requested.
+	 */
+	public function findForUser($user) {
+		$binds = array (
+			'username' => $user->username,
+			'email'    => $user->email,
+			);
+
+		return $this->_db->newRecordset("
+			(
+				SELECT *
+				FROM item
+				WHERE contact_1_email=:email OR contact_2_email=:email
+			)
+			UNION DISTINCT
+			(
+				SELECT i.*
+				FROM item i
+				INNER JOIN item_editor ie ON ie.item_id=i.item_id AND ie.username=:username
+			)
+			ORDER BY
+			CASE
+			  WHEN title<>'' THEN title
+			  ELSE manufacturer
+			  END ASC, model, acronym
+		", $binds, array($this, 'convertRowToObject'));
+	}// /method
+
+
+
+	/**
 	 * Find the A-to-Z alphabetic list of manufactuers used in the catalogue
 	 *
 	 * All numbers and punctuation found as the first character of a manufacturer's name will cause the 'Other'
@@ -1172,24 +1361,22 @@ class Itemstore {
 			ORDER BY letter
 		");
 
-		if ($row_count>0) {
-			$atoz = $this->_db->getColumn();
+		if (0 == $row_count) { return array(); }
 
-			$org_count = count($atoz);
-			$atoz = array_filter($atoz, function ($v) {
-				$ord = ord($v);
-				return ( ($ord>=65) && ($ord<=90) );
-			});
+		$atoz = $this->_db->getColumn();
 
-			if (count($atoz)<$org_count) {
-				$atoz = array_merge($atoz);
-				$atoz[] = 'Other';
-			}
+		$org_count = count($atoz);
+		$atoz = array_filter($atoz, function ($v) {
+			$ord = ord($v);
+			return ( ($ord>=65) && ($ord<=90) );
+		});
 
-			return $atoz;
-		} else {
-			return array();
+		if (count($atoz)<$org_count) {
+			$atoz = array_merge($atoz);
+			$atoz[] = 'Other';
 		}
+
+		return $atoz;
 	}// /method
 
 
@@ -1243,28 +1430,40 @@ class Itemstore {
 	 *
 	 * @param  string  $keywords  The terms to search for.
 	 * @param  integer  $visibility  The visibility of the items to search for.
+	 * @param  boolean  $whole_term_only  Only the entire keyword string is searched for. (default: false)
 	 *
 	 * @return  mixed  The RecordSet of objects found.  On fail, null.
 	 */
-	public function searchItems($keywords, $visibility) {
+	public function searchItems($keywords, $visibility, $whole_term_only = false) {
 		$items = null;
 
 		$keywords = trim($keywords);
 
 		if (empty($keywords)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
+		// Remove common wildcard characters
+		$keywords = str_replace('*', ' ', $keywords);
+		$keywords = str_replace('%', ' ', $keywords);
+
 		// MySQL's default FULLTEXT search has character limitations, so we do things the hard way
 		// Grab the terms and run LIKE queries on everything we need.
 
-		$temp_terms = explode(' ', $keywords);
-
-		foreach($temp_terms as $term) {
-			$term = trim($term);
-			if (!empty($term)) {
-				$terms[] = "%{$term}%";
+		$terms = array();
+		if ($whole_term_only) {
+			if (strlen($keywords)>=2) {
+				$terms = array("%{$keywords}%");
 			}
+		} else {
+			$temp_terms = explode(' ', $keywords);
+
+			foreach($temp_terms as $term) {
+				$term = trim($term);
+				if ( (!empty($term)) && (strlen($term)) >=2) {
+					$terms[] = "%{$term}%";
+				}
+			}
+			$temp_terms = null;
 		}
-		$temp_terms = null;
 
 
 		if (empty($terms)) { return new Ecl_Db_Emptyrecordset(null, ''); }
@@ -1274,6 +1473,32 @@ class Itemstore {
 
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		$sql__vis_condition = (!empty($sql__vis_condition)) ? "AND $sql__vis_condition" : null ;
+
+		// If the search term is an integer then search for matching Item ID
+		if (is_numeric($keywords)) {
+			$sql__id = $this->_db->prepareValue((int) $keywords);
+			$queries[] = "
+				SELECT DISTINCT i.*, 50 AS search_relevancy
+				FROM item i
+				WHERE (item_id=$sql__id)
+					$sql__vis_condition
+			";
+		}
+
+		// Whole term searching on major fields
+		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords');
+		$conditions = array();
+		foreach($fields as $field) {
+			$conditions[] = $this->_db->prepareFilter($field, "%{$keywords}%", 'OR', 'LIKE');
+		}
+		$sql__conditions = implode("\n OR " , $conditions);
+
+		$queries[] = "
+			SELECT DISTINCT i.*, 15 AS search_relevancy
+			FROM item i
+			WHERE ($sql__conditions)
+				$sql__vis_condition
+		";
 
 
 		// Search the primary fields
@@ -1285,7 +1510,7 @@ class Itemstore {
 		$sql__conditions = implode("\n OR " , $conditions);
 
 		$queries[] = "
-			SELECT DISTINCT i.*, '9' AS search_relevancy
+			SELECT DISTINCT i.*, 8 AS search_relevancy
 			FROM item i
 			WHERE ($sql__conditions)
 				$sql__vis_condition
@@ -1293,7 +1518,7 @@ class Itemstore {
 
 
 		// Search the secondary fields
-		$fields = array('full_description', 'technique');
+		$fields = array('short_description', 'full_description', 'technique');
 		$conditions = array();
 		foreach($fields as $field) {
 			$conditions[] = $this->_db->prepareFilter($field, $terms, 'OR', 'LIKE');
@@ -1301,7 +1526,7 @@ class Itemstore {
 		$sql__conditions = implode("\n OR " , $conditions);
 
 		$queries[] = "
-			SELECT DISTINCT i.*, '3' AS search_relevancy
+			SELECT DISTINCT i.*, 7 AS search_relevancy
 			FROM item i
 			WHERE ($sql__conditions)
 				$sql__vis_condition
@@ -1313,7 +1538,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('c.name', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 5 AS search_relevancy
 				FROM item i
 					INNER JOIN item_category ic ON ic.item_id=i.item_id
 					INNER JOIN category c ON c.category_id=ic.category_id
@@ -1333,7 +1558,7 @@ class Itemstore {
 			$sql__conditions = implode("\n OR " , $conditions);
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 3 AS search_relevancy
 				FROM item i
 				WHERE ($sql__conditions)
 					$sql__vis_condition
@@ -1341,17 +1566,55 @@ class Itemstore {
 		}
 
 
-		// Search the departments
-		if ($this->_model->get('search.include_departments')) {
-			$sql__conditions = $this->_db->prepareFilter('d.name', $terms, 'OR', 'LIKE');
+		// Search the organisational units
+		if ($this->_model->get('search.include_ou')) {
 
-			$queries[] = "
-				SELECT DISTINCT i.*, '6' AS search_relevancy
-				FROM item i
-					INNER JOIN department d ON i.department_id=d.department_id
-				WHERE ($sql__conditions)
-					$sql__vis_condition
-			";
+			if (!$this->_model->get('search.include_ou_descendents')) {
+				$sql__conditions = $this->_db->prepareFilter('ou.name', $terms, 'OR', 'LIKE');
+
+				$queries[] = "
+					SELECT DISTINCT i.*, 1 AS search_relevancy
+					FROM item i
+						INNER JOIN ou ON i.ou_id=ou.ou_id
+					WHERE ($sql__conditions)
+						$sql__vis_condition
+				";
+			} else {
+				$sql__conditions = $this->_db->prepareFilter('name', $terms, 'OR', 'LIKE');
+
+				$this->_db->query("
+					SELECT ou_id
+					FROM ou
+					WHERE $sql__conditions
+					ORDER BY ou_id
+				");
+
+				if ($this->_db->hasResult()) {
+					$ou_list = $this->_db->getColumn();
+
+					$ou_id_list = array();
+					foreach($ou_list as $ou_id) {
+						$ou_ids = $this->_model->get('ou_tree')->findSubRefsForRef($ou_id);
+						if (!empty($ou_ids)) {
+							$ou_id_list = array_merge($ou_id_list, $ou_ids);
+						}
+					}
+
+					$ou_id_list = array_unique($ou_id_list);
+
+					if (!empty($ou_id_list)) {
+
+						$sql__ou_set = $this->_db->prepareSet($ou_id_list);
+						$queries[] = "
+							SELECT DISTINCT i.*, 1 AS search_relevancy
+							FROM item i
+							INNER JOIN ou ON i.ou_id=ou.ou_id
+							WHERE (ou.ou_id IN $sql__ou_set)
+								$sql__vis_condition
+						";
+					}
+				}
+			}
 		}
 
 
@@ -1360,7 +1623,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('t.tag', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '7' AS search_relevancy
+				SELECT DISTINCT i.*, 5 AS search_relevancy
 				FROM item i
 					INNER JOIN item_tag it ON it.item_id=i.item_id
 					INNER JOIN tag t ON t.tag_id=it.tag_id
@@ -1375,7 +1638,7 @@ class Itemstore {
 			$sql__conditions = $this->_db->prepareFilter('icf.value', $terms, 'OR', 'LIKE');
 
 			$queries[] = "
-				SELECT DISTINCT i.*, '5' AS search_relevancy
+				SELECT DISTINCT i.*, 1 AS search_relevancy
 				FROM item i
 					INNER JOIN item_custom icf ON icf.item_id=i.item_id
 				WHERE ($sql__conditions)
@@ -1400,13 +1663,11 @@ class Itemstore {
 		";
 
 
-		// @debug :	Ecl::dump($sql);
-
-
 		$rows = $this->_db->newRecordset($sql, null)->toArray();
 
 		if (empty($rows)) { return new Ecl_Db_Emptyrecordset(null, ''); }
 
+		// Create a unique recordset
 		$unique_ids = array();
 		$unique_rows = array();
 

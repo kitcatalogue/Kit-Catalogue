@@ -6,7 +6,7 @@
  *
  * @package  Ecl
  * @static
- * @version  1.0.0
+ * @version  1.2.0
  */
 class Ecl_Helper_Filesystem {
 
@@ -112,12 +112,19 @@ class Ecl_Helper_Filesystem {
 	 *
 	 * Does no error checking.
 	 *
-	 * @param  string  $path  The path of the file to delete.
+	 * @param  mixed  $path  The path of the file(s) to delete.
 	 *
 	 * @return  boolean  The operation was successful.
 	 */
 	public static function deleteFile($path) {
-		return @unlink($path);
+		if (is_array($path)) {
+			foreach($path as $filepath) {
+				@unlink($filepath);
+			}
+			return true;
+		} else {
+			return @unlink($path);
+		}
 	}// /method
 
 
@@ -231,17 +238,54 @@ class Ecl_Helper_Filesystem {
 	 * Get the files within the given folder.
 	 *
 	 * @param  string  $path  The path of the folder to scan.
+	 * @param  string  $pattern  (optional) A regex pattern to whitelist files against. (default: '')
 	 *
-	 * @return  mixed  An array of filenames. On fail, null.
+	 * @return  array  An array of files.
 	 */
-	public static function getFiles($path) {
-		$files = null;
+	public static function getFiles($path, $pattern = '') {
+		$all_files = self::getFolderContents($path, true);
+		if (empty($all_files)) { return array(); }
+
+		$files = array();
+		if (empty($pattern)) {
+			foreach($all_files as $i => $name) {
+				if (!is_dir($path.'/'.$name)) {
+					$files[] = $name;
+				}
+			}
+		} else {
+			foreach($all_files as $i => $name) {
+				if ( (!is_dir($path.'/'.$name)) && (preg_match($pattern, $name)) ) {
+					$files[] = $name;
+				}
+			}
+		}
+		return $files;
+	}
+
+
+
+	/**
+	 * Get files older than the given age.
+	 *
+	 * @param  string  $path  The path of the folder to scan.
+	 * @param  integer  $age  The age limit in seconds.
+	 *
+	 * @return  mixed  An array of filenames.
+	 */
+	public static function getFilesOlderThan($path, $age) {
+		$files = array();
+
+		$now = time();
 
 		$all_files = self::getFolderContents($path);
 		if ($all_files) {
 			foreach($all_files as $i => $name) {
-				if (!is_dir($path.'/'.$name)) {
-					$files[] = $name;
+				$full_path = $path.'/'.$name;
+				if (!is_dir($full_path)) {
+					if ( ($now - filemtime($full_path)) > $age) {
+						$files[] = $name;
+					}
 				}
 			}
 		}

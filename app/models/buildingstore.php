@@ -51,6 +51,7 @@ class Buildingstore {
 			'site_id'      => $object->site_id ,
 			'latitude'     => $object->latitude ,
 			'longitude'    => $object->longitude ,
+			'url'          => $object->url ,
 		);
 
 		return $row;
@@ -74,6 +75,7 @@ class Buildingstore {
 		$object->site_id = $row['site_id'];
 		$object->latitude = $row['latitude'];
 		$object->longitude = $row['longitude'];
+		$object->url = $row['url'];
 
 		return $object;
 	}// /method
@@ -160,6 +162,7 @@ class Buildingstore {
 	 */
 	public function findAllUsed($visibility = null) {
 
+		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
 		$sql__visibility = $this->_db->escapeString($visibility);
 
 		return $this->_db->newRecordset("
@@ -173,23 +176,23 @@ class Buildingstore {
 
 
 	/**
-	 * Find buildings for department.
+	 * Find buildings for OU.
 	 *
-	 * @param  string  $department_id  The department ID to check for.
+	 * @param  string  $ou_id  The OU ID to check for.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findForDepartment($department_id) {
+	public function findForOU($ou_id) {
 
 		$binds = array (
-			'department'  => $department_id ,
+			'ou_id'  => $ou_id ,
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT s.*
 			FROM building s
 				INNER JOIN item i ON s.building_id=i.building
-			WHERE i.building=:building
+			WHERE i.ou_id=:ou_id
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject'));
 	}// /method
@@ -236,6 +239,32 @@ class Buildingstore {
 			$this->_lookup = $this->findAll()->toAssoc('id', 'name');
 		}
 		return (isset($this->_lookup[$building_id])) ? $this->_lookup[$building_id] : $default ;
+	}// /method
+
+
+
+	/**
+	 * Find an existing building with the given name, or create a new one with the name.
+	 *
+	 * If $building_to_create is given, then it will be inserted and returned as the new building.
+	 * If it is left empty, then a new building will be created.
+	 * Any newly created building will use the given name.
+	 *
+	 * @param  string  $name
+	 * @param  mixed  $building_to_create  (optional)
+	 *
+	 * @return  object  The building
+	 */
+	public function findOrCreateForName($name, $building_to_create = null) {
+		$building = $this->findForName($name);
+		if (!empty($building)) { return $building; }
+
+		if (empty($building_to_create)) {
+			$building = $this->newBuilding();
+		}
+		$building->name = $name;
+		$building->id = $this->insert($building);
+		return $building;
 	}// /method
 
 

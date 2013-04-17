@@ -103,6 +103,7 @@ class Ecl_Helper_Mime {
 	 */
 	public static function getTypeForExtension($file_ext, $default_type = 'application/octet-stream') {
 		// Remove any dot prefix
+		if (empty($file_ext)) { return $default_type; }
 		if ($file_ext[0]=='.') {
 			$file_ext = substr($file_ext, 1, strlen($file_ext));
 		}

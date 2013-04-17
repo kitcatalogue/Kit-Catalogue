@@ -1,0 +1,213 @@
+<?php
+$lang = $this->model('lang');
+
+
+$this->layout()->addGlobalJavascript();
+
+
+$default_output_fields = array (
+	'id', 'name', 'manufacturer', 'model', 'ou', 'building', 'room', 'asset_no',
+	'contact_1_email', 'contact_2_email', 'last_updated_email' ,
+);
+
+$js__default_output_fields = json_encode($default_output_fields);
+
+
+$order_directions = array (
+	'asc'  => 'Ascending' ,
+	'desc' => 'Descending' ,
+);
+
+
+
+$this->layout()->appendSection('layout.head', <<< EndHtml
+<style type="text/css">
+
+	#outputfields .checkbox_grid { margin-bottom: 1em; }
+
+	#table_orderby td+td { padding-left: 4em; }
+	#table_orderby label { display: block; font-weight: bold; color: #000; }
+
+</style>
+<script type="text/javascript">
+
+var default_outputs = {$js__default_output_fields};
+
+$(document).ready( function (){
+
+	$('#addoutput').on('click', function() {
+		var selected_options = $('#available_output option:selected');
+		if (selected_options.length > 0) {
+			$('#output').append(selected_options.clone());
+			selected_options.remove();
+		}
+	});
+
+	$('#removeoutput').on('click', function() {
+		var selected_options = $('#output option:selected');
+		if (selected_options.length > 0) {
+			$('#available_output').append(selected_options.clone());
+			selected_options.remove();
+		}
+	});
+
+	$('#output').on('dblclick', function(e) {
+		$('#removeoutput').trigger('click');
+	});
+
+	$('#available_output').on('dblclick', function() {
+		$('#addoutput').trigger('click');
+	});
+
+	$('#moveupoutput').on('click', function(e) {
+		$('#output option:selected').each( function() {
+   			$(this).insertBefore($(this).prev());
+  		});
+	});
+
+	$('#movedownoutput').on('click', function(e) {
+		$('#output option:selected').each( function() {
+   			$(this).insertAfter($(this).next());
+  		});
+	});
+
+
+	$('#report_form').on('submit', function(e) {
+		$('#output option').attr('selected', true);
+	});
+
+});
+
+</script>
+EndHtml
+);
+
+?>
+
+
+<h1 class="green-bar">Inventory Reporting</h1>
+<p>Customise your item report using the options below.</p>
+
+
+<form action="<?php echo $this->router()->makeAbsoluteUri('/admin/reports/inventory/show'); ?>" method="post" id="report_form">
+
+
+<fieldset>
+	<legend>Filtering Options</legend>
+	<p class="note">Use these filters to restrict items to those matching the specified properties.</p>
+	<dl class="form">
+
+		<dt><?php $this->out($lang['ou.label']); ?></dt>
+		<dd><?php $this->layout()->renderOUSelect('ou_id', $this->model('user')); ?></dd>
+
+		<dt><?php $this->out($lang['item.form.manufacturer']); ?></dt>
+		<dd><?php $this->layout()->renderManufacturerSelect('manufacturer'); ?></dd>
+
+		<dt><?php $this->out($lang['building.label']); ?></dt>
+		<dd><?php $this->layout()->renderBuildingSelect('building_id'); ?></dd>
+
+		<dt><?php $this->out($lang['cat.label']); ?></dt>
+		<dd><?php $this->layout()->renderCategorySelect('category'); ?></dd>
+
+		<dt><?php $this->out($lang['item.form.contact']); ?></dt>
+		<dd><?php $this->layout()->renderContactSelect('contact'); ?></dd>
+
+		<dt><?php $this->out($lang['item.form.visibility']); ?></dt>
+		<dd><?php $this->layout()->renderVisibilitySelect('visibility'); ?></dd>
+
+	</dl>
+</fieldset>
+
+
+<fieldset>
+	<legend>Reporting Fields</legend>
+	<p class="note">Select which information to report on by adding fields to the <em>Reporting Fields</em> box below.</p>
+	<p class="note">You can re-order the fields using the up/down arrow buttons.</p>
+	<table class="layout">
+	<tr>
+		<td>
+			<label for="output" style="display: block;">Reporting Fields</label>
+			<select name="output[]" id="output" size="13" multiple="multiple" style="min-width: 20em;">
+				<?php
+				$available_output_fields = $this->available_output_fields;
+				foreach($default_output_fields as $k) {
+					if (array_key_exists($k, $available_output_fields)) {
+						printf('<option value="%1$s">%2$s</option>', $k, $available_output_fields[$k]);
+						unset($available_output_fields[$k]);
+					}
+				}
+				?>
+			</select>
+		</td>
+		<td style="padding: 2.5em 0.5em; vertical-align: top;">
+			<input type="button" name="moveupoutput" id="moveupoutput" value="&uarr;" /><br />
+			<input type="button" name="movedownoutput" id="movedownoutput" value="&darr;" /><br />
+			<br />
+			<input type="button" name="addoutput" id="addoutput" value="&larr;" />
+			<input type="button" name="removeoutput" id="removeoutput" value="&rarr;" />
+		</td>
+		<td>
+			<label for="output" style="display: block;">Available Fields</label>
+			<select name="available_output[]" id="available_output" size="13" multiple="multiple" style="min-width: 20em;">
+				<?php
+				Ecl_Helper_Html::formOptions($available_output_fields);
+				?>
+			</select>
+		</td>
+	</tr>
+	</table>
+</fieldset>
+
+
+<fieldset>
+	<legend>Order By</legend>
+	<p class="note">You can order your results by up to three columns.</p>
+	<p class="note">An item's <em>name</em> is the title shown on the item's details page. Where an item has no "title" field, it uses "manufacturer model" instead.</p>
+	<table id="table_orderby">
+	<tr>
+		<td valign="top">
+			<label for="orderby_1">Order By</label>
+			<select name="orderby[1]" id="orderby_1">
+				<?php Ecl_Helper_Html::formOptions($this->orderby_fields, 'name'); ?>
+			</select>
+			<br />
+			<select name="orderdirection[1]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+		<td valign="top">
+			<label for="orderby_2">.. Then By</label>
+			<select name="orderby[2]" id="orderby_2">
+				<?php Ecl_Helper_Html::formOptions(array('' => '') + $this->orderby_fields); ?>
+			</select>
+			<br />
+			<select name="orderdirection[2]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+		<td valign="top">
+			<label for="orderby_3">.. Finally By</label>
+			<select name="orderby[3]" id="orderby_3">
+				<?php Ecl_Helper_Html::formOptions(array('' => '') + $this->orderby_fields); ?>
+			</select>
+			<br />
+			<select name="orderdirection[3]">
+				<?php Ecl_Helper_Html::formOptions($order_directions); ?>
+			</select>
+		</td>
+	</tr>
+	</table>
+</fieldset>
+
+
+<div class="button_bar">
+	<?php
+	Ecl_Helper_Html::formSubmit('submitview', 'View Report');
+	Ecl_Helper_Html::formSubmit('submitdownload', 'Download CSV');
+	?>
+</div>
+
+
+</form>
+
+

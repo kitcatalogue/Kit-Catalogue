@@ -221,6 +221,32 @@ class Departmentstore {
 
 
 	/**
+	 * Find an existing department with the given name, or create a new one with the name.
+	 *
+	 * If $dept_to_create is given, then it will be inserted and returned as the new department.
+	 * If it is left empty, then a new department will be created.
+	 * Any newly created department will use the given name.
+	 *
+	 * @param  string  $name
+	 * @param  mixed  $dept_to_create  (optional)
+	 *
+	 * @return  object  The Department.
+	 */
+	public function findOrCreateForName($name, $dept_to_create = null) {
+		$dept = $this->findForName($name);
+		if (!empty($dept)) { return $dept; }
+
+		if (empty($dept_to_create)) {
+			$dept = $this->newDepartment();
+		}
+		$dept->name = $name;
+		$dept->id = $this->insert($dept);
+		return $dept;
+	}// /method
+
+
+
+	/**
 	 * Find the requested number of departments, ranked by item usage, for the given visibility.
 	 *
 	 * @param  integer  $num  The number of results to return.
@@ -354,7 +380,7 @@ class Departmentstore {
 		);
 
 
-		// Get all the counts for each category
+		// Get all the counts for each department
 		$update_info = null;
 
 		foreach($visibility_types as $type => $sql) {

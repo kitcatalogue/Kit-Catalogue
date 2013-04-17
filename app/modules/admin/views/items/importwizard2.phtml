@@ -1,4 +1,6 @@
 <?php
+$lang = $this->model('lang');
+
 $this->layout()->addGlobalJavascript();
 $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/common.css'));
 $this->layout()->appendSection('layout.head', '
@@ -6,7 +8,8 @@ $this->layout()->appendSection('layout.head', '
 
 	#csvtable tr td { vertical-align: top; }
 
-	#csvtable tr.ignored td { height: 1em !important; overflow: none; background-color: #fdd; color: #aaa; }
+	#csvtable tr.ignored td { height: 1em !important; overflow: none; background-color: #d61; color: #333; }
+	#csvtable td.issue { background-color: #f99; color: #333; }
 
 </style>
 <script type="text/javascript">
@@ -43,19 +46,20 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 <ul>
 	<li>Empty rows are ignored.</li>
 	<li>All text is converted to UTF-8.</li>
-	<li>New categories, departments, contacts, etc, will be automatically added, where required.</li>
+	<li>New <?php $this->out(strtolower($lang['cat.label.plural'])); ?>, <?php $this->out(strtolower($lang['ou.label.plural'])); ?>, contacts, etc, will be automatically added, where required.</li>
 	<li>As well as the mandatory information, other important fields will be prompted for if missing from the spreadsheet.</li>
-	<li>Any visibility other than "public" will be reset to "internal".</li>
+	<li>Any <?php $this->out(strtolower($lang['item.form.visibility'])); ?> other than "public" will be reset to "internal".</li>
 </ul>
 
 
 <br />
 <h2>Imported Data</h2>
 <p>The first row (in grey) contains the field names the importer expects.  This will be the standard Item fields, plus any Custom Fields you have defined.</p>
+<p>Below that is the data from your spreadsheet, with the leftmost column containing the row number.</p>
+<p>The importer will map columns names automatically, so if you have re-ordered them they will be shown in their proper locations below.</p>
 
-<p>Below that is the data from your spreadsheet.  If your data contains header rows, exclude them here:</p>
 <dl class="form">
-	<dt><?php Ecl_Helper_Html::formLabel('ignore_rows', 'Rows to ignore ', 'style="display: inline; font-weight: bold;"'); ?>
+	<dt><?php Ecl_Helper_Html::formLabel('ignore_rows', 'Header rows to ignore ', 'style="display: inline; font-weight: bold;"'); ?>
 	<dd>
 		<?php
 		Ecl_Helper_Html::formSelect('ignore_rows', array (
@@ -71,20 +75,35 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 	</dd>
 </dl>
 
-<div class="scrollable" style="width: auto; height: 35em; margin-top: 0.5em; padding: 0; overflow:auto; border: 1px solid #666;">
+<?php
+	//Ecl::dump($this->datacsv);
+?>
+
+<div class="scrollable" style="width: auto; height: 25em; margin: 0.5em 0 1em 0; padding: 0; overflow:auto; border: 1px solid #666;">
 	<table id="csvtable" class="grid" style="margin: 0;">
 	<?php
+	$issues = array();
+
+	echo("\n<tr>\n\t");
+	echo("<th>&nbsp;</th>");
+	foreach($this->expected_headers as $h) {
+		$value = Ecl_Helper_Html::escape($h);
+		echo("<th>$value</th>");
+	}
+	echo("\n</tr>");
+
 	foreach($this->datacsv as $y => $row) {
+		$y++;
 		echo("\n<tr>\n\t");
-		if ($y==0) {
-			foreach($row as $x => $value) {
-				$value = Ecl_Helper_Html::escape($value);
-				echo("<th>$value</th>");
-			}
-		} else {
-			foreach($row as $x => $value) {
-				$value = Ecl_Helper_Html::escape($value);
+		echo("<td>$y</td>");
+
+		foreach($this->expected_headers as $h) {
+			if (array_key_exists($h, $row)) {
+				$value = Ecl_Helper_Html::escape($row[$h]);
 				echo("<td>$value</td>");
+			} else {
+				$issues[$h]['missing'] = true;
+				echo('<td class="issue">[missing]</td>');
 			}
 		}
 		echo("\n</tr>");
@@ -94,14 +113,56 @@ Ecl_Helper_Html::formHidden('filename', basename($this->filename));
 </div>
 
 
-<div class="button_bar">
+
+<?php
+if (!empty($issues)) {
+	$critical_columns = array ('item_title', 'manufacturer', 'organisational_unit', 'visibility', 'contact_1_email');
+	$found_critical_columns = array();
+	?>
+	<h2>Data Issues</h2>
+	<p>Your imported data had the following issues with these columns:
+	<dl>
+		<?php
+		foreach($issues as $col => $problems) {
+			if (in_array($col, $critical_columns)) {
+				$found_critical_columns[] = $col;
+			}
+			?>
+			<dt><?php $this->out($col); ?></dt>
+			<dd>
+				<?php
+				if (isset($problems['missing'])) {
+					echo('<p>This column is missing from your imported data.</p>');
+				}
+				?>
+			</dd>
+			<?php
+		}
+		?>
+	</dl>
+	<?php
+	if (!empty($found_critical_columns)) {
+		?>
+		<div class="feedback feedback_error">
+		<p class="title">Critical issue found with: <em><?php $this->out(implode('</em>, <em>', $found_critical_columns)); ?></em>.</p>
+		<p>Such issues could cause your import to fail.  Please check your data carefully before proceeding.</p>
+		</div>
+		<?php
+	} else {
+		?>
+		<p>These issues are not critical, but you should double-check you wish to proceed before continuing.</p>
+		<?php
+	}
+}
+?>
+
+<div class="button_bar" style="margin-top: 1em;">
 	<?php
 	Ecl_Helper_Html::formSubmit('submitback', '&lt; Back');
 	Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel');
 	Ecl_Helper_Html::formSubmit('submitnext', 'Next >');
 	?>
 </div>
-
 
 
 

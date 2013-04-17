@@ -4,6 +4,10 @@
  * periods of user inactivity.
  */
 
+
+date_default_timezone_set('Europe/London');
+setlocale(LC_ALL, 'en_UK.UTF8');
+
 @session_start();
 
 ?><!doctype html>

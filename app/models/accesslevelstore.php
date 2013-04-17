@@ -168,23 +168,23 @@ class Accesslevelstore {
 
 
 	/**
-	 * Find the access levels used for equipment in a department.
+	 * Find the access levels used for equipment in an OU.
 	 *
-	 * @param  string  $department_id  The department ID to check for.
+	 * @param  string  $ou_id  The OU ID to check for.
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findForDepartment($department_id) {
+	public function findForOU($ou_id) {
 
 		$binds = array (
-			'department_id'  => $department_id ,
+			'ou_id'  => $ou_id ,
 		);
 
 		return $this->_db->newRecordset("
 			SELECT DISTINCT a.*
 			FROM access a
 				INNER JOIN item i ON a.access_id=i.access
-			WHERE i.department=:department_id
+			WHERE i.ou_id=:ou_id
 			ORDER BY name ASC
 		", $binds, array($this, 'convertRowToObject') );
 	}// /method

@@ -3,7 +3,7 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 
 	protected $_default_format = 'json';
-	protected $_valid_formats = array('html', 'json');
+	protected $_valid_formats = array('csv', 'html', 'json', 'xml');
 
 
 
@@ -44,6 +44,7 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 			return;
 		}
 
+		$this->view()->api_root = $this->router()->makeAbsoluteUri('/api/public');
 
 		$dot_pos = strpos($this->_action, '.');
 		if ($dot_pos !== false) {
@@ -60,10 +61,9 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 
 	public function actionIndex() {
-		$api_root = $this->router()->makeAbsoluteUri('/api/public');
 		$this->view()->available_calls = array (
-			"{$api_root}/items.json"                   => 'List all available items.' ,
-			"{$api_root}/items.json?search=[keywords]" => 'Search the available items for a given query. Use the querystring parameter search to define the terms to search for.' ,
+			"/items.json"                   => 'List all available items.' ,
+			"/items.json?search=[keywords]" => 'Search the available items for a given query. Use the querystring parameter to define the terms to search for.' ,
 		);
 
 		$this->view()->render("api_public_index");

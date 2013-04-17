@@ -10,6 +10,14 @@ class Controller_Admin_Organisations extends Ecl_Mvc_Controller {
 	 * Before action method.
 	 */
 	public function beforeAction() {
+
+
+		// Organisation admin disabled
+		$this->abort();
+		$this->router()->action('404', 'error');
+		return false;
+
+
 		if (!$this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 			$this->abort();
 			$this->router()->action('unauthorised', 'error');

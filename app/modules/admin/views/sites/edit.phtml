@@ -46,6 +46,9 @@ Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey()
 	<dt>Name</dt>
 	<dd><?php Ecl_Helper_Html::formInput('name', 50, 250, $site->name); ?></dd>
 
+	<dt>URL</dt>
+	<dd><?php Ecl_Helper_Html::formInput('url', 50, 250, $site->url); ?></dd>
+
 </dl>
 
 <div>

@@ -47,16 +47,24 @@ $router->model($model);
 // Setup routing instructions
 
 
-// If using HTTPS, switch to it if user is authenticated
-if ($config['app.use_https']) {
-	if (!$model->get('user')->isAnonymous()) {
-		$secure_base_url = preg_replace('#^http:#', 'https:', $config['app.www']);
-		$router->baseUri($secure_base_url);
+
+$secure_base_url = preg_replace('#^http:#', 'https:', $config['app.www']);
+
+
+// if the current scheme is HTTPS, then continue to use it
+if ($model->get('request')->isSecure()) {
+	$router->baseUri($secure_base_url);
+} else {
+	// If using HTTPS, switch to it if user is authenticated
+	if ($config['app.use_https']) {
+		if (!$model->get('user')->isAnonymous()) {
+			$router->baseUri($secure_base_url);
+		}
 	}
 }
 
-
 include($config['app.include_root'].'/routes.php');
+
 
 
 // --------------------------------------------------------------------------------
@@ -77,6 +85,7 @@ if (empty($config['layout.template_file'])) {
 	}
 }
 $router->layout()->addBreadcrumb('Home', $router->makeAbsoluteUri('/'));
+
 
 
 // --------------------------------------------------------------------------------

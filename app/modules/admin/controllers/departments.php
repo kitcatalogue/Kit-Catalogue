@@ -10,6 +10,14 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 	 * Before action method.
 	 */
 	public function beforeAction() {
+
+		// Department admin disabled
+		$this->abort();
+		$this->router()->action('404', 'error');
+		return false;
+
+
+
 		if (!$this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 			$this->abort();
 			$this->router()->action('unauthorised', 'error');
@@ -53,7 +61,7 @@ class Controller_Admin_Departments extends Ecl_Mvc_Controller {
 				$new_id = $this->model('departmentstore')->insert($new_dept);
 
 				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($this->model()->lang['dept.label']) ." '{$new_dept->name} has been added");
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The '. strtolower($this->model()->lang['dept.label']) ." '{$new_dept->name}' has been added");
 				} else {
 					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new '. strtolower($this->model()->lang['dept.label']).'.');
 				}

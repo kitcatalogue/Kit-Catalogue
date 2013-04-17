@@ -1,3 +1,8 @@
+/**
+ * Kit-Catalogue Stylesheet.
+ *
+ * @version 1.1.0
+ */
 
 
 
@@ -83,7 +88,7 @@ body {
 	color: #999;
 	text-align: center;
 	border: 1px solid #fff;
-	background: url(../images/system/footer_bk.png) no-repeat left top;
+	background: #ddd url(../images/system/footer_bk.png) no-repeat left top;
 }
 
 #footer p {color:#555;margin:0.3em;padding:0;}
@@ -333,8 +338,9 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 	outline: none; /* Removes dotted border in FireFox */
 }
 
-.logo.institution {
+.institution {
 	float: right;
+	outline: none; /* Removes dotted border in FireFox */
 }
 
 
@@ -547,6 +553,8 @@ input { font-family: sans-serif; }   /* Fix IE's weird input-width bug */
 
 div.button_bar { margin: 0.5em 0; text-align: center; }
 
+div.button_bar input + input { margin-left: 6em; }
+
 
 .admin-link ,
 .admin_link {
@@ -580,6 +588,7 @@ a.admin_link {color:#FFF;padding:0.2em 1.5em 0 1em;}
 .side-bar h4 {padding-left:0.5em;font-size: 1em; font-weight: bold; margin: 0 0 0.5em 0;background-color:#F1F0EE;line-height:2em;}
 .side-bar ul { margin: 0 1em; }
 .side-bar ul li + li { border-top: 1px solid #F1F0EE; line-height:2em; }
+.side-bar ul#tree li + li { border: 0; }
 
 
 
@@ -741,8 +750,9 @@ div.item table.fields th {color:#000;}
 	
 .item-detail-left {
 	float: left;
+	margin-bottom: 1em; 
 	width: 25%;
-	zborder-top:1px solid #D0C6DF;
+	
 }
 
 	
@@ -768,8 +778,8 @@ a.enquire-link {
 }
 
 
-div.usage {border:1px solid #D7D8D2;margin-bottom:2em;}
-div.usage h2 { margin-bottom:0.4em;font-size: 15px; line-height:2em;padding-left:1em;background: url(../images/system/list_item_title_bk.png) repeat-x;border-bottom:1px solid #EBEBEC; }
+div.usage { border: 1px solid #D7D8D2; margin-bottom: 2em; }
+div.usage h2 { margin-bottom: 0.4em; font-size: 15px; line-height: 2em; padding-left: 1em; background: url(../images/system/list_item_title_bk.png) repeat-x; border-bottom: 1px solid #EBEBEC; }
 
 
 .item-body ul,
@@ -778,14 +788,15 @@ div.usage h2 { margin-bottom:0.4em;font-size: 15px; line-height:2em;padding-left
 	list-style: square;
 }
 
-div.images {border-bottom:1px dotted #CCC;margin-bottom:2em;padding-bottom:1em;}
-div.images img {border:1px solid #EFEFEF;padding:0.2em;}
-div.extra-image img {opacity:0.6;filter:alpha(opacity=60); /* For IE8 and earlier */}
-div.extra-image img:hover {opacity:1;filter:alpha(opacity=100); /* For IE8 and earlier */}
+div.images { border-bottom: 1px dotted #CCC; margin-bottom: 2em; padding-bottom: 1em; }
+div.images img { border: 1px solid #EFEFEF; }
+div.extra-image img { opacity: 0.6; filter: alpha(opacity=60); /* For IE8 and earlier */ }
+div.extra-image img:hover { opacity: 1; filter: alpha(opacity=100); /* For IE8 and earlier */ }
 
-.item-description { margin-left: 1em;  margin-bottom: 1em; }
 
-.item-specification { margin-left: 1em; margin-bottom: 1em; }
+.item-description,
+.item-specification,
+.item-embedded-content { margin-left: 1em; margin-bottom: 1em; }
 
 
 .item-description h1 ,
@@ -809,19 +820,23 @@ div.extra-image img:hover {opacity:1;filter:alpha(opacity=100); /* For IE8 and e
 .item-specification td { padding-right: 1em !important; border-bottom: 1px solid #ccc !important; }
 
 
+
+
+
 .extra-image { float: left; border: 2px solid #fff; }
 
 
-.item-files { margin-left: 1em; }
-.item-files ul {list-style:none;}
-.item-files ul li {height:2em;background: url(../images/system/file.gif) no-repeat;}
-.item-files a {padding-left:2em;}
+.item-resources { margin-left: 1em; }
+.item-resources ul { list-style: none; }
+.item-resources ul li.file { height: 2em; background: url(../images/system/file.gif) no-repeat; }
+.item-resources ul li.link { height: 2em; background: url(../images/system/link.gif) no-repeat; }
+.item-resources a { padding-left: 2em; }
 
 
 .item-children ul.item-list { margin: 0; }
 
-
-.item-date-updated { margin-top: 1em; border-top: 1px solid #ccc; }
+.item-id { margin-top: 1em; border-top: 1px solid #ccc;  }
+.item-date-updated { }
 
 
 .socialnetworkbuttons { clear: both; float: left; margin-top: 2em; }
@@ -884,6 +899,111 @@ div.atoz-bottom-line { height: 1em; z-index: -10; margin-top: -1px; padding-bott
 
 
 .atoz-item-list { width: 70%; }
+
+
+
+/* ==================================================================================
+ * UL Tree Lists 
+ * ==================================================================================
+ */
+ 
+ 
+#tree ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#tree ul ul {
+	background: url(../images/system/tree_line.png) repeat-y;
+	margin-left: 10px;
+}
+
+#tree ul ul>li {
+	margin: 0;
+	padding: 0 0 0 14px;
+	line-height: 20px;
+	background: url(../images/system/tree_node.png) no-repeat;
+}
+
+#tree ul ul li.last_child {
+	background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+}
+
+#tree ul ul li:last-child {
+	background: #fff url(../images/system/tree_lastnode.png) no-repeat;
+}
+
+
+
+/* ==================================================================================
+ * Modal Windows 
+ * ==================================================================================
+ */
+
+
+#modalwindow_mask {
+	position: absolute;
+	display: none;
+	z-index: 9000;
+	background-color: #000;
+}
+
+.window {
+	position: fixed;
+	display: none;
+	width: 500px;
+	height: auto;
+	z-index: 9999;
+	padding: 1em;
+	background-color: #e0e0e0;
+	border: 1px solid #999;
+	border-radius: 10px;
+}
+
+.window a.modalwindow_close {
+	float: right;
+	margin: -0.8em -0.5em 0 0;
+	color: #666;
+	font-weight: bold;
+}
+
+#modalwindow_desc {
+	clear: both;
+}
+
+
+
+/* ==================================================================================
+ * Lightbox 
+ * ==================================================================================
+ */
+
+
+#lightbox { display: none; width: 608px; background-color: #ddd; border: 2px solid #999; }
+
+#lightbox_top { text-align: right; }
+#lightbox_top a { float: none; margin: 0; } 
+
+#lightbox_imagecontainer { display: table-cell; clear: both; width: 604px; height: 604px; margin: 0 8px; background-color: #000; text-align: center; vertical-align: middle; }
+#lightbox_image { max-width: 600px; max-height: 600px; }
+
+#lightbox_list {
+	min-width: 608px;
+	overflow: hidden;
+	-ms-overflow-x: auto;
+	-ms-overflow-y: hidden;
+	overflow-x: auto;
+	overflow-y: hidden;
+	margin: 2px 0;
+	white-space: nowrap
+}
+
+#lightbox_list img { padding: 2px; }
+#lightbox_list img + img { margin: 0 2px; }
+
+#lightbox_list img { border: 2px solid #ddd; }
+#lightbox_list img.active { border-color: #000; }
 
 
 

@@ -39,12 +39,15 @@ class Item {
 	public $availability = '';
 	public $restrictions = '';
 
-	public $department = '';   // Department ID
 	public $usergroup = '';
 	public $access = '';   // Access ID
 	public $portability = '';
 
-	public $organisation = '';
+	public $department = '';   // @todo : Deprecated - remove
+	public $organisation = ''; // @todo : Deprecated - remove
+
+	public $ou = null;
+
 	public $site = '';       // Site ID
 	public $building = '';   // Building ID
 	public $room = '';
@@ -57,6 +60,7 @@ class Item {
 	public $visibility = 0;
 
 	public $image = '';
+	public $embedded_content = '';
 
 	public $manufacturer_website = '';
 	public $copyright_notice = '';
@@ -108,11 +112,13 @@ class Item {
 
 
 	public function __get($name) {
-
 		switch ($name) {
 			case 'idslug':
 				return "{$this->id}/". preg_replace('/[^a-z0-9]+/', '-', strtolower($this->name)) .'.html';
 				break;
+			case 'imageslug':
+					return "{$this->id}/image/{$this->image}";
+					break;
 			case 'last_update':
 				return (empty($this->date_updated)) ? $this->date_added : $this->date_updated ;
 				break;
@@ -178,12 +184,15 @@ class Item {
 	public function validate(&$errors = null) {
 		$errors = null;
 
-		if (empty($this->manufacturer)) { $errors['manufacturer'] = 'Manufacturer is empty.'; }
-		if (empty($this->model)) { $errors['model'] = 'Model is empty'; }
-		if (empty($this->department)) { $errors['department'] = 'Department is empty.'; }
+		if ( (empty($this->item_title)) && (empty($this->manufacturer)) ) {
+			$errors['title'] = 'Title is empty. Either Title or Manufacturer must be supplied.';
+			$errors['manufacturer'] = 'Manufacturer is empty. Either Title or Manufacturer must be supplied.';
+		}
+
+		if (empty($this->ou)) { $errors['ou'] = 'Organisational Unit is empty.'; }
 
 		if (empty($this->contact_1_email)) { $errors['contact_1_email'] = 'Contact 1 Email is empty.'; }
-		//elseif (filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
+		//elseif (false === filter_var($this->contact_1_email, FILTER_VALIDATE_EMAIL)) { $errors['contact_1_email'] = 'Contact 1 Email is an invalid email address.'; }
 
 		if (!empty($errors)) { return false; }
 

@@ -1,9 +1,20 @@
+<?php
+if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
+	?>
+	<div class="help-box">
+		<p>Help with administering and running your catalogue is available here:</p>
+		<p><a href="<?php echo $this->model('admin.help.manual'); ?>" target="_blank"><?php $this->out($this->model('admin.help.manual_title')); ?> </a></p>
+	</div>
+	<?php
+}
+?>
+
 <h1>Administration Options</h1>
 
 <table class="layout" style="width: 100%;">
 <tr>
 	<td>
-		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+		<div class="white-box">
 			<h4>Item administration</h4>
 			<p class="note">To edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
 			<ul>
@@ -29,7 +40,7 @@
 			</ul>
 		</div>
 
-		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+		<div class="white-box">
 			<h4>Homepage blocks</h4>
 			<p class="note">Customisation of which blocks appear on the homepage</p>
 			<ul>
@@ -38,25 +49,30 @@
 		</div>
 	</td>
 	<td>
-		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+		<div class="white-box">
 			<h4>Categorisation</h4>
 			<p class="note">Catalogue metadata</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/categories/index/'); ?>"><?php $this->out($this->model()->lang['cat.label.plural']); ?></a></li>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'); ?>"><?php $this->out($this->model()->lang['access.label.plural']); ?></a></li>
+				<?php if (false) { ?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisations/index/'); ?>"><?php $this->out($this->model()->lang['org.label.plural']); ?></a></li>
+				<?php } ?>
 			</ul>
 			<br />
 			<p class="note">Locations</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/sites/index/'); ?>"><?php $this->out($this->model()->lang['site.label.plural']); ?></a></li>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/buildings/index/'); ?>"><?php $this->out($this->model()->lang['building.label.plural']); ?></a></li>
+				<?php if (false) { ?>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/departments/index/'); ?>"><?php $this->out($this->model()->lang['dept.label.plural']); ?></a></li>
+				<?php } ?>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisationalunits/index/'); ?>"><?php $this->out($this->model()->lang['ou.label.adminsection']); ?></a></li>
 			</ul>
 		</div>
 	</td>
 	<td>
-		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+		<div class="white-box">
 			<h4>Users</h4>
 			<p class="note">User managment</p>
 			<ul>
@@ -64,7 +80,7 @@
 			</ul>
 		</div>
 
-		<div class="white-box" style="margin: 1em 0.5em 1em 0.5em; padding: 1em;">
+		<div class="white-box">
 			<h4>Reports</h4>
 			<p class="note">Report managment</p>
 			<ul>

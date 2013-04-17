@@ -46,10 +46,17 @@ $lang = $this->model('lang');
 
 			<?php
 			$org_logo = $this->model()->get('org.logo');
+			$org_www = $this->model()->get('org.www');
 			if (!empty($org_logo)) {
-				?>
-				<a class="logo institution" href="#"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
-				<?php
+				if (!empty($org_www)) {
+					?>
+					<a class="institution" href="<?php echo $org_www; ?>"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+					<?php
+				} else {
+					?>
+					<span class="institution"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></span>
+					<?php
+				}
 			}
 			$this->renderSection('layout.header');
 
@@ -74,6 +81,10 @@ $lang = $this->model('lang');
 			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 				?>
 				<li><a href="<?php echo $www_root; ?>/admin">administration</a></li>
+				<?php
+			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/ouadmin">administration</a></li>
 				<?php
 			}
 			?>
@@ -107,15 +118,36 @@ $lang = $this->model('lang');
 			?>
 
 			<ul id="topnav" class="cf">
-				<li><a href="<?php echo $www_root; ?>/">Home</a></li>
 				<?php
-				if ( (!$user->isAnonymous()) || $this->model('app.allow_anonymous') ) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/<?php echo $lang['cat.route']; ?>/"><?php $this->out($lang['cat.label.plural']); ?></a></li>
-				<li><a href="<?php echo $www_root; ?>/<?php echo $lang['dept.route']; ?>/"><?php $this->out($lang['dept.label.plural']); ?></a></li>
-				<li><a href="<?php echo $www_root; ?>/a-z/">Manufacturer A - Z</a></li>
-				<?php
+				$topnav = array (
+					'home'         => '/',
+					'category'     => "/{$lang['cat.route']}/",
+					'department'   => "/{$lang['dept.route']}/",
+					'ou'           => "/ou/",
+					'manufacturer' => "/a-z/",
+					'facility'     => "/facility/",
+					'tag'          => "/tag/",
+				);
+
+
+				if ( ($user->isAnonymous()) && (!$this->model('app.allow_anonymous')) ) {
+					$topnav = array_intersect_key($topnav, array('home'));
 				}
+
+				if ($this->model('app.use_ou_tree')) {
+					unset($topnav['department']);
+				} else {
+					unset($topnav['ou']);
+				}
+
+				foreach($topnav as $id => $link) {
+					if ($this->model("menu.{$id}.enabled")) {
+						?>
+						<li><a href="<?php echo $www_root . $link; ?>"><?php $this->out($this->model("menu.{$id}.label")); ?></a></li>
+						<?php
+					}
+				}
+
 				if ($user->isAnonymous()) {
 					?>
 					<li class="user"><a class="signin" href="<?php echo $www_root; ?>/signin/">Sign In</a></li>

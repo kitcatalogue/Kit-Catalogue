@@ -27,7 +27,7 @@ class Controller_Myprofile extends Ecl_Mvc_Controller {
 	public function actionItems() {
 		$user = $this->model('user');
 
-		$this->view()->items = $this->model('itemstore')->findForContact($user->email);
+		$this->view()->items = $this->model('itemstore')->findForUser($user);
 		$this->view()->render('myprofile_items');
 	}// /method
 
