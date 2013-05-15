@@ -77,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.1';
+$config['app.version'] = '2.0.2';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -246,6 +246,11 @@ $config['layout.date_format_report'] = 'd M Y';
 
 // Show the sign-in prompt to anonymous users on every page
 $config['layout.signin_prompt_enabled'] = true;
+
+// HTML message to show for the sign-in prompt.
+// If you include the text  [[SIGNIN_URL]]  it will be replaced with the signin URL automatically.
+// E.g.  '<a href="[[SIGNIN_URL]]">click here to login</a>' will give a working link to the signin page.
+$config['layout.signin_prompt'] = 'You are currently viewing only those items made visible to the public. <a href="[[SIGNIN_URL]]" style="font-weight: bold;">Click here to sign in</a> and view the full catalogue.';
 
 
 

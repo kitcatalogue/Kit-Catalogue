@@ -11,6 +11,21 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.2.0.2  (limited release)
+
+
+== Config
+
+Added layout.signin_prompt setting to control the message shown to unauthenticated users.
+
+
+== General
+
+Fixed an incorrect link to the old department section, that should point to the new OU section.
+
+
+
+--------------------------------------------------------------------------------
 v.2.0.1  (released 23-04-2013)
 
 
