@@ -157,8 +157,8 @@ $lang = $this->model('lang');
 				<li>
 			</ul>
 		</div>
-		<?php
 
+		<?php
 		if ($this->hasBreadcrumbs()) {
 			?>
 			<ul id="breadcrumbs">
@@ -168,14 +168,15 @@ $lang = $this->model('lang');
 		}
 
 		if ( ($user->isAnonymous()) && (true === $this->model('layout.signin_prompt_enabled')) ){
+			$signin_prompt = str_replace('[[SIGNIN_URL]]', $this->router()->makeAbsoluteUri('/signin/'), $this->model('layout.signin_prompt'));
 			?>
 			<p class="signin_warning">
-				You are currently viewing only those items made visible to the public. <a href="<?php echo $this->router()->makeAbsoluteUri("/signin/"); ?>" style="font-weight: bold;">Click here to sign in</a> and view the full catalogue.
+				<?php echo $signin_prompt; ?>
 			</p>
 			<?php
 		}
-
 		?>
+
 	</div>
 
 	<?php
