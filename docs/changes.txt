@@ -9,6 +9,15 @@ changes and improvements to the system will be detailed in here for the most
 recent versions of the software.
 
 
+--------------------------------------------------------------------------------
+v.2.0.3  (released 02-05-2013)
+
+
+== General
+
+Fixed an issue with the installation wizard which caused the database installation to fail on some PHP-MySQL configurations. 
+
+
 
 --------------------------------------------------------------------------------
 v.2.0.2  (limited release)
@@ -21,7 +30,7 @@ Added layout.signin_prompt setting to control the message shown to unauthenticat
 
 == General
 
-Fixed an incorrect link to the old department section, that should point to the new OU section.
+Fixed an incorrect link to the old department section that should point to the new OU section.
 
 
 

@@ -518,12 +518,11 @@ CREATE TABLE `ou` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
 --
 -- INSERT root OU record (tree record is inserted later) 
 --
 
-REPLACE INTO `ou` (ou_id, name, url)
+INSERT INTO `ou` (ou_id, name, url)
 VALUES (1, 'Catalogue', '');
 
 
@@ -553,7 +552,7 @@ CREATE TABLE `ou_tree` (
 -- INSERT OU tree root node
 --
 
-REPLACE INTO `ou_tree` (id, tree_left, tree_right, tree_level, name, ref)
+INSERT INTO `ou_tree` (id, tree_left, tree_right, tree_level, name, ref)
 VALUES (1, 1, 2, 0, 'Catalogue', 1);
 
 
@@ -626,7 +625,7 @@ CREATE TABLE `system_authorisation` (
 
 /*!40000 ALTER TABLE `system_authorisation` DISABLE KEYS */;
 INSERT INTO `system_authorisation` (`agent`,`item`,`auth`) VALUES 
- ('admin','system','can_admin')
+ ('admin','system','can_admin');
 /*!40000 ALTER TABLE `system_authorisation` ENABLE KEYS */;
 
 
@@ -692,7 +691,7 @@ CREATE TABLE `user` (
 
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`,`username`,`forename`,`surname`,`email`,`salt`,`password`) VALUES 
- (1,'admin','Admin','Account','fake@example.com','builtin','7c151b7da91a7bff909ac8967b5c61cb')
+ (1,'admin','Admin','Account','fake@example.com','builtin','7c151b7da91a7bff909ac8967b5c61cb');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 

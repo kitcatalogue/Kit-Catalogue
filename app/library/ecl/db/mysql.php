@@ -165,7 +165,7 @@ class Ecl_Db_Mysql {
 	/**
 	 * Executes an SQL dump file, running one command at a time.
 	 *
-	 * Supports ALTER, CREATE, DROP, INSERT AND UPDATE statements.
+	 * Supports ALTER, CREATE, DROP, INSERT, REPLACE AND UPDATE statements.
 	 *
 	 * This function processes the entire SQL script in one go,
 	 * for large dump files this could consume large amounts of memory.
@@ -186,7 +186,7 @@ class Ecl_Db_Mysql {
 		$rand = rand(1,999999);
 		$marker ="!~%MARKER:{$rand}%~!";
 
-		$sql = preg_replace('%^\s*(ALTER|CREATE|DROP|INSERT|UPDATE)%ims', "$marker\\1", $sql);
+		$sql = preg_replace('%^\s*(ALTER|CREATE|DROP|INSERT|REPLACE|UPDATE)%ims', "$marker\\1", $sql);
 
 		// Split the SQL into an array of SQL statements
 		$statements = explode($marker, $sql);

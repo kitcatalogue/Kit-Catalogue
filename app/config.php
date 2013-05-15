@@ -77,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.2';
+$config['app.version'] = '2.0.3';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -219,7 +219,7 @@ $config['import.date_format_mdy'] = false;
  */
 
 // The direct layout template file-path
-// The Kit-Catalogue default layout is '/app/layouts/default.phtml'
+// The Kit-Catalogue default layout is '/app/layouts/kitcatalogue.phtml'
 // Provide a path to a template file to override the default layout.
 // e.g. '/local/layouts/mytemplate.phtml' would cause Kit-Catalogue to use your local 'mytemplate.phtml' file.
 $config['layout.template_file'] = null;
