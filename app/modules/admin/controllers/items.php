@@ -792,7 +792,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$standard_keys = Ecl_Helper_Array::changeValueCase($standard_columns, CASE_LOWER);
 
 				$custom_columns = Ecl_Helper_Array::extractColumn($this->model('customfieldstore')->findAll()->toArray(), 'name', true);
-
+				$custom_columns = Ecl_Helper_Array::changeValueCase($custom_columns, CASE_LOWER);
 
 				$items = array();    // Assoc-array of items being imported and their 'issues'
 				$are_issues = false;
@@ -987,7 +987,6 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 						}
 					}
 
-
 					// Add the item
 					$items[$i]['item'] = $item;
 					$items[$i]['issues'] = $issues;
@@ -1175,11 +1174,13 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 							$custom = array();
 							if (!empty($custom_fields)) {
 								foreach($custom_fields as $field) {
-									if ( (isset($info['custom'][$field->name])) && (!empty($info['custom'][$field->name])) ) {
-										$custom[$field->id] = $info['custom'][$field->name];
+									$field_name = strtolower($field->name);
+									if ( (isset($info['custom'][$field_name])) && (!empty($info['custom'][$field_name])) ) {
+										$custom[$field->id] = $info['custom'][$field_name];
 									}
 								}
 							}
+
 
 							if (!empty($custom)) {
 								$this->model('itemstore')->setItemCustomFields($item->id, $custom);

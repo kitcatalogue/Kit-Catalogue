@@ -11,8 +11,22 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
-v.2.0.0  (released 16-04-2013)
+v.2.0.1  (released 23-04-2013)
 
+
+== Administration
+
+Fixed CSV importer not reading custom field data.
+
+
+== General
+
+Improved display of manufacturer website link when no manufacturer name has been given. 
+
+
+
+--------------------------------------------------------------------------------
+v.2.0.0  (released 16-04-2013)
 
 
 IMPORTANT: Kit-Catalogue now uses a new upgrade process.
