@@ -247,10 +247,14 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							&& (substr($item->manufacturer_website, 0, 8)!='https://') ) {
 								$start_url = 'http://';
 						}
-						$manufacturer_website = sprintf('&nbsp;&nbsp;&nbsp;(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', htmlentities("{$start_url}{$item->manufacturer_website}"));
+						$manufacturer_website = sprintf('(<a href="%1$s" target="_blank">manufacturer\'s website</a>)', htmlentities("{$start_url}{$item->manufacturer_website}"));
 					}
 				}
-				drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
+				if ( (!empty($manufacturer_website)) && (empty($item->manufacturer)) ) {
+					printf('<td colspan="2">%1$s</td>', $manufacturer_website);
+				} else {
+					drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
+				}
 
 				if ($this->model('fieldview')->show('item.model')) {
 					drawField($lang['item.label.model'], $this->escape($item->model));
