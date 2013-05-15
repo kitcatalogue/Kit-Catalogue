@@ -67,17 +67,6 @@ EndJS
 );
 
 
-
-if ($this->model('security')->checkAuth(array(KC__AUTH_CANADMIN, KC__AUTH_CANEDIT))) {
-	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
-	$back_url = base64_encode($this->request()->relativeUri());
-	$editlink = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
-} else {
-	$editlink = '';
-}
-
-
-
 $options = array(
 	'category'      => array() ,
 	'department'    => array() ,
@@ -203,6 +192,20 @@ if ($use_category) {
 if (isset($options['manufacturer'])) { ksort($options['manufacturer']); }
 if (isset($options['technique'])) { ksort($options['technique']); }
 
+
+
+if ($this->model('security')->canAddItems()) {
+	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
+	$back_url = base64_encode($this->request()->relativeUri());
+
+	$presets = '';
+	foreach($this->selected_params as $k => $v) {
+		$presets .= "&preset[$k]=$v";
+	}
+	$editlink = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s%3$s">add an item</a>', $edit_url, $back_url, $presets);
+} else {
+	$editlink = '';
+}
 
 
 

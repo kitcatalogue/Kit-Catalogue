@@ -71,6 +71,12 @@ class Security {
 
 
 
+	public function canAddItems() {
+		return ($this->checkAuth(array(KC__AUTH_CANADMIN, KC__AUTH_CANEDIT, KC__AUTH_CANOUADMIN)));
+	}
+
+
+
 	/**
 	 * Check if the current user has the requested auth on any object.
 	 *

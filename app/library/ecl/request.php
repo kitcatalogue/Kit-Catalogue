@@ -73,6 +73,7 @@ Class Ecl_Request {
 		// Process GET params
 		$this->_get_params = Ecl_Helper_String::parseQuerystring($_SERVER['QUERY_STRING']);
 
+
 		// Process PUT params
 		if ($this->isPut()) {
 			$this->_put_params = Ecl_Helper_String::parseQuerystring(file_get_contents('php://input'));

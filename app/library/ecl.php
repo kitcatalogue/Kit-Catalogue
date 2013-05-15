@@ -135,7 +135,7 @@ class Ecl {
 			if ( (!$reuse) || (!isset(self::$_factoried_objects[$class])) || (!is_object(self::$_factoried_objects[$class]))) {
 				// Does the class have a singleton() method?
 				if (is_callable(array($class, 'singleton'))) {
-					$obj = $class::singleton($config);   //call_user_func(array($class, 'singleton'));
+					$obj = $class::singleton($config);
 					if (!is_object($obj)) {
 						$obj = null;
 					}

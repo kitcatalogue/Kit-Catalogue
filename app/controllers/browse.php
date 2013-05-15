@@ -33,7 +33,12 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 		$main_param = null;
 
 		$this->_fillParamVariables($selected_params, $uri_params, $main_param);
-		$selected_params['visibility'] = $user->param('visibility');
+
+		// If internal, then don't restrict the view
+		$user_vis = $user->param('visibility');
+		if ($user_vis && (KC__VISIBILITY_INTERNAL != $user_vis)) {
+			$selected_params['visibility'] = $user_vis;
+		}
 
 		$this->view()->main_param = $main_param;
 		$this->view()->selected_params = $selected_params;

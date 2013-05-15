@@ -29,7 +29,10 @@ class Controller_Search extends Ecl_Mvc_Controller {
 
 		$query = str_replace('%', '\%', $query);
 
-		$this->view()->items = $this->model('itemstore')->searchItems($query, $this->model('user')->param('visibility'));
+		$search_options = array(
+			'prioritise_facilities' => ($this->model('search.prioritise_facilities')),
+		);
+		$this->view()->items = $this->model('itemstore')->searchItems($query, $this->model('user')->param('visibility'), $search_options);
 		$this->view()->render('search_results');
 	}// /method
 

@@ -77,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.3';
+$config['app.version'] = '2.0.4';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -403,6 +403,9 @@ $config['search.include_ou_descendents'] = true;
 
 // Include items where search terms match associated tags
 $config['search.include_tags'] = true;
+
+// Prioritise facility records
+$config['search.prioritise_facilities'] = false;
 
 
 

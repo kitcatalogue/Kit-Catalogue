@@ -62,13 +62,35 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 			if (!empty($item_id)) {
 				$new_item = false;
 				$item = $this->model('itemstore')->find($item_id);
+			} else {
+				// Load any preset values
+				$presets = $this->request()->get('preset');
+
+				if ($presets && is_array($presets)) {
+					foreach($presets as $k => $v) {
+						switch ($k) {
+							case 'category':
+								break;
+							case 'manufacturer':
+								$item->manufacturer = $v;
+								break;
+							case 'ou':
+								$item->ou_id = $v;
+								break;
+							case 'technique':
+								$item->technique = $v;
+								break;
+							default:
+								break;
+						}
+					}
+				}
 			}
 		} else {
 			// The item is a pre-existing one
 			$new_item = false;
 			$item = $this->model('itemstore')->find($item_id);
 		}
-
 
 
 		if (empty($item)) {
@@ -157,17 +179,18 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 			// OU
 			$can_change_ou = false;
-
 			$allow_any_ou = false;
 			$valid_ou = array();
 
 			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 				$can_change_ou = true;
 				$allow_any_ou = true;
-			} elseif ($this->model('security')->checkOUAuth($item->ou, KC__AUTH_CANOUADMIN)) {
-				$can_change_ou = true;
-				$allow_any_ou = false;
+			} else {
 				$valid_ou = $this->model('security')->findOUsForAuth(KC__AUTH_CANOUADMIN);
+				if ($valid_ou) {
+					$can_change_ou = true;
+					$allow_any_ou = false;
+				}
 			}
 
 			if ($can_change_ou) {

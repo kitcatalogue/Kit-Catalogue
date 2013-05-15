@@ -181,6 +181,12 @@ class Item {
 
 
 
+	public function isParent() {
+		return ($this->is_parent);
+	}
+
+
+
 	public function validate(&$errors = null) {
 		$errors = null;
 
