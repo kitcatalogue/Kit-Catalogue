@@ -258,6 +258,12 @@ $config['layout.signin_prompt'] = 'You are currently viewing only those items ma
  * Menu Settings
  */
 
+// Order to display menu items
+// Each item is identified by its default name
+// Any items missing from the order list will be appended to the menu
+// Whether an item is shown or not is controlled by the menu.___.enabled settings
+$config['menu.order'] = array('home', 'category', 'department', 'ou', 'manufacturer', 'facility', 'tag');
+
 // Home menu option
 $config['menu.home.enabled'] = true;
 $config['menu.home.label'] = 'Home';

@@ -91,8 +91,13 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			$image_alt = $item->name;
 			$image = $this->router()->makeAbsoluteUri("/item/{$item->imageslug}");
 		}
+
+		$extra_classes = '';
+		if ($item->is_parent) {
+			$extra_classes = 'is_parent';
+		}
 		?>
-		<li class="item" id="item-<?php $this->out($item->id); ?>">
+		<li class="item <?php echo $extra_classes; ?>" id="item-<?php $this->out($item->id); ?>">
 			<?php
 			if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
