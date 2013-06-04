@@ -386,6 +386,16 @@ $config['recaptcha.private_key'] = '';
 
 
 /*
+ * Browse Settings
+ */
+
+// Prioritise facility records
+// If true, Facility/Parent items will be returned first.
+$config['browse.prioritise_facilities'] = false;
+
+
+
+/*
  * Search Settings
  */
 
@@ -411,6 +421,7 @@ $config['search.include_ou_descendents'] = true;
 $config['search.include_tags'] = true;
 
 // Prioritise facility records
+// If true, Facility/Parent items will be returned first.
 $config['search.prioritise_facilities'] = false;
 
 

@@ -15,8 +15,9 @@ v.2.0.4  (release TBC)
 
 == Config
 
-Added search.prioritise_facilities setting to control whether facility items will be listed first in search results.
-Added menu.order setting to control the order of items in the main menu.
+Added 'browse.prioritise_facilities' setting to control whether facility items will be listed first in browse results.
+Added 'search.prioritise_facilities' setting to control whether facility items will be listed first in search results.
+Added 'menu.order' setting to control the order of items in the main menu.
  
 
 == General

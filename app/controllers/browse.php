@@ -48,7 +48,12 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 			$selected_params['ou_id'] =  $this->model('ou_tree')->findSubRefsForRef($selected_params['ou']);
 			unset($selected_params['ou']);
 		}
-		$this->view()->items = $this->model('itemstore')->findForSearchParams($selected_params);
+		if ($this->model('browse.prioritise_facilities')) {
+			$order_by = array('is_parent' => 'desc', 'name' => 'asc');
+		} else {
+			$order_by = array('name' => 'asc');
+		}
+		$this->view()->items = $this->model('itemstore')->findForSearchParams($selected_params, $order_by);
 
 		$this->view()->render('browse_view');
 	}// /method
