@@ -420,7 +420,7 @@ class Ecl_Helper_String {
 			$key = trim($key);
 
 			// Check and process array indicators ([])
-
+			// @todo : parseQuerystring cannot handle assoc array parameters
 			if (strpos($key, '[]')!==false) {
 				$temp = strrev($key);
 				if (strpos($temp, '[]')==0) {
@@ -440,7 +440,6 @@ class Ecl_Helper_String {
 			}
 		}
 		// /foreach(kv-pair)
-
 
 		return $kv_pairs;
 	}// /method

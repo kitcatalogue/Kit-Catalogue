@@ -400,7 +400,7 @@ if ($this->model('admin.item.editors.enabled')) {
 
 		<dt><?php Ecl_Helper_Html::formLabel('manufacturer_website', $lang['item.form.manufacturer_website']); ?></dt>
 		<dd>
-			<p class="note">A specific web page containing the of manufactuer's information about this item, or the manufacturer's main website.</p>
+			<p class="note">A specific web page containing the of manufacturer's information about this item, or the manufacturer's main website.</p>
 			<?php Ecl_Helper_Html::formInput('manufacturer_website', 80, 250, $item->manufacturer_website); ?>
 		</dd>
 
@@ -563,7 +563,11 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt>Associated <?php $this->out($lang['cat.label.plural']); ?></dt>
 		<dd>
 			<?php
-			$selected = $this->model('categorystore')->findForItem($item->id)->toColumn('id');
+			if ($new_item) {
+				$selected = $this->request()->post('category');
+			} else {
+				$selected = $this->model('categorystore')->findForItem($item->id)->toColumn('id');
+			}
 			Ecl_Helper_Html::formCheckboxGrid('category', $this->model('categorystore')->findAll()->toAssoc('id', 'name'), 3, $selected);
 			?>
 			&nbsp; &nbsp;

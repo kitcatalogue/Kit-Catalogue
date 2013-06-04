@@ -1430,11 +1430,18 @@ class Itemstore {
 	 *
 	 * @param  string  $keywords  The terms to search for.
 	 * @param  integer  $visibility  The visibility of the items to search for.
-	 * @param  boolean  $whole_term_only  Only the entire keyword string is searched for. (default: false)
+	 * @param  array  $options  Assoc array of search options.
 	 *
 	 * @return  mixed  The RecordSet of objects found.  On fail, null.
 	 */
-	public function searchItems($keywords, $visibility, $whole_term_only = false) {
+	public function searchItems($keywords, $visibility, $options = array()) {
+		$default_options = array (
+			'prioritise_facilities' => false ,   // Facility items are returned first
+			'whole_term_only'       => false ,   // Only the entire keyword string is searched for
+		);
+		$options = array_merge($default_options, $options);
+
+
 		$items = null;
 
 		$keywords = trim($keywords);
@@ -1449,7 +1456,7 @@ class Itemstore {
 		// Grab the terms and run LIKE queries on everything we need.
 
 		$terms = array();
-		if ($whole_term_only) {
+		if ($options['whole_term_only']) {
 			if (strlen($keywords)>=2) {
 				$terms = array("%{$keywords}%");
 			}
@@ -1654,14 +1661,23 @@ class Itemstore {
 			$sql = $this->_db->unionise($queries, 'ALL');
 		}
 
-		$sql .= "
-			ORDER BY search_relevancy DESC,
-			CASE
-				WHEN title<>'' THEN title
-				ELSE manufacturer
-			END ASC, manufacturer, model, acronym
-		";
-
+		if ($options['prioritise_facilities']) {
+			$sql .= "
+				ORDER BY is_parent DESC, search_relevancy DESC,
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, manufacturer, model, acronym
+			";
+		} else {
+			$sql .= "
+				ORDER BY search_relevancy DESC,
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, manufacturer, model, acronym
+			";
+		}
 
 		$rows = $this->_db->newRecordset($sql, null)->toArray();
 

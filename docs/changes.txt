@@ -10,6 +10,29 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.2.0.4  (release TBC)
+
+
+== Config
+
+Added 'browse.prioritise_facilities' setting to control whether facility items will be listed first in browse results.
+Added 'search.prioritise_facilities' setting to control whether facility items will be listed first in search results.
+Added 'menu.order' setting to control the order of items in the main menu.
+ 
+
+== General
+
+Added item's OU is set accordingly when adding a new item from an OU listing page.
+Added HTML class to parent-items in lists (is_parent).
+
+Fixed an error in the browsing page which would hide public items from authenticated users.
+Fixed access permission problems for OU-Admin roles.
+Fixed minor typo errors in the admin area.
+Fixed selected category tick boxes being cleared when an error prevents a new item from saving.
+
+
+
+--------------------------------------------------------------------------------
 v.2.0.3  (released 02-05-2013)
 
 

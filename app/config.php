@@ -77,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.3';
+$config['app.version'] = '2.0.4';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -258,6 +258,12 @@ $config['layout.signin_prompt'] = 'You are currently viewing only those items ma
  * Menu Settings
  */
 
+// Order to display menu items
+// Each item is identified by its default name
+// Any items missing from the order list will be appended to the menu
+// Whether an item is shown or not is controlled by the menu.___.enabled settings
+$config['menu.order'] = array('home', 'category', 'department', 'ou', 'manufacturer', 'facility', 'tag');
+
 // Home menu option
 $config['menu.home.enabled'] = true;
 $config['menu.home.label'] = 'Home';
@@ -380,6 +386,16 @@ $config['recaptcha.private_key'] = '';
 
 
 /*
+ * Browse Settings
+ */
+
+// Prioritise facility records
+// If true, Facility/Parent items will be returned first.
+$config['browse.prioritise_facilities'] = false;
+
+
+
+/*
  * Search Settings
  */
 
@@ -403,6 +419,10 @@ $config['search.include_ou_descendents'] = true;
 
 // Include items where search terms match associated tags
 $config['search.include_tags'] = true;
+
+// Prioritise facility records
+// If true, Facility/Parent items will be returned first.
+$config['search.prioritise_facilities'] = false;
 
 
 
