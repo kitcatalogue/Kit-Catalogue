@@ -568,16 +568,21 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					if (!empty($files)) {
 						$image_ext = array ('jpg', 'jpeg', 'gif', 'png');
 						foreach($files as $file) {
-							$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
-							if (in_array($extension, $image_ext)) {
-								if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
-									$img = Ecl_Image::createFromFile("{$item_path}/{$file->filename}");
-									$img->resizeWithinLimits($this->model('item.image.max_width'), $this->model('item.image.max_height'));
-									$img->save();
+							$file_path = "{$item_path}/{$file->filename}";
+							if (file_exists($file_path)) {
+								$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
+								if (in_array($extension, $image_ext)) {
+									if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
+										$img = Ecl_Image::createFromFile($file_path);
+										if ($img) {
+											$img->resizeWithinLimits($this->model('item.image.max_width'), $this->model('item.image.max_height'));
+											$img->save();
+										}
+									}
+									$image_files[] = $file;
 								}
-								$image_files[] = $file;
 							}
-						}
+						}// /foreach(file)
 					}
 
 

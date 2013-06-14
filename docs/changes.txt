@@ -10,6 +10,17 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
+v.2.0.5  (release TBC)
+
+
+== Admin
+
+Added extra error checking for image resizing when editing an item.
+
+
+
+
+--------------------------------------------------------------------------------
 v.2.0.4  (release 04-06-2013)
 
 
