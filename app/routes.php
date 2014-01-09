@@ -35,6 +35,10 @@ $router->addroute('*', 'api/public/:action', array (
 	'controller'  => 'apipublic' ,
 ));
 
+$router->addroute('*', 'api/public/:action/:id', array (
+		'controller'  => 'apipublic' ,
+));
+
 
 $router->addroute('*', 'api/private', array (
 	'controller'  => 'apiprivate' ,

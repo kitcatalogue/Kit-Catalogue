@@ -1,5 +1,8 @@
 <?php
 $this->router()->layout(null);
+ob_end_clean();
+ini_set('zlib.output_compression', 'Off');
+
 
 $basename = basename($this->filename);
 
@@ -14,4 +17,6 @@ header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $ttl) . ' GMT');
 header('Content-Type: '.$this->mime_type);
 
 readfile($this->filename);
-?>
+exit();
+
+

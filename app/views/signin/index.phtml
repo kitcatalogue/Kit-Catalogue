@@ -7,7 +7,7 @@ $www_root = $this->model('app.www');
 
 
 $this->layout()->appendSection('layout.head', '
-	<!-- INSTALL.REWRITE=OK : This string is checked for as part of the install process -->
+	<!-- INSTALL.REWRITE=OK (This string is checked for as part of the installation process) -->
 	<style type="text/css">
 
 		#signonform { margin-bottom: 1em; }
@@ -35,6 +35,9 @@ switch (strtolower($this->request()->get('msg'))) {
 	case 'signedout':
 		$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS ,	'You have signed out.');
 		break;
+	case 'notsupported':
+		$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The authentication method selected is not supported.', 'Please use another sign-in option and try again.');
+		break;
 	default:
 		break;
 }
@@ -48,22 +51,37 @@ switch (strtolower($this->request()->get('msg'))) {
 $use_https = $this->model('app.use_https') ? true : false ;
 ?>
 <form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/', $use_https); ?>" method="post" id="signonform">
-<table class="form" style="margin-left: 5em;">
-<tr>
-	<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>
-	<td><?php Ecl_Helper_Html::formInput('username', '12', '50'); ?></td>
-</tr>
-<tr>
-	<th><?php Ecl_Helper_Html::formLabel('password', 'Password'); ?></th>
-	<td><?php Ecl_Helper_Html::formPassword('password', '12', '50'); ?></td>
-</tr>
-<tr>
-	<td colspan="2" style="padding-top: 1em; text-align: right;">
-		<?php Ecl_Helper_Html::formSubmit('signin', 'Sign in'); ?>
-	</td>
-</tr>
-</table>
 
+<div style="float: left;">
+	<table class="form" style="margin-left: 5em;">
+	<tr>
+		<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>
+		<td><?php Ecl_Helper_Html::formInput('username', '12', '50'); ?></td>
+	</tr>
+	<tr>
+		<th><?php Ecl_Helper_Html::formLabel('password', 'Password'); ?></th>
+		<td><?php Ecl_Helper_Html::formPassword('password', '12', '50'); ?></td>
+	</tr>
+	<tr>
+		<td colspan="2" style="padding-top: 1em; text-align: right;">
+			<?php Ecl_Helper_Html::formSubmit('signin', 'Sign in'); ?>
+		</td>
+	</tr>
+	</table>
+</div>
+
+<?php
+if ($this->model('signin.use_shibboleth')) {
+	?>
+	<div class="sso-box">
+		<p>Click the link to access using Single Sign-On.</p>
+		<div><a class="sso-link" href="/sso/">Use Single Sign-On</a></div>
+	</div>
+	<?php
+}
+?>
+
+<div style="clear: both;"></div>
 
 </form>
 
@@ -76,7 +94,5 @@ $use_https = $this->model('app.use_https') ? true : false ;
 	<li>Check an item's location.</li>
 	<li>Access manuals, case studies and other supporting documentation.</li>
 </ul>
-
-
 
 

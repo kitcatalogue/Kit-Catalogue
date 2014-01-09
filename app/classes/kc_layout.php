@@ -286,7 +286,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 					<div class="usage">
 						<?php
-						if (!empty($item->ou)) {
+						if ( ($this->model('fieldview')->show('item.ou')) && (!empty($item->ou)) ) {
 							echo '<h2>'. $this->model('organisationalunitstore')->lookupName($item->ou). '</h2>';
 						}
 						?>
@@ -610,7 +610,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						<div class="item-resources">
 							<?php
 							foreach($grouped_files as $file_type => $file_group) {
-								$type_name = (isset($types[$file_type])) ? $types[$file_type] : 'Other Resources' ;
+								$type_name = (isset($types[$file_type])) ? $types[$file_type] : $lang['item.label.otherresources'] ;
 								?>
 								<h4><?php $this->out($type_name); ?></h4>
 								<ul>

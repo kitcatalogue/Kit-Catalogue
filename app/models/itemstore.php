@@ -263,7 +263,7 @@ class Itemstore {
 			'last_updated_username' => $object->last_updated_username ,
 			'last_updated_email' => $object->last_updated_email ,
 
-			'is_disposed_of' => ($object->is_disposed_of) ? 'yes' : 'no' ,
+			'is_disposed_of' => $object->is_disposed_of ,
 			'date_disposed_of' => $this->_db->formatDate($object->date_disposed_of, true) ,
 
 			'comments' => $object->comments ,
@@ -381,7 +381,7 @@ class Itemstore {
 			'end_of_life' => $this->_db->formatDate($object->end_of_life, true) ,
 			'maintenance' => $object->maintenance ,
 
-			'is_disposed_of'   => (int) $object->is_disposed_of ,
+			'is_disposed_of'   => $object->is_disposed_of ,
 			'date_disposed_of' => $this->_db->formatDate($object->date_disposed_of, true) ,
 
 			'archived'      => (int) $object->archived ,
@@ -482,7 +482,7 @@ class Itemstore {
 		$object->end_of_life = (is_null($row['end_of_life'])) ? null : strtotime($row['end_of_life']);
 		$object->maintenance = $row['maintenance'];
 
-		$object->is_disposed_of  = (bool) $row['is_disposed_of'];
+		$object->is_disposed_of  = $row['is_disposed_of'];
 		$object->date_disposed_of = (is_null($row['date_disposed_of'])) ? null : strtotime($row['date_disposed_of']);
 
 		$object->archived = (bool) $row['archived'];
