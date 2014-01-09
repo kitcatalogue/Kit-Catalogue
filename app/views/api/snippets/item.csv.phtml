@@ -1,0 +1,17 @@
+<?php
+
+
+
+$fields = array ('id', 'name', 'manufacturer', 'model', 'description', 'contact1', 'contact2', 'image', 'link');
+$that = $this;
+
+array_walk($fields, function($v, $k) use ($that) {
+	return $that->renderer->csv($v);
+});
+echo implode(',', $fields) ."\n";
+
+
+
+$this->renderer->renderAsCsv($this->item);
+
+

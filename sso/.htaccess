@@ -1,0 +1,10 @@
+
+
+
+AuthType shibboleth
+ShibRequestSetting requireSession 1
+ShibExportAssertion On
+
+Require shibboleth
+
+

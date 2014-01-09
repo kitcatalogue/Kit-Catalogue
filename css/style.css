@@ -115,7 +115,7 @@ dl dd + dt { margin-top: 1.5em; }
 
 
 a:link,
-a:visited { color: #485F24; zcolor: #669900; text-decoration: none; }
+a:visited { color: #485F24; text-decoration: none; }
 a:hover,
 a:active { color: #485F24; text-decoration: underline; }
 
@@ -1025,5 +1025,42 @@ div.atoz-bottom-line { height: 1em; z-index: -10; margin-top: -1px; padding-bott
 
 
 .admin-box > h3 { margin-top: 0;}
+
+
+
+/* ==================================================================================
+ * SSO Styles
+ * ==================================================================================
+ */
+
+
+ 
+div.sso-box {
+	float: left;
+	margin-left: 8em;
+	padding: 1em;
+	
+	background-color: #eee;
+	border: 1px solid #bbb;
+	border-radius: 8px;
+	
+	color: #000;
+}
+ 
+a.sso-link:link,
+a.sso-link:visited {
+	display: block;
+	margin: 0 1em;
+	padding: 0.5em;
+	background-color: #ddf;
+	border: 1px solid #006;
+	border-radius: 4px;
+	color: #006;
+	font-size: 1.1em;
+	font-weight: bold;
+	text-align: center;
+}
+a.sso-link:hover { background-color: #ccf; text-decoration: none; }
+a.sso-link:active { text-decoration: none; }
 
 

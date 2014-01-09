@@ -70,6 +70,10 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 	public function actionItem() {
+		include($this->model('app.include_root').'/classes/itemrenderer.php');
+		$public_fields = array();
+		$this->view()->renderer = new Itemrenderer($public_fields, $this->model());
+
 		$item = $this->model('itemstore')->find((int) $this->param('id'));
 
 		$format = $this->_getFormat();

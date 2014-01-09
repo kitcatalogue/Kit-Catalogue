@@ -34,6 +34,10 @@ if (isset($config)) {
 }
 
 
+$model->setFunction('authenticator', function($model) {
+	return new Authenticator($model);
+});
+
 
 $model->setFunction('db', function ($model) {
 

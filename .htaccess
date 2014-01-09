@@ -4,6 +4,10 @@ RewriteEngine On
 
 RewriteRule ^.*?\.phtml$ forbidden [F,L]
 
+RewriteRule ^Shibboleth.sso(/|$) - [L,NC]
+
+#dddRewriteCond %{REQUEST_URI} !^Shibboleth.sso(/|$) - [L,NC]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L,QSA]

@@ -26,25 +26,90 @@ class Patch_v1_1_0 extends Ecl_Db_Migration {
 			// Do nothing
 		}
 
-		$this->_db->execute("
-			ALTER TABLE `item`
-				ADD COLUMN `upgrades` TEXT DEFAULT NULL AFTER `specification`,
-				ADD COLUMN `future_upgrades` TEXT DEFAULT NULL AFTER `upgrades`,
-				ADD COLUMN `restrictions` VARCHAR(250) DEFAULT NULL AFTER `availability`,
-				ADD COLUMN `portability` VARCHAR(250) DEFAULT '' AFTER `access_id`,
-				ADD COLUMN `organisation` INTEGER UNSIGNED DEFAULT NULL AFTER `portability`,
-				ADD COLUMN `cost` VARCHAR(100) DEFAULT '' AFTER `date_of_purchase`,
-				ADD COLUMN `replacement_cost` VARCHAR(100) DEFAULT '' AFTER `cost`,
-				ADD COLUMN `end_of_life` DATETIME DEFAULT NULL AFTER `replacement_cost`,
-				ADD COLUMN `maintenance` VARCHAR(250) DEFAULT NULL AFTER `end_of_life`,
-				ADD COLUMN `is_disposed_of` VARCHAR(5) DEFAULT '' AFTER `maintenance`,
-				ADD COLUMN `date_disposed_of` DATETIME DEFAULT NULL AFTER `is_disposed_of`,
-				ADD COLUMN `date_archived` DATETIME DEFAULT NULL AFTER `archived`,
-				ADD COLUMN `is_parent` TINYINT UNSIGNED DEFAULT '0' AFTER `date_archived`,
-				ADD COLUMN `last_updated_username` VARCHAR(250) DEFAULT '' AFTER `date_updated`,
-				ADD COLUMN `last_updated_email` VARCHAR(250) DEFAULT '' AFTER `last_updated_username`,
-				ADD COLUMN `comments` TEXT DEFAULT NULL AFTER `date_disposed_of`;
-		");
+
+		$this->_schema->patchTable('item', array (
+			'upgrades' => array (
+				'type'    => 'text',
+				'default' => null,
+				'after'   => 'specification',
+				),
+			'future_upgrades' => array (
+				'type'    => 'text',
+				'default' => null,
+				'after'   => 'upgrades',
+				),
+			'restrictions' => array (
+				'type'    => 'varchar(250)',
+				'default' => null,
+				'after'   => 'availability',
+				),
+			'portability' => array (
+				'type'    => 'varchar(250)',
+				'default' => null,
+				'after'   => 'access_id',
+				),
+			'organisation' => array (
+				'type'    => 'integer',
+				'default' => null,
+				'after'   => 'portability',
+				),
+			'cost' => array (
+				'type'    => 'varchar(100)',
+				'default' => '',
+				'after'   => 'date_of_purchase',
+				),
+			'replacement_cost' => array (
+				'type'    => 'varchar(100)',
+				'default' => null,
+				'after'   => 'cost',
+				),
+			'end_of_life' => array (
+				'type'    => 'datetime',
+				'default' => null,
+				'after'   => 'replacement_cost',
+				),
+			'maintenance' => array (
+				'type'    => 'varchar(250)',
+				'default' => null,
+				'after'   => 'end_of_life',
+				),
+			'is_disposed_of' => array (
+				'type'    => 'varchar(5)',
+				'default' => '',
+				'after'   => 'maintenance',
+				),
+			'date_disposed_of' => array (
+				'type'    => 'datetime',
+				'default' => null,
+				'after'   => 'is_disposed_of',
+				),
+			'date_archived' => array (
+				'type'    => 'datetime',
+				'default' => null,
+				'after'   => 'archived',
+				),
+			'is_parent' => array (
+				'type'    => 'tinyint',
+				'default' => 0,
+				'after'   => 'date_archived',
+				),
+			'last_updated_username' => array (
+				'type'    => 'varchar(250)',
+				'default' => '',
+				'after'   => 'date_updated',
+				),
+			'last_updated_email' => array (
+				'type'    => 'varchar(250)',
+				'default' => '',
+				'after'   => 'last_updated_username',
+				),
+			'comments' => array (
+				'type'    => 'text',
+				'default' => null,
+				'after'   => 'date_disposed_of',
+				),
+		));
+
 
 		try {
 			$this->_db->execute("

@@ -36,7 +36,7 @@ $lang['building.label.plural'] = 'Buildings';
 // The route MUST be a single, lowercase word suitable for inclusion in a URL
 // The route MUST NOT clash with the name of another entity in kit-catalogue, such as 'category' or 'item'.
 // The route MUST contain only alphanumeric characters, i.e. Only a-z or 0-9.
-// For example, you could use "department" (the default) or "school".
+// For example, you could use "category" (the default) or "theme".
 $lang['cat.route'] = 'category';
 
 $lang['cat.label'] = 'Category';
@@ -247,6 +247,8 @@ $lang['item.label.copyright_notice'] = '';
 $lang['item.label.embedded_content'] = 'Embedded Content';
 
 $lang['item.label.links'] = 'Links';
+
+$lang['item.label.otherresources'] = 'Other Resources';
 
 $lang['item.label.date_updated'] = 'Last Updated';
 

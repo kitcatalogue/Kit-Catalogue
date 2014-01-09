@@ -93,26 +93,33 @@ $config['db.database'] = 'kitcatalogue';
 /*
  * Sign-In Settings
  *
- * Note: You can use a local-plugin function to override, or provide fall-back for, the built-in
+ * Note: You can use a local-plugin function to override, or provide fall-back for,  the built-in
  * authentication methods below.
  *
  * To override completely, set the "signin.use_ldap" and "signin.use_database" settings to false in local_config.php
  * and provide your own plugin function.
  *
  * To provide a custom fall-back, leave the settings enabled and your plugin function will be called if LDAP and Kit-Catalogue
- * database authentication fail.
- *
- * See docs/plugins.txt for more information.
+ * database authentication fail.  See docs/plugins.txt for more information.
  */
 
 // Enable LDAP / Active Directory authentication
 // Note: Ensure you configure the connection in the "LDAP Settings" section below
-$config['signin.use_ldap'] = false;
+$config['signin.use_ldap'] = true;
 
 // Enable Database authentication
 // If you're using LDAP, you can probably disable this.
 // If you're NOT using LDAP, then you have little choice but to use it unless you supply your own plugin.
 $config['signin.use_database'] = true;
+
+// Enable Shibboleth SSO authentication
+// Note: Ensure you configure the attribute mapping in the "Shibboleth Settings" section below
+$config['signin.use_shibboleth'] = false;
+
+// Only permit Shibboleth access
+// If enabled the sign-in form will be hidden and no one can enter a username and password into the system.
+// Access will only be possible via Shibboleth SSO.
+$config['signin.use_shibboleth_only'] = false;
 
 // Log all user sign-ins to the catalogue system
 $config['signin.log'] = true;
@@ -138,6 +145,49 @@ $config['ldap.options'] = array (
 // (b) Disable certificate checking altogether (use "TLS_REQCERT never" in ldap.conf).
 // For more info, see:  http://www.php.net/manual/en/function.ldap-start-tls.php
 $config['ldap.use_secure'] = false;
+
+
+
+/*
+ * Shibboleth Settings
+*
+* As well as setting up shibboleth here, you may need to edit the /local/sso/.htaccess file that triggers the
+* single sign-on process and supply your local handler URL.
+*
+* Please see /docs/shibboleth.txt for more information on setting up Shibboleth, and how the particulars of your
+* SSO setup could limit how Kit-Catalogue works for your users.  Your local IT staff will need to setup your
+* server for Shibboleth (e.g. Apache + mod_shib) and add your catalogue to your local SSO service provider.
+*
+* You must supply the config settings to map the fields in Kit-Catalogue's user information to the user attributes
+* available in PHP's $_SERVER array.  The $_SERVER array is typically populated automatically by your server's
+* Shibboleth setup when a user successfully logs in.
+*
+* The "shib.<field-name>.attr" setting should be the name of the attribute as returned in the $_SERVER array.
+*
+* If "shib.<field-name>.regex" is supplied, it will be used as a regular expression to extract the actual value
+* from the raw attribute. If it is left blank, the raw value of the attribute will be used.
+*/
+
+// Required attributes
+// At least one of these must be supplied by your SSO setup.
+
+$config['shib.username.attr'] = 'eppn';
+$config['shib.username.regex'] = '/^(.*)@/';
+
+$config['shib.email.attr'] = 'mail';
+$config['shib.email.regex'] = '';
+
+// Optional attributes
+// Depending on your SSO setup not all of these may be available but their use is not required.
+
+$config['shib.id.attr'] = 'employeeNumber';
+$config['shib.id.regex'] = '';
+
+$config['shib.forename.attr'] = 'givenName';
+$config['shib.forename.regex'] = '';
+
+$config['shib.surname.attr'] = 'sn';
+$config['shib.surname.regex'] = '';
 
 
 

@@ -64,10 +64,28 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 		$this->view()->available_calls = array (
 			"/items.json"                   => 'List all available items.' ,
 			"/items.json?search=[keywords]" => 'Search the available items for a given query. Use the querystring parameter to define the terms to search for.' ,
+			"/items.json?tag=[tag-name]"    => 'Search for items with the given tag. Use the querystring parameter to define the tag to search for.' ,
+			"/item/[id-number]"             => 'Show an individual item. Use the item ID number path parameter to define which item to return.' ,
 		);
 
 		$this->view()->render("api_public_index");
 	}
+
+
+
+	public function actionItem() {
+		include($this->model('app.include_root').'/classes/itemrenderer.php');
+		$public_fields = array();
+		$this->view()->renderer = new Itemrenderer($public_fields, $this->model());
+
+		$format = $this->_getFormat();
+
+		$this->view()->item = $this->model('itemstore')->find($this->param('id'));
+
+
+		$this->view()->render("api_public_item.{$format}");
+	}// /method
+
 
 
 
@@ -80,6 +98,8 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 		if ($this->request()->get('search')) {
 			$this->view()->items = $this->model('itemstore')->searchItems($this->request()->get('search'), KC__VISIBILITY_PUBLIC);
+		} elseif ($this->request()->get('tag')) {
+			$this->view()->items = $this->model('itemstore')->findForTag($this->request()->get('tag'), KC__VISIBILITY_PUBLIC);
 		} else {
 			$this->view()->items = $this->model('itemstore')->findAll(KC__VISIBILITY_PUBLIC);
 		}

@@ -246,10 +246,9 @@ class Patch_v2_0_0 extends Ecl_Db_Migration {
 				if ($new_id) {
 					$sql__dept_id = $this->_db->prepareValue($dept['department_id']);
 					$sql_dept_obj_id = $this->_db->prepareValue("dept_{$dept['department_id']}");
-					$sql_ou_obj_id = $this->_db->prepareValue("ou_{$new_id}");
 
 					$this->_db->update('item', array('ou_id' => $new_id), "department_id=$sql__dept_id");
-					$this->_db->update('system_authorisation', array('item' => $new_id), "item=$sql_dept_obj_id");
+					$this->_db->update('system_authorisation', array('item' => "ou_{$new_id}"), "item=$sql_dept_obj_id");
 				}
 			}
 		}

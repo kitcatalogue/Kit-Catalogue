@@ -10,13 +10,32 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
-v.2.0.5  (release TBC)
+v.2.0.6  (release TBC)
+
+
+== Security
+
+Added Shibboleth Single Sign-On options for authentication. (config 'signin.shibboleth___' and 'shib.___')
 
 
 == Admin
 
 Added extra error checking for image resizing when editing an item.
 
+
+== API
+
+Added support for retrieving a single item.
+Added searching items with a tag.
+
+
+== General
+
+Fixed an error blocking database upgrades from some v1.0.x installations.
+Fixed an error in the upgrade process where existing department permissions would not convert to OU permissions properly.
+Fixed areas where field_view settings were not applied.
+Fixed some minor styling issues.
+Fixed an error where changes to the "disposed of" field would not save.
 
 
 
