@@ -952,6 +952,14 @@ class Ecl_Db_Mysql {
 	/* Methods for preparing elements of an SQL query */
 
 
+
+	public function prepareDatabaseName($database) {
+		$database = str_replace(array('`', '\\', "\0"), '', $database);
+		return "`{$database}`";
+	}
+
+
+
 	public function prepareFieldName($field) {
 		$field = str_replace(array('`', '\\', "\0"), '', $field);
 		return "`{$field}`";
@@ -1172,9 +1180,9 @@ class Ecl_Db_Mysql {
 		if ($this->_debug) {
 			if ($this->_use_error_exceptions) {
 				if ($this->_mysqli) {
-					throw new Exception("MySQL DB Error ({$this->_config['database']}@{$this->_config['host']}). $err_msg :: ". $this->getError());
+					throw new Exception("MySQL DB Error ({$this->_config['database']}@{$this->_config['host']}). $err_msg :: ". $this->getError() ."\n\n". $this->getSql());
 				} else {
-					throw new Exception("MySQL DB Error (no connection). $err_msg :: ". $this->getError());
+					throw new Exception("MySQL DB Error (no connection). $err_msg :: ". $this->getError() ."\n\n". $this->getSql());
 				}
 			} else {
 				if ($this->_mysqli) {

@@ -102,6 +102,8 @@ class Authenticator {
 	/**
 	 * Check if the current session contains Shibboleth authentication information.
 	 *
+	 * The 'id' user info (mapped from employeeNumber) is optional.
+	 *
 	 * @return  array  An assoc-array of user info, keys ('id', 'username', 'forename', 'surname', 'email'). On fail, null.
 	 */
 	public function authenticateShibboleth() {
@@ -121,6 +123,8 @@ class Authenticator {
 						$user_row[$attr] = $matches[1];
 					}
 				}
+			} else {
+				$user_row[$attr] = '';
 			}
 		}
 
@@ -137,7 +141,7 @@ class Authenticator {
 		if ($this->_model->get('signin.log')) {
 			$this->_model->get('db')->insert('log_signin', array (
 				'date_signin'  => $this->_model->get('db')->formatDate(time()) ,
-				'user_id'      => $user_info['id'] ,
+				'user_id'      => (isset($user_info['id'])) ? $user_info['id'] : '' ,
 				'username'     => $user_info['username'] ,
 			));
 		}

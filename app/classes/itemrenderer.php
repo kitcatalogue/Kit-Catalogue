@@ -34,6 +34,18 @@ class ItemRenderer {
 
 
 
+	public function getCategoryUri($category) {
+		return $this->_router->makeAbsoluteUri("/id/category/{$category->id}");
+	}
+
+
+
+	public function getItemCategories($item) {
+		return $this->model('categorystore')->findForItem($item->id);
+	}
+
+
+
 	public function getItemImage($item) {
 		return (!empty($item->image)) ? $this->_router->makeAbsoluteUri("/id/item/{$item->imageslug}") : '' ;
 	}
@@ -48,6 +60,13 @@ class ItemRenderer {
 
 	public function getItemUri($item) {
 		return $this->_router->makeAbsoluteUri("/id/item/{$item->id}");
+	}
+
+
+
+	public function getManufacturerUri($manufacturer) {
+		$md5 = md5($manufacturer);
+		return $this->_router->makeAbsoluteUri("/id/manufacturer/{$md5}");
 	}
 
 
@@ -153,8 +172,83 @@ class ItemRenderer {
 
 
 	public function renderAsRdf($item) {
-		// @todo : renderAsRdf()
-		die('METHOD NOT IMPLEMENTED - renderAsRdf()');
+		$item_uri = $this->getItemUri($item);
+
+		$categories = $this->getItemCategories($item);
+		?>
+		<oo:Equipment rdf:about="<?php echo $this->xml($item_uri); ?>">
+			<rdfs:label><?php echo $this->xml($item->name); ?></rdfs:label>
+			<gr:name><?php echo $this->xml($item->name); ?></gr:name>
+			<?php
+			if (!empty($item->manufacturer)) {
+				$manufacturer_uri = $this->getManufacturerUri($item->manufacturer);
+				if (empty($item->model)) {
+					printf('<gr:hasManufacturer rdf:resource="%1$s"/>', $manufacturer_uri);
+				} else {
+					?>
+					<gr:hasMakeAndModel>
+						<gr:ProductOrServiceModel rdf:about="<?php echo $this->xml("{$item_uri}#model"); ?>">
+							<?php
+							printf('<rdfs:label>%1$s</rdfs:label>'."\n", $this->xml($item->model));
+							?>
+							<gr:hasManufacturer>
+								<gr:BusinessEntity rdf:about="<?php echo $manufacturer_uri; ?>">
+									<rdfs:label><?php echo $this->xml($item->manufacturer); ?></rdfs:label>
+								</gr:BusinessEntity>
+							</gr:hasManufacturer>
+						</gr:ProductOrServiceModel>
+					</gr:hasMakeAndModel>
+					<?php
+				}
+			}
+
+			$this->outIfNotEmpty($item->full_description, sprintf('<dc:description rdf:datatype="xtypes:Fragment-HTML"><![CDATA[%1$s]]></dc:description>'."\n", $this->_wikiparser->parse($item->full_description)));
+
+			foreach($categories as $category) {
+				printf('<dc:subject rdf:resource="%1$s" />', $this->getCategoryUri($category));
+				if (!empty($category->external_schema_uri)) {
+					printf('<dc:subject rdf:resource="%1$s" />', $category->external_schema_uri);
+				}
+			}
+
+			$this->outIfNotEmpty($item->contact_1_name, sprintf('<oo:primaryContact rdf:resource="%1$s#contact" />', $this->xml($item_uri)));
+			$this->outIfNotEmpty($item->contact_2_name, sprintf('<oo:contact rdf:resource="%1$s#contact2" />', $this->xml($item_uri)));
+
+			$image_uri = $this->getItemImage($item);
+			$this->outIfNotEmpty($image_uri, sprintf('<foaf:depiction rdf:resource="%1$s" />'."\n", $this->xml($this->getItemImage($item))));
+			?>
+			<foaf:page><?php echo $this->xml($this->getItemLink($item)); ?></foaf:page>
+		</oo:Equipment>
+		<foaf:Person rdf:about="<?php echo $this->xml("{$item_uri}#contact"); ?>">
+			<?php
+			if (!empty($item->contact_1_email)) {
+				$this->outIfNotEmpty($item->contact_1_name, sprintf('<foaf:name>%1$s</foaf:name>', $this->xml($item->contact_1_name)));
+				?>
+  				<foaf:mbox><?php echo $this->xml($item->contact_1_email); ?></foaf:mbox>
+  				<?php
+			}
+			?>
+		</foaf:Person>
+		<foaf:Person rdf:about="<?php echo $this->xml("{$item_uri}#contact2"); ?>">
+			<?php
+			if (!empty($item->contact_2_email)) {
+				$this->outIfNotEmpty($item->contact_2_name, sprintf('<foaf:name>%1$s</foaf:name>', $this->xml($item->contact_2_name)));
+				?>
+  				<foaf:mbox><?php echo $this->xml($item->contact_2_email); ?></foaf:mbox>
+  				<?php
+  			}
+  			?>
+		</foaf:Person>
+		<?php
+		if (!empty($item->image)) {
+			?>
+		<foaf:Image rdf:about="<?php echo $image_uri; ?>">
+			<dc:type><?php echo $this->xml(pathinfo($image_uri, PATHINFO_EXTENSION));?></dc:type>
+			<dc:description><?php echo $this->xml("Image of {$item->name}"); ?></dc:description>
+			<dcat:accessURL rdf:resource="<?php echo $image_uri; ?>" />
+		</foaf:Image>
+			<?php
+		}
 	}
 
 
@@ -179,7 +273,7 @@ class ItemRenderer {
 			<name><?php echo $this->xml($item->name); ?></name>
 			<?php
 			$this->outIfNotEmpty($item->manufacturer, sprintf('<manufacturer>%1$s</manufacturer>'."\n", $this->xml($item->manufacturer)));
-			$this->outIfNotEmpty($item->manufacturer, sprintf('<model>%1$s</model>'."\n", $this->xml($item->model)));
+			$this->outIfNotEmpty($item->model, sprintf('<model>%1$s</model>'."\n", $this->xml($item->model)));
 			$this->outIfNotEmpty($item->full_description, sprintf('<description><![CDATA[%1$s]]></description>'."\n", $this->_wikiparser->parse($item->full_description)));
 
 			if (!empty($item->contact_1_email)) {

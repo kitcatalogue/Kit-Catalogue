@@ -3,7 +3,7 @@
  * MySQL Database Schema Class
  *
  * @package  Ecl
- * @version  1.0.0
+ * @version  1.1.0
  */
 class Ecl_Db_Mysql_Schema {
 
@@ -235,7 +235,7 @@ class Ecl_Db_Mysql_Schema {
 			));
 		} else {
 			$table_name = $this->_db->prepareTableName($table);
-			$database_name = $this->_db->getDatabaseName();
+			$database_name = $this->_db->prepareDatabaseName($this->_db->getDatabaseName());
 			$this->_db->query("SHOW COLUMNS FROM {$database_name}.{$table_name}");
 		}
 
@@ -433,7 +433,7 @@ class Ecl_Db_Mysql_Schema {
 		$this->_db->execute("
 			ALTER TABLE $sql__table
 			$sql__definitions
-		");
+			");
 
 		return true;
 	}

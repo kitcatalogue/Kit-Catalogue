@@ -1,4 +1,10 @@
 <?php
+/**
+ * Database Migrator Class
+ *
+ * @package  Ecl
+ * @version  1.0.1
+ */
 class Ecl_Db_Migrator {
 
 	protected $_db = null;
@@ -58,6 +64,7 @@ class Ecl_Db_Migrator {
 
 	public function getLatestVersion() {
 		$migs = $this->listMigrations();
+
 		if (empty($migs)) { return 0; }
 
 		$last_filename = end($migs);
@@ -67,7 +74,7 @@ class Ecl_Db_Migrator {
 
 
 	public function listMigrations() {
-		$pattern = '#\d{'. $this->_config['version_length'] .'}_.*\.php#';
+		$pattern = '#^\d{'. $this->_config['version_length'] .'}_.*\.php$#';
 		return Ecl_Helper_Filesystem::getFiles($this->_config['path'], $pattern);
 	}
 

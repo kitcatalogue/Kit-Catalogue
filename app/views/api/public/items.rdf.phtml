@@ -1,0 +1,21 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'application/rdf+xml');
+
+
+echo("<?xml version=\"1.0\"?>\n");
+?><rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:oo="http://purl.org/openorg/"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:spacerel="http://data.ordnancesurvey.co.uk/ontology/spatialrelations/"
+	xmlns:gr="http://purl.org/goodrelations/v1#"
+	xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	xmlns:dc="http://purl.org/dc/terms/"
+	xmlns:dcat="http://www.w3.org/ns/dcat#"
+	>
+
+<?php $this->render('api_snippets_items.rdf'); ?>
+
+
+</rdf:RDF>

@@ -3,7 +3,7 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 
 	protected $_default_format = 'json';
-	protected $_valid_formats = array('csv', 'html', 'json', 'xml');
+	protected $_valid_formats = array('csv', 'html', 'json', 'rdf', 'xml');
 
 
 

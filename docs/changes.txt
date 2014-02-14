@@ -10,7 +10,7 @@ recent versions of the software.
 
 
 --------------------------------------------------------------------------------
-v.2.0.6  (release TBC)
+v.2.0.7  (release 17-07-2014)
 
 
 == Security
@@ -27,15 +27,19 @@ Added extra error checking for image resizing when editing an item.
 
 Added support for retrieving a single item.
 Added searching items with a tag.
+Added support for linking a category to a URI in an external taxonomy.
+RDF output now available (aligned with N8 linked data spec).
 
 
 == General
 
+Added all available data download formats to the permalink item records (CSV, JSON, RDF, etc).
 Fixed an error blocking database upgrades from some v1.0.x installations.
 Fixed an error in the upgrade process where existing department permissions would not convert to OU permissions properly.
 Fixed areas where field_view settings were not applied.
 Fixed some minor styling issues.
 Fixed an error where changes to the "disposed of" field would not save.
+Fixed minor ECL library bugs.
 
 
 

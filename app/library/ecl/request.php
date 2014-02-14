@@ -71,7 +71,7 @@ Class Ecl_Request {
 
 
 		// Process GET params
-		$this->_get_params = Ecl_Helper_String::parseQuerystring($_SERVER['QUERY_STRING']);
+		$this->_get_params = Ecl_Helper_String::parseQuerystring(urldecode($_SERVER['QUERY_STRING']));
 
 
 		// Process PUT params

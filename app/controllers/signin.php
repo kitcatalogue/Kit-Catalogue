@@ -52,7 +52,11 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 
 	public function actionIndex() {
 		if ( $this->model('signin.use_shibboleth_only') && $this->model('signin.use_shibboleth') ) {
-			$this->response()->setRedirect($this->model('app.www'). '/sso/');
+			$sso_url = $this->model('shib.idp.url');
+			if (empty($sso_url)) {
+				$sso_url = $this->router()->makeAbsoluteUri('/sso/');
+			}
+			$this->response()->setRedirect($sso_url);
 		} else {
 			$this->view()->render('signin_index');
 		}

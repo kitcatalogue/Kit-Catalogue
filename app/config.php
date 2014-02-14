@@ -16,7 +16,7 @@
 // Setting this to false will lockout the installation wizard.
 // Even if you have deleted your /install/ folder, you should set this to false as if you
 // later upgrade or reinstall it will recreate a new /install/ folder.
-$config['install.enabled'] = false;
+$config['install.enabled'] = true;
 
 
 
@@ -77,7 +77,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.6';
+$config['app.version'] = '2.0.7';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
