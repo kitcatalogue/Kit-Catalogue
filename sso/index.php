@@ -18,13 +18,14 @@ $router->baseUri($model->get('app.www'));
 if ($model->get('signin.use_shibboleth')) {
 	$user_info = $model->get('authenticator')->authenticateShibboleth();
 
-	// @debug : Ecl::dump($user_info);
-
 	if ($user_info) {
 		$model->get('authenticator')->loginUser($user_info);
 	}
 }
 
 
+
 header('Location: '. $router->makeAbsoluteUri('/', $model->get('app.use_https')) );
 exit();
+
+

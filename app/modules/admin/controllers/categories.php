@@ -180,6 +180,7 @@ class Controller_Admin_Categories extends Ecl_Mvc_Controller {
 
 
 				$category->name = $this->request()->post('name');
+				$category->external_schema_uri = $this->request()->post('external_schema_uri');
 				$cpv_codes = $this->request()->post('cpv_code');
 
 				$ok = $this->model('categorystore')->update($category);

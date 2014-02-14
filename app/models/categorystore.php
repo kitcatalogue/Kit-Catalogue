@@ -46,8 +46,9 @@ class Categorystore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'category_id'  => $object->id ,
-			'name'         => $object->name ,
+			'category_id'          => $object->id ,
+			'name'                 => $object->name ,
+			'external_schema_uri'  => $object->external_schema_uri ,
 
 			'item_count_internal'  => $object->item_count_internal ,
 			'item_count_public'    => $object->item_count_public ,
@@ -70,6 +71,7 @@ class Categorystore {
 
 		$object->id = $row['category_id'];
 		$object->name = $row['name'];
+		$object->external_schema_uri = $row['external_schema_uri'];
 
 		$object->item_count_internal = $row['item_count_internal'];
 		$object->item_count_public = $row['item_count_public'];

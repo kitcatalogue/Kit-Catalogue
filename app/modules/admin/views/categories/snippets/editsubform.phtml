@@ -33,6 +33,21 @@ cpv_selected_codes = {$js__selected_codes};
 		), true , true);
 		?>
 	</dd>
+	<dt><?php Ecl_Helper_Html::formLabel('external_schema_uri', 'External Schema URI'); ?></dt>
+	<dd>
+		<?php
+		Ecl_Helper_Html::tag('input', null, array (
+			'name'       => 'external_schema_uri' ,
+			'size'       => 100 ,
+			'maxlength'  => 250 ,
+			'value'      => $this->category->external_schema_uri ,
+		), true , true);
+		?>
+		<p class="note">
+			If you need to tie your categories to an external schema or taxonomy, enter the corresponding URI here.
+			<br />The schema URI will only be used when accessing the API (and for now, only in the RDF format output).
+		</p>
+	</dd>
 </dl>
 
 <?php
@@ -40,6 +55,7 @@ $cpv_codes = $this->model('cpvstore')->findAllVisible();
 
 if (!empty($cpv_codes)) {
 	?>
+	<h2>Common Procurement Vocabulary (CPV) Tags</h2>
 	<p style="margin-top: 1.5em;">In order to better link equipment in similar categories together, Kit-Catalogue uses the Common Procurement Vocabulary (CPV) to provide a common basis for categories. Please tag your category with any relevant terms from the list below.</p>
 
 	<h3>Suggested tags</h3>

@@ -37,7 +37,6 @@ class Controller_Id extends Ecl_Mvc_Controller {
 		}
 
 		$this->layout()->addBreadcrumb('Categories', $this->router()->makeAbsoluteUri('/category/'));
-		$this->layout()->addBreadcrumb($category->name, $this->router()->makeAbsoluteUri("category/{$category->slug}"));
 
 		$this->view()->category = $category;
 		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
@@ -102,7 +101,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 
 
 	public function _getFormat() {
-		$valid_formats = array('html', 'json', 'rdf', 'ttl');
+		$valid_formats = array('csv', 'html', 'json', 'rdf', 'xml');
 
 		$format = strtolower($this->request()->extension());
 		if (!in_array($format, $valid_formats)) { $format = 'html'; }

@@ -9,6 +9,7 @@ class Category {
 	// Public Properties
 	public $id = null;        // The internal ID (numeric)
 	public $name = '';        // The name
+	public $external_schema_uri = '';   // URI of the equivalent category in an external schema (e.g. N8)
 
 	public $item_count_internal = 0;    // The number of internally-restricted items in this category
 	public $item_count_public = 0;      // The number of public items in this category
