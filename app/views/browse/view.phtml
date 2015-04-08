@@ -338,7 +338,7 @@ if (!$this->items) {
 
 					$this->layout()->renderTree($ou_list, function($node) use ($that, $count_property, $url_stub) {
 						$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
-						printf('<li><a href="%4$s/ou-%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $node->id.'-'.urlencode($name), $node->$count_property, $url_stub);
+						printf('<li><a href="%4$s/ou-%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $node->id.'-'.$that->slugify($name), $node->$count_property, $url_stub);
 					});
 					?>
 					</ul>
@@ -350,9 +350,9 @@ if (!$this->items) {
 						foreach($available_options as $l => $info) {
 							$name = (!empty($info['name'])) ? $info['name'] : "-No $k-" ;
 							if (isset($info['id'])) {
-								$url = $url_stub .'-'. urlencode($info['id']) .'-'. urlencode($info['name']);
+								$url = $url_stub .'-'. urlencode($info['id']) .'-'. $this->slugify($info['name']);
 							} else {
-								$url = $url_stub .'-'. urlencode($info['name']);
+								$url = $url_stub .'-'. $this->slugify($info['name']);
 							}
 							printf('<li><a href="%1$s">%2$s <span class="count">(%3$s)</span></a></li>', $url, $this->escape($name), $info['count']);
 						}

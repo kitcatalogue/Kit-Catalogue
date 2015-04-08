@@ -43,8 +43,8 @@ class Item {
 	public $access = '';   // Access ID
 	public $portability = '';
 
-	public $department = '';   // @todo : Deprecated - remove
-	public $organisation = ''; // @todo : Deprecated - remove
+	public $department = null;   // @todo : Deprecated - remove
+	public $organisation = null; // @todo : Deprecated - remove
 
 	public $ou = null;
 

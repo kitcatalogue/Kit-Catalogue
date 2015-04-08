@@ -258,7 +258,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				if ( (!empty($manufacturer_website)) && (empty($item->manufacturer)) ) {
 					printf('<td colspan="2">%1$s</td>', $manufacturer_website);
 				} else {
-					drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) . $manufacturer_website);
+					drawField($lang['item.label.manufacturer'], $this->escape($item->manufacturer) .' '. $manufacturer_website);
 				}
 
 				if ($this->model('fieldview')->show('item.model')) {
@@ -378,7 +378,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							$contact_name = (!empty($item->contact_1_name)) ? $item->contact_1_name : $contact_email ;
 							$contact_link = '';
 
-							if (empty($contact_email)) {
+							if ( ($this->model('enquiry.enabled') && !$this->model('enquiry.email_links')) || (empty($contact_email)) ) {
 								$contact_link = sprintf('%1$s', $contact_name);
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
@@ -392,7 +392,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							$contact_name = (!empty($item->contact_2_name)) ? $item->contact_2_name : $contact_email ;
 							$contact_link = '';
 
-							if (empty($contact_email)) {
+							if ( ($this->model('enquiry.enabled') && !$this->model('enquiry.email_links')) || (empty($contact_email)) ) {
 								$contact_link = sprintf('%1$s', $contact_name);
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);

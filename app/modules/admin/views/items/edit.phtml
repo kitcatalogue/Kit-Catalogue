@@ -427,6 +427,7 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dd>
 			<p class="note">Use tags to group different equipment by particular research areas or activity.</p>
 			<p class="note">Tags should be separated by a comma.  e.g. graphene, nanotech</p>
+			<p class="note">Only alphanumeric characters and hyphens can be used in tag names.</p>
 			<?php
 			if ($item->id || $this->saved_ok) {
 				$tags = $this->model('itemstore')->getItemTags($item->id);

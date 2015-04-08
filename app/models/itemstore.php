@@ -928,7 +928,6 @@ class Itemstore {
 		$sql__vis_condition = $this->getVisibilitySqlCondition($visibility);
 		$where_clause .= (!empty($sql__vis_condition)) ? " AND $sql__vis_condition" : null ;
 
-
 		return $this->_db->newRecordset("
 			SELECT *
 			FROM item i
@@ -1809,6 +1808,11 @@ class Itemstore {
 	 */
 	public function setItemTags($item_id, $tags) {
 		$tags = array_map('trim', (array) $tags);
+
+		array_walk($tags, function(&$v, $k) {
+			$v = preg_replace('/[^A-Za-z0-9\-]+/', '-', $v);
+		});
+
 		$tags = array_unique($tags);
 
 

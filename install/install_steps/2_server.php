@@ -14,6 +14,33 @@ if (!defined('KC_INSTALL_WIZARD')) { die('Install wizard steps cannot be called 
 <p>We have not yet produced detailed instructions for setting up Kit-Catalogue on Windows IIS.
 
 
+
+<h2>Check .htaccess file</h2>
+
+<p>Kit-Catalogue needs a .htaccess file in the /public/ root folder to setup mod_rewrite.</p>
+<p>On windows in particular, it's very easy to mistakenly not copy this hidden file across along with the rest of your Kit-Catalogue installation.
+
+<?php
+if (file_exists(realpath(ROOT_PATH . '/.htaccess'))) {
+	?>
+	<div class="good">
+		<p class="title">OK - The .htaccess file appears to be enabled.</p>
+	</div>
+	<?php
+} else {
+	?>
+	<div class="bad">
+		<p class="title">Error - The .htaccess file appears to be missing.</p>
+		<p>
+			Check the installation zip-file and copy across the missing .htaccess file.
+			If you can't see the file, you may need "show hidden files" in your file browser.
+		</p>
+	</div>
+	<?php
+}
+?>
+
+
 <h2>Check Apache mod_rewrite</h2>
 
 <p>Kit-Catalogue requires that Apache's mod_rewrite be enabled so it can process all

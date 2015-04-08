@@ -1,0 +1,11 @@
+<ul class="category-list">
+	<?php
+	foreach($this->categories as $category) {
+		echo("\n<li>\n");
+		$this->renderer->renderAsHtml($category);
+		echo("\n</li>\n");
+	}
+	?>
+</ul>
+
+

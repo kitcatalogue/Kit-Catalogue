@@ -4,7 +4,8 @@
  *
  * Future updates to Kit-Catalogue may overwrite this config file.
  *
- * Do not edit the settings in here, instead edit and override the settings in local/local_config.php
+ * Do not edit the settings in here, instead copy the settings to your local/local_config.php file
+ * and override the settings there.
  */
 
 
@@ -77,7 +78,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.7';
+$config['app.version'] = '2.0.9';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -394,10 +395,12 @@ $config['log.item_view'] = true;
  */
 
 // Enable the enquiry form
-// Regardless of this setting, users can always read the custodians' contact
-// information from the item details page.
 // By default, enquiry form submissions are emailed to the custodians' email addresses.
 $config['enquiry.enabled'] = true;
+
+// If true, authenticated users will still see email links for custodians.
+// If disabled, only the enquiry button will be available.
+$config['enquiry.email_links'] = true;
 
 // An email address which will overrides the custodian addresses,
 // and will be the only address that receives enquiry form submissions.
@@ -505,6 +508,20 @@ $config['api.enabled'] = false;
 // Controls access to information about those items you have made public in the catalogue.
 // The public API is not protected by any API key.
 $config['api.public.enabled'] = true;
+
+// You can override the URI/URLs returned by the API for certain item fields.
+// For example, you could override the item links so that items appear to exist at a different location entirely.
+// e.g.  $config['api.item.link.override'] = 'http://www.example.com/path/to/item?id={id}'
+//
+// The replacement variables available are:
+// {id}     = The ID number of the item
+// {name}   = The name/title of the item (URL escaped)
+// {image}  = The image filename
+//
+// Leave the overrides blank to use the default URI/URLs.
+$config['api.item.uri.override'] = '';
+$config['api.item.image.override'] = '';
+$config['api.item.link.override'] = '';
 
 // NOTE : At the moment this setting has no effect (item collections are not implemented).
 // Controls access to private collections of items (regardless of public/internal visibility).

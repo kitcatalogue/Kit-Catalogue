@@ -34,7 +34,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 					}
 					$count = (!$user->isAnonymous()) ? $category->item_count_internal : $category->item_count_public ;
 					?>
-					<li><a href="<?php echo "{$url}{$category->id}-".urlencode($category->name); ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+					<li><a href="<?php echo "{$url}{$category->id}-".$this->slugify($category->name); ?>"><strong><?php $this->out($category->name) ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
 					<?php
 				}
 				?>
@@ -60,7 +60,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 					foreach($ous as $ou) {
 						$count = (!$user->isAnonymous()) ? $ou->item_count_internal : $ou->item_count_public ;
 						?>
-						<li><a href="<?php echo "{$url}{$ou->id}-".urlencode($ou->name); ?>"><strong><?php $this->out($ou->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<li><a href="<?php echo "{$url}{$ou->id}-".$this->slugify($ou->name); ?>"><strong><?php $this->out($ou->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
 						<?php
 					}
 				}
@@ -82,7 +82,7 @@ if (!Ecl::isEmpty($this->model('app.intro'))) {
 					foreach($departments as $department) {
 						$count = (!$user->isAnonymous()) ? $department->item_count_internal : $department->item_count_public ;
 						?>
-						<li><a href="<?php echo "{$url}{$department->id}-".urlencode($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
+						<li><a href="<?php echo "{$url}{$department->id}-".$this->slugify($department->name); ?>"><strong><?php $this->out($department->name); ?></strong> <span class="count">(<?php $this->out($count); ?>)</span></a></li>
 						<?php
 					}
 				}

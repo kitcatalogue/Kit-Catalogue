@@ -75,7 +75,8 @@ Once enabled, you can access the public API by browsing to:
 
   http://<your-site>/api/public/
 
-There you can read more information on how to use 
+There you can read more information on what resources and API calls are available, 
+and how to use them.
 
 
 
