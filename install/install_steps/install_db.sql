@@ -73,6 +73,7 @@ DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
   `category_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL DEFAULT '',
+  `external_schema_uri` varchar(250) NOT NULL DEFAULT '',
   `item_count_internal` int(10) unsigned NOT NULL DEFAULT '0',
   `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`category_id`),
@@ -646,7 +647,7 @@ CREATE TABLE `system_info` (
 
 
 INSERT INTO `system_info` (name, value) VALUES
- ('database_version', '0.9.8') ,
+ ('database_version', '2.0.9') ,
  ('database_updated', NOW());
 
 

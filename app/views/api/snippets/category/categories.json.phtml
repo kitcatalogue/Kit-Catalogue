@@ -1,0 +1,17 @@
+<?php
+$last_index = count($this->categories) - 1;
+
+
+echo '[';
+
+foreach($this->categories as $i => $category) {
+	$this->renderer->renderAsJson($category);
+	if ($last_index > $i) {
+		echo(',');
+	}
+
+}
+
+echo ']';
+
+

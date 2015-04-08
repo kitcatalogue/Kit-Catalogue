@@ -47,7 +47,7 @@ if ($this->categories->count()>0) {
 								<?php
 							}
 							?>
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".urlencode($category->name)); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".$this->slugify($category->name)); ?>"><?php $this->out($category->name); ?> <span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span></a></li>
 							<?php
 						}
 						?>

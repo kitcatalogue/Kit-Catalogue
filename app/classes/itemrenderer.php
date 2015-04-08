@@ -2,7 +2,7 @@
 /**
  * A class to render item records found through the API.
  *
- * @version 1.0.0
+ * @version 1.0.7
  */
 class ItemRenderer {
 
@@ -47,19 +47,40 @@ class ItemRenderer {
 
 
 	public function getItemImage($item) {
-		return (!empty($item->image)) ? $this->_router->makeAbsoluteUri("/id/item/{$item->imageslug}") : '' ;
+		$override_str = $this->model('api.item.image.override');
+		if (!empty($override_str)) {
+			return $this->_processOverrideString($override_str, $item);
+		} else {
+			if (!empty($item->image)) {
+				if (0 === strpos($item->image, 'http')) {
+					return $item->image;
+				} else {
+					return (!empty($item->image)) ? $this->_router->makeAbsoluteUri("/id/item/{$item->imageslug}") : '' ;
+				}
+			}
+		}
 	}
 
 
 
 	public function getItemLink($item) {
-		return $this->_router->makeAbsoluteUri("/id/item/{$item->idslug}");
+		$override_str = $this->model('api.item.link.override');
+		if (!empty($override_str)) {
+			return $this->_processOverrideString($override_str, $item);
+		} else {
+			return $this->_router->makeAbsoluteUri("/id/item/{$item->idslug}");
+		}
 	}
 
 
 
 	public function getItemUri($item) {
-		return $this->_router->makeAbsoluteUri("/id/item/{$item->id}");
+		$override_str = $this->model('api.item.uri.override');
+		if (!empty($override_str)) {
+			return $this->_processOverrideString($override_str, $item);
+		} else {
+			return $this->_router->makeAbsoluteUri("/id/item/{$item->id}");
+		}
 	}
 
 
@@ -211,14 +232,17 @@ class ItemRenderer {
 				}
 			}
 
-			$this->outIfNotEmpty($item->contact_1_name, sprintf('<oo:primaryContact rdf:resource="%1$s#contact" />', $this->xml($item_uri)));
-			$this->outIfNotEmpty($item->contact_2_name, sprintf('<oo:contact rdf:resource="%1$s#contact2" />', $this->xml($item_uri)));
+			$this->outIfNotEmpty($item->contact_1_email, sprintf('<oo:primaryContact rdf:resource="%1$s#contact" />', $this->xml($item_uri)));
+			$this->outIfNotEmpty($item->contact_2_email, sprintf('<oo:contact rdf:resource="%1$s#contact2" />', $this->xml($item_uri)));
 
 			$image_uri = $this->getItemImage($item);
 			$this->outIfNotEmpty($image_uri, sprintf('<foaf:depiction rdf:resource="%1$s" />'."\n", $this->xml($this->getItemImage($item))));
 			?>
 			<foaf:page><?php echo $this->xml($this->getItemLink($item)); ?></foaf:page>
 		</oo:Equipment>
+		<?php
+		if (!empty($item->contact_1_email)) {
+			?>
 		<foaf:Person rdf:about="<?php echo $this->xml("{$item_uri}#contact"); ?>">
 			<?php
 			if (!empty($item->contact_1_email)) {
@@ -229,6 +253,11 @@ class ItemRenderer {
 			}
 			?>
 		</foaf:Person>
+			<?php
+		}
+
+		if (!empty($item->contact_2_email)) {
+			?>
 		<foaf:Person rdf:about="<?php echo $this->xml("{$item_uri}#contact2"); ?>">
 			<?php
 			if (!empty($item->contact_2_email)) {
@@ -239,13 +268,15 @@ class ItemRenderer {
   			}
   			?>
 		</foaf:Person>
-		<?php
+			<?php
+		}
+
 		if (!empty($item->image)) {
 			?>
-		<foaf:Image rdf:about="<?php echo $image_uri; ?>">
+		<foaf:Image rdf:about="<?php echo $this->xml($image_uri); ?>">
 			<dc:type><?php echo $this->xml(pathinfo($image_uri, PATHINFO_EXTENSION));?></dc:type>
 			<dc:description><?php echo $this->xml("Image of {$item->name}"); ?></dc:description>
-			<dcat:accessURL rdf:resource="<?php echo $image_uri; ?>" />
+			<dcat:accessURL rdf:resource="<?php echo $this->xml($image_uri); ?>" />
 		</foaf:Image>
 			<?php
 		}
@@ -301,6 +332,21 @@ class ItemRenderer {
 
 	public function xml($string) {
 		return str_replace(array('&', '<', '>', '"', "'"), array('&#x26;', '&#x3C;', '&#x3E;', '&#x22;', '&#x27;'), $string);
+	}
+
+
+
+	/* ------------------------------------------------------------------------
+	 * Private Methods
+	 */
+
+
+
+	protected function _processOverrideString($string, $item) {
+		$search = array ('{name}', '{idslug}', '{id}', '{image}');
+		$replace = array($item->name, $item->idslug, $item->id, $item->image);
+
+		return str_replace($search, $replace, $string);
 	}
 
 

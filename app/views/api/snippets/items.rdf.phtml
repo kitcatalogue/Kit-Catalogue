@@ -2,6 +2,8 @@
 
 
 
-$this->renderer->renderAsRdf($item);
+foreach($this->items as $item) {
+	$this->renderer->renderAsRdf($item);
+}
 
 
