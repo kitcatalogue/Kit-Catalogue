@@ -1492,7 +1492,7 @@ class Itemstore {
 		}
 
 		// Whole term searching on major fields
-		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords');
+		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords','asset_no');
 		$conditions = array();
 		foreach($fields as $field) {
 			$conditions[] = $this->_db->prepareFilter($field, "%{$keywords}%", 'OR', 'LIKE');
