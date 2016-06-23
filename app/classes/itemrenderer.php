@@ -132,7 +132,6 @@ class ItemRenderer {
 			'contact2' => $this->csv($item->contact_2_email) ,
 			'image' => $this->csv($this->getItemImage($item)) ,
 			'link' => $this->csv($this->getItemLink($item)) ,
-			//'asset_no' => $this->csv($item->asset_no),
 		);
 		echo '"' . implode('","', $fields) .'"';
 	}
@@ -154,9 +153,6 @@ class ItemRenderer {
 
 			<dt data-key="model">Model</dt>
 			<dd data-key="model"><?php echo $this->html($item->model); ?></dd>
-			
-			<dt data-key="model">Asset Number</dt>
-			<dd data-key="model"><?php echo $this->html($item->asset_no); ?></dd>
 
 			<dt data-key="description">Description</dt>
 			<dd data-key="description"><?php echo $this->_wikiparser->parse($item->full_description); ?></dd>
