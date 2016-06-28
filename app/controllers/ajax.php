@@ -78,6 +78,18 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 			}
 		}
 	}// /method
+    public function actionGetNameSuggestions() {
+        // TODO: Change to Regular user?
+        if (!$this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+			$this->reply->setFail('Access denied');
+			return;
+		}
+
+		$query = $this->request()->get('q');
+
+		$results = $this->model('userstore')->findPartialMatch($query);
+        $this->reply->SetData('result', $results);
+	}// /method
 
 
 
