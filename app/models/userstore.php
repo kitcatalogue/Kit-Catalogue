@@ -149,14 +149,17 @@ class Userstore {
      */
     public function findPartialMatch($query){
         $binds = array (
-                'query' => $query,
+                'query' => '%' . $query . '%',
             );
         $this->_db->query("
                 SELECT *
                 FROM user 
                 WHERE surname LIKE :query
                 ", $binds);
-    return $this->_db->getObject(array($this, 'convertRowToObject') );
+        return $this->_db->getResultObjects(
+            array($this,'convertRowToObject') );
+        //array($this, 'convertRowToObject') );
+
     }// /method 
 
 

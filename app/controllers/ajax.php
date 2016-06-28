@@ -88,6 +88,7 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 		$query = $this->request()->get('q');
 
 		$results = $this->model('userstore')->findPartialMatch($query);
+        //die(var_dump($results));
         $this->reply->SetData('result', $results);
 	}// /method
 
