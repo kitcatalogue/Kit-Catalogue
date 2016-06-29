@@ -155,6 +155,7 @@ class Userstore {
                 SELECT *
                 FROM user 
                 WHERE surname LIKE :query
+                OR email LIKE :query
                 ", $binds);
         return $this->_db->getResultObjects(
             array($this,'convertRowToObject') );
