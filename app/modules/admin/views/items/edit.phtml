@@ -11,6 +11,7 @@ $new_item = empty($item->id);
 $this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', <<<EndJS
+<script type="text/javascript" src="/js/typeahead.bundle.min.js"></script> 
 <script type="text/javascript">
 
 	var link_element_count = 1;
@@ -59,8 +60,65 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 		});
 		$("#td_contact2email").append(usemyemail2_button);
 
+            ///////////////////////////////////////////////////////////////////////////
+   var Names = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    matchAnyQueryToken: true,
+    identify: function(names){
+   console.log("IDENTIFY CALLED");
+    return datum.email;
+    },
+    remote: {
+        url: 'http://139.59.166.46/ajax/getnamesuggestions/?q=%QUERY',
+        wildcard: '%QUERY',
+        transform: function(response) {
+          // map remote JSON to javascript object?
+					return $.map(response.result, function (names) {
+        		//return 
+            
+            return  {
+                    Name: names.forename + ' ' + names.surname,
+                    Email: names.email,
+                };
+					});
+				}
+    }
+});
 
-	});
+$('#name .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Name',
+  source: Names
+});
+$('#td_contact1email .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Email',
+  source: Names
+});
+
+var NameSelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#td_contact1email .typeahead').val(suggestionObject.Email);
+
+}
+var EmailSelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#name .typeahead').val(suggestionObject.Name);
+    }
+$('#name .typeahead').on('typeahead:selected',NameSelectedHandler);
+$('#td_contact1email .typeahead').on('typeahead:selected',EmailSelectedHandler);
+
+});
+
 
 </script>
 EndJS
@@ -177,10 +235,11 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 		<dd>
 			<p class="note">The custodian or primary staff contact.</p>
 			<dl class="form">
-
-				<dt><?php Ecl_Helper_Html::formLabel('contact_1_name', 'Name'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name); ?></dd>
-
+                
+                <div id="name">
+				    <dt><?php Ecl_Helper_Html::formLabel('contact_1_name', 'Name'); ?></dt>
+				    <dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name, array('class'=>'typeahead')); ?></dd>
+                </div>
 				<dt>Email *</dt>
 				<dd>
 					<table class="layout">
@@ -205,7 +264,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 						<td id="td_contact1email" style="padding-left: 2em;">
 							<label style="display: block;" for="new_contact_1_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
-							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'));
+							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'), array('class'=>'typeahead'));
 							?>
 						</td>
 					</tr>
