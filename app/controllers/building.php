@@ -32,17 +32,17 @@ class Controller_Building extends Ecl_Mvc_Controller {
 	public function actionView() {
 		$user = $this->model('user');
 
-		$category = $this->model('categorystore')->find($this->param('catid'));
+		$building = $this->model('buildingstore')->find($this->param('catid')); // :catid should, confusingly be correct
 
-		if (empty($category)) {
+		if (empty($building)) {
 			$this->router()->action('error', '404');
 			return true;
 		}
 
-		$this->view()->category = $category;
-		$this->view()->items = $this->model('itemstore')->findForCategory($category->id, $user->param('visibility'));
+		$this->view()->building = $building;
+		$this->view()->items = $this->model('itemstore')->findForCategory($building->id, $user->param('visibility'));
 
-		$this->view()->render('category_view');
+		$this->view()->render('building_view');
 	}// /method
 
 
@@ -51,12 +51,12 @@ class Controller_Building extends Ecl_Mvc_Controller {
 		$item_name  = $this->param('itemname');
 		$item_id = $this->param('itemid');
 
-		$category = $this->model('categorystore')->find($this->param('catid'));
+		$building = $this->model('buildingstore')->find($this->param('catid'));
 
 		$item = $this->model('itemstore')->find($item_id);
 
 
-		if ( (empty($category)) || (empty($item)) ) {
+		if ( (empty($building)) || (empty($item)) ) {
 			$this->router()->action('error', '404');
 			return true;
 		}
@@ -67,10 +67,10 @@ class Controller_Building extends Ecl_Mvc_Controller {
 			return true;
 		}
 
-		$this->view()->category = $category;
+		$this->view()->building = $building;
 		$this->view()->item = $item;
 
-		$this->view()->render('category_viewitem');
+		$this->view()->render('building_viewitem');
 	}// /method
 
 

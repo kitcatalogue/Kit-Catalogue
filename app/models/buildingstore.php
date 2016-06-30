@@ -1,7 +1,6 @@
 <?php
 
 
-
 include_once('building.php');
 
 
@@ -315,6 +314,19 @@ class Buildingstore {
 		$affected_count = $this->_db->update('building', $binds, "building_id=$id");
 
 		return ($affected_count>0);
+	}// /method
+
+    	/**
+	 * Find all categories IDs and Names, and their respective counts, for the items specified.
+	 *
+	 * @param  array  $id  The array of item IDs to find.
+	 *
+	 * @return  array  The information retrieved.
+	 */
+	public function findCountsForItemBuildings($id) {
+
+
+	 // This may not work...
 	}// /method
 
 

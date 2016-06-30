@@ -2,7 +2,7 @@
 $lang = $this->model('lang');
 
 
-$this->router()->layout()->addBreadcrumb($this->category->name, $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}"));
+$this->router()->layout()->addBreadcrumb($this->building->name, $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}"));
 
 $back_url = base64_encode($this->request()->relativeUri());
 $edit_link = null;
@@ -20,15 +20,15 @@ if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 echo $edit_link;
 if (0 == count($this->items)) {
 	?>
-	<p class="note">There are no items listed, please try a different <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<p class="note">There are no items listed, please try a different <?php $this->out(strtolower($lang['building.label'])); ?>.</p>
 	<?php
 } else {
 	?>
-	<p class="note">The following equipment and facilities are listed under this <?php $this->out(strtolower($lang['cat.label'])); ?>.</p>
+	<p class="note">The following equipment and facilities are listed under this <?php $this->out(strtolower($lang['building.label'])); ?>.</p>
 
 	<ul class="item-list">
 		<?php
-		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}/item/");
+		$url_stub = $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}/item/");
 		foreach($this->items as $item) {
 			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}");
 		}

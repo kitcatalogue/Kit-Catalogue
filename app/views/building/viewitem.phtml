@@ -1,9 +1,9 @@
 <?php
 $lang = $this->model('lang');
 
-$url_category = urlencode(strtolower($this->category->name));
-$this->router()->layout()->addBreadcrumb($this->category->name, $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}"));
-$this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$this->category->slug}/item/{$this->item->slug}"));
+$url_category = urlencode(strtolower($this->building->name));
+$this->router()->layout()->addBreadcrumb($this->building->name, $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}"));
+$this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}/item/{$this->item->slug}"));
 
 
 $goto_url = '';

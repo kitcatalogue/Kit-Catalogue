@@ -73,6 +73,7 @@ $options = array(
 	'ou'            => array() ,
 	'manufacturer'  => array() ,
 	'technique'     => array() ,
+	'building'     => array() ,
 );
 
 $option_names = array(
@@ -81,6 +82,7 @@ $option_names = array(
 	'ou'            => $lang['ou.label'] ,
 	'manufacturer'  => $lang['item.label.manufacturer'] ,
 	'technique'     => $lang['item.label.technique'] ,
+	'building'      => $lang['building.label'] ,
 );
 
 if ($this->model('app.use_ou_tree')) {
@@ -96,6 +98,7 @@ if ($this->model('app.use_ou_tree')) {
 // Build the option lists
 
 $category_lookup = $this->model('categorystore')->findAll()->toAssoc('id', 'name');
+$building_lookup = $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
 if ($this->model('app.use_ou_tree')) {
 	$ou_lookup = $this->model('organisationalunitstore')->findAll()->toAssoc('id', 'name');
 } else {
@@ -110,6 +113,7 @@ $use_department = (!isset($this->selected_params['department']));
 $use_ou = (!isset($this->selected_params['ou']));
 $use_manufacturer = (!isset($this->selected_params['manufacturer']));
 $use_technique = (!isset($this->selected_params['technique']));
+$use_building = (!isset($this->selected_params['building']));
 
 if ($this->model('app.use_ou_tree')) {
 	$use_department = false;
@@ -119,7 +123,6 @@ if ($this->model('app.use_ou_tree')) {
 
 
 $item_ids = array();
-
 
 
 // Build the department, ou, manufacturer and technique option lists (category comes later)
@@ -170,7 +173,6 @@ foreach($this->items as $item) {
 }
 
 
-
 // Build the category option list
 if ($use_category) {
 	$category_list = $this->model('categorystore')->findCountsForItemCategories($item_ids);
@@ -184,6 +186,21 @@ if ($use_category) {
 	}
 
 	$category_list = null;
+}
+// Build the building option list
+if ($use_building) {
+	//$building_list = $this->model('buildingstore')->findCountsForItemCategories($item_ids);
+	$building_list = $this->model('buildingstore')->findCountsForItemBuildings($item_ids);
+
+	if (!empty($building_list)) {
+		foreach($building_list as $building_id => $count) {
+			$options['building'][$building_id]['id'] = $building_id;
+			$options['building'][$building_id]['name'] = (isset($building_lookup[$building_id])) ? $building_lookup[$building_id] : "Unknown {$lang['building.label']}" ;
+			$options['building'][$building_id]['count'] = $count;
+		}
+	}
+
+	$building_list = null;
 }
 
 
@@ -240,6 +257,10 @@ if (!empty($this->selected_params)) {
 			case 'category':
 				$param_name = $lang['cat.label'];
 				$val = (isset($category_lookup[$this->selected_params[$param_key]])) ? $category_lookup[$this->selected_params[$param_key]] : "Unknown {$lang['cat.label']}" ;
+                break;
+            case 'building':
+				$param_name = $lang['building.label'];
+				$val = (isset($building_lookup[$this->selected_params[$param_key]])) ? $building_lookup[$this->selected_params[$param_key]] : "Unknown {$lang['building.label']}" ;
 				break;
 			case 'department':
 				$param_name = $lang['dept.label'];
@@ -304,7 +325,10 @@ if (!$this->items) {
 				case 'ou':
 					$val = (isset($ou_lookup[$this->selected_params[$param_key]])) ? $ou_lookup[$this->selected_params[$param_key]] : "Unknown {$lang['ou.label']}" ;
 					break;
-				default:
+				case 'building':
+					$val = (isset($building_lookup[$this->selected_params[$param_key]])) ? $building_lookup[$this->selected_params[$param_key]] : "Unknown {$lang['building.label']}" ;
+					break;
+                default:
 					$val = $this->selected_params[$param_key];
 					if (empty($val)) { $val = "-No $k-" ; }
 					break;

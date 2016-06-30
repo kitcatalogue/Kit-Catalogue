@@ -84,7 +84,10 @@ class Itemstore {
 			unset($params['contact']);
 		}
 
-
+        if (isset($params['building'])){
+            $params['building_id'] = $params['building'];
+            unset($params['building']);
+        }
 		if (isset($params['building_id'])) {
 			$sql_set = $this->_db->prepareSet($params['building_id']);
 			$where_conditions[] = "(i.building_id IN $sql_set)";
