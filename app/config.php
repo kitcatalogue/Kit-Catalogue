@@ -317,7 +317,7 @@ $config['layout.signin_prompt'] = 'You are currently viewing only those items ma
 // Each item is identified by its default name
 // Any items missing from the order list will be appended to the menu
 // Whether an item is shown or not is controlled by the menu.___.enabled settings
-$config['menu.order'] = array('home', 'category', 'department', 'ou', 'manufacturer', 'facility', 'tag');
+$config['menu.order'] = array('home', 'category', 'department', 'ou', 'manufacturer', 'building', 'facility', 'tag');
 
 // Home menu option
 $config['menu.home.enabled'] = true;
@@ -346,7 +346,9 @@ $config['menu.facility.label'] = 'Facilities';
 // Tag menu option
 $config['menu.tag.enabled'] = false;
 $config['menu.tag.label'] = 'Tags';
-
+// Building menu option
+$config['menu.building.enabled'] = true;
+$config['menu.building.label'] = 'Buildings';
 
 
 /*

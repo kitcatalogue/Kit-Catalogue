@@ -134,6 +134,10 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 							unset($bits[0]);
 							$selected_params['technique'] = implode('-', $bits);
 							break;
+                        case strtolower($lang['building.label']):
+							$uri_params['building'] = urlencode($param);
+							$selected_params['building'] = (int) $bits[1];
+							break;
 						default:
 							break;
 					}

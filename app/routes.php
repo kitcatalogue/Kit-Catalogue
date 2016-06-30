@@ -359,4 +359,19 @@ $router->addRoute('*', '/', array(
 	'action'      => 'index' ,
 ));
 
+// Buildings 
+
+$router->addRoute('*', $model->lang['building.route'], array(
+	'controller'  => 'building' ,
+));
+
+$router->addRoute('*', $model->lang['building.route'].'/:buildid/:catid' , array(
+	'controller'  => 'building' ,
+	'action'      => 'view' ,
+));
+
+$router->addRoute('*', $model->lang['building.route'].'/:catname/:catid/item/:itemname/:itemid', array(
+	'controller'  => 'building' ,
+	'action'      => 'viewitem' ,
+));
 
