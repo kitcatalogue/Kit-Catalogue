@@ -44,13 +44,15 @@ class Buildingstore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'building_id'  => $object->id ,
-			'code'         => $object->code ,
-			'name'         => $object->name ,
-			'site_id'      => $object->site_id ,
-			'latitude'     => $object->latitude ,
-			'longitude'    => $object->longitude ,
-			'url'          => $object->url ,
+			'building_id'           => $object->id ,
+			'code'                  => $object->code ,
+			'name'                  => $object->name ,
+			'site_id'               => $object->site_id ,
+			'latitude'              => $object->latitude ,
+			'longitude'             => $object->longitude ,
+			'url'                   => $object->url ,
+            'item_count_internal'   => $object->item_count_internal ,
+            'item_count_public'     => $object->item_count_public ,
 		);
 
 		return $row;
@@ -75,6 +77,8 @@ class Buildingstore {
 		$object->latitude = $row['latitude'];
 		$object->longitude = $row['longitude'];
 		$object->url = $row['url'];
+        $object->item_count_internal = $row['item_count_internal'];
+        $object->item_count_public = $row['item_count_public'];
 
 		return $object;
 	}// /method
