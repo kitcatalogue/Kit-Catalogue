@@ -331,6 +331,72 @@ class Buildingstore {
 
 
 	 // This may not work...
+    }// /method
+    
+    /**
+	 * Rebuild all the item counts per building.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+    public function rebuildItemCounts() {
+        // needs to be adapted
+		$visibility_types = array (
+			'internal' => '
+					SELECT ic.building_id, count(ic.item_id) AS count
+					FROM item_category ic
+						INNER JOIN item i ON ic.item_id=i.item_id
+					GROUP BY ic.category_id
+					ORDER BY ic.category_id
+				' ,
+			'public' => '
+					SELECT ic.category_id, count(ic.item_id) AS count
+					FROM item_category ic
+						INNER JOIN item i ON ic.item_id=i.item_id AND i.visibility = \''. KC__VISIBILITY_PUBLIC .'\'
+					GROUP BY ic.category_id
+					ORDER BY ic.category_id
+				' ,
+		);
+
+
+		// Get all the counts for each category
+		$update_info = null;
+
+		foreach($visibility_types as $type => $sql) {
+			$row_count = $this->_db->query($sql);
+
+			if ($row_count>0) {
+				$counts = $this->_db->getResultAssoc('category_id', 'count');
+
+				if ($counts) {
+					foreach($counts as $category_id => $item_count) {
+						$category_id = (int) $category_id;
+						$update_info[$category_id][$type] = $item_count;
+					}
+				}
+			}
+		}
+
+
+		// Reset all the category item counts to 0
+		$binds = array (
+			'item_count_internal'  => 0 ,
+			'item_count_public'    => 0 ,
+		);
+		$this->_db->update('category', $binds);
+
+		// If there are counts to update in the database
+		if ($update_info) {
+			foreach($update_info as $category_id => $counts) {
+				$binds = array (
+					'item_count_internal'  => (isset($counts['internal'])) ? $counts['internal'] : 0 ,
+					'item_count_public'    => (isset($counts['public'])) ? $counts['public'] : 0 ,
+				);
+
+				$this->_db->update('category', $binds, "category_id='$category_id'");
+			}
+		}
+
+		return true;
 	}// /method
 
 
