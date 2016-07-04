@@ -189,7 +189,6 @@ if ($use_category) {
 }
 // Build the building option list
 if ($use_building) {
-	//$building_list = $this->model('buildingstore')->findCountsForItemCategories($item_ids);
 	$building_list = $this->model('buildingstore')->findCountsForItemBuildings($item_ids);
 
 	if (!empty($building_list)) {

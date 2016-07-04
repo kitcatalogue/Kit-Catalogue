@@ -320,18 +320,26 @@ class Buildingstore {
 		return ($affected_count>0);
 	}// /method
 
-    	/**
-	 * Find all categories IDs and Names, and their respective counts, for the items specified.
+   /**
+	 * Find all building IDs and Names, and their respective counts, for the items specified.
 	 *
 	 * @param  array  $id  The array of item IDs to find.
 	 *
 	 * @return  array  The information retrieved.
 	 */
 	public function findCountsForItemBuildings($id) {
+		$sql__id_set = $this->_db->prepareSet((array) $id);
 
+		$this->_db->query("
+			SELECT b.building_id, b.name, count(b.building_id) AS `count`
+			FROM building b
+				INNER JOIN item i ON b.building_id=i.building_id AND i.item_id IN $sql__id_set
+			GROUP BY b.building_id, b.name
+			ORDER BY b.name
+		");
 
-	 // This may not work...
-    }// /method
+		return $this->_db->getResultAssoc('building_id','count');
+	}// /method
     
     /**
 	 * Rebuild all the item counts per building.
