@@ -182,6 +182,29 @@ class Buildingstore {
 			ORDER BY name ASC
 		", null, array($this, 'convertRowToObject'));
 	}// /method
+    /**
+     * Find all buildings used by at least one item of equipment, for the given visibility.
+     *
+     * @fix this method is kept just in case we broke anything by updating the new findAllUsed method
+     *
+     * @param  integer  $visibility  (optional) The item visibility to check
+     *
+     * @return  mixed  An array of objects.  On fail, null.
+     */
+    public function findAllUsedLongList($visibility = null) {
+
+        if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
+            $sql__visibility = $this->_db->escapeString($visibility);
+            return $this->_db->newRecordset("
+                   SELECT b.*
+                   FROM building b INNER JOIN item i ON b.building_id=i.building_id
+                   WHERE (i.visibility & $sql__visibility)=$sql__visibility
+                   ORDER BY b.name ASC
+         ", null, array($this, 'convertRowToObject') );
+    }// /method
+
+
+
 	/**
 	 * Find buildings for OU.
 	 *

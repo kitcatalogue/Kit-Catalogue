@@ -1,6 +1,6 @@
 <?php
 
-$all_buildings = $this->model('buildingstore')->findAllUsed(KC__VISIBILITY_INTERNAL)->toAssoc('id', 'name');
+$all_buildings = $this->model('buildingstore')->findAllUsedLongList(KC__VISIBILITY_INTERNAL)->toAssoc('id', 'name');
 
 
 $staff_contacts = $this->model('itemstore')->findAllContacts(KC__VISIBILITY_INTERNAL);
