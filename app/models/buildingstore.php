@@ -163,21 +163,25 @@ class Buildingstore {
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findAllUsed($visibility = null) {
+    public function findAllUsed($visibility = null) {
 
-		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
-		$sql__visibility = $this->_db->escapeString($visibility);
+		switch ($visibility) {
+			case KC__VISIBILITY_PUBLIC:
+				$where_clause = "WHERE item_count_public>'0'";
+				break;
+			case KC__VISIBILITY_INTERNAL:
+			default:
+				$where_clause = "WHERE item_count_internal>'0'";
+				break;
+		}// /switch
 
 		return $this->_db->newRecordset("
-			SELECT b.*
-			FROM building b INNER JOIN item i ON b.building_id=i.building_id
-			WHERE (i.visibility & $sql__visibility)=$sql__visibility
-			ORDER BY b.name ASC
-		", null, array($this, 'convertRowToObject') );
+			SELECT *
+			FROM building
+			$where_clause
+			ORDER BY name ASC
+		", null, array($this, 'convertRowToObject'));
 	}// /method
-
-
-
 	/**
 	 * Find buildings for OU.
 	 *

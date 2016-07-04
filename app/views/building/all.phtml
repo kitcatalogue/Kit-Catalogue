@@ -21,7 +21,6 @@ if ($this->buildings->count()==0) {
 }
 
 if ($this->buildings->count()>0) {
-
 	if ($this->buildings->count()>10) {
 		$chunks = Ecl_Helper_Array::split($this->buildings->toArray(), 2);
 	} else {
