@@ -118,6 +118,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('organisationalunitstore')->rebuildItemCounts();
 				$this->model('supplierstore')->rebuildItemCounts();
+				$this->model('buildingstore')->rebuildItemCounts();
 			}
 			$this->layout()->clearBreadcrumbs(2);
 			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The item has been deleted');
@@ -605,6 +606,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					$this->model('categorystore')->rebuildItemCounts();
 					$this->model('organisationalunitstore')->rebuildItemCounts();
 					$this->model('supplierstore')->rebuildItemCounts();
+					$this->model('buildingstore')->rebuildItemCounts();
 
 					//Final update of item
 					$this->model('itemstore')->update($item);
@@ -1228,6 +1230,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('organisationalunitstore')->rebuildItemCounts();
 				$this->model('supplierstore')->rebuildItemCounts();
+				$this->model('buildingstore')->rebuildItemCounts();
 
 
 				if (!$errors) {

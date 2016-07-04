@@ -342,18 +342,17 @@ class Buildingstore {
         // needs to be adapted
 		$visibility_types = array (
 			'internal' => '
-					SELECT ic.building_id, count(ic.item_id) AS count
-					FROM item_category ic
-						INNER JOIN item i ON ic.item_id=i.item_id
-					GROUP BY ic.category_id
-					ORDER BY ic.category_id
+					SELECT building_id, count(item_id) AS count
+					FROM item
+					GROUP BY building_id 
+					ORDER BY building_id
 				' ,
 			'public' => '
-					SELECT ic.category_id, count(ic.item_id) AS count
-					FROM item_category ic
-						INNER JOIN item i ON ic.item_id=i.item_id AND i.visibility = \''. KC__VISIBILITY_PUBLIC .'\'
-					GROUP BY ic.category_id
-					ORDER BY ic.category_id
+					SELECT building_id, count(item_id) AS count
+					FROM item
+					WHERE visibility = \''. KC__VISIBILITY_PUBLIC .'\'
+					GROUP BY building_id 
+                    ORDER BY building_id
 				' ,
 		);
 
@@ -365,12 +364,12 @@ class Buildingstore {
 			$row_count = $this->_db->query($sql);
 
 			if ($row_count>0) {
-				$counts = $this->_db->getResultAssoc('category_id', 'count');
+				$counts = $this->_db->getResultAssoc('building_id', 'count');
 
 				if ($counts) {
-					foreach($counts as $category_id => $item_count) {
-						$category_id = (int) $category_id;
-						$update_info[$category_id][$type] = $item_count;
+					foreach($counts as $building_id => $item_count) {
+						$building_id = (int) $building_id;
+						$update_info[$building_id][$type] = $item_count;
 					}
 				}
 			}
@@ -382,17 +381,17 @@ class Buildingstore {
 			'item_count_internal'  => 0 ,
 			'item_count_public'    => 0 ,
 		);
-		$this->_db->update('category', $binds);
+		$this->_db->update('building', $binds);
 
 		// If there are counts to update in the database
 		if ($update_info) {
-			foreach($update_info as $category_id => $counts) {
+			foreach($update_info as $building_id => $counts) {
 				$binds = array (
 					'item_count_internal'  => (isset($counts['internal'])) ? $counts['internal'] : 0 ,
 					'item_count_public'    => (isset($counts['public'])) ? $counts['public'] : 0 ,
 				);
 
-				$this->_db->update('category', $binds, "category_id='$category_id'");
+				$this->_db->update('building', $binds, "building_id='$building_id'");
 			}
 		}
 

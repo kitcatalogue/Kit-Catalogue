@@ -37,34 +37,11 @@ class Patch_v2_1_0 extends Ecl_Db_Migration {
 		));
 
 
-		$buildings= $model->get('buildingstore')->findAll();
-
-        foreach($buildings as $building){
-        // we need to iterate every building and count all items that are
-        // assigned to the building;
-        // Then, we need to insert the values back to db.  
-            //query all items
-            $res = $this->_db->query("
-                SELECT COUNT(building_id)
-                FROM item
-                WHERE building_id=:id
-                ", array('id'=> $building->id));
-            //query public items only
-            die(var_dump($res));
-            $res_publica = $this->_db->query("
-                SELECT COUNT(building_id)
-                FROM item
-                WHERE building_id=:id
-                AND visibility=:vis
-                ", array('id'=> $building->id, 
-                'vis'=>KC__VISIBILITY_PUBLIC));
- 
-            $this->_db->update('building', array(
-                'item_count_internal'=>$res, 
-                'item_count_public'=>$res_publica
-            ), "building_id={$building->id}");
-
+		$test= $model->get('buildingstore')->rebuildItemCounts();
+        if ($test!=true){
+        die("error: $test");
         }
+        
 		$this->_db->replaceMulti('system_info', array (
 			array (
 				'name'  => 'database_version',
