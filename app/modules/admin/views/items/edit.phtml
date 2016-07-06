@@ -86,7 +86,7 @@ $this->layout()->appendSection('layout.head', <<<EndJS
     }
 });
 
-$('#name .typeahead').typeahead({
+$('#name1 .typeahead').typeahead({
   hint: true,
   highlight: true,
   minLength: 2
@@ -95,6 +95,16 @@ $('#name .typeahead').typeahead({
   display: 'Name',
   source: Names
 });
+$('#name2 .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Name',
+  source: Names
+});
+
 $('#td_contact1email .typeahead').typeahead({
   hint: true,
   highlight: true,
@@ -104,18 +114,43 @@ $('#td_contact1email .typeahead').typeahead({
   display: 'Email',
   source: Names
 });
+$('#td_contact2email .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Email',
+  source: Names
+});
 
-var NameSelectedHandler = function
+
+var Name1SelectedHandler = function
 (eventObject, suggestionObject, suggestionDataset){
 $('#td_contact1email .typeahead').val(suggestionObject.Email);
-
+$('select#contact_1_email').children().removeAttr("selected");
 }
-var EmailSelectedHandler = function
+var Email1SelectedHandler = function
 (eventObject, suggestionObject, suggestionDataset){
-$('#name .typeahead').val(suggestionObject.Name);
+$('#name1 .typeahead').val(suggestionObject.Name);
+$('select#contact_1_email').children().removeAttr("selected");
     }
-$('#name .typeahead').on('typeahead:selected',NameSelectedHandler);
-$('#td_contact1email .typeahead').on('typeahead:selected',EmailSelectedHandler);
+$('#name1 .typeahead').on('typeahead:selected',Name1SelectedHandler);
+$('#td_contact1email .typeahead').on('typeahead:selected',Email1SelectedHandler);
+
+
+var Name2SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#td_contact2email .typeahead').val(suggestionObject.Email);
+$('select#contact_2_email').children().removeAttr("selected");
+}
+var Email2SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#name2 .typeahead').val(suggestionObject.Name);
+$('select#contact_2_email').children().removeAttr("selected");
+    }
+$('#name2 .typeahead').on('typeahead:selected',Name2SelectedHandler);
+$('#td_contact2email .typeahead').on('typeahead:selected',Email2SelectedHandler);
 
 });
 
@@ -236,7 +271,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 			<p class="note">The custodian or primary staff contact.</p>
 			<dl class="form">
                 
-                <div id="name">
+                <div id="name1">
 				    <dt><?php Ecl_Helper_Html::formLabel('contact_1_name', 'Name'); ?></dt>
 				    <dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name, array('class'=>'typeahead')); ?></dd>
                 </div>
@@ -284,10 +319,10 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 		<dd>
 			<p class="note">The secondary staff contact.</p>
 			<dl class="form">
-
+                <div id="name2">
 				<dt><?php Ecl_Helper_Html::formLabel('contact_2_name', 'Name'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name); ?></dd>
-
+				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name,array('class'=>'typeahead')); ?></dd>
+                </div>
 				<dt>Email</dt>
 				<dd>
 					<table class="layout">
@@ -313,7 +348,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 						<td id="td_contact2email" style="padding-left: 2em;">
 							<label style="display: block;" for="new_contact_2_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
-							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'));
+							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'),array('class'=>'typeahead'));
 							?>
 						</td>
 					</tr>
