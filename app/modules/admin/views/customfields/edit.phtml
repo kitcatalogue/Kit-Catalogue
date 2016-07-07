@@ -6,7 +6,6 @@ $this->router()->layout()->addBreadcrumb('Custom Fields', $this->router()->makeA
 $this->router()->layout()->addBreadcrumb("Editing : {$field->name}", $this->router()->makeAbsoluteUri("/admin/customfields/edit/{$field->id}"));
 
 
-$this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', <<<EndJS
 <script type="text/javascript">

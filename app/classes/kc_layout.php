@@ -38,7 +38,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-min.js'));
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery.require.js'));
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/kc_config.php'));
-		//$this->addJavascript($this->router()->makeAbsoluteUri('/js/bootstrap.min.js'));
+		$this->addJavascript($this->router()->makeAbsoluteUri('/js/bootstrap.min.js'));
 		return true;
 	}// /method
 
