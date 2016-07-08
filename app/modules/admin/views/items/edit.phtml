@@ -162,7 +162,7 @@ EndJS
 
 
 <?php
-Ecl_Helper_Html::form('itemform', $this->request()->uri(), 'post', 'UTF-8', 'enctype="multipart/form-data"');
+Ecl_Helper_Html::form('itemform', $this->request()->uri(), 'post', 'UTF-8', 'enctype="multipart/form-data" class="form-horizontal"');
 Ecl_Helper_Html::formHidden('item_id', $item->id);
 ?>
 
@@ -212,17 +212,17 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 		<dt><?php Ecl_Helper_Html::formLabel('title', $lang['item.form.title'].' *'); ?></dt>
 		<dd>
 			<p class="note">General name of the item. Mandatory if <em>Manufacturer</em> is blank.</p>
-			<?php Ecl_Helper_Html::formInput('title', 70, 250, $item->title); ?>
+			<?php Ecl_Helper_Html::formInput('title', 70, 250, $item->title, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('manufacturer', $lang['item.form.manufacturer'].' *'); ?></dt>
 		<dd>
 			<p class="note">Mandatory if <em>Title</em> is blank.</p>
-			<?php Ecl_Helper_Html::formInput('manufacturer', 40, 100, $item->manufacturer); ?>
+			<?php Ecl_Helper_Html::formInput('manufacturer', 40, 100, $item->manufacturer,array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('model', $lang['item.form.model']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('model', 40, 100, $item->model); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('model', 40, 100, $item->model,array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *'); ?></dt>
 		<dd>
@@ -248,7 +248,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 				KC__VISIBILITY_PUBLIC    => 'Public' ,
 			);
 
-			Ecl_Helper_Html::formSelect('visibility', $options, $item->visibility);
+			Ecl_Helper_Html::formSelect('visibility', $options, $item->visibility, array('class'=>'form-control'));
 			?>
 		</dd>
 
@@ -272,7 +272,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
                 
                 <div id="name1">
 				    <dt><?php Ecl_Helper_Html::formLabel('contact_1_name', 'Name'); ?></dt>
-				    <dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name, array('class'=>'typeahead')); ?></dd>
+				    <dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name, array('class'=>'typeahead form-control')); ?></dd>
                 </div>
 				<dt>Email *</dt>
 				<dd>
@@ -298,7 +298,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 						<td id="td_contact1email" style="padding-left: 2em;">
 							<label style="display: block;" for="new_contact_1_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
-							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'), array('class'=>'typeahead'));
+							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'), array('class'=>'typeahead form-control'));
 							?>
 						</td>
 					</tr>
@@ -320,7 +320,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 			<dl class="form">
                 <div id="name2">
 				<dt><?php Ecl_Helper_Html::formLabel('contact_2_name', 'Name'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name,array('class'=>'typeahead')); ?></dd>
+				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name,array('class'=>'typeahead form-control')); ?></dd>
                 </div>
 				<dt>Email</dt>
 				<dd>
@@ -347,7 +347,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 						<td id="td_contact2email" style="padding-left: 2em;">
 							<label style="display: block;" for="new_contact_2_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
-							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'),array('class'=>'typeahead'));
+							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'),array('class'=>'typeahead form-control'));
 							?>
 						</td>
 					</tr>
@@ -494,26 +494,26 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('manufacturer_website', $lang['item.form.manufacturer_website']); ?></dt>
 		<dd>
 			<p class="note">A specific web page containing the of manufacturer's information about this item, or the manufacturer's main website.</p>
-			<?php Ecl_Helper_Html::formInput('manufacturer_website', 80, 250, $item->manufacturer_website); ?>
+			<?php Ecl_Helper_Html::formInput('manufacturer_website', 80, 250, $item->manufacturer_website,array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('technique', $lang['item.form.technique']); ?></dt>
 		<dd>
 			<p class="note">What kind of scientific principle, technique or methodology the item uses. (if applicable)</p>
-			<?php Ecl_Helper_Html::formInput('technique', 30, 100, $item->technique); ?>
+			<?php Ecl_Helper_Html::formInput('technique', 30, 100, $item->technique, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('acronym', $lang['item.form.acronym']); ?></dt>
 		<dd>
 			<p class="note">Any short-hand acronym or abbreviation used to identify the item.</p>
-			<?php Ecl_Helper_Html::formInput('acronym', 10, 15, $item->acronym); ?>
+			<?php Ecl_Helper_Html::formInput('acronym', 10, 15, $item->acronym, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('keywords', $lang['item.form.keywords']); ?></dt>
 		<dd>
 			<p class="note">Any keywords not mentioned in any of the fields above, but which should include this item in search results.</p>
 			<p class="note">This could also include variations in spelling or terminology (e.g. "multiaxis, multi-axis, multi axis")</p>
-			<?php Ecl_Helper_Html::formInput('keywords', 80, 250, $item->keywords); ?>
+			<?php Ecl_Helper_Html::formInput('keywords', 80, 250, $item->keywords, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('tags', $lang['tag.label.plural']); ?></dt>
@@ -536,7 +536,7 @@ if ($this->model('admin.item.editors.enabled')) {
 			} else {
 				$tags = $this->request()->post('tags');
 			}
-			Ecl_Helper_Html::formInput('tags', 80, 2048, $tags);
+			Ecl_Helper_Html::formInput('tags', 80, 2048, $tags, array('class'=>'form-control'));
 			?>
 		</dd>
 
@@ -667,7 +667,7 @@ if ($this->model('admin.item.editors.enabled')) {
 			&nbsp; &nbsp;
 			<label style="display: block;" for="other_category">&hellip;or use a new <?php $this->out(strtolower($lang['cat.label'])); ?></label>
 			<?php
-			Ecl_Helper_Html::formInput('other_category', 40, 250, $this->request()->post('other_category'));
+			Ecl_Helper_Html::formInput('other_category', 40, 250, $this->request()->post('other_category'), array('class'=>'form-control'));
 			?>
 		</dd>
 
@@ -699,25 +699,25 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('usergroup', $lang['item.form.usergroup']); ?></dt>
 		<dd>
 			<p class="note">Short description of the typical user group.  (e.g. "Department" or "Renewable Energy Research Group")</p>
-			<?php Ecl_Helper_Html::formInput('usergroup', 30, 250, $item->usergroup); ?>
+			<?php Ecl_Helper_Html::formInput('usergroup', 30, 250, $item->usergroup, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('availability', $lang['item.form.availability']); ?></dt>
 		<dd>
 			<p class="note">An indication of when this item might be available for use. (e.g. "Wednesday afternoons")</p>
-			<?php Ecl_Helper_Html::formInput('availability', 50, 250, $item->availability); ?>
+			<?php Ecl_Helper_Html::formInput('availability', 50, 250, $item->availability, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('restrictions', $lang['item.form.restrictions']); ?></dt>
 		<dd>
 			<p class="note">Any restrictions on the use of this item, or specific Health &amp; Safety considerations, etc.</p>
-			<?php Ecl_Helper_Html::formInput('restrictions', 50, 250, $item->restrictions); ?>
+			<?php Ecl_Helper_Html::formInput('restrictions', 50, 250, $item->restrictions, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('portability', $lang['item.form.portability']); ?></dt>
 		<dd>
 			<p class="note">For most items the portability will be obvious and need not be entered, but for special cases you can enter portability information here.</p>
-			<?php Ecl_Helper_Html::formInput('portability', 30, 250, $item->portability); ?>
+			<?php Ecl_Helper_Html::formInput('portability', 30, 250, $item->portability, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('training_required', $lang['item.form.trainingrequired']); ?></dt>
@@ -797,11 +797,11 @@ if ($this->model('admin.item.editors.enabled')) {
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('quantity', $lang['item.form.quantity']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('quantity', 5, 10, $item->quantity); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('quantity', 5, 10, $item->quantity, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('quantity_detail', $lang['item.form.quantity_detail']); ?></dt>
 		<dd><p class="note">If this record describes multiple items, please provide details here.</p>
-			<?php Ecl_Helper_Html::formInput('quantity_detail', 50, 100, $item->quantity_detail); ?>
+			<?php Ecl_Helper_Html::formInput('quantity_detail', 50, 100, $item->quantity_detail, array('class'=>'form-control')); ?>
 		</dd>
 
 	</dl>
@@ -837,7 +837,7 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('room', $lang['item.form.room']); ?></dt>
 		<dd>
 			<?php
-			Ecl_Helper_Html::formInput('room', 15, 20, $item->room);
+			Ecl_Helper_Html::formInput('room', 15, 20, $item->room, array('class'=>'form-control'));
 			?>
 		</dd>
 
@@ -857,16 +857,16 @@ if ($this->model('admin.item.editors.enabled')) {
 	<dl class="form">
 
 		<dt><?php Ecl_Helper_Html::formLabel('asset_no', $lang['item.form.asset_no']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('asset_no', 15, 250, empty($item->asset_no) ? null : $item->asset_no ); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('asset_no', 15, 250, empty($item->asset_no) ? null : $item->asset_no, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('finance_id', $lang['item.form.finance_id']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('finance_id', 15, 250, empty($item->finance_id) ? null : $item->finance_id ); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('finance_id', 15, 250, empty($item->finance_id) ? null : $item->finance_id, array('class'=>'form-control') ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('serial_no', $lang['item.form.serial_no']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('serial_no', 15, 250, empty($item->serial_no) ? null : $item->serial_no ); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('serial_no', 15, 250, empty($item->serial_no) ? null : $item->serial_no, array('class'=>'form-control') ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('year_of_manufacture', $lang['item.form.year_of_manufacture']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('year_of_manufacture', 10, 4, $item->year_of_manufacture); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('year_of_manufacture', 10, 4, $item->year_of_manufacture, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php $this->out($lang['item.form.supplier']); ?></dt>
 		<dd>
@@ -899,7 +899,7 @@ if ($this->model('admin.item.editors.enabled')) {
 						<label style="display: block;" for="new_supplier">&hellip;or provide a new <?php $this->out(strtolower($lang['item.form.supplier'])); ?></label>
 						<?php
 					}
-					Ecl_Helper_Html::formInput('new_supplier', 30, 250, $this->request()->post('new_supplier'));
+					Ecl_Helper_Html::formInput('new_supplier', 30, 250, $this->request()->post('new_supplier'), array('class'=>'form-control'));
 					?>
 				</td>
 			</tr>
@@ -911,13 +911,13 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('PAT', date('Y'), date('Y')+10, empty($item->PAT) ? null : $item->PAT ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('cost', $lang['item.form.cost']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('cost', 30, 100, $item->cost); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('cost', 30, 100, $item->cost, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('date_of_purchase', $lang['item.form.date_of_purchase']); ?></dt>
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('date_of_purchase', date('Y')-20, date('Y'), empty($item->date_of_purchase) ? null : $item->date_of_purchase); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('replacement_cost', $lang['item.form.replacement_cost']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('replacement_cost', 30, 100, $item->replacement_cost); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('replacement_cost', 30, 100, $item->replacement_cost, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('end_of_life', $lang['item.form.end_of_life']); ?></dt>
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('end_of_life', date('Y')-5, date('Y')+10, empty($item->end_of_life) ? null : $item->end_of_life); ?></dd>
@@ -925,7 +925,7 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('maintenance', $lang['item.form.maintenance']); ?></dt>
 		<dd>
 			<p class="note">Details of any maintenance agreements, contracts or costs.</p>
-			<?php Ecl_Helper_Html::formInput('maintenance', 100, 250, $item->maintenance); ?>
+			<?php Ecl_Helper_Html::formInput('maintenance', 100, 250, $item->maintenance, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('is_disposed_of', $lang['item.form.is_disposed_of']); ?></dt>
@@ -990,7 +990,7 @@ if (!empty($fields)) {
 				$value = (isset($item_custom[$field->id])) ? $item_custom[$field->id] : null ;
 				?>
 				<dt><?php Ecl_Helper_Html::formLabel('custom_field_'. $field->id, $field->name); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('custom_field_'. $field->id, 50, 250, $value); ?></dd>
+				<dd><?php Ecl_Helper_Html::formInput('custom_field_'. $field->id, 50, 250, $value, array('class'=>'form-control')); ?></dd>
 				<?php
 			}
 			?>
@@ -1090,8 +1090,8 @@ if (!$new_item) {
 					?>
 					<tr class="<?php echo($tr_class); ?>">
 						<td><?php Ecl_Helper_Html::formSelect("link[{$link->id}][type]", $types, $link->type); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][name]", 25, 250, $link->name); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][url]", 40, 250, $link->url); ?></td>
+						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][name]", 25, 250, $link->name, array('class'=>'form-control')); ?></td>
+						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][url]", 40, 250, $link->url, array('class'=>'form-control')); ?></td>
 						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_link[]', "link_delete_{$i}", $link->id); ?></td>
 					</tr>
 					<?php
@@ -1110,9 +1110,9 @@ if (!$new_item) {
 				<dt><label>Link 1</label></dt>
 				<dd>
 					<?php Ecl_Helper_Html::formLabel('newlink[1][name]', 'Title'); ?>
-					<br /><?php Ecl_Helper_Html::formInput('newlink[1][name]', 40, 250, '')?>
+					<br /><?php Ecl_Helper_Html::formInput('newlink[1][name]', 40, 250, '', array('class'=>'form-control'))?>
 					<br /><?php Ecl_Helper_Html::formLabel('newlink[1][url]', 'URL'); ?>
-					<br /><?php Ecl_Helper_Html::formInput('newlink[1][url]', 65, 250, '')?>
+					<br /><?php Ecl_Helper_Html::formInput('newlink[1][url]', 65, 250, '', array('class'=>'form-control'))?>
 				</dd>
 
 			</dl>
@@ -1165,7 +1165,7 @@ if (!$new_item) {
 			<dl class="form">
 
 				<dt><?php Ecl_Helper_Html::formLabel('copyright_notice', 'Copyright Notice (to cover all uploaded files)'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('copyright_notice', 80, 250, $item->copyright_notice)?></dd>
+				<dd><?php Ecl_Helper_Html::formInput('copyright_notice', 80, 250, $item->copyright_notice, array('class'=>'form-control'))?></dd>
 
 			</dl>
 
@@ -1192,7 +1192,7 @@ if (!$new_item) {
 					<tr class="<?php echo($tr_class); ?>">
 						<td class="name"><?php $this->out($file->filename); ?></td>
 						<td><?php Ecl_Helper_Html::formSelect("file_type_{$b64_filename}", $types, $file->type); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("file_name_{$b64_filename}", 50, 250, $file->name) ?></td>
+						<td><?php Ecl_Helper_Html::formInput("file_name_{$b64_filename}", 50, 250, $file->name, array('class'=>'form-control')) ?></td>
 						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_file_{$i}", $file->filename); ?></td>
 					</tr>
 					<?php
