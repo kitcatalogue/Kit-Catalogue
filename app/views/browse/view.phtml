@@ -217,7 +217,7 @@ if ($this->model('security')->canAddItems()) {
 	foreach($this->selected_params as $k => $v) {
 		$presets .= "&preset[$k]=$v";
 	}
-	$editlink = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s%3$s">add an item</a>', $edit_url, $back_url, $presets);
+	$editlink = sprintf('<form><button class="pull-right btn btn-success" formaction="%1$s?backlink=%2$s%3$s">add an item</button></form>', $edit_url, $back_url, $presets);
 } else {
 	$editlink = '';
 }
@@ -226,16 +226,21 @@ if ($this->model('security')->canAddItems()) {
 
 $hide_properties = array();
 ?>
-
-<h1><?php $this->out($title); ?></h1>
-
+<div class="row vertical-align">
+<div class="col-xs-6">
+<h2><?php $this->out($title); ?></h2> 
+</div>
+<div class="col-xs-6">
 <?php
 
 echo $editlink;
 
+?>  </div></div> <?php
 
 if (!empty($this->selected_params)) {
 	?>
+  <div class="row vertical-align">
+  <div class="col-sm-10">
 	<p>Viewing items matching the following properties:</p>
 	<ul class="hozmenu selected-list">
 	<?php
@@ -280,9 +285,10 @@ if (!empty($this->selected_params)) {
 	}
 	?>
 	</ul>
+  </div>
+  </div>
 	<?php
 }
-
 
 if (!$this->items) {
 	?>
@@ -292,7 +298,7 @@ if (!$this->items) {
 ?>
 
 
-<div class="side-bar">
+<div id="side-column" class="col-sm-4 side-bar hidden-xs collapse in">
 	<?php
 	$uri = $this->request()->uri();
 	if ( (!empty($uri)) && ('/' !== substr($uri, -1)) ) {
@@ -394,7 +400,7 @@ if (!$this->items) {
 <?php
 if ( 0 < count($this->items)) {
 	?>
-	<ul class="item-list">
+	<ul class="col-sm-8 item-list">
 		<?php
 		$url_stub = "{$uri}item/";
 		foreach($this->items as $item) {
@@ -405,5 +411,12 @@ if ( 0 < count($this->items)) {
 	<?php
 }
 ?>
+<nav class="navbar navbar-default navbar-fixed-bottom visible-xs" style="min-height: 30px; line-height: 1;">
+
+<span class="glyphicon glyphicon-resize-vertica"> </span>
+<div class="centered">
+<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#side-column">  Name </button>
+</div>
+</nav>
 
 

@@ -35,11 +35,11 @@ ini_set('session.gc_divisor', 100);
 
 
 // Types of feedback boxes
-define('KC__FEEDBACK_ERROR', 'feedback_error');
-define('KC__FEEDBACK_INFO', 'feedback_info');
+define('KC__FEEDBACK_ERROR', 'alert-danger');
+define('KC__FEEDBACK_INFO', 'alert-info');
 define('KC__FEEDBACK_QUESTION', 'feedback_question');
-define('KC__FEEDBACK_SUCCESS', 'feedback_success');
-define('KC__FEEDBACK_WARNING', 'feedback_warning');
+define('KC__FEEDBACK_SUCCESS', 'alert-success');
+define('KC__FEEDBACK_WARNING', 'alert-warning');
 
 
 // Different user permissions/auths

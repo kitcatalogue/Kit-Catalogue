@@ -5,7 +5,7 @@ $lang = $this->model('lang');
 
 ?>
 
-<h1><?php $this->out($lang['building.label.plural']); ?></h1>
+<h2><?php $this->out($lang['building.label.plural']); ?></h2>
 
 <?php
 if ($this->buildings->count()==0) {
@@ -40,13 +40,8 @@ if ($this->buildings->count()>0) {
 					<ul>
 						<?php
 						foreach($chunk as $i => $building) {
-							if (false) {
-								?>
-								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$building->slug}"); ?>"><?php $this->out($building->name); ?> <span class="count">(<?php $this->out($building->getItemCount($user->param('visibility'))); ?>)</span></a></li>
-								<?php
-							}
-							?>
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['building.label'])."-{$building->id}-".$this->slugify($building->name)); ?>"><?php $this->out($building->name); ?> <span class="count">(<?php $this->out($building->getItemCount($user->param('visibility'))); ?>)</span></a></li>
+?>	
+							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['building.label'])."-{$building->id}-".$this->slugify($building->name)); ?>"><?php $this->out($building->name); ?> <span class="badge"><?php $this->out($building->getItemCount($user->param('visibility'))); ?></span></a></li>
 							<?php
 						}
 						?>

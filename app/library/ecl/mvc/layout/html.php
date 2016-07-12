@@ -221,7 +221,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 		if ($this->hasFeedback()) {
 			foreach($this->_feedback as $i => $feedback) {
 				?>
-				<div class="feedback <?php echo($feedback['type']); ?>">
+				<div class="alert <?php echo($feedback['type']); ?>">
 					<?php
 					if (isset($feedback['title'])) {
 						?>
