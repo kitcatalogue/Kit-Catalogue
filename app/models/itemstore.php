@@ -1392,9 +1392,12 @@ class Itemstore {
 	 */
 	public function insert($item) {
 		$binds = $this->convertObjectToRow($item);
-
 		unset($binds['item_id']);   // Don't insert the id, we want a new one
-
+        if ($binds['short_description']==NULL){ // If we have full description, create short from full:
+            if ($binds['full_description']!=null){
+            $binds['short_description'] = substr($binds['full_description'], 0, 245) . '...';
+            }
+        }
 		$binds['date_added'] = $this->_db->formatDate(time());
 		$binds['date_updated'] = $this->_db->formatDate(time());
 
@@ -2051,6 +2054,11 @@ class Itemstore {
 	 */
 	public function update($item) {
 		$binds = $this->convertObjectToRow($item);
+        if ($binds['short_description']==NULL){ // If we have full description, create short from full:
+            if ($binds['full_description']!=null){
+                $binds['short_description'] = substr($binds['full_description'], 0, 245) . '...';
+            }
+        }
 
 		$id = $this->_db->prepareValue($item->id);
 

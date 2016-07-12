@@ -8,21 +8,73 @@ $user = $this->model('user');
 $lang = $this->model('lang');
 
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><?php echo (!empty($this->_title)) ? "{$this->_title} : " : '' ; ?> <?php echo $this->model('app.title'); ?></title>
-	<link href="<?php echo $www_root; ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
+  <link href="<?php echo $www_root; ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
 	<link href="<?php echo $www_root; ?>/css/print.css" media="print" rel="stylesheet" type="text/css" />
+  <link href="<?php echo $www_root; ?>/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
 	<?php
 	$this->renderStylesheets();
-    $this->addGlobalJavascript();
-	$this->renderJavascripts();
+  $this->addGlobalJavascript();
+  $this->renderJavascripts();
+   
+ 
 
 	if ($this->model('layout.use_local_css')) {
 		?>
+    
+   <style>
+   #headercontainer {min-height: 56px;}
+   @media (min-width: 970px) {
+    .container{
+        max-width: 970px;
+        margin: auto;
+    }
+}
+///////////////////////////pasted:
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+code {
+  font-size: 80%;
+}
+
+.navbar-brand {
+  height: 60px;
+}
+
+.nav >li >a {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.navbar-toggle {
+  padding: 10px;
+  margin: 25px 15px 25px 0;
+}
+
+  </style>  
 	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
 		<?php
 	}
@@ -38,24 +90,22 @@ $lang = $this->model('lang');
 </head>
 <?php echo $this->getSection('layout.pre-body'); ?>
 <body>
-
-<div id="wrapper">
-
-	<div id="header">
-		<div class="header-wrapper">
-			<a class="logo" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.jpg" alt="Kit-Catalogue" /></a>
-
-			<?php
-			$org_logo = $this->model()->get('org.logo');
-			$org_www = $this->model()->get('org.www');
+<div class="wrapper">
+ <nav class="navbar navbar-default navbar-default-fixed navbar-static-top">
+     <div id="headercontainer" class="container-fluid">
+		     <div class="navbar-header navbar-left pull-left">
+         <a class="navbar-brand" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.png" alt="Kit-Catalogue" /></a>
+         <?php
+			   $org_logo = $this->model()->get('org.logo');
+		    	$org_www = $this->model()->get('org.www');
 			if (!empty($org_logo)) {
 				if (!empty($org_www)) {
 					?>
-					<a class="institution" href="<?php echo $org_www; ?>"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
+					<a class="institution navbar-brand" href="<?php echo $org_www; ?>"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
 					<?php
 				} else {
 					?>
-					<span class="institution"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></span>
+					<span class="institution navbar-brand"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></span>
 					<?php
 				}
 			}
@@ -63,62 +113,30 @@ $lang = $this->model('lang');
 
 			$user = $this->model('user');
 			?>
-		</div>
-	</div>
-
-
-	<?php
-	if (!$user->isAnonymous()) {
-		?>
-	<div id="userbar" class="cf">
-		<ul id="usernav">
-			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out</a></li>
-			<?php
-			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/myprofile/items">my items</a></li>
-				<?php
-			}
-			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/admin">administration</a></li>
-				<?php
-			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/ouadmin">administration</a></li>
-				<?php
-			}
-			?>
-			<li>Welcome <strong><?php
-				$name = $user->name;
-				if (empty($name)) {
-					$name = $user->email;
-				}
-				$this->out($name);
-			?></strong></li>
-		</ul>
-	</div>
-		<?php
-	}
-	?>
-
-	<div id="top">
-
-		<div id="nav" class="cf">
-			<?php
+      
+        
+          
+         </div>
+         
+          <div class="navbar-header navbar-right pull-right">
+             <?php
 			if ( (!$user->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
 				?>
-				<div id="search-box">
+				<div id="search-box-past" class="navbar-form pull-right" role="search">
 					<form action="<?php echo $www_root; ?>/search/" method="get">
-					<input type="text" name="q" id="search" class="hint" value="Search..." onfocus="if (this.value=='Search...') { this.className = ''; this.value = ''; }" onblur="if (this.value == '') { this.className = 'hint'; this.value = 'Search...'; }" />
-					<input type="image" name="searchsubmit" id="search-image" src="<?php echo $www_root; ?>/images/bg-search.png" />
+					<input type="text" name="q" id="searchbox" class="form-control" placeholder="Search"/>
+					<button type="submit" class="btn btn-default navbar-btn">
+          <span class="glyphicon glyphicon-search"></span> Search
+        </button>
 					</form>
 				</div>
 				<?php
 			}
-			?>
-
-			<ul id="topnav" class="cf">
+			?>     
+             
+          </div>
+         <div id="navbar-menu" class="collapse navbar-collapse" role="navigation">
+                <ul id="top-nav" class="nav navbar-nav">
 				<?php
 				$topnav = array (
 					'home'         => '/',
@@ -165,16 +183,32 @@ $lang = $this->model('lang');
 					<?php
 				}
 				?>
-				<li>
+				<!--<li> -->
 			</ul>
-		</div>
+      
+            
+         </div>     <!-- navbar collapse -->
+           <div class="navbar-menu pull-left">
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-menu">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+         </div>
+      
+	   </div> <!-- Container fluid -->
+ </nav>
+  <div id="top-bar" class="container-fluid">
+  <div class="pull-left col-sm-6">
+
+		
 
 		<?php
 		if ($this->hasBreadcrumbs()) {
 			?>
-			<ul id="breadcrumbs">
+			<ol class="breadcrumb">
 				<?php $this->renderBreadcrumbs();?>
-			</ul>
+			</ol>
 			<?php
 		}
 
@@ -189,7 +223,50 @@ $lang = $this->model('lang');
 		?>
 
 	</div>
+  <?php
+	if (!$user->isAnonymous()) {
+		?>
+	<div id="user-bar" class="pull-right col-xs-6">
+		<ul id="usernav">
+			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out </a>
+      </li>
+			<?php
+			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/myprofile/items">my items</a></li>
+				<?php
+			}
+			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/admin">administration</a></li>
+				<?php
+			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
+				?>
+				<li><a href="<?php echo $www_root; ?>/ouadmin">administration</a></li>
+				<?php
+			}
+			?>
+			<li>Welcome <strong><?php
+				$name = $user->name;
+				if (empty($name)) {
+					$name = $user->email;
+				}
+				$this->out($name);
+			?></strong></li>
+		</ul>
+	</div>
+		<?php
+	}
+	?>       
+  </div>
 
+	
+
+
+	
+
+	
+ <div class="container vertical-center" id="main">
 	<?php
 	$this->renderFeedback();
 
@@ -199,22 +276,13 @@ $lang = $this->model('lang');
 
 	$this->renderSection('layout.post-content');
 	?>
-	<div id="footer">
+	
 
-		<?php $this->renderSection('layout.footer'); ?>
-
-		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
-
-		<?php $this->renderView('snippets_licenceinfo', ''); ?>
-
-		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v<?php $this->out($this->model('app.version')); ?>).<br />
-		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>
-	</div>
-</div>
 
 <?php $this->renderSection('layout.post-body'); ?>
+    	</div>
+      </div>
 
-<iframe src="<?php echo $www_root; ?>/keep_alive.php" height="1" width="1" style="display: none;">keep alive</iframe>
 
 </body>
 </html>
