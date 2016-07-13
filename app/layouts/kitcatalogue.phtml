@@ -29,15 +29,7 @@ $lang = $this->model('lang');
 	if ($this->model('layout.use_local_css')) {
 		?>
     
-   <style>
-   #headercontainer {min-height: 56px;}
-   @media (min-width: 970px) {
-    .container{
-        max-width: 970px;
-        margin: auto;
-    }
-}
-
+<style>
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -46,20 +38,37 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 50px;
+  margin-bottom: 60px;
 }
 .footer {
   position: absolute;
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 50px;
+  height: 60px;
   background-color: #f5f5f5;
 }
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 60px 15px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
 code {
   font-size: 80%;
 }
-
 .navbar-brand {
   height: 60px;
 }
@@ -73,7 +82,8 @@ code {
   margin: 25px 15px 25px 0;
 }
 
-  </style>  
+
+</style>  
 	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
 		<?php
 	}

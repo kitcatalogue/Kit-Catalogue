@@ -52,7 +52,7 @@ table { border-collapse: collapse; border-spacing: 0; }
  */
 
 
-body {
+#body {
 	font: 12px/1.6em Helvetica, Arial, sans-serif;
 	color: #444;
 	background: #f5f5f5 url(../images/system/body_bk.png) repeat-x;
@@ -574,11 +574,11 @@ a.admin_link {color:#FFF;padding:0.2em 1.5em 0 1em;}
 
 
 .side-bar {
-	//clear: left;
-	//float: left;
-	//width: 15em;
+  /*  clear: left;
+	  float: left;
+	  width: 15em;
 	
-	//margin: 1em 1.5em 2em 0;
+	margin: 1em 1.5em 2em 0;   */
 	
 	background: #fff;
 	border: 6px solid #F1F0EE;
@@ -676,13 +676,13 @@ h2.divider { margin-top: 1em; border-bottom: 1px solid #ccc; }
 
 ul.item-list {
 	overflow: hidden;
-	//margin: 0 0 0 2em;
+  /*margin: 0 0 0 2em;*/
 }
 
 ul.item-list li.item {
 	overflow: hidden;
 	min-height: 12.5em;
-	//margin: 10px;
+	/*margin: 10px; */
 	margin-bottom:20px;
 	zpadding: 1em;
 	background: #fff;
@@ -695,7 +695,7 @@ ul.item-list li .item-title { font-size: 15px; line-height:2.5em;padding-left:1e
 ul.item-list li .item-desc { margin-bottom: 13px; color:#000;}
 ul.item-list li .item-desc a {color:#6372AB;}
 
-//li.item > a.admin_link { zmargin: -1em -1em 0 0 !important; }
+/*li.item > a.admin_link { zmargin: -1em -1em 0 0 !important; }    */
 
 
 ul.item-list li .item-title a {
@@ -1169,13 +1169,69 @@ span.twitter-typeahead {
     display: flex;
     align-items: center;
 }
- #bottom-nav{
-        float:none;
-        margin: 0 auto;
-        //display: table;
-        //table-layout: fixed;
-    }
+
   #top-bar {
   margin: -20px auto;
   }
   
+
+#headercontainer {min-height: 56px;}
+@media (min-width: 970px) {
+    .container{
+        max-width: 970px;
+        margin: auto;
+    }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 60px 15px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+.navbar-brand {
+  height: 60px;
+}
+
+.nav >li >a {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+.navbar-toggle {
+  padding: 10px;
+  margin: 25px 15px 25px 0;
+}
+
