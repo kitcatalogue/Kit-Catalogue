@@ -4,9 +4,9 @@ $user = $this->model('user');
 $lang = $this->model('lang');
 
 ?>
-
+<div class="page-header">
 <h2><?php $this->out($lang['ou.label.plural']); ?></h2>
-
+</div>
 <?php
 $organisational_units = $this->model('organisationalunitstore')->findTree();
 
@@ -20,7 +20,7 @@ if (0 == $organisational_units->count()) {
 
 
 
-<p>The following is a list of all the <?php echo strtolower($lang['ou.label.plural']); ?> used in this catalogue.</p>
+<p class="note">The following is a list of all the <?php echo strtolower($lang['ou.label.plural']); ?> used in this catalogue.</p>
 
 <div id="tree">
 	<?php

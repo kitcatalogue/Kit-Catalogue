@@ -45,29 +45,36 @@ switch (strtolower($this->request()->get('msg'))) {
 
 
 ?>
-
-<h1>Sign in to <?php $this->out($this->model('app.title')); ?>.</h1>
+<div class="container" style="text-align: center; margin-bottom: 40px;">
+<h2>Sign in to <?php $this->out($this->model('app.title')); ?>.</h2>
+</div>
 <?php
 $use_https = $this->model('app.use_https') ? true : false ;
 ?>
 <form action="<?php echo $this->router()->makeAbsoluteUri('/signin/check/', $use_https); ?>" method="post" id="signonform">
 
-<div style="float: left;">
-	<table class="form" style="margin-left: 5em;">
-	<tr>
-		<th><?php Ecl_Helper_Html::formLabel('username', 'Username'); ?></th>
-		<td><?php Ecl_Helper_Html::formInput('username', '12', '50'); ?></td>
-	</tr>
-	<tr>
-		<th><?php Ecl_Helper_Html::formLabel('password', 'Password'); ?></th>
-		<td><?php Ecl_Helper_Html::formPassword('password', '12', '50'); ?></td>
-	</tr>
-	<tr>
-		<td colspan="2" style="padding-top: 1em; text-align: right;">
-			<?php Ecl_Helper_Html::formSubmit('signin', 'Sign in'); ?>
-		</td>
-	</tr>
-	</table>
+<div class="form-horizontal" style="max-width: 330px; margin: 0 auto;">
+
+   <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('username', 'Username', array('class' => "col-sm-4 control-label")); ?>
+    <div class="col-sm-8">
+      <?php Ecl_Helper_Html::formInput('username', '12', '50','', array('class'=>'form-control')); ?>  
+    
+    </div>
+  </div>
+  <div class="form-group">
+    <?php Ecl_Helper_Html::formLabel('password', 'Password', array('class' => "col-sm-4 control-label")); ?>
+    <div class="col-sm-8">
+      <?php Ecl_Helper_Html::formPassword('password', '12', '50','', array('class'=>'form-control')); ?>  
+      
+    </div>
+  </div>
+
+
+	    <div class="button_bar">
+        <?php Ecl_Helper_Html::formSubmit('signin', 'Sign in', array('class' => "btn btn-lg btn-primary btn-block")); ?>
+     </div>
+			
 </div>
 
 <?php
@@ -81,15 +88,12 @@ if ($this->model('signin.use_shibboleth')) {
 }
 ?>
 
-<div style="clear: both;"></div>
-
 </form>
-
 <br />
 <br />
 
-<h3>Signing in allows you to..</h3>
-<ul style="margin-left: 2em; list-style: disc;">
+<h3 style="text-align: center; margin-bottom: 40px;">Signing in allows you to..</h3>
+<ul style="margin: 0 auto; max-width: 330px; list-style: disc;">
 	<li>Browse and search the full equipment database.</li>
 	<li>Check an item's location.</li>
 	<li>Access manuals, case studies and other supporting documentation.</li>

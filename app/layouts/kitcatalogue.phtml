@@ -37,7 +37,6 @@ $lang = $this->model('lang');
         margin: auto;
     }
 }
-///////////////////////////pasted:
 
 /* Sticky footer styles
 -------------------------------------------------- */
@@ -47,14 +46,14 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  margin-bottom: 50px;
 }
 .footer {
-  position: absolute !important;
-  bottom: 0 !important;
-  width: 100% !important;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   /* Set the fixed height of the footer here */
-  height: 60px;
+  height: 50px;
   background-color: #f5f5f5;
 }
 code {
@@ -210,18 +209,8 @@ code {
 				<?php $this->renderBreadcrumbs();?>
 			</ol>
 			<?php
-		}
-
-		if ( ($user->isAnonymous()) && (true === $this->model('layout.signin_prompt_enabled')) ){
-			$signin_prompt = str_replace('[[SIGNIN_URL]]', $this->router()->makeAbsoluteUri('/signin/'), $this->model('layout.signin_prompt'));
-			?>
-			<p class="signin_warning">
-				<?php echo $signin_prompt; ?>
-			</p>
-			<?php
-		}
-		?>
-
+		}    ?>
+   
 	</div>
   <?php
 	if (!$user->isAnonymous()) {
@@ -257,16 +246,29 @@ code {
 	</div>
 		<?php
 	}
-	?>       
+	?>
+  
+         
   </div>
-
+     
+     
 	
 
 
 	
 
-	
+<div class="container">
+<?php
+		if ( ($user->isAnonymous()) && (true === $this->model('layout.signin_prompt_enabled')) ){
+			$signin_prompt = str_replace('[[SIGNIN_URL]]', $this->router()->makeAbsoluteUri('/signin/'), $this->model('layout.signin_prompt'));
+			?>
+      <div class="alert alert-warning pull-left" role="alert"><?php echo $signin_prompt; ?></div>
+			<?php
+		}
+		?>
+</div>
  <div class="container vertical-center" id="main">
+     
 	<?php
 	$this->renderFeedback();
 
@@ -283,6 +285,18 @@ code {
     	</div>
       </div>
 
+ <footer class="footer">
+   <div class="container">
 
+		<?php $this->renderSection('layout.footer'); ?>
+
+		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
+
+		<?php $this->renderView('snippets_licenceinfo', ''); ?>
+
+		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v<?php $this->out($this->model('app.version')); ?>).<br />
+		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>
+     </div>
+    </footer>
 </body>
 </html>

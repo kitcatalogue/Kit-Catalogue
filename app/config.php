@@ -305,7 +305,7 @@ $config['layout.signin_prompt_enabled'] = true;
 // HTML message to show for the sign-in prompt.
 // If you include the text  [[SIGNIN_URL]]  it will be replaced with the signin URL automatically.
 // E.g.  '<a href="[[SIGNIN_URL]]">click here to login</a>' will give a working link to the signin page.
-$config['layout.signin_prompt'] = 'You are currently viewing only those items made visible to the public. <a href="[[SIGNIN_URL]]" style="font-weight: bold;">Click here to sign in</a> and view the full catalogue.';
+$config['layout.signin_prompt'] = 'You are currently viewing only those items made visible to the public. <a href="[[SIGNIN_URL]]" class="alert-link">Click here to sign in</a> and view the full catalogue.';
 
 
 

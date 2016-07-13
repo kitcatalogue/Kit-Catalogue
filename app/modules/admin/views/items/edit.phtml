@@ -467,12 +467,12 @@ if (!$new_item) {
 			} else {
 				?>
 				<p class="note">The following links have been attached to this item.</p>
-				<table class="grid striped" style="margin: 0 0 0 1em;">
+				<table class="table">
 				<tr>
-					<th>Type</th>
-					<th>Title</th>
-					<th>Link</th>
-					<th>Delete</th>
+					<th>Type   </th>
+					<th>Title  </th>
+					<th>Link   </th>
+					<th>Delete </th>
 				</tr>
 				<?php
 				foreach($links as $i => $link) {
@@ -522,12 +522,12 @@ if (!$new_item) {
 				?>
 				<p class="note">The following files have been uploaded and attached to this item.</p>
 				<p class="note">Select which one will be the main image for the item.  The other images will only appear on the item's detail page.</p>
-				<table class="grid striped" style="margin: 0 0 0 1em;">
-				<tr>
+				<table class="table table-bordered">
+				<tr><b>
 					<th>Image</th>
 					<th>Main Image</th>
 					<th>Delete</th>
-				</tr>
+			</b>	</tr>
 				<?php
 				foreach($image_files as $i => $file) {
 					$selected = ($file->filename == $item->image) || (1 == count($image_files));
@@ -535,8 +535,8 @@ if (!$new_item) {
 					?>
 					<tr class="<?php echo($tr_class); ?>">
 						<td class="name"><?php $this->out($file->filename); ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formRadio('use_image', "use_image_{$i}", $file->filename, $selected); ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_image_{$i}", $file->filename); ?></td>
+						<td><?php Ecl_Helper_Html::formRadio('use_image', "use_image_{$i}", $file->filename, $selected); ?></td>
+						<td><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_image_{$i}", $file->filename); ?></td>
 					</tr>
 					<?php
 				}
@@ -657,7 +657,7 @@ if (!$new_item) {
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse1">Additional Fields</a>
+          <a data-toggle="collapse" href="#collapse1">Additional Fields (Click to expand)</a>
         </h4>
       </div>
       <div id="collapse1" class="panel-collapse collapse">

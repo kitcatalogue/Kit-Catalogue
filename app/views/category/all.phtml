@@ -4,9 +4,9 @@ $user = $this->model('user');
 $lang = $this->model('lang');
 
 ?>
-
+<div class="page-header">
 <h2><?php $this->out($lang['cat.label.plural']); ?></h2>
-
+</div>
 <?php
 if ($this->categories->count()==0) {
 	if ($this->model('user')->isAnonymous()) {
