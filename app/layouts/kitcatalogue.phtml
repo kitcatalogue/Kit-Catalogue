@@ -153,17 +153,18 @@ $lang = $this->model('lang');
       </button>
          </div>
       
-	   </div> <!-- Container fluid -->
+	   </div> <!-- Container fluid header -->
  </nav>
   <div id="top-bar" class="container-fluid">
-  <div class="pull-left col-sm-6">
+  <div class="row"> 
+  <div class="col-sm-6 col-xs-12">
 
 		
 
 		<?php
 		if ($this->hasBreadcrumbs()) {
 			?>
-			<ol class="breadcrumb">
+			<ol class="breadcrumb pull-left">
 				<?php $this->renderBreadcrumbs();?>
 			</ol>
 			<?php
@@ -173,8 +174,9 @@ $lang = $this->model('lang');
   <?php
 	if (!$user->isAnonymous()) {
 		?>
-	<div id="user-bar" class="pull-right col-xs-6">
-		<ul id="usernav">
+	<div id="userbar" class="col-sm-6 col-xs-12">
+		
+    <ul id="usernav">
 			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out </a>
       </li>
 			<?php
@@ -202,11 +204,12 @@ $lang = $this->model('lang');
 			?></strong></li>
 		</ul>
 	</div>
+  
 		<?php
 	}
 	?>
   
-         
+   </div>      
   </div>
      
      

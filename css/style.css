@@ -434,7 +434,6 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 #userbar {
 	margin: 0;
 	overflow: hidden;
-	background-color: #fff;
 }
 
 #usernav li {
@@ -445,7 +444,7 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 	zpadding: 0.5em 1em;
 	padding: 0.5em 1em 0.2em 0.5em;
 	
-	line-height: 1em;
+	line-height: 1.6em;
 	color: #000;
 }
 
@@ -1172,6 +1171,10 @@ span.twitter-typeahead {
 
   #top-bar {
   margin: -20px auto;
+  background-color: #f4f4f4;
+  padding-left: 0px;
+  padding-right: 0px;
+  height: 40px;
   }
   
 
