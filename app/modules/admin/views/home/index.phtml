@@ -11,20 +11,17 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 
 <h2>Administration Options</h2>
 
-<table class="layout" style="width: 100%;">
-<tr>
-	<td>
-		<div class="white-box">
+<div class="row">
+  <div class="col-sm-7">
+  <div class="white-box">
 			<h4>Item administration</h4>
-			<p class="note">To edit individual items of equipment, browse the site normally and look for <a style="float: none;" class="admin_link" href="#" onclick="return false;">edit</a> links.</p>
-			<ul>
+			<p class="note">To edit individual items of equipment, browse the site normally and look for <span  style=""class="btn btn-xs btn-primary">edit</span> button.</p>
+			<ul style="margin-top: 1em;">
+        <li><form><button class="btn btn-success" formaction="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</button></form></li>
+			</ul>
+       	<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/customfields/index/'); ?>">Item Field Customisation</a></li>
 			</ul>
-
-			<ul style="margin-top: 1em;">
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/edit/new/?backlink='.base64_encode('/admin/')); ?>">Add New Item</a></li>
-			</ul>
-
 			<ul style="margin-top: 1em;">
 				<li>
 					<a href="<?php echo $this->router()->makeAbsoluteUri('/admin/items/import/'); ?>">Import CSV</a>
@@ -39,17 +36,11 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 				</li>
 			</ul>
 		</div>
-
-		<div class="white-box">
-			<h4>Homepage blocks</h4>
-			<p class="note">Customisation of which blocks appear on the homepage</p>
-			<ul>
-				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/homepageblocks/index/'); ?>">Homepage blocks</a></li>
-			</ul>
-		</div>
-	</td>
-	<td>
-		<div class="white-box">
+  </div>
+  <div class="col-sm-5">
+    <div class="row">
+      <div class="col-sm-7">
+       <div class="white-box">
 			<h4>Categorisation</h4>
 			<p class="note">Catalogue metadata</p>
 			<ul>
@@ -70,25 +61,40 @@ if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/organisationalunits/index/'); ?>"><?php $this->out($this->model()->lang['ou.label.adminsection']); ?></a></li>
 			</ul>
 		</div>
-	</td>
-	<td>
-		<div class="white-box">
+      </div>
+      <div class="col-sm-5">
+        <div class="row">
+         <div class="white-box">
 			<h4>Users</h4>
 			<p class="note">User managment</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/users/index/'); ?>">Users</a></li>
 			</ul>
 		</div>
-
-		<div class="white-box">
+        </div>
+        <div class="row">
+              <div class="white-box">
 			<h4>Reports</h4>
 			<p class="note">Report managment</p>
 			<ul>
 				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/reports/index/'); ?>">Reports</a></li>
 			</ul>
 		</div>
-	</td>
-</tr>
-</table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+<div class="col-sm-4">
+<div class="white-box">
+			<h4>Homepage blocks</h4>
+			<p class="note">Customisation of which blocks appear on the homepage</p>
+			<ul>
+				<li><a href="<?php echo $this->router()->makeAbsoluteUri('/admin/homepageblocks/index/'); ?>">Homepage blocks</a></li>
+			</ul>
+		</div>
+</div>
+</div>
 
 

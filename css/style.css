@@ -165,8 +165,8 @@ h4, h5, h6 { font-size: 1em; }
 
 
 .white-box {
-	margin-bottom: 25px;
-	padding: 20px;
+	margin-bottom: 10px;
+	padding: 5px; 
 	border: 1px solid #ddd;
 	background: #fff;
 }
