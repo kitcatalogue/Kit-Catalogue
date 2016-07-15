@@ -155,8 +155,10 @@ $('select#contact_2_email').children().removeAttr("selected");
 $('#name2 .typeahead').on('typeahead:selected',Name2SelectedHandler);
 $('#td_contact2email .typeahead').on('typeahead:selected',Email2SelectedHandler);
 
-});
 
+/* To enable popover help */
+$('[data-toggle="popover"]').popover();
+});
 
 </script>
 EndJS
@@ -224,6 +226,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
      <?php Ecl_Helper_Html::formLabel('manufacturer', $lang['item.form.manufacturer'].' *', array('class' => "col-sm-3 control-label")); ?>          
     <div class="col-sm-9">
 			<?php Ecl_Helper_Html::formInput('manufacturer', 40, 100, $item->manufacturer,array('class'=>'form-control')); ?>
+      <a href="#" data-toggle="popover" data-trigger="hover" title="header" data-content="Some content"> <span class="glyphicon glyphicon-question-sign"></span>    </a>
       <p class="help-block">Mandatory if <em>Title</em> is blank.</p>
     </div>
   </div>                  

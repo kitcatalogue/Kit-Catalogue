@@ -178,17 +178,17 @@ $lang = $this->model('lang');
 		
     <ul id="usernav">
       <li><form><button class="btn btn-default btn-sm" formaction="<?php echo $www_root; ?>/signin/signout"><span class="glyphicon glyphicon-log-out"></span> sign out</button></form></li>
-			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out </a>
       </li>
 			<?php
 			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
 				?>
-        <li><form><button class="btn btn-sm btn-danger" formaction="<?php echo $www_root; ?>/myprofile/items">my items</button></form></li>
+        <li><form><button class="btn btn-sm btn-info" formaction="<?php echo $www_root; ?>/myprofile/items">my items</button></form></li>
 				<?php
 			}
 			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 				?>
-				<li><a href="<?php echo $www_root; ?>/admin">administration</a></li>
+        <li><form><button class="btn btn-sm btn-danger" formaction="<?php echo $www_root; ?>/admin">administration</button></form></li>
+				<!--<li><a href="<?php echo $www_root; ?>/admin">administration</a></li> -->
 				<?php
 			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
 				?>
