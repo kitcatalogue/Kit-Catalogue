@@ -26,6 +26,7 @@ setlocale(LC_ALL, 'en_UK.UTF8');
 ini_set('session.gc_maxlifetime', 2400);   // 40 minute session timeout
 ini_set('session.gc_probability', 1);
 ini_set('session.gc_divisor', 100);
+ini_set( 'session.cookie_httponly', 1 ); //HTTP only cookies to prevent some XSS damage
 @session_start();
 
 

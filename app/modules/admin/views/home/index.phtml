@@ -1,7 +1,7 @@
 <?php
 if (!Ecl::isEmpty($this->model('admin.help.manual'))) {
 	?>
-	<div class="help-box">
+	<div class="alert alert-info">
 		<p>Help with administering and running your catalogue is available here:</p>
 		<p><a href="<?php echo $this->model('admin.help.manual'); ?>" target="_blank"><?php $this->out($this->model('admin.help.manual_title')); ?> </a></p>
 	</div>

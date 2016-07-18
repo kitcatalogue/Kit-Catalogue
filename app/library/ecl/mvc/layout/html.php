@@ -49,6 +49,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function addBreadcrumb($title, $href = null) {
+        $title = $this->escape($title);
 		$this->_breadcrumbs[] = array (
 			'title'  => $title ,
 			'href'   => $href ,

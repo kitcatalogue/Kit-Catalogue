@@ -533,7 +533,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							$contact_link = '';
 
 							if ( ($this->model('enquiry.enabled') && !$this->model('enquiry.email_links')) || (empty($contact_email)) ) {
-								$contact_link = sprintf('%1$s', $contact_name);
+								$contact_link = sprintf('%1$s', $this->escape($contact_name));
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
