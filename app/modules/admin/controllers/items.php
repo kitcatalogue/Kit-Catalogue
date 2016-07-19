@@ -112,6 +112,8 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		if ($this->request()->post('submitdelete')) {
 			if (!$new_item) {
+        //backup item first, then delete
+        $this->model('itembackupstore')->backup($item->id);
 				$this->model('itemstore')->delete($item->id);
 
 				// Rebuild cached item counts

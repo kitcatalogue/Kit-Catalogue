@@ -51,7 +51,12 @@ class Patch_v2_1_0 extends Ecl_Db_Migration {
 				'name'  => 'database_updated',
 				'value' => date('c'),
 				),
-		));
+            ));
+        //copy item table schema to a new *backup* table
+        $this->_db->execute('CREATE TABLE
+                            item_backup
+                            LIKE
+                            item;');
 
 
 
