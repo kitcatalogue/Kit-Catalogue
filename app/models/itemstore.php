@@ -37,7 +37,6 @@ class Itemstore {
 	 */
 
 
-
 	/**
 	 * Build a query suitable for searching the given parameters, and order the results accordingly.
 	 *
@@ -2042,8 +2041,19 @@ class Itemstore {
 		$count =  $this->_db->update('item', $binds, "site_id={$source}");
 		return ($count>0);
 	}// /method
-
-
+  
+  /**
+   * Undo Delete Item
+   * @param integer $item_id
+   * 
+   * @return integer new item id.
+   */
+   public function undelete($item_id){
+   // Sanitize input
+   //get object from the backup table
+   // insert object to item table
+   // return new id
+   }
 
 	/**
 	 * Update the existing Item.

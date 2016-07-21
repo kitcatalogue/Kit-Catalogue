@@ -24,7 +24,7 @@ class Itembackupstore extends Itemstore {
      * All other functions should be inherited  from *itemstore.php*
      * The only difference here is the table name in _db->insert()
      */
-    public function insert($item) {
+    public function insert_backup($item) {
         $binds = $this->convertObjectToRow($item);
         unset($binds['item_id']); // Don't insert the id, we want a new one
         if ($binds['short_description'] == null) { // If we have full description, create short from full:
@@ -50,8 +50,56 @@ class Itembackupstore extends Itemstore {
     public function backup($item_id) {
         // we are using the find function from *itemstore.php*!
         $item = $this->find_live($item_id);
-        $this->insert($item);
+        $this->insert_backup($item);
     }
-    
+    public function findAllDeleted(){
+    return $this->_findDeleted();
+    }
+    public function findDeletedByID($id){
+    	$sql__id = $this->_db->prepareValue($id);
+      return $this->_findDeleted("item_id=$id");
+    }
+    	public function deleteBackup($id) {
+    // Delete the item itself
+		$id = $this->_db->prepareValue($id);
+		$affected_count = $this->_db->delete('item_backup', "item_id=$id");
+
+		return ($affected_count>0);
+	}// /method
+    /**
+	 * Find all items using the given where clause.
+	 *
+	 * @param  string  $where  (optional) The where clause to use.
+	 * @param  string  $order_by  (optional) The order-by clause to use.
+	 *
+	 * @return  object  An Ecl_Db_Recordset of objects requested.
+	 */
+   protected function _findDeleted($where = '', $order_by = null){
+   	if (null === $order_by) {
+			$order_by = "
+				CASE
+					WHEN title<>'' THEN title
+					ELSE manufacturer
+				END ASC, model, acronym
+			";
+		}
+
+
+		if (empty($where)) {
+			return $this->_db->newRecordset("
+				SELECT *
+				FROM item_backup
+				ORDER BY $order_by
+			", null, array($this, 'convertRowToObject'));
+		} else {
+			return $this->_db->newRecordset("
+				SELECT *
+				FROM item_backup
+				WHERE $where
+				ORDER BY $order_by
+			", null, array($this, 'convertRowToObject'));
+		}
+   
+   } 
 } //class
 ?>

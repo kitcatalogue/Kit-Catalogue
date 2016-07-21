@@ -17,7 +17,7 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 		}
 
 		$this->router()->layout()->addBreadcrumb('Administration', $this->router()->makeAbsoluteUri('/admin/'));
-		$this->router()->layout()->addBreadcrumb('Access Levels', $this->router()->makeAbsoluteUri('/admin/accesslevels/index/'));
+		$this->router()->layout()->addBreadcrumb('Undo Delete Items', $this->router()->makeAbsoluteUri('/admin/undelete/index/'));
 		$this->router()->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/admin.css'));
 	}// /method
 
@@ -26,7 +26,7 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 	/**
 	 * Create a new access level.
 	 */
-	public function actionCreate() {
+	public function actionUndo() {
 		$this->layout()->clearBreadcrumbs(2);
 		$this->layout()->clearFeedback();
 
@@ -37,20 +37,25 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 				$errors[] = 'The form details supplied appear to be forged.';
 			}
 
-			$accesslevel_name = $this->request()->post('name');
-			if (empty($accesslevel_name)) {
+			$item_ids = $this->request()->post('ids');
+			if (empty($item_ids)) {
 				$errors[] = 'You must provide the name of your new access level.';
 			}
 
 			if ($errors) {
 				$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'The following errors were found:', '', $errors);
 			} else {
-				$new_accesslevel = $this->model('accesslevelstore')->newAccesslevel();
-				$new_accesslevel->name = $accesslevel_name;
-				$new_id = $this->model('accesslevelstore')->insert($new_accesslevel);
-
-				if ($new_id) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "The access level '{$new_accesslevel->name} has been added");
+				 
+        foreach($item_ids as $item_id){
+        $items = $this->model('itembackupstore')->findAllDeleted("item_id=$item_id");
+            foreach($items as $item){
+            $new_ids[] = $this->model('itembackupstore')->insert($item);
+            $this->model('itembackupstore')->deleteBackup($item_id);   
+            }
+        }
+        
+				if ($new_ids) {
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "the Item/s have been restored (files and tags can not be recovered)");
 				} else {
 					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new access level.');
 				}
@@ -130,8 +135,8 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 	 */
 	public function actionIndex() {
     // work here:
-		$this->view()->accesslevels = $this->model('accesslevelstore')->findAll();
-		$this->view()->render('accesslevels_index');
+		$this->view()->deletedItems = $this->model('itembackupstore')->findAllDeleted();
+		$this->view()->render('undelete_index');
 	}// /method
 
 
