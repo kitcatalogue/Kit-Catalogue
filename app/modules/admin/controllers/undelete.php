@@ -39,7 +39,7 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 
 			$item_ids = $this->request()->post('ids');
 			if (empty($item_ids)) {
-				$errors[] = 'You must provide the name of your new access level.';
+				$errors[] = 'No Items were selected';
 			}
 
 			if ($errors) {
@@ -47,21 +47,22 @@ class Controller_Admin_Undelete extends Ecl_Mvc_Controller {
 			} else {
 				 
         foreach($item_ids as $item_id){
-        $items = $this->model('itembackupstore')->findAllDeleted("item_id=$item_id");
+        $items = $this->model('itembackupstore')->findDeletedByID($item_id);
             foreach($items as $item){
             $new_ids[] = $this->model('itembackupstore')->insert($item);
             $this->model('itembackupstore')->deleteBackup($item_id);   
             }
         }
         
-				if ($new_ids) {
-					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "the Item/s have been restored (files and tags can not be recovered)");
+				if (isset($new_ids)) {
+           $item_count = count($new_ids);
+					$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, "Number of items restored: $item_count (files and tags can not be recovered)");
 				} else {
-					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'There was an unspecified error adding your new access level.');
+					$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Could not restore item. Try refreshing the webpage.');
 				}
 			}
 		} else {
-			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to create access level.  No information posted.');
+			$this->layout()->addFeedback(KC__FEEDBACK_ERROR, 'Unable to restore item.  No information posted.');
 		}
 
 		$this->action('index');
