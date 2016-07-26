@@ -239,6 +239,18 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
     </div>
   </div>
   <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('access', $lang['access.label'], array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+         <?php
+			$options = (array) $this->model('accesslevelstore')->findAll()->toAssoc('id', 'name');
+			$options = array('0' => '') + $options;
+
+			Ecl_Helper_Html::formSelect('access', $options, $item->access, array('class'=>'form-control'));
+			?>
+      <p class="help-block">Where in the organisational tree does this item reside.</p>
+    </div>
+  </div>
+  <div class="form-group">
      <?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *', array('class' => "col-sm-3 control-label")); ?>          
     <div class="col-sm-9">
          
@@ -997,17 +1009,6 @@ if ($this->model('admin.item.editors.enabled')) {
 	<legend><?php $this->out($lang['item.formsection.access']); ?></legend>
 
 	<dl class="form">
-
-		<dt><?php Ecl_Helper_Html::formLabel('access', $lang['access.label']); ?></dt>
-		<dd>
-			<p class="note">What kind of access is usually permitted to this item?</p>
-			<?php
-			$options = (array) $this->model('accesslevelstore')->findAll()->toAssoc('id', 'name');
-			$options = array('0' => '') + $options;
-
-			Ecl_Helper_Html::formSelect('access', $options, $item->access);
-			?>
-		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('usergroup', $lang['item.form.usergroup']); ?></dt>
 		<dd>

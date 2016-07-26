@@ -1174,7 +1174,7 @@ span.twitter-typeahead {
   background-color: #f4f4f4;
   padding-left: 0px;
   padding-right: 0px;
-  height: 40px;
+  height: 60px;
   }
   
 
@@ -1231,12 +1231,30 @@ code {
   height: 60px;
 }
 
-.nav >li >a {
+#headercontainer > li > a {
+  line-height: 50px;
   padding-top: 24px;
   padding-bottom: 24px;
+  color: #112d09;
 }
 .navbar-toggle {
   padding: 10px;
   margin: 25px 15px 25px 0;
 }
 
+#side-column {
+padding-left: 0px;
+padding-right: 0px;
+margin-bottom: 20px;
+}
+#headercontainer {
+
+font-size: 1.6em;
+}
+
+unnamed {
+color: #0f2707;
+line-height: 66px;
+padding-bottom: 0px;
+padding-top: 0px;
+}

@@ -844,7 +844,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 					// Process each column in turn
 
-					$item->title = Ecl_Helper_String::parseString($row['item_title'], 250);
+                    $item->title = Ecl_Helper_String::parseString($row['item_title'], 250);
 					$item->manufacturer = Ecl_Helper_String::parseString($row['manufacturer'], 100);
 
 					if ( (empty($item->title)) && (empty($item->manufacturer)) ) {

@@ -280,7 +280,7 @@ if (!empty($this->selected_params)) {
 				break;
 		}
 		?>
-		<li><?php $this->out($param_name); ?> : <a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[x]</span></a></li>
+		<li><?php $this->out($param_name); ?> : <a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[Remove Filter]</span></a></li>
 		<?php
 	}
 	?>
@@ -298,7 +298,7 @@ if (!$this->items) {
 ?>
 
 
-<div id="side-column" class="col-sm-4 side-bar hidden-xs collapse in">
+<div id="side-column" class="col-sm-4 side-bar hidden-xs collapse in" style="padding-left: 0px; padding-right: 0px;">
 	<?php
 	$uri = $this->request()->uri();
 	if ( (!empty($uri)) && ('/' !== substr($uri, -1)) ) {
@@ -341,7 +341,7 @@ if (!$this->items) {
 			<h4><?php $this->out($option_names[$param_key]); ?>&hellip;</h4>
 			<div class="clipped-list">
 				<ul>
-					<li><a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[x]</span></a></li>
+					<li><a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[Remove Filter]</span></a></li>
 				</ul>
 			</div>
 			<?php
