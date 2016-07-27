@@ -21,7 +21,6 @@ if ($this->categories->count()==0) {
 }
 
 if ($this->categories->count()>0) {
-
 	if ($this->categories->count()>10) {
 		$chunks = Ecl_Helper_Array::split($this->categories->toArray(), 2);
 	} else {
@@ -31,7 +30,9 @@ if ($this->categories->count()>0) {
 	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['cat.label.plural'])); ?> used in this catalogue.</p>
 
 	<div id="categories" class="container">
-        <ul class="list-group">
+ <div class="row" style="margin-bottom: 20px;">
+  
+ 
 		<?php
 		foreach($chunks as $chunk) {
 			if (!empty($chunk)) {
@@ -39,7 +40,7 @@ if ($this->categories->count()>0) {
 						<?php
 						foreach($chunk as $i => $category) {
 ?>
-<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".$this->slugify($category->name)); ?>"><?php $this->out($category->name); ?> <span class="badge"><?php $this->out($category->getItemCount($user->param('visibility'))); ?></span></a></li>
+<div id="category" class="col-sm-6"><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['cat.label'])."-{$category->id}-".$this->slugify($category->name)); ?>"><?php $this->out($category->name); ?> <span class="badge"><?php $this->out($category->getItemCount($user->param('visibility'))); ?></span></a></div>
 							<?php
 						}
 						?>
@@ -47,7 +48,7 @@ if ($this->categories->count()>0) {
 			}
 		}
 		?>
-		</ul>
+   </div>
 	</div>
 	<?php
 }?>

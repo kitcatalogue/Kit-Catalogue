@@ -29,30 +29,29 @@ if ($this->buildings->count()>0) {
 	?>
 	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['building.label.plural'])); ?> used in this catalogue.</p>
 
-	<div id="categories">
-		<table class="layout" style="width: 900px; margin: 1em auto;">
-		<tr>
+	<div id="buildings">
+ <div class="row" style="margin-bottom: 20px">
+  
+
 		<?php
 		foreach($chunks as $chunk) {
 			if (!empty($chunk)) {
 				?>
-				<td>
-					<ul>
+			
 						<?php
 						foreach($chunk as $i => $building) {
 ?>	
-							<li><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['building.label'])."-{$building->id}-".$this->slugify($building->name)); ?>"><?php $this->out($building->name); ?> <span class="badge"><?php $this->out($building->getItemCount($user->param('visibility'))); ?></span></a></li>
+						<div class="col-sm-6" id="building"><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['building.label'])."-{$building->id}-".$this->slugify($building->name)); ?>"><?php $this->out($building->name); ?> <span class="badge"><?php $this->out($building->getItemCount($user->param('visibility'))); ?></span></a></div>
 							<?php
 						}
 						?>
-					</ul>
-				</td>
+					
+				
 				<?php
 			}
 		}
 		?>
-		</tr>
-		</table>
+		</div>
 	</div>
 	<?php
 }?>

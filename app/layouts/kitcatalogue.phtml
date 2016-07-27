@@ -156,7 +156,7 @@ $lang = $this->model('lang');
 	   </div> <!-- Container fluid header -->
  </nav>
   <div id="top-bar" class="container-fluid">
-  <div class="row"> 
+  <div>
   <div class="col-sm-6 col-xs-12">
 
 		
@@ -164,7 +164,7 @@ $lang = $this->model('lang');
 		<?php
 		if ($this->hasBreadcrumbs()) {
 			?>
-			<ol class="breadcrumb pull-left">
+			<ol class="breadcrumb pull-left" style="line-height: 56px; font-size: 1.3em; padding: 0px 0px;">
 				<?php $this->renderBreadcrumbs();?>
 			</ol>
 			<?php
@@ -174,25 +174,24 @@ $lang = $this->model('lang');
   <?php
 	if (!$user->isAnonymous()) {
 		?>
-	<div id="userbar" class="col-sm-6 col-xs-12">
+	<div id="userbar" class="col-sm-6 col-xs-12" style="margin-bottom: 20px;">
 		
-    <ul id="usernav">
-      <li><form><button class="btn btn-default" formaction="<?php echo $www_root; ?>/signin/signout"><span class="glyphicon glyphicon-log-out"></span> sign out</button></form></li>
+    <ul id="usernav" style="line-height: 56px;">
+      <li><form><button class="btn btn btn-default" formaction="<?php echo $www_root; ?>/signin/signout"><span class="glyphicon glyphicon-log-out"></span> sign out</button></form></li>
       </li>
 			<?php
 			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
 				?>
-        <li><form><button class="btn btn-info" formaction="<?php echo $www_root; ?>/myprofile/items">my items</button></form></li>
+        <li><form><button class="btn btn btn-info" formaction="<?php echo $www_root; ?>/myprofile/items">my items</button></form></li>
 				<?php
 			}
 			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 				?>
-        <li><form><button class="btn btn-danger" formaction="<?php echo $www_root; ?>/admin">administration</button></form></li>
-				<!--<li><a href="<?php echo $www_root; ?>/admin">administration</a></li> -->
+        <li><form><button class="btn btn btn-danger" formaction="<?php echo $www_root; ?>/admin">administration</button></form></li>
 				<?php
 			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
 				?>
-				<li><a href="<?php echo $www_root; ?>/ouadmin">administration</a></li>
+        <li><form><button class="btn btn btn-danger" formaction="<?php echo $www_root; ?>/ouadmin">administration</button></form></li>
 				<?php
 			}
 			?>
