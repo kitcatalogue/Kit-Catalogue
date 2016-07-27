@@ -103,7 +103,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
 				$back_url = base64_encode($this->request()->relativeUri());
-				printf('<form><button class="pull-right btn btn-sm btn-primary" formaction="%1$s?backlink=%2$s">edit</button></form>', $edit_url, $back_url);
+                printf('<form method="GET"><button class="pull-right btn btn-primary" formaction="%1$s">edit</button>
+                    <input type="hidden" name="backlink" value="%2$s"/>
+                    </form>', $edit_url, $back_url);
 			}
 			?>
 
@@ -235,7 +237,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						)
 					) {
 					?>
-          <form><button class="pull-right btn btn-success" formaction="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>">Enquire</button></form>
+          <form method="GET"><button class="pull-right btn btn-success" formaction="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}"); ?>">Enquire</button>
+          <input type="hidden" name="backlink" value="<?php echo $back_url; ?>" />
+</form>
 				<!--	<a class="enquire-link" href="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>"><img src="<?php echo $this->router()->makeAbsoluteUri('/images/system/enquirebutton.gif'); ?>" alt="Enquire Now" /></a>       -->
 					<?php
 				}
@@ -432,7 +436,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
       <?php
 				if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 					$edit_url = $this->router()->makeAbsoluteUri("/admin/items/edit/{$item->id}");
-					printf('<form><button class="pull-right btn btn-sm btn-primary" formaction="%1$s?backlink=%2$s">Edit</button></form>', $edit_url, $back_url );
+                    $back_url = base64_encode($this->request()->relativeUri());
+                    printf('<form method="GET"><button class="pull-right btn btn-primary" formaction="%1$s">Edit</button>
+                        <input type="hidden" name="backlink" value="%2$s" />
+                        </form>', $edit_url, $back_url );
 				}
 				?>
 
