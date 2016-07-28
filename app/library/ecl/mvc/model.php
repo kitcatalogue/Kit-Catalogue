@@ -5,7 +5,6 @@
 Ecl::load('Ecl_Mvc');
 
 
-
 class Ecl_Mvc_Model_Exception extends Ecl_Mvc_Exception {}
 
 
@@ -185,9 +184,9 @@ Class Ecl_Mvc_Model {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function set($name, $value) {
-		if (is_callable($value)) { return $this->setFunction($name, $value); }
-		if (is_object($value)) { return $this->setObject($name, $value); }
-		return $this->setValue($name, $value);
+         if (is_object($value)) { return $this->setObject($name, $value); }
+         if (is_callable($value)) { return $this->setFunction($name, $value); }
+	       return $this->setValue($name, $value);
 	}// /method
 
 
