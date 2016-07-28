@@ -1263,13 +1263,3 @@ font-size: 1.3em;
 #search-box-past {
 margin-right: 0px;
 }
-@media (min-width: 768px) {
-    #search-box-div {
-    margin-bottom: 0px;
-    margin-bottom-width: 0px;
-    }
-     #search-box-past {
-    margin-bottom: 0px;
-    margin-bottom-width: 0px;
-    }
-}
