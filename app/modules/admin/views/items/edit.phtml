@@ -180,6 +180,17 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 
 
 <h2>Editing: <?php $this->out( ($new_item) ? 'New Item' : $item->name ); ?></h2>
+<script type="text/javascript">
+$(function(){
+    new_item = <?php echo ($new_item) ? 'true' : 'false'; ?>;
+    if (new_item){
+        document.title = document.title + " - " + "Adding new item";    
+    } else {
+        document.title = document.title + " - Editing: " + "<?php $this->out( ($new_item) ? 'New Item' : $item->name ); ?>";
+    }
+    
+});
+ </script>
 
 <div style="margin-bottom: 1em;"><a href="<?php echo $this->backlink; ?>">&laquo; Back to Catalogue</a></div>
 

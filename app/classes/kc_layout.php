@@ -246,7 +246,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				?>
 
 				<h1><?php $this->out($item->name); ?></h1>
-
+        <script type="text/javascript"> $(function(){
+        document.title = document.title + " - " + "<?php $this->out($item->name); ?>";
+        }); </script>
 				<table class="fields">
 				<?php
 				$manufacturer_website = '';
