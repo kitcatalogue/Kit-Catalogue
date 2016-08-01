@@ -1,7 +1,5 @@
 <?php
 $lang = $this->model('lang');
-
-
 $title = 'Browse Items';
 if (!empty($this->main_param)) {
 	$first_uri_param = (isset($this->uri_params[$this->main_param])) ? $this->uri_params[$this->main_param] : '' ;
@@ -9,20 +7,12 @@ if (!empty($this->main_param)) {
 } else {
 	$this->layout()->addBreadcrumb($title, $this->router()->makeAbsoluteUri('/browse/') );
 }
-
-
-
 if (2 <= count($this->uri_params)) {
 	$this->router()->layout()->addBreadcrumb('Custom filters', $this->router()->makeAbsoluteUri('/browse/') . implode('/', $this->uri_params) );
 }
-
-
-
 $this->layout()->appendSection('layout.head', <<<EndJS
 <script type="text/javascript">
-
 	$(document).ready( function() {
-
 		$('.clipped-list').each( function(i) {
 			var li_list = $(this).find('ul li');
 			if (li_list.length > 6) {
@@ -32,11 +22,9 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 				$(this).append('<div class="clipped-toggleinfo" data-mode="more" data-target="'+ $(this).attr('id') +'">show all&hellip;</div>');
 			}
 		});
-
 		$(".clipped-toggleinfo").click(function(event) {
 			var target = $('#'+$(this).attr('data-target'));
 			var li_list = $(target).find('ul li');
-
 			if ('more' == $(this).attr('data-mode')) {
 				if (li_list.length > 5) {
 					li_list.each( function (idx, el) {
@@ -53,19 +41,34 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 				$(this).html('show all&hellip;').attr('data-mode', 'more');
 			}
 		});
-
-	});
-
+  $('#sidebar-toggle').click(function(){
+  if ($('#side-column').hasClass('hidden-xs')){
+     $('#side-column').removeClass('hidden-xs');
+  } else {
+$('#side-column').collapse('toggle');
+                                     }
+//
+$('#side-column').get(0).scrollIntoView();
+                                        });
+$(window).resize(function() {
+  console.log("called resize!");
+  if ($(this).width() < 768) {
+  $('#side-column').collapse('hide');
+  $('#side-column').removeClass('hidden-xs');
+    //do something
+  }
+  else {
+   $('#side-column').collapse('show');
+   $('#side-column').addClass('hidden-xs');
+  }
+});
+document.title = document.title +  " - Browse Items";
+  });
 </script>
 <style type="text/css">
-
-	.side-bar { width: 33%; }
-
 </style>
 EndJS
 );
-
-
 $options = array(
 	'category'      => array() ,
 	'department'    => array() ,
@@ -74,7 +77,6 @@ $options = array(
 	'technique'     => array() ,
 	'building'     => array() ,
 );
-
 $option_names = array(
 	'category'      => $lang['cat.label'] ,
 	'department'    => $lang['dept.label'] ,
@@ -83,7 +85,6 @@ $option_names = array(
 	'technique'     => $lang['item.label.technique'] ,
 	'building'      => $lang['building.label'] ,
 );
-
 if ($this->model('app.use_ou_tree')) {
 	unset($options['department']);
 	unset($option_names['department']);
@@ -91,11 +92,7 @@ if ($this->model('app.use_ou_tree')) {
 	unset($options['ou']);
 	unset($option_names['ou']);
 }
-
-
-
 // Build the option lists
-
 $category_lookup = $this->model('categorystore')->findAll()->toAssoc('id', 'name');
 $building_lookup = $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
 if ($this->model('app.use_ou_tree')) {
@@ -103,9 +100,6 @@ if ($this->model('app.use_ou_tree')) {
 } else {
 	$department_lookup = $this->model('departmentstore')->findAll()->toAssoc('id', 'name');
 }
-
-
-
 // Which options will we be using in the side-bar (i.e. which are not already selected)
 $use_category = (!isset($this->selected_params['category']));
 $use_department = (!isset($this->selected_params['department']));
@@ -113,21 +107,15 @@ $use_ou = (!isset($this->selected_params['ou']));
 $use_manufacturer = (!isset($this->selected_params['manufacturer']));
 $use_technique = (!isset($this->selected_params['technique']));
 $use_building = (!isset($this->selected_params['building']));
-
 if ($this->model('app.use_ou_tree')) {
 	$use_department = false;
 } else {
 	$use_ou = false;
 }
-
-
 $item_ids = array();
-
-
 // Build the department, ou, manufacturer and technique option lists (category comes later)
 foreach($this->items as $item) {
 	$item_ids[] = $item->id;
-
 	if ($use_department) {
 		if (isset($options['department'][$item->department])) {
 			$options['department'][$item->department]['count']++;
@@ -137,7 +125,6 @@ foreach($this->items as $item) {
 			$options['department'][$item->department]['count'] = 1;
 		}
 	}
-
 	if ($use_ou) {
 		if (isset($options['ou'][$item->ou])) {
 			$options['ou'][$item->ou]['count']++;
@@ -147,10 +134,8 @@ foreach($this->items as $item) {
 			$options['ou'][$item->ou]['count'] = 1;
 		}
 	}
-
 	if ($use_manufacturer) {
 		$lcase_id = strtolower($item->manufacturer);
-
 		if (isset($options['manufacturer'][$lcase_id])) {
 			$options['manufacturer'][$lcase_id]['count']++;
 		} else {
@@ -158,10 +143,8 @@ foreach($this->items as $item) {
 			$options['manufacturer'][$lcase_id]['count'] = 1;
 		}
 	}
-
 	if ($use_technique) {
 		$lcase_id = strtolower($item->technique);
-
 		if (isset($options['technique'][$lcase_id])) {
 			$options['technique'][$lcase_id]['count']++;
 		} else {
@@ -170,12 +153,9 @@ foreach($this->items as $item) {
 		}
 	}
 }
-
-
 // Build the category option list
 if ($use_category) {
 	$category_list = $this->model('categorystore')->findCountsForItemCategories($item_ids);
-
 	if (!empty($category_list)) {
 		foreach($category_list as $category_id => $count) {
 			$options['category'][$category_id]['id'] = $category_id;
@@ -183,13 +163,11 @@ if ($use_category) {
 			$options['category'][$category_id]['count'] = $count;
 		}
 	}
-
 	$category_list = null;
 }
 // Build the building option list
 if ($use_building) {
 	$building_list = $this->model('buildingstore')->findCountsForItemBuildings($item_ids);
-
 	if (!empty($building_list)) {
 		foreach($building_list as $building_id => $count) {
 			$options['building'][$building_id]['id'] = $building_id;
@@ -197,65 +175,50 @@ if ($use_building) {
 			$options['building'][$building_id]['count'] = $count;
 		}
 	}
-
 	$building_list = null;
 }
-
-
-
 // Sort the currently unsorted options
 if (isset($options['manufacturer'])) { ksort($options['manufacturer']); }
 if (isset($options['technique'])) { ksort($options['technique']); }
-
-
-
 if ($this->model('security')->canAddItems()) {
 	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
 	$back_url = base64_encode($this->request()->relativeUri());
-
 	$presets = '';
 	foreach($this->selected_params as $k => $v) {
 		$presets .= "&preset[$k]=$v";
 	}
-	$editlink = sprintf('<form><button class="pull-right btn btn-success" formaction="%1$s?backlink=%2$s%3$s">add an item</button></form>', $edit_url, $back_url, $presets);
+	$editlink = sprintf('<form method="GET"><button class="pull-right btn btn-success" formaction="%1$s">add an item</button><input type="hidden" name="backlink" value="%2$s%3$s"></form>', $edit_url, $back_url, $presets);
 } else {
 	$editlink = '';
 }
-
-
-
 $hide_properties = array();
 ?>
 <div class="row vertical-align">
-<div class="col-xs-6">
-<h2><?php $this->out($title); ?></h2> 
-</div>
-<div class="col-xs-6">
+  <div class="col-xs-6"><h2>
+      <?php $this->out($title); ?></h2>
+  </div>
+  <div class="col-xs-6">
 <?php
-
 echo $editlink;
-
-?>  </div></div> <?php
-
+                ?>
+  </div>
+</div>
+<?php
 if (!empty($this->selected_params)) {
 	?>
-  <div class="row vertical-align">
+<div class="row vertical-align">
   <div class="col-sm-10">
-	<p>Viewing items matching the following properties:</p>
-	<ul class="hozmenu selected-list">
-	<?php
+    <p>Viewing items matching the following properties:
+    </p>
+    <ul class="hozmenu selected-list">
+<?php
 	foreach($this->selected_params as $k => $u) {
 		$param_key = strtolower($k);
-
 		if ('visibility' == $param_key) { continue; }
-
 		$uri_params = $this->uri_params;
 		unset($uri_params[$param_key]);
-
 		$url = $this->router()->makeAbsoluteUri('/browse/') . implode('/', $uri_params);
-
 		$hide_properties[] = $param_key;
-
 		switch($param_key) {
 			case 'category':
 				$param_name = $lang['cat.label'];
@@ -279,46 +242,43 @@ if (!empty($this->selected_params)) {
 				if (empty($val)) { $val = "-No $k-" ; }
 				break;
 		}
-		?>
-		<li><?php $this->out($param_name); ?> : <a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[Remove&nbsp;Filter]</span></a></li>
-		<?php
+                        		?>
+      <li>
+      <?php $this->out($param_name); ?> :
+      <a href="<?php echo $url; ?>" class="removeparam">
+        <?php $this->out($val); ?> &nbsp;
+        <span class="remove">[Remove&nbsp;Filter]
+        </span></a>
+      </li>
+<?php
 	}
-	?>
-	</ul>
+                        	?>
+    </ul>
   </div>
-  </div>
-	<?php
+</div>
+<?php
 }
-
 if (!$this->items) {
 	?>
-	<p class="note">There are no items of equipment or facilities associated with the properties you selected.</p>
-	<?php
+<p class="note">There are no items of equipment or facilities associated with the properties you selected.
+</p>
+<?php
 }
 ?>
-
-
 <div id="side-column" class="col-xs-12 col-sm-4 side-bar hidden-xs collapse in" style="padding-left: 0px; padding-right: 0px;">
-	<?php
+<?php
 	$uri = $this->request()->uri();
 	if ( (!empty($uri)) && ('/' !== substr($uri, -1)) ) {
 		$uri .= '/';
 	}
-
-
 	$css_count = 0;
 	foreach($options as $k => $available_options) {
 		$css_count++;
-
 		$param_key = strtolower($k);
-
 		if (isset($this->selected_params[$param_key])) {
-
 			$uri_params = $this->uri_params;
 			unset($uri_params[$param_key]);
-
 			$url = $this->router()->makeAbsoluteUri('/browse/') . implode('/', $uri_params);
-
 			switch($param_key) {
 				case 'category':
 					$val = (isset($category_lookup[$this->selected_params[$param_key]])) ? $category_lookup[$this->selected_params[$param_key]] : "Unknown {$lang['cat.label']}" ;
@@ -337,44 +297,45 @@ if (!$this->items) {
 					if (empty($val)) { $val = "-No $k-" ; }
 					break;
 			}
-			?>
-			<h4><?php $this->out($option_names[$param_key]); ?>&hellip;</h4>
-			<div class="clipped-list">
-				<ul>
-					<li><a href="<?php echo $url; ?>" class="removeparam"><?php $this->out($val); ?> &nbsp;<span class="remove">[Remove&nbsp;Filter]</span></a></li>
-				</ul>
-			</div>
-			<?php
+        			?>			<h4>
+    <?php $this->out($option_names[$param_key]); ?>&hellip;</h4>
+  <div class="clipped-list">
+    <ul>
+      <li>
+      <a href="<?php echo $url; ?>" class="removeparam">
+        <?php $this->out($val); ?> &nbsp;
+        <span class="remove">[Remove&nbsp;Filter]
+        </span></a>
+      </li>
+    </ul>
+  </div>
+<?php
 		} elseif (!empty($available_options)) {
 			printf('<h4>%1$s&hellip;</h4>', $this->escape($option_names[$param_key]));
-
 			$url_stub = $uri . strtolower($option_names[$param_key]);
 			$option_count = count($available_options);
-
 			$css_id = "clipped-list-{$css_count}";
-			?>
-			<div class="clipped-list" id="<?php echo $css_id; ?>">
-			<?php
+        			?>
+  <div class="clipped-list" id="<?php echo $css_id; ?>">
+<?php
 				if ('ou' == $param_key) {
-					?>
-					<ul id="tree">
-					<?php
+                					?>
+    <ul id="tree">
+<?php
 					$ou_list = $this->model('organisationalunitstore')->findTree()->toArray();
-
 					$that = $this;
 					$count_property = ($that->model('user')->isAnonymous()) ? 'item_count_public' : 'item_count_internal' ;
-
 					$this->layout()->renderTree($ou_list, function($node) use ($that, $count_property, $url_stub) {
 						$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
 						printf('<li><a href="%4$s/ou-%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $node->id.'-'.$that->slugify($name), $node->$count_property, $url_stub);
 					});
-					?>
-					</ul>
-					<?php
+                        					?>
+    </ul>
+<?php
 				} else {
-				?>
-					<ul>
-						<?php
+                				?>
+    <ul>
+<?php
 						foreach($available_options as $l => $info) {
 							$name = (!empty($info['name'])) ? $info['name'] : "-No $k-" ;
 							if (isset($info['id'])) {
@@ -384,39 +345,36 @@ if (!$this->items) {
 							}
 							printf('<li><a href="%1$s">%2$s <span class="count">(%3$s)</span></a></li>', $url, $this->escape($name), $info['count']);
 						}
-						?>
-					</ul>
-				<?php
+                        						?>
+    </ul>
+<?php
 			}
-			?>
-			</div>
-			<?php
+                			?>
+  </div>
+<?php
 		}
 	}
-	?>
+        	?>
 </div>
-
-
 <?php
 if ( 0 < count($this->items)) {
 	?>
-	<ul class="col-xs-12 col-sm-8 item-list">
-		<?php
+<ul class="col-xs-12 col-sm-8 item-list">
+<?php
 		$url_stub = "{$uri}item/";
 		foreach($this->items as $item) {
 			$this->layout()->renderItemInList($item, "{$url_stub}{$item->slug}", $hide_properties);
 		}
-		?>
-	</ul>
-	<?php
+        		?>
+</ul>
+<?php
 }
 ?>
 <nav class="navbar navbar-default navbar-fixed-bottom visible-xs" style="min-height: 30px; line-height: 1;">
-
-<span class="glyphicon glyphicon-resize-vertica"> </span>
-<div class="centered">
-<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#side-column">  Name </button>
-</div>
+  <span class="glyphicon glyphicon-resize-vertica">
+  </span>
+  <div class="centered">
+    <button id="sidebar-toggle" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#side-co-lumn">  Name
+    </button>
+  </div>
 </nav>
-
-

@@ -42,6 +42,8 @@ url: $.scriptPath + jsFiles[n],
 success: cBack,
 dataType: "script",
 cache: eCache,
+// async false causes ajax call to block main thread.
+// This gives a warning in most modern browsers!
 async: false
 });
 $.require.loadedLib[jsFiles[n]] = true;

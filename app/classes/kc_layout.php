@@ -880,7 +880,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			?>
 			<div id="lightbox" class="window">
 				<div id="lightbox_top"><a class="modalwindow_close" href="#" title="close window">close</a></div>
-				<div id="lightbox_imagecontainer"><a id="lightbox_link" href="#" target="_blank"><img id="lightbox_image" src="ajax-loader.gif"></a></div>
+				<div id="lightbox_imagecontainer"><a id="lightbox_link" href="#" target="_blank"><img id="lightbox_image" src="/images/system/busy_animation.gif"></a></div>
 				<div id="lightbox_list"></div>
 			</div>
 			<?php
