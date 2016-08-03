@@ -105,6 +105,10 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
         if (!is_dir($item_path)) {
             mkdir($item_path, 0755, true);
              }
+        if (!isset($files)){
+        $this -> reply -> SetData('success', 'no-change');
+        return;
+        }
         foreach($files as $file) {
             // first download the file to folder $item_path:
             $original_name = basename($file['url']);
