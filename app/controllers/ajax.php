@@ -84,10 +84,10 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
 
     {
          // Check if Authenticated as Admin:
-        if (!$this -> model('security') -> checkAuth(KC__AUTH_CANADMIN)) {
+       if (!$this -> model('security') -> checkAuth(KC__AUTH_CANADMIN)) {
             $this -> reply -> setFail('Access denied');
              return;
-             }
+             }  // */
         $id = $this -> request() -> get('id');
         if (!is_numeric($id)) {
             $this -> reply -> SetFail('INVALID item ID!');
@@ -99,6 +99,13 @@ class Controller_Ajax extends Ecl_Mvc_Controller {
             $files[$i-1]['url'] = $this -> request() -> get('file_' . $i);
              $i++;
              }
+        // check if files were passed as array
+        if ($this -> request() -> get('files')){
+        $tmps = $this -> request() -> get('files');
+          for ($j = 0; $j < count($tmps); $j++){
+            $files[$j]['url'] = $tmps[$j];
+            }
+        }
         $item = $this -> model('itemstore') -> find($id);
         $item_path = $this -> model() -> get('app.upload_root') . '/items' . $item -> getFilePath();
          // create directory if it doesn't exist:
