@@ -1263,3 +1263,10 @@ font-size: 1.3em;
 #search-box-past {
 margin-right: 0px;
 }
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+.navbar-form {
+             margin-bottom: 0px;
+             border-bottom-style: none;
+}
+}

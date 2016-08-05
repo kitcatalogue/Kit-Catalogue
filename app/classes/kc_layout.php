@@ -150,7 +150,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		$this->layout()->addGlobalJavascript();
 
 		if ($this->model('item.allow_lightbox')) {
-			$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_lightbox.js'));
+			$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/featherlight.min.js'));
+   $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/featherlight.min.css'),'all');
+   $this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/featherlight.gallery.min.js'));
+   $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/featherlight.gallery.min.css'),'all');
 		}
 
 		$user = $this->model('user');
@@ -282,7 +285,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			</div>
       <div class="col-sm-3">
 
-				<div class="images cf">
+				<div class="images cf" data-featherlight-gallery data-featherlight-filter="a">
 					<?php
 					if ($no_image) {
 						?>
