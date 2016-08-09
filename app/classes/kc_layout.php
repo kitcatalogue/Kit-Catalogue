@@ -243,7 +243,6 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
           <form method="GET"><button class="pull-right btn btn-success" formaction="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}"); ?>">Enquire</button>
           <input type="hidden" name="backlink" value="<?php echo $back_url; ?>" />
 </form>
-				<!--	<a class="enquire-link" href="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>"><img src="<?php echo $this->router()->makeAbsoluteUri('/images/system/enquirebutton.gif'); ?>" alt="Enquire Now" /></a>       -->
 					<?php
 				}
 				?>

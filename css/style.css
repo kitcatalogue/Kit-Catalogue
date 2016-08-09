@@ -69,7 +69,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 	margin: 0 auto;
 	padding: 0 10px 10px 10px;
 	overflow: hidden;
-	
+
 }
 
 #header {}
@@ -146,7 +146,7 @@ a.back-arrow:active {
 
 h1, h2, h3, h4, h5, h6 {
 	margin: 0.75em 0 0.75em 0;
-	
+
 	font-weight: bold;
 	line-height: 1.2em;
 }
@@ -166,7 +166,7 @@ h4, h5, h6 { font-size: 1em; }
 
 .white-box {
 	margin-bottom: 10px;
-	padding: 5px; 
+	padding: 5px;
 	border: 1px solid #ddd;
 	background: #fff;
 }
@@ -198,25 +198,25 @@ h4, h5, h6 { font-size: 1em; }
 
 .feedback_error {
 	border: 1px solid #c96;
-	background: #fec; 
+	background: #fec;
 	color: #a62;
 }
 
 .feedback_info {
 	border: 1px solid #ccc;
-	background: #eee; 
+	background: #eee;
 	color: #333;
 }
 
 .feedback_success {
 	border: 1px solid #ace;
-	background: #eef; 
+	background: #eef;
 	color: #05b;
 }
 
 .feedback_warning {
 	border: 1px solid #c96;
-	background: #fec; 
+	background: #fec;
 	color: #a62;
 }
 
@@ -1264,9 +1264,33 @@ font-size: 1.3em;
 margin-right: 0px;
 }
 /* Extra Small Devices, Phones */
+/* following section overrides the bootstrap css*/
 @media only screen and (min-width : 480px) {
+.ignore {
+
+}
 .navbar-form {
-             margin-bottom: 0px;
-             border-bottom-style: none;
+             margin-bottom: 0px !important;
+             border-bottom-style: !important;
+             }
+.search-box {
+            margin-bottom: 0px !important;
+            margin-top: 10px;
+            }
 }
+
+@media only screen and (max-width : 480px) {
+.ignore {
+
 }
+.navbar-form {
+             margin-bottom: 0px !important;
+             border-bottom-style: none !important;
+             }
+.search-box {
+            margin-bottom: 0px !important;
+            margin-top: 10px;
+            }
+
+
+    }

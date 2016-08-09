@@ -76,11 +76,11 @@ $lang = $this->model('lang');
 			$user = $this->model('user');
                         			?>
           </div>
-          <div id="search-box-div" class="navbar nav navbar-right">
+          <div id="search-box-div" class="navbar nav navbar-right search-box">
 <?php
 			if ( (!$user->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
                         				?>
-            <div id="search-box-past" class="navbar-form" role="search">
+            <div id="search-box-past" class="navbar-form search-form" role="search">
               <form action="<?php echo $www_root; ?>/search/" method="get">
                 <input type="text" name="q" id="searchbox" class="form-control" placeholder="Search"/>
                 <button type="submit" class="btn btn-default navbar-btn">
