@@ -155,4 +155,8 @@ span.treecontrols a:visited,
 span.treecontrols a:hover,
 span.treecontrols a:active { color: #aaa !important; }
 
-
+.tt-menu {
+    background-color: #fff;
+    padding: 4px 0;
+    border: 1px solid #ccc;
+}

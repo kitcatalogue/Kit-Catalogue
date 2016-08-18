@@ -4,9 +4,9 @@ $user = $this->model('user');
 $lang = $this->model('lang');
 
 ?>
-
-<h1><?php $this->out($lang['ou.label.plural']); ?></h1>
-
+<div class="page-header">
+<h2><?php $this->out($lang['ou.label.plural']); ?></h2>
+</div>
 <?php
 $organisational_units = $this->model('organisationalunitstore')->findTree();
 
@@ -20,7 +20,7 @@ if (0 == $organisational_units->count()) {
 
 
 
-<p>The following is a list of all the <?php echo strtolower($lang['ou.label.plural']); ?> used in this catalogue.</p>
+<p class="note">The following is a list of all the <?php echo strtolower($lang['ou.label.plural']); ?> used in this catalogue.</p>
 
 <div id="tree">
 	<?php
@@ -32,7 +32,7 @@ if (0 == $organisational_units->count()) {
 	$this->layout()->renderTree($ou_list, function($node) use ($that, $count_property) {
 		$name = (!empty($node->name)) ? $node->name : '<unknown>' ;
 		$url = $that->router()->makeAbsoluteUri('/browse/ou-'.urlencode($node->id).'-'.$that->slugify($name));
-		printf('<li><a href="%2$s"> %1$s </a> <span class="count">(%3$s)</span>', $that->escape($name), $url, $node->$count_property);
+		printf('<li><a href="%2$s"> %1$s </a> <span class="badge">%3$s</span>', $that->escape($name), $url, $node->$count_property);
 	});
 	?>
 

@@ -9,15 +9,15 @@ $this->layout()->addBreadcrumb('Item Enquiry', $this->router()->makeAbsoluteUri(
 ?>
 
 
-<h1>Item Enquiry</h1>
+<h2>Item Enquiry</h2>
 <p class="note">Complete the form below to enquire about this equipment.  A copy of your enquiry will be emailed to you.</p>
 <p class="note">* denotes a required field.</p>
 
 <?php
-Ecl_Helper_Html::form('enquiryform', $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"));
+Ecl_Helper_Html::form('enquiryform', $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"), 'post', 'UTF-8', 'class="form-horizontal"');
 ?>
 
-
+<div class="form">
 <input type="submit" name="submitfake" value="fake" onclick="return false;" style="position: absolute; left: -100%;" />
 
 <fieldset>
@@ -45,82 +45,70 @@ Ecl_Helper_Html::form('enquiryform', $this->router()->makeAbsoluteUri("/enquiry/
 </fieldset>
 
 <fieldset>
-	<legend>Your Details</legend>
-	<table class="layout">
-	<tr>
-		<td>
-			<dl class="form" style="margin-left: 2em;">
-
-				<dt><?php Ecl_Helper_Html::formLabel('name', 'Name *'); ?></dt>
-				<dd>
-					<p class="note">Your full name.</p>
-					<?php Ecl_Helper_Html::formInput('name', 30, 250, $form['name']); ?>
-				</dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('email', 'Email *'); ?></dt>
-				<dd>
-					<p class="note">Your contact email address - your enquiry receipt will be sent here.</p>
-					<?php Ecl_Helper_Html::formInput('email', 40, 250, $form['email']); ?>
-				</dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('phone', 'Phone Number'); ?></dt>
-				<dd>
-					<p class="note">Your contact telephone number.</p>
-					<?php Ecl_Helper_Html::formInput('phone', 20, 20, $form['phone']); ?>
-				</dd>
-
-			</dl>
-		</td>
-		<td>
-			<dl class="form" style="margin-left: 5em;">
-
-				<dt><?php Ecl_Helper_Html::formLabel('org', 'Organisation / Institution'); ?></dt>
-				<dd>
-					<p class="note">Your university or company name.</p>
-					<?php Ecl_Helper_Html::formInput('org', 40, 250, $form['org']); ?>
-				</dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('role', 'Role / Job Title'); ?></dt>
-				<dd>
-					<p class="note">Are you an academic, PhD student, undergraduate student, etc?</p>
-					<?php Ecl_Helper_Html::formInput('role', 40, 250, $form['role']); ?>
-				</dd>
-
-				<dt><?php Ecl_Helper_Html::formLabel('deadline', 'Booking Deadline'); ?></dt>
-				<dd>
-					<p class="note">If requesting an equipment booking, when must the work be completed?</p>
-					<?php Ecl_Helper_Html::formInput('deadline', 40, 50, $form['deadline']); ?>
-				</dd>
-
-			</dl>
-		</td>
-	</tr>
-	</table>
-</fieldset>
-
-<fieldset>
-	<legend>Your Enquiry</legend>
-	<dl class="form" style="margin-left: 2em;">
-
-		<dt><?php Ecl_Helper_Html::formLabel('type', 'Type'); ?></dt>
-		<dd>
-			<?php
+     <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('name', 'Name *', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('name', 30, 250, $form['name'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Your full name.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('email', 'Email *', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('email', 40, 250, $form['email'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Your contact email address - your enquiry receipt will be sent here.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('role', 'Role / Job Title', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('role', 40, 250, $form['role'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Are you an academic, PhD student, undergraduate student, etc?</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('org', 'Organisation / Institution', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('org', 40, 250, $form['org'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Your university or company name.</p>
+    </div>
+  </div>
+   <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('phone', 'Phone Number', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('phone', 20, 20, $form['phone'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Your contact telephone number.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('deadline', 'Booking Deadline', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      <?php Ecl_Helper_Html::formInput('deadline', 40, 50, $form['deadline'], array('class'=>'form-control')); ?>  
+      <p class="help-block">If requesting an equipment booking, when must the work be completed?</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('type', 'Type', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      	<?php
 			$options = array(
 				'general'   => 'General enquiry' ,
 				'booking'   => 'Booking request' ,
 				'research'  => 'Research collaboration' ,
 			);
-			Ecl_Helper_Html::formSelect('type', $options, $form['type']);
+			Ecl_Helper_Html::formSelect('type', $options, $form['type'], array('class'=>'form-control'));
 			?>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('body', 'Text *'); ?></dt>
-		<dd>
-			<p class="note">Enter the text for your enquiry, including any relevant information not entered elsewhere.</p>
-			<?php Ecl_Helper_Html::formTextarea('body', 80, 6, $form['body']); ?>
-		</dd>
-
-	</dl>
+    </div>
+  </div>
+   <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('body', 'Enquiry Text *', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+      	<?php Ecl_Helper_Html::formTextarea('body', 80, 6, $form['body'], array('class'=>'form-control')); ?>  
+      <p class="help-block">Enter the text for your enquiry, including any relevant information not entered elsewhere.</p>
+    </div>
+  </div>
+   
+	<legend>Your Details</legend>
 
 </fieldset>
 
@@ -148,11 +136,11 @@ if ( $this->model('enquiry.use_recaptcha') && (!Ecl::isEmpty($this->model('recap
 ?>
 
 <div class="button_bar">
-	<?php Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel'); ?>
-	<?php Ecl_Helper_Html::formSubmit('submitsend', 'Send Enquiry'); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitcancel', 'Cancel', array('class' => "btn btn-danger")); ?>
+	<?php Ecl_Helper_Html::formSubmit('submitsend', 'Send Enquiry', array('class' => "btn btn-success")); ?>
 </div>
 
 <?php
 Ecl_Helper_Html::formClose();
 ?>
-
+</div>

@@ -1,7 +1,6 @@
 <?php
 
 
-
 include_once('building.php');
 
 
@@ -45,13 +44,15 @@ class Buildingstore {
 	 */
 	public function convertObjectToRow($object) {
 		$row = array (
-			'building_id'  => $object->id ,
-			'code'         => $object->code ,
-			'name'         => $object->name ,
-			'site_id'      => $object->site_id ,
-			'latitude'     => $object->latitude ,
-			'longitude'    => $object->longitude ,
-			'url'          => $object->url ,
+			'building_id'           => $object->id ,
+			'code'                  => $object->code ,
+			'name'                  => $object->name ,
+			'site_id'               => $object->site_id ,
+			'latitude'              => $object->latitude ,
+			'longitude'             => $object->longitude ,
+			'url'                   => $object->url ,
+            'item_count_internal'   => $object->item_count_internal ,
+            'item_count_public'     => $object->item_count_public ,
 		);
 
 		return $row;
@@ -76,6 +77,8 @@ class Buildingstore {
 		$object->latitude = $row['latitude'];
 		$object->longitude = $row['longitude'];
 		$object->url = $row['url'];
+        $object->item_count_internal = $row['item_count_internal'];
+        $object->item_count_public = $row['item_count_public'];
 
 		return $object;
 	}// /method
@@ -160,18 +163,45 @@ class Buildingstore {
 	 *
 	 * @return  mixed  An array of objects.  On fail, null.
 	 */
-	public function findAllUsed($visibility = null) {
+    public function findAllUsed($visibility = null) {
 
-		if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
-		$sql__visibility = $this->_db->escapeString($visibility);
+		switch ($visibility) {
+			case KC__VISIBILITY_PUBLIC:
+				$where_clause = "WHERE item_count_public>'0'";
+				break;
+			case KC__VISIBILITY_INTERNAL:
+			default:
+				$where_clause = "WHERE item_count_internal>'0'";
+				break;
+		}// /switch
 
 		return $this->_db->newRecordset("
-			SELECT b.*
-			FROM building b INNER JOIN item i ON b.building_id=i.building_id
-			WHERE (i.visibility & $sql__visibility)=$sql__visibility
-			ORDER BY b.name ASC
-		", null, array($this, 'convertRowToObject') );
+			SELECT *
+			FROM building
+			$where_clause
+			ORDER BY name ASC
+		", null, array($this, 'convertRowToObject'));
 	}// /method
+    /**
+     * Find all buildings used by at least one item of equipment, for the given visibility.
+     *
+     * @fix this method is kept just in case we broke anything by updating the new findAllUsed method
+     *
+     * @param  integer  $visibility  (optional) The item visibility to check
+     *
+     * @return  mixed  An array of objects.  On fail, null.
+     */
+    public function findAllUsedLongList($visibility = null) {
+
+        if (empty($visibility)) { $visibility = KC__VISIBILITY_INTERNAL; }
+            $sql__visibility = $this->_db->escapeString($visibility);
+            return $this->_db->newRecordset("
+                   SELECT b.*
+                   FROM building b INNER JOIN item i ON b.building_id=i.building_id
+                   WHERE (i.visibility & $sql__visibility)=$sql__visibility
+                   ORDER BY b.name ASC
+         ", null, array($this, 'convertRowToObject') );
+    }// /method
 
 
 
@@ -315,6 +345,92 @@ class Buildingstore {
 		$affected_count = $this->_db->update('building', $binds, "building_id=$id");
 
 		return ($affected_count>0);
+	}// /method
+
+   /**
+	 * Find all building IDs and Names, and their respective counts, for the items specified.
+	 *
+	 * @param  array  $id  The array of item IDs to find.
+	 *
+	 * @return  array  The information retrieved.
+	 */
+	public function findCountsForItemBuildings($id) {
+		$sql__id_set = $this->_db->prepareSet((array) $id);
+
+		$this->_db->query("
+			SELECT b.building_id, b.name, count(b.building_id) AS `count`
+			FROM building b
+				INNER JOIN item i ON b.building_id=i.building_id AND i.item_id IN $sql__id_set
+			GROUP BY b.building_id, b.name
+			ORDER BY b.name
+		");
+
+		return $this->_db->getResultAssoc('building_id','count');
+	}// /method
+    
+    /**
+	 * Rebuild all the item counts per building.
+	 *
+	 * @return  boolean  The operation was successful.
+	 */
+    public function rebuildItemCounts() {
+        // needs to be adapted
+		$visibility_types = array (
+			'internal' => '
+					SELECT building_id, count(item_id) AS count
+					FROM item
+					GROUP BY building_id 
+					ORDER BY building_id
+				' ,
+			'public' => '
+					SELECT building_id, count(item_id) AS count
+					FROM item
+					WHERE visibility = \''. KC__VISIBILITY_PUBLIC .'\'
+					GROUP BY building_id 
+                    ORDER BY building_id
+				' ,
+		);
+
+
+		// Get all the counts for each category
+		$update_info = null;
+
+		foreach($visibility_types as $type => $sql) {
+			$row_count = $this->_db->query($sql);
+
+			if ($row_count>0) {
+				$counts = $this->_db->getResultAssoc('building_id', 'count');
+
+				if ($counts) {
+					foreach($counts as $building_id => $item_count) {
+						$building_id = (int) $building_id;
+						$update_info[$building_id][$type] = $item_count;
+					}
+				}
+			}
+		}
+
+
+		// Reset all the category item counts to 0
+		$binds = array (
+			'item_count_internal'  => 0 ,
+			'item_count_public'    => 0 ,
+		);
+		$this->_db->update('building', $binds);
+
+		// If there are counts to update in the database
+		if ($update_info) {
+			foreach($update_info as $building_id => $counts) {
+				$binds = array (
+					'item_count_internal'  => (isset($counts['internal'])) ? $counts['internal'] : 0 ,
+					'item_count_public'    => (isset($counts['public'])) ? $counts['public'] : 0 ,
+				);
+
+				$this->_db->update('building', $binds, "building_id='$building_id'");
+			}
+		}
+
+		return true;
 	}// /method
 
 

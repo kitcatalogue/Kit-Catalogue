@@ -1,0 +1,57 @@
+<?php
+
+$user = $this->model('user');
+$lang = $this->model('lang');
+
+?>
+<div class="page-header">
+<h2><?php $this->out($lang['building.label.plural']); ?></h2>
+</div>
+<?php
+if ($this->buildings->count()==0) {
+	if ($this->model('user')->isAnonymous()) {
+		?>
+		<p class="note">There are no publically available <?php $this->out(strtolower($lang['building.label.plural'])); ?> listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/signin'); ?>">sign in</a> to browse this catalogue.</p>
+		<?php
+	} else {
+		?>
+		<p class="note">There are no <?php $this->out(strtolower($lang['building.label.plural'])); ?> available so it is likely this catalogue is empty.</p>
+		<?php
+	}
+}
+
+if ($this->buildings->count()>0) {
+	if ($this->buildings->count()>10) {
+		$chunks = Ecl_Helper_Array::split($this->buildings->toArray(), 2);
+	} else {
+		$chunks = array ( 0 => $this->buildings );
+	}
+	?>
+	<p class="note">The following is a list of all the <?php $this->out(strtolower($lang['building.label.plural'])); ?> used in this catalogue.</p>
+
+	<div id="buildings">
+ <div class="row" style="margin-bottom: 20px">
+  
+
+		<?php
+		foreach($chunks as $chunk) {
+			if (!empty($chunk)) {
+				?>
+			
+						<?php
+						foreach($chunk as $i => $building) {
+?>	
+						<div class="col-sm-6" id="building"><a href="<?php echo $this->router()->makeAbsoluteUri('/browse/'.strtolower($lang['building.label'])."-{$building->id}-".$this->slugify($building->name)); ?>"><?php $this->out($building->name); ?> <span class="badge"><?php $this->out($building->getItemCount($user->param('visibility'))); ?></span></a></div>
+							<?php
+						}
+						?>
+					
+				
+				<?php
+			}
+		}
+		?>
+		</div>
+	</div>
+	<?php
+}?>

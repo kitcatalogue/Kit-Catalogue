@@ -142,6 +142,26 @@ class Userstore {
 				ORDER BY surname, forename ASC
 			", null, array($this, 'convertRowToObject') );
 	}// /method
+    /**
+     * Find users that contain the sring.
+     *
+     * @return mixed An array of objects. On fail, null.
+     */
+    public function findPartialMatch($query){
+        $binds = array (
+                'query' => '%' . $query . '%',
+            );
+        $this->_db->query("
+                SELECT *
+                FROM user 
+                WHERE surname LIKE :query
+                OR email LIKE :query
+                ", $binds);
+        return $this->_db->getResultObjects(
+            array($this,'convertRowToObject') );
+        //array($this, 'convertRowToObject') );
+
+    }// /method 
 
 
 

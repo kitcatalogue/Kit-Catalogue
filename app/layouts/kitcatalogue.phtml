@@ -2,123 +2,100 @@
 error_reporting(E_ALL);
 $app_root = $this->model('app.root');
 $www_root = rtrim($this->router()->makeAbsoluteUri('/'), '/');
-
-
 $user = $this->model('user');
 $lang = $this->model('lang');
-
-
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+?>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title><?php echo (!empty($this->_title)) ? "{$this->_title} : " : '' ; ?> <?php echo $this->model('app.title'); ?></title>
-	<link href="<?php echo $www_root; ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
-	<link href="<?php echo $www_root; ?>/css/print.css" media="print" rel="stylesheet" type="text/css" />
-	<?php
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      <?php echo (!empty($this->_title)) ? "{$this->_title} : " : '' ; ?>
+      <?php echo $this->model('app.title'); ?>
+    </title>
+    <link href="<?php echo $www_root; ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="<?php echo $www_root; ?>/css/print.css" media="print" rel="stylesheet" type="text/css" />
+    <link href="<?php echo $www_root; ?>/css/bootstrap.min.css" media="all" rel="stylesheet" type="text/css" />
+<?php
 	$this->renderStylesheets();
-	$this->renderJavascripts();
-
+  $this->addGlobalJavascript();
+  $this->renderJavascripts();
 	if ($this->model('layout.use_local_css')) {
-		?>
-	<link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
-		<?php
+        		?>
+    <style>
+    </style>
+    <link href="<?php echo $www_root; ?>/local/css/local.css" media="all" rel="stylesheet" type="text/css" />
+<?php
 	}
-
 	$this->renderSection('layout.head');
-
 	if ($this->model('layout.use_local_head')) {
 		if (file_exists("{$app_root}/local/local_head.html")) {
 			include("{$app_root}/local/local_head.html");
 		}
 	}
-	?>
-</head>
-<?php echo $this->getSection('layout.pre-body'); ?>
-<body>
-
-<div id="wrapper">
-
-	<div id="header">
-		<div class="header-wrapper">
-			<a class="logo" href="/"><img src="<?php echo $www_root; ?>/images/logo-kc.jpg" alt="Kit-Catalogue" /></a>
-
-			<?php
-			$org_logo = $this->model()->get('org.logo');
-			$org_www = $this->model()->get('org.www');
+        	?>
+  </head>
+  <?php echo $this->getSection('layout.pre-body'); ?>
+  <body>
+    <div class="wrapper">
+      <nav class="navbar navbar-default navbar-default-fixed navbar-static-top">
+        <div id="headercontainer" class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target="#navbar-menu">
+              <span class="icon-bar">
+              </span>
+              <span class="icon-bar">
+              </span>
+              <span class="icon-bar">
+              </span>
+            </button>
+            <a class="navbar-brand" href="/">
+              <img src="<?php echo $www_root; ?>/images/logo-kc.png" alt="Kit-Catalogue" /></a>
+<?php
+			   $org_logo = $this->model()->get('org.logo');
+		    	$org_www = $this->model()->get('org.www');
 			if (!empty($org_logo)) {
 				if (!empty($org_www)) {
-					?>
-					<a class="institution" href="<?php echo $org_www; ?>"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></a>
-					<?php
+                        					?>
+            <a class="institution navbar-brand" href="<?php echo $org_www; ?>">
+              <img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="
+              <?php echo $this->model('org.title'); ?> " /></a>
+<?php
 				} else {
-					?>
-					<span class="institution"><img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="<?php echo $this->model('org.title'); ?>" /></span>
-					<?php
+                        					?>
+            <span class="institution navbar-brand">
+              <img src="<?php echo $www_root; ?>/local/images/<?php echo $org_logo; ?>" alt="
+              <?php echo $this->model('org.title'); ?> " />
+            </span>
+<?php
 				}
 			}
 			$this->renderSection('layout.header');
-
 			$user = $this->model('user');
-			?>
-		</div>
-	</div>
-
-
-	<?php
-	if (!$user->isAnonymous()) {
-		?>
-	<div id="userbar" class="cf">
-		<ul id="usernav">
-			<li><a href="<?php echo $www_root; ?>/signin/signout">sign out</a></li>
-			<?php
-			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/myprofile/items">my items</a></li>
-				<?php
-			}
-			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/admin">administration</a></li>
-				<?php
-			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
-				?>
-				<li><a href="<?php echo $www_root; ?>/ouadmin">administration</a></li>
-				<?php
-			}
-			?>
-			<li>Welcome <strong><?php
-				$name = $user->name;
-				if (empty($name)) {
-					$name = $user->email;
-				}
-				$this->out($name);
-			?></strong></li>
-		</ul>
-	</div>
-		<?php
-	}
-	?>
-
-	<div id="top">
-
-		<div id="nav" class="cf">
-			<?php
+                        			?>
+          </div>
+          <div id="search-box-div" class="navbar nav navbar-right search-box">
+<?php
 			if ( (!$user->isAnonymous()) || ($this->model('app.allow_anonymous')) ) {
-				?>
-				<div id="search-box">
-					<form action="<?php echo $www_root; ?>/search/" method="get">
-					<input type="text" name="q" id="search" class="hint" value="Search..." onfocus="if (this.value=='Search...') { this.className = ''; this.value = ''; }" onblur="if (this.value == '') { this.className = 'hint'; this.value = 'Search...'; }" />
-					<input type="image" name="searchsubmit" id="search-image" src="<?php echo $www_root; ?>/images/bg-search.png" />
-					</form>
-				</div>
-				<?php
+                        				?>
+            <div id="search-box-past" class="navbar-form search-form" role="search">
+              <form action="<?php echo $www_root; ?>/search/" method="get">
+                <input type="text" name="q" id="searchbox" class="form-control" placeholder="Search"/>
+                <button type="submit" class="btn btn-default navbar-btn">
+                  <span class="glyphicon glyphicon-search">
+                  </span> Search
+                </button>
+              </form>
+            </div>
+<?php
 			}
-			?>
-
-			<ul id="topnav" class="cf">
-				<?php
+                        			?>
+          </div>
+          <div id="navbar-menu" class="collapse navbar-collapse navbar-left" role="navigation">
+            <ul id="top-nav" class="nav navbar-nav">
+<?php
 				$topnav = array (
 					'home'         => '/',
 					'category'     => "/{$lang['cat.route']}/",
@@ -126,93 +103,156 @@ $lang = $this->model('lang');
 					'ou'           => "/ou/",
 					'manufacturer' => "/a-z/",
 					'facility'     => "/facility/",
+                    'building'     => "/{$lang['building.route']}",
 					'tag'          => "/tag/",
 				);
-
-
 				$topnav_order = $this->model("menu.order");
 				foreach($topnav as $k => $v) {
 					if (!in_array($k, $topnav_order)) {
 						$topnav_order[] = $k;
 					}
 				}
-
-
 				if ( ($user->isAnonymous()) && (!$this->model('app.allow_anonymous')) ) {
 					$topnav = array_intersect_key($topnav, array('home'));
 				}
-
 				if ($this->model('app.use_ou_tree')) {
 					unset($topnav['department']);
 				} else {
 					unset($topnav['ou']);
 				}
-
-
 				foreach($topnav_order as $id) {
 					if (isset($topnav[$id]) && $this->model("menu.{$id}.enabled")) {
-						?>
-						<li><a href="<?php echo $www_root . $topnav[$id]; ?>"><?php $this->out($this->model("menu.{$id}.label")); ?></a></li>
-						<?php
+                            						?>
+              <li>
+              <a href="<?php echo $www_root . $topnav[$id]; ?>">
+                <?php $this->out($this->model("menu.{$id}.label")); ?></a>
+              </li>
+<?php
 					}
 				}
-
 				if ($user->isAnonymous()) {
-					?>
-					<li class="user"><a class="signin" href="<?php echo $www_root; ?>/signin/">Sign In</a></li>
-					<?php
+                            					?>
+              <li class="user">
+                <a class="signin" href="<?php echo $www_root; ?>/signin/">Sign In</a>
+              </li>
+<?php
 				}
-				?>
-				<li>
-			</ul>
-		</div>
-
-		<?php
+                            				?>
+              <!--<li> -->
+            </ul>
+          </div>
+          <!-- navbar collapse -->
+        </div>
+        <!-- Container fluid header -->
+      </nav>
+      <div id="top-bar" class="container-fluid">
+        <div>
+          <div class="col-sm-6 col-xs-12">
+<?php
 		if ($this->hasBreadcrumbs()) {
-			?>
-			<ul id="breadcrumbs">
-				<?php $this->renderBreadcrumbs();?>
-			</ul>
-			<?php
-		}
-
+                        			?>
+            <ol class="breadcrumb pull-left" style="line-height: 56px; font-size: 1.3em; padding: 0px 0px;">
+              <?php $this->renderBreadcrumbs();?>
+            </ol>
+<?php
+                        		}    ?>
+          </div>
+<?php
+	if (!$user->isAnonymous()) {
+                    		?>
+          <div id="userbar" class="col-sm-6 col-xs-12" style="margin-bottom: 20px;">
+            <ul id="usernav" style="line-height: 56px;">
+              <li>
+              <form>
+                <button class="btn btn btn-default" formaction="<?php echo $www_root; ?>/signin/signout">
+                  <span class="glyphicon glyphicon-log-out">
+                  </span> sign out
+                </button>
+              </form>
+              </li>
+              </li>
+<?php
+			if ($this->model('user')->hasParam(KC__USER_HASITEMS)) {
+                            				?>
+              <li>
+              <form>
+                <button class="btn btn btn-info" formaction="<?php echo $www_root; ?>/myprofile/items">my items
+                </button>
+              </form>
+              </li>
+<?php
+			}
+			if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
+                            				?>
+              <li>
+              <form>
+                <button class="btn btn btn-danger" formaction="<?php echo $www_root; ?>/admin">administration
+                </button>
+              </form>
+              </li>
+<?php
+			} elseif ($this->model('security')->checkAuth(KC__AUTH_CANOUADMIN)) {
+                            				?>
+              <li>
+              <form>
+                <button class="btn btn btn-danger" formaction="<?php echo $www_root; ?>/ouadmin">administration
+                </button>
+              </form>
+              </li>
+<?php
+			}
+                            			?>
+              <li>Welcome <strong>
+<?php
+				$name = $user->name;
+				if (empty($name)) {
+					$name = $user->email;
+				}
+				$this->out($name);
+                                			?></strong>
+              </li>
+            </ul>
+          </div>
+<?php
+	}
+                    	?>
+        </div>
+      </div>
+      <div class="container">
+<?php
 		if ( ($user->isAnonymous()) && (true === $this->model('layout.signin_prompt_enabled')) ){
 			$signin_prompt = str_replace('[[SIGNIN_URL]]', $this->router()->makeAbsoluteUri('/signin/'), $this->model('layout.signin_prompt'));
-			?>
-			<p class="signin_warning">
-				<?php echo $signin_prompt; ?>
-			</p>
-			<?php
+                			?>
+        <div class="alert alert-warning pull-left" role="alert">
+          <?php echo $signin_prompt; ?>
+        </div>
+<?php
 		}
-		?>
-
-	</div>
-
-	<?php
+                		?>
+      </div>
+      <div class="container vertical-center" id="main">
+<?php
 	$this->renderFeedback();
-
 	$this->renderSection('layout.pre-content');
-
 	echo $this->content();
-
 	$this->renderSection('layout.post-content');
-	?>
-	<div id="footer">
-
-		<?php $this->renderSection('layout.footer'); ?>
-
-		<p><a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a></p>
-
-		<?php $this->renderView('snippets_licenceinfo', ''); ?>
-
-		<p>This equipment database is powered by the <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v<?php $this->out($this->model('app.version')); ?>).<br />
-		Kit-Catalogue has been developed by Loughborough University and is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.</p>
-	</div>
-</div>
-
-<?php $this->renderSection('layout.post-body'); ?>
-
-<iframe src="<?php echo $www_root; ?>/keep_alive.php" height="1" width="1" style="display: none;">keep alive</iframe>
-
-</body>
+                	?>
+        <?php $this->renderSection('layout.post-body'); ?>
+      </div>
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <?php $this->renderSection('layout.footer'); ?>
+        <p>
+          <a class="link" href="mailto:<?php $this->out($this->model('app.email')); ?>">Contact the catalogue owner</a>
+        </p>
+        <?php $this->renderView('snippets_licenceinfo', ''); ?>
+        <p>This equipment database is powered by the
+          <a href="http://www.kit-catalogue.com/">Kit-Catalogue</a> system (v
+          <?php $this->out($this->model('app.version')); ?> ).<br />		Kit-Catalogue has been developed by Loughborough University and is licensed under the
+          <a href="http://www.gnu.org/copyleft/gpl.html">Open Source GPLv3 licence</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
 </html>

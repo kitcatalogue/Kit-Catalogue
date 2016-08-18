@@ -52,7 +52,7 @@ table { border-collapse: collapse; border-spacing: 0; }
  */
 
 
-body {
+#body {
 	font: 12px/1.6em Helvetica, Arial, sans-serif;
 	color: #444;
 	background: #f5f5f5 url(../images/system/body_bk.png) repeat-x;
@@ -69,7 +69,7 @@ body {
 	margin: 0 auto;
 	padding: 0 10px 10px 10px;
 	overflow: hidden;
-	
+
 }
 
 #header {}
@@ -146,7 +146,7 @@ a.back-arrow:active {
 
 h1, h2, h3, h4, h5, h6 {
 	margin: 0.75em 0 0.75em 0;
-	
+
 	font-weight: bold;
 	line-height: 1.2em;
 }
@@ -165,8 +165,8 @@ h4, h5, h6 { font-size: 1em; }
 
 
 .white-box {
-	margin-bottom: 25px;
-	padding: 20px;
+	margin-bottom: 10px;
+	padding: 5px;
 	border: 1px solid #ddd;
 	background: #fff;
 }
@@ -178,7 +178,7 @@ h4, h5, h6 { font-size: 1em; }
 
 .note {
 	color: #666;
-	font-size: 0.95em;
+	font-size: 1.2em;
 	font-style: italic;
 	margin-bottom: 0.3em;
 }
@@ -198,25 +198,25 @@ h4, h5, h6 { font-size: 1em; }
 
 .feedback_error {
 	border: 1px solid #c96;
-	background: #fec; 
+	background: #fec;
 	color: #a62;
 }
 
 .feedback_info {
 	border: 1px solid #ccc;
-	background: #eee; 
+	background: #eee;
 	color: #333;
 }
 
 .feedback_success {
 	border: 1px solid #ace;
-	background: #eef; 
+	background: #eef;
 	color: #05b;
 }
 
 .feedback_warning {
 	border: 1px solid #c96;
-	background: #fec; 
+	background: #fec;
 	color: #a62;
 }
 
@@ -254,7 +254,7 @@ table.fields {}
 
 table.fields th,
 table.fields td {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 table.fields th {
@@ -262,7 +262,7 @@ table.fields th {
 	padding-right: 1em;
 
 	font-weight: bold;
-	
+	font-size: 1em;
 	text-transform: uppercase;
 }
 
@@ -434,7 +434,6 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 #userbar {
 	margin: 0;
 	overflow: hidden;
-	background-color: #fff;
 }
 
 #usernav li {
@@ -443,9 +442,9 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 	
 	margin: 0;
 	zpadding: 0.5em 1em;
-	padding: 0.5em 1em 0.2em 0.5em;
-	
-	line-height: 1em;
+	padding: 0em 1em 0em 0em;
+	font-size: 1.1em;
+	line-height: 56px;
 	color: #000;
 }
 
@@ -488,7 +487,7 @@ div#delete_button_container { float: right; margin-left: 2em; padding: 1em; }
 #search-box {
 	float: right;
 	margin-top: 3px;
-	margin-right:6px;	
+	margin-right: 6px;	
 	padding: 0 4px 4px 4px;
 	zborder: 1px solid #bbb;
 	zvertical-align: middle; 
@@ -574,11 +573,11 @@ a.admin_link {color:#FFF;padding:0.2em 1.5em 0 1em;}
 
 
 .side-bar {
-	clear: left;
-	float: left;
-	width: 15em;
+  /*  clear: left;
+	  float: left;
+	  width: 15em;
 	
-	margin: 1em 1.5em 2em 0;
+	margin: 1em 1.5em 2em 0;   */
 	
 	background: #fff;
 	border: 6px solid #F1F0EE;
@@ -676,13 +675,13 @@ h2.divider { margin-top: 1em; border-bottom: 1px solid #ccc; }
 
 ul.item-list {
 	overflow: hidden;
-	margin: 0 0 0 2em;
+  /*margin: 0 0 0 2em;*/
 }
 
 ul.item-list li.item {
 	overflow: hidden;
 	min-height: 12.5em;
-	margin: 10px;
+	/*margin: 10px; */
 	margin-bottom:20px;
 	zpadding: 1em;
 	background: #fff;
@@ -690,12 +689,12 @@ ul.item-list li.item {
 }
 
 ul.item-list li .item-content { overflow: hidden; padding-left:1em;border-left:1px dotted #666; }
-ul.item-list li .item-thumb { width: 110px; float: left; padding: 5px 5px 0 5px; }
+ul.item-list li .item-thumb { max-width: 110px; float: left; padding: 5px 5px 0 5px; }
 ul.item-list li .item-title { font-size: 15px; line-height:2.5em;padding-left:1em; margin-left:-1.0em;margin-top: 0; zmargin-bottom: 13px;background: url(../images/system/list_item_title_bk.png) repeat-x;border-bottom:1px solid #EBEBEC; }
 ul.item-list li .item-desc { margin-bottom: 13px; color:#000;}
 ul.item-list li .item-desc a {color:#6372AB;}
 
-li.item > a.admin_link { zmargin: -1em -1em 0 0 !important; }
+/*li.item > a.admin_link { zmargin: -1em -1em 0 0 !important; }    */
 
 
 ul.item-list li .item-title a {
@@ -744,7 +743,7 @@ div.item div.side-bar + div.side-bar { margin-top: 2em; }
 div.item div.tags {border-color:#F3F1E2; margin-top:2em;}
 div.item div.tags h4 {background-color:#F3F1E2;}
 
-div.item table.fields td {font-size:1em;}
+div.item table.fields td {font-size:1.1em;}
 div.item table.fields th {color:#000;}
 
 	
@@ -800,21 +799,21 @@ div.extra-image img:hover { opacity: 1; filter: alpha(opacity=100); /* For IE8 a
 
 
 .item-description h1 ,
-.item-specification h1 { margin-top: 2em; font-size: 1.2em; font-style: italic; }
+.item-specification h1 { margin-top: 2em; font-size: 1.4em; font-style: italic; }
 
 .item-description h2 ,
-.item-specification h2 { margin-top: 2em; font-size: 1.15em; font-style: italic; }
+.item-specification h2 { margin-top: 2em; font-size: 1.3em; font-style: italic; }
 
 .item-description h3 ,
-.item-specification h3 { margin-top: 2em; font-size: 1.1em; font-style: italic; }
+.item-specification h3 { margin-top: 2em; font-size: 1.2em; font-style: italic; }
 
 .item-description h4 ,
-.item-specification h4 { margin-top: 1.5em; font-size: 1.05em; font-style: italic; }
+.item-specification h4 { margin-top: 1.5em; font-size: 1.1em; font-style: italic; }
 
 .item-description h5 ,
 .item-description h6 ,
 .item-specification h5 ,
-.item-specification h6 { margin-top: 1em; font-size: 1em; font-style: italic; }
+.item-specification h6 { margin-top: 1em; font-size: 1.05em; font-style: italic; }
 
 .item-description td,
 .item-specification td { padding-right: 1em !important; border-bottom: 1px solid #ccc !important; }
@@ -1063,4 +1062,235 @@ a.sso-link:visited {
 a.sso-link:hover { background-color: #ccf; text-decoration: none; }
 a.sso-link:active { text-decoration: none; }
 
+/* =============================================================================
+typeahead styles:
+*/
 
+span.twitter-typeahead .tt-menu,
+span.twitter-typeahead .tt-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+}
+span.twitter-typeahead .tt-suggestion {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333333;
+  white-space: nowrap;
+}
+span.twitter-typeahead .tt-suggestion.tt-cursor,
+span.twitter-typeahead .tt-suggestion:hover,
+span.twitter-typeahead .tt-suggestion:focus {
+  color: #ffffff;
+  text-decoration: none;
+  outline: 0;
+  background-color: #337ab7;
+}
+.input-group.input-group-lg span.twitter-typeahead .form-control {
+  height: 46px;
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 6px;
+}
+.input-group.input-group-sm span.twitter-typeahead .form-control {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+span.twitter-typeahead {
+  width: 100%;
+}
+.input-group span.twitter-typeahead {
+  display: block !important;
+  height: 34px;
+}
+.input-group span.twitter-typeahead .tt-menu,
+.input-group span.twitter-typeahead .tt-dropdown-menu {
+  top: 32px !important;
+}
+.input-group span.twitter-typeahead:not(:first-child):not(:last-child) .form-control {
+  border-radius: 0;
+}
+.input-group span.twitter-typeahead:first-child .form-control {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.input-group span.twitter-typeahead:last-child .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.input-group.input-group-sm span.twitter-typeahead {
+  height: 30px;
+}
+.input-group.input-group-sm span.twitter-typeahead .tt-menu,
+.input-group.input-group-sm span.twitter-typeahead .tt-dropdown-menu {
+  top: 30px !important;
+}
+.input-group.input-group-lg span.twitter-typeahead {
+  height: 46px;
+}
+.input-group.input-group-lg span.twitter-typeahead .tt-menu,
+.input-group.input-group-lg span.twitter-typeahead .tt-dropdown-menu {
+  top: 46px !important;
+}
+/* 
+
+
+
+*/
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+  #top-bar {
+  margin: -20px auto;
+  background-color: #f4f4f4;
+  padding-left: 0px;
+  padding-right: 0px;
+  height: 60px;
+  }
+  
+
+#headercontainer {min-height: 56px;}
+@media (min-width: 970px) {
+    .container{
+        max-width: 970px;
+        margin: auto;
+    }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+.wrapper {
+  /* Margin bottom by footer height */
+  margin-bottom: 80px;
+}
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 80px;
+  
+}
+footer > .container {
+background-color: #e0e0e0;
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+body > .container {
+  padding: 50px 15px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+.footer > .container {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+code {
+  font-size: 80%;
+}
+.navbar-brand {
+  height: 60px;
+}
+
+#headercontainer > li > a {
+  line-height: 50px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  color: #112d09;
+}
+.navbar-toggle {
+  padding: 10px;
+  margin: 25px 15px 25px 0;
+}
+
+#side-column {
+padding-left: 0px;
+padding-right: 0px;
+margin-bottom: 20px;
+}
+#top-nav > li > a {
+color: #0f2707;
+line-height: 66px;
+padding-bottom: 0px;
+padding-top: 0px;
+font-size: 1.4em;
+}
+#category > a {
+font-size: 1.3em;
+}
+#building > a {
+font-size: 1.3em;
+}
+#search-box-past {
+margin-right: 0px;
+}
+/* Extra Small Devices, Phones */
+/* following section overrides the bootstrap css*/
+@media only screen and (min-width : 480px) {
+.ignore {
+
+}
+.navbar-form {
+             margin-bottom: 0px !important;
+             border-bottom-style: !important;
+             }
+.search-box {
+            margin-bottom: 0px !important;
+            margin-top: 10px;
+            }
+}
+
+@media only screen and (max-width : 480px) {
+.ignore {
+
+}
+.navbar-form {
+             margin-bottom: 0px !important;
+             border-bottom-style: none !important;
+             }
+.search-box {
+            margin-bottom: 0px !important;
+            margin-top: 10px;
+            }
+
+
+    }

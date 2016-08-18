@@ -38,6 +38,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery-min.js'));
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/jquery.require.js'));
 		$this->addJavascript($this->router()->makeAbsoluteUri('/js/kc_config.php'));
+		$this->addJavascript($this->router()->makeAbsoluteUri('/js/bootstrap.min.js'));
 		return true;
 	}// /method
 
@@ -102,7 +103,9 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 				$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/'. $item->id);
 				$back_url = base64_encode($this->request()->relativeUri());
-				printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit</a>', $edit_url, $back_url);
+                printf('<form method="GET"><button class="pull-right btn btn-primary" formaction="%1$s">edit</button>
+                    <input type="hidden" name="backlink" value="%2$s"/>
+                    </form>', $edit_url, $back_url);
 			}
 			?>
 
@@ -147,7 +150,10 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 		$this->layout()->addGlobalJavascript();
 
 		if ($this->model('item.allow_lightbox')) {
-			$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/kc_lightbox.js'));
+			$this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/featherlight.min.js'));
+   $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/featherlight.min.css'),'all');
+   $this->layout()->addJavascript($this->router()->makeAbsoluteUri('/js/featherlight.gallery.min.js'));
+   $this->layout()->addStylesheet($this->router()->makeAbsoluteUri('/css/featherlight.gallery.min.css'),'all');
 		}
 
 		$user = $this->model('user');
@@ -234,13 +240,17 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						)
 					) {
 					?>
-					<a class="enquire-link" href="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}?backlink={$back_url}"); ?>"><img src="<?php echo $this->router()->makeAbsoluteUri('/images/system/enquirebutton.gif'); ?>" alt="Enquire Now" /></a>
+          <form method="GET"><button class="pull-right btn btn-success" formaction="<?php echo $this->router()->makeAbsoluteUri("/enquiry/{$item->id}"); ?>">Enquire</button>
+          <input type="hidden" name="backlink" value="<?php echo $back_url; ?>" />
+</form>
 					<?php
 				}
 				?>
 
 				<h1><?php $this->out($item->name); ?></h1>
-
+        <script type="text/javascript"> $(function(){
+        document.title = document.title + " - " + "<?php $this->out($item->name); ?>";
+        }); </script>
 				<table class="fields">
 				<?php
 				$manufacturer_website = '';
@@ -272,13 +282,168 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 				</table>
 
 			</div>
+      <div class="col-sm-3">
 
-			<div class="item-detail-right">
+				<div class="images cf" data-featherlight-gallery data-featherlight-filter="a">
+					<?php
+					if ($no_image) {
+						?>
+						<img src="<?php echo $image; ?>" class="img-responsive" width="100" alt="<?php $this->out($image_alt); ?>" />
+						<?php
+					} else {
+						?>
+						<a href="<?php echo $image; ?>" target="_blank"><img id="main-image" class="img-responsive" src="<?php echo $image; ?>" width="252" alt="<?php $this->out($image_alt); ?>" /></a>
+						<?php
+					}
+
+					foreach($image_files as $i => $file) {
+						if ($file->filename != $item->image) {
+							$extra_image = $this->router()->makeAbsoluteUri("/item/{$item->id}/image/{$file->filename}");
+							?>
+							<div class="extra-image">
+								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="68" height="68" alt="" /></a>
+							</div>
+							<?php
+						}
+					}
+					?>
+				</div>
 
 				<?php
+				$categories = $this->model('categorystore')->findForItem($item->id);
+				if ($categories->count()==0) {
+					if ($this->model('user')->isAnonymous()) {
+						?>
+						<p class="note">There are no publically available categories listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
+						<?php
+					}
+				} else {
+					?>
+					<div class="side-bar">
+						<h4><?php $this->out($lang['cat.label.plural']); ?></h4>
+						<ul>
+						<?php
+						foreach($categories as $i => $category) {
+							?>
+							<li>
+								<a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->url_suffix}"); ?>">
+									<?php $this->out($category->name); ?>
+									<span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span>
+								</a>
+							</li>
+							<?php
+						}
+						?>
+						</ul>
+					</div>
+					<?php
+				}
+				$categories = null;
+
+
+				$facilities = $this->model('itemstore')->findParents($item->id);
+				if (count($facilities)>0) {
+					?>
+					<div class="side-bar tags">
+						<h4><?php $this->out($lang['item.label.showparents']); ?></h4>
+						<ul>
+							<?php
+							foreach($facilities as $i => $facility) {
+								?>
+								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/item/{$facility->slug}"); ?>"><?php $this->out($facility->name); ?></a></li>
+								<?php
+							}
+							?>
+						</ul>
+					</div>
+					<?php
+				}
+				$facilities = null;
+
+
+				if ($this->model('fieldview')->show('item.tags')) {
+					$tags = $this->model('itemstore')->getItemTags($item->id);
+					if (count($tags)>0) {
+						?>
+						<div class="side-bar tags">
+							<h4>Tags</h4>
+							<ul>
+								<?php
+								foreach($tags as $i => $tag) {
+									?>
+									<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
+									<?php
+								}
+								?>
+							</ul>
+						</div>
+						<?php
+					}
+					$tags = null;
+				}
+				?>
+
+				<div class="side-bar">
+					<h4>Permanent Link</h4>
+					<ul>
+						<li><a href="<?php echo $permalink; ?>">Direct Permalink</a></li>
+					</ul>
+				</div>
+
+				<?php
+				if ( (!$user->isAnonymous()) && (KC__VISIBILITY_PUBLIC == $item->visibility) ) {
+					?>
+					<div class="side-bar">
+						<h4>Visibility</h4>
+						<div style="padding: 3px;">This item is publically visible.</div>
+					</div>
+					<?php
+				}
+
+
+				if (
+					(KC__VISIBILITY_PUBLIC == $item->visibility)
+					|| ($this->model('socialnetwork.allow_googleplus'))
+					|| ($this->model('socialnetwork.allow_twitter'))
+					) {
+					?>
+					<div class="socialnetworkbuttons">
+						<?php
+						if ($this->model('socialnetwork.allow_googleplus')) {
+							?>
+							<div id="plusone-div" class="plusone"></div>
+							<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+								{lang:"en", parsetags:"explicit"}
+							</script>
+							<script type="text/javascript">
+								gapi.plusone.render("plusone-div", {annotation:"none"});
+							</script>
+							<?php
+						}
+
+
+						if ($this->model('socialnetwork.allow_twitter')) {
+							?>
+							<a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-count="none">Tweet</a>
+							<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+							<?php
+						}
+						?>
+					</div>
+					<?php
+				}
+				?>
+
+			</div>
+			<div class="col-sm-9">
+
+      <?php
 				if ($this->model('security')->checkItemPermission($item, 'site.item.edit')) {
 					$edit_url = $this->router()->makeAbsoluteUri("/admin/items/edit/{$item->id}");
-					printf('<a class="admin_link" href="%1$s?backlink=%2$s">edit item</a>', $edit_url, $back_url );
+                    $back_url = base64_encode($this->request()->relativeUri());
+                    printf('<form method="GET"><button class="pull-right btn btn-primary" formaction="%1$s">Edit</button>
+                        <input type="hidden" name="backlink" value="%2$s" />
+                        </form>', $edit_url, $back_url );
 				}
 				?>
 
@@ -379,7 +544,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							$contact_link = '';
 
 							if ( ($this->model('enquiry.enabled') && !$this->model('enquiry.email_links')) || (empty($contact_email)) ) {
-								$contact_link = sprintf('%1$s', $contact_name);
+								$contact_link = sprintf('%1$s', $this->escape($contact_name));
 							} else {
 								$contact_link = sprintf('<a href="mailto:%1$s">%2$s</a>', $contact_email, $contact_name);
 							}
@@ -575,7 +740,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						if ( ($this->model('item.allow_embedded_content')) && (!empty($item->embedded_content)) ) {
 							$this->outf($lang['item.label.embedded_content'], '<h2>%s</h2>');
 							?>
-							<div class="item-embedded-content">
+							<div class="embed-responsive embed-responsive-16by9">
 								<?php echo $item->embedded_content; ?>
 							</div>
 							<?php
@@ -710,159 +875,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 
 
-			<div class="item-detail-left">
-
-				<div class="images cf">
-					<?php
-					if ($no_image) {
-						?>
-						<img src="<?php echo $image; ?>" width="100" alt="<?php $this->out($image_alt); ?>" />
-						<?php
-					} else {
-						?>
-						<a href="<?php echo $image; ?>" target="_blank"><img id="main-image" src="<?php echo $image; ?>" width="252" alt="<?php $this->out($image_alt); ?>" /></a>
-						<?php
-					}
-
-					foreach($image_files as $i => $file) {
-						if ($file->filename != $item->image) {
-							$extra_image = $this->router()->makeAbsoluteUri("/item/{$item->id}/image/{$file->filename}");
-							?>
-							<div class="extra-image">
-								<a href="<?php echo $extra_image; ?>" target="_blank"><img src="<?php echo $extra_image; ?>" width="68" height="68" alt="" /></a>
-							</div>
-							<?php
-						}
-					}
-					?>
-				</div>
-
-				<?php
-				$categories = $this->model('categorystore')->findForItem($item->id);
-				if ($categories->count()==0) {
-					if ($this->model('user')->isAnonymous()) {
-						?>
-						<p class="note">There are no publically available categories listed at present. You may have to <a href="<?php echo $this->router()->makeAbsoluteUri('/'); ?>">sign in</a> to browse this catalogue.</p>
-						<?php
-					}
-				} else {
-					?>
-					<div class="side-bar">
-						<h4><?php $this->out($lang['cat.label.plural']); ?></h4>
-						<ul>
-						<?php
-						foreach($categories as $i => $category) {
-							?>
-							<li>
-								<a href="<?php echo $this->router()->makeAbsoluteUri("/{$lang['cat.route']}/{$category->url_suffix}"); ?>">
-									<?php $this->out($category->name); ?>
-									<span class="count">(<?php $this->out($category->getItemCount($user->param('visibility'))); ?>)</span>
-								</a>
-							</li>
-							<?php
-						}
-						?>
-						</ul>
-					</div>
-					<?php
-				}
-				$categories = null;
-
-
-				$facilities = $this->model('itemstore')->findParents($item->id);
-				if (count($facilities)>0) {
-					?>
-					<div class="side-bar tags">
-						<h4><?php $this->out($lang['item.label.showparents']); ?></h4>
-						<ul>
-							<?php
-							foreach($facilities as $i => $facility) {
-								?>
-								<li><a href="<?php echo $this->router()->makeAbsoluteUri("/item/{$facility->slug}"); ?>"><?php $this->out($facility->name); ?></a></li>
-								<?php
-							}
-							?>
-						</ul>
-					</div>
-					<?php
-				}
-				$facilities = null;
-
-
-				if ($this->model('fieldview')->show('item.tags')) {
-					$tags = $this->model('itemstore')->getItemTags($item->id);
-					if (count($tags)>0) {
-						?>
-						<div class="side-bar tags">
-							<h4>Tags</h4>
-							<ul>
-								<?php
-								foreach($tags as $i => $tag) {
-									?>
-									<li class="tags"><a href="<?php echo $this->router()->makeAbsoluteUri("/tag/{$tag}"); ?>">#<?php $this->out($tag); ?></a></li>
-									<?php
-								}
-								?>
-							</ul>
-						</div>
-						<?php
-					}
-					$tags = null;
-				}
-				?>
-
-				<div class="side-bar">
-					<h4>Permanent Link</h4>
-					<ul>
-						<li><a href="<?php echo $permalink; ?>">Direct Permalink</a></li>
-					</ul>
-				</div>
-
-				<?php
-				if ( (!$user->isAnonymous()) && (KC__VISIBILITY_PUBLIC == $item->visibility) ) {
-					?>
-					<div class="side-bar">
-						<h4>Visibility</h4>
-						<div style="padding: 3px;">This item is publically visible.</div>
-					</div>
-					<?php
-				}
-
-
-				if (
-					(KC__VISIBILITY_PUBLIC == $item->visibility)
-					|| ($this->model('socialnetwork.allow_googleplus'))
-					|| ($this->model('socialnetwork.allow_twitter'))
-					) {
-					?>
-					<div class="socialnetworkbuttons">
-						<?php
-						if ($this->model('socialnetwork.allow_googleplus')) {
-							?>
-							<div id="plusone-div" class="plusone"></div>
-							<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
-								{lang:"en", parsetags:"explicit"}
-							</script>
-							<script type="text/javascript">
-								gapi.plusone.render("plusone-div", {annotation:"none"});
-							</script>
-							<?php
-						}
-
-
-						if ($this->model('socialnetwork.allow_twitter')) {
-							?>
-							<a href="https://twitter.com/share" class="twitter-share-button" data-size="large" data-count="none">Tweet</a>
-							<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-							<?php
-						}
-						?>
-					</div>
-					<?php
-				}
-				?>
-
-			</div>
+			
 
 		</div>
 
@@ -871,7 +884,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			?>
 			<div id="lightbox" class="window">
 				<div id="lightbox_top"><a class="modalwindow_close" href="#" title="close window">close</a></div>
-				<div id="lightbox_imagecontainer"><a id="lightbox_link" href="#" target="_blank"><img id="lightbox_image" src="ajax-loader.gif"></a></div>
+				<div id="lightbox_imagecontainer"><a id="lightbox_link" href="#" target="_blank"><img id="lightbox_image" src="/images/system/busy_animation.gif"></a></div>
 				<div id="lightbox_list"></div>
 			</div>
 			<?php
@@ -922,7 +935,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 
 
 
-	public function renderOUSelect($html_id, $selected_ou = null) {
+	public function renderOUSelect($html_id, $selected_ou = null, $attr = null) {
 		$allow_select_ou = false;
 		$allow_all_ou = false;
 		$valid_ou = array();
@@ -940,7 +953,7 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 			return false;
 		} else {
 			?>
-			<select name="<?php echo $html_id; ?>" id="<?php echo $html_id; ?>">
+                <select name="<?php echo $html_id; ?>" id="<?php echo $html_id; ?>" class="form-control" >
 				<?php
 				$ou_list = $this->model('organisationalunitstore')->findTree();
 

@@ -54,7 +54,6 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 			$order_by = array('name' => 'asc');
 		}
 		$this->view()->items = $this->model('itemstore')->findForSearchParams($selected_params, $order_by);
-
 		$this->view()->render('browse_view');
 	}// /method
 
@@ -133,6 +132,10 @@ class Controller_Browse extends Ecl_Mvc_Controller {
 							$uri_params['technique'] = urlencode($param);
 							unset($bits[0]);
 							$selected_params['technique'] = implode('-', $bits);
+							break;
+                        case strtolower($lang['building.label']):
+							$uri_params['building'] = urlencode($param);
+							$selected_params['building'] = (int) $bits[1];// EDOTODO
 							break;
 						default:
 							break;

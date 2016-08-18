@@ -190,7 +190,7 @@ class Item {
 	public function validate(&$errors = null) {
 		$errors = null;
 
-		if ( (empty($this->item_title)) && (empty($this->manufacturer)) ) {
+		if ( (empty($this->title)) && (empty($this->manufacturer)) ) {
 			$errors['title'] = 'Title is empty. Either Title or Manufacturer must be supplied.';
 			$errors['manufacturer'] = 'Manufacturer is empty. Either Title or Manufacturer must be supplied.';
 		}

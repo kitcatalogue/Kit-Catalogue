@@ -11,3 +11,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L,QSA]
 
 php_flag magic_quotes_gpc off
+RedirectMatch 404 /\.git

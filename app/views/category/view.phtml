@@ -9,7 +9,7 @@ $edit_link = null;
 
 if ($this->model('security')->checkAuth(KC__AUTH_CANADMIN)) {
 	$edit_url = $this->router()->makeAbsoluteUri('/admin/items/edit/new');
-	$edit_link = sprintf('<a class="admin_link" href="%1$s?backlink=%2$s">add an item</a>', $edit_url, $back_url);
+	$editlink = sprintf('<form><button class="pull-right btn btn-success" formaction="%1$s?backlink=%2$s">add an item</button></form>', $edit_url, $back_url);
 }
 ?>
 

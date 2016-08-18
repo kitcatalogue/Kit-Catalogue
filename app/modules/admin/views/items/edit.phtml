@@ -8,17 +8,18 @@ $new_item = empty($item->id);
 
 
 
-$this->layout()->addGlobalJavascript();
 
 $this->layout()->appendSection('layout.head', <<<EndJS
+<script type="text/javascript" src="/js/typeahead.bundle.min.js"></script> 
 <script type="text/javascript">
 
 	var link_element_count = 1;
 	var file_element_count = 1;
 
 	$(document).ready( function() {
-
-		var del_button = $('<input type="submit" name="submitdelete" value="Delete Item" />');
+            //
+            //<button type="button" class="btn btn-danger" aria-label="Delete Item" name="submitdelete"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  Delete Item</button>
+		var del_button = $('<input type="submit" class="btn btn-danger" name="submitdelete" value="Delete Item" />');
 		del_button.click(function () {
 			var msg = 'Please confirm that this item and its associated files will be deleted.\\n\\nThis operation cannot be undone.';
 			return confirm(msg);
@@ -26,18 +27,18 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 		$('#delete_button_container').append(del_button);
 
 
-		var addlinkmore_button = $('<input type="button" name="addlinkmore" value="More Links.." />');
+		var addlinkmore_button = $('<input type="button" class="btn btn-primary" name="addlinkmore" value="More Links.." />');
 		addlinkmore_button.click(function() {
 			link_element_count++;
 			var id_prefix = 'link_'+ link_element_count +'_';
 			var el_prefix = 'newlink['+ link_element_count +']';
-			new_link_block = $('<dt><label>Link '+ link_element_count +'</label></dt><dd><label for="'+ id_prefix +'name" >Title</label><br /><input type="text" name="'+ el_prefix +'[name]" id="'+ id_prefix +'name" size="40" maxlength="250" value="" /><br /><label for="'+ id_prefix +'url" >URL</label><br /><input type="text" name="'+ el_prefix +'[url]" id="'+ id_prefix +'url" size="65" maxlength="250" value="" /></dd>');
+			new_link_block = $('<dt><label>Link '+ link_element_count +'</label></dt><dd><label for="'+ id_prefix +'name" >Title</label><br /><input class="form-control" type="text" name="'+ el_prefix +'[name]" id="'+ id_prefix +'name" size="40" maxlength="250" value="" /><br /><label for="'+ id_prefix +'url" >URL</label><br /><input class="form-control" type="text" name="'+ el_prefix +'[url]" id="'+ id_prefix +'url" size="65" maxlength="250" value="" /></dd>');
 			$('#addlink_list').append(new_link_block);
 		});
 		$('#addlinksmore_button_container').append(addlinkmore_button);
 
 
-		var uploadmore_button = $('<input type="button" name="uploadmore" value="More Files.." />');
+		var uploadmore_button = $('<input type="button" class="btn btn-primary" name="uploadmore" value="More Files.." />');
 		uploadmore_button.click(function() {
 			file_element_count++;
 			new_upload_block = $('<dt><label for="file_'+ file_element_count +'">File '+ file_element_count +'</label></dt><dd><input type="file" name="file_'+ file_element_count +'" id="file_'+ file_element_count +'" /></dd>');
@@ -46,9 +47,12 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 		$('#uploadmore_button_container').append(uploadmore_button);
 
 
-		var usemyemail1_button = $('<input type="button" name="usemyemail" value="Use my email" />');
+		var usemyemail1_button = $('<input type="button" name="usemyemail" value="Use my email" class="btn btn-primary" />');
 		usemyemail1_button.click(function() {
 			$("input#new_contact_1_email").val("{$user->email}");
+      $("input#contact_1_name").val("{$user->name}");
+      $('select#contact_1_email').children().removeAttr("selected");
+      
 		});
 		$("#td_contact1email").append(usemyemail1_button);
 
@@ -59,8 +63,102 @@ $this->layout()->appendSection('layout.head', <<<EndJS
 		});
 		$("#td_contact2email").append(usemyemail2_button);
 
+            ///////////////////////////////////////////////////////////////////////////
+   var Names = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('Name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    matchAnyQueryToken: true,
+    identify: function(names){
+   console.log("IDENTIFY CALLED");
+    return datum.email;
+    },
+    remote: {
+        url: '/ajax/getnamesuggestions/?q=%QUERY',
+        wildcard: '%QUERY',
+        transform: function(response) {
+          // map remote JSON to javascript object?
+					return $.map(response.result, function (names) {
+        		//return 
+            
+            return  {
+                    Name: names.forename + ' ' + names.surname,
+                    Email: names.email,
+                };
+					});
+				}
+    }
+});
 
-	});
+$('#name1 .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Name',
+  source: Names
+});
+$('#name2 .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Name',
+  source: Names
+});
+
+$('#td_contact1email .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Email',
+  source: Names
+});
+$('#td_contact2email .typeahead').typeahead({
+  hint: true,
+  highlight: true,
+  minLength: 2
+},
+{
+  display: 'Email',
+  source: Names
+});
+
+
+var Name1SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#td_contact1email .typeahead').val(suggestionObject.Email);
+$('select#contact_1_email').children().removeAttr("selected");
+}
+var Email1SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#name1 .typeahead').val(suggestionObject.Name);
+$('select#contact_1_email').children().removeAttr("selected");
+    }
+$('#name1 .typeahead').on('typeahead:selected',Name1SelectedHandler);
+$('#td_contact1email .typeahead').on('typeahead:selected',Email1SelectedHandler);
+
+
+var Name2SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#td_contact2email .typeahead').val(suggestionObject.Email);
+$('select#contact_2_email').children().removeAttr("selected");
+}
+var Email2SelectedHandler = function
+(eventObject, suggestionObject, suggestionDataset){
+$('#name2 .typeahead').val(suggestionObject.Name);
+$('select#contact_2_email').children().removeAttr("selected");
+    }
+$('#name2 .typeahead').on('typeahead:selected',Name2SelectedHandler);
+$('#td_contact2email .typeahead').on('typeahead:selected',Email2SelectedHandler);
+
+
+/* To enable popover help */
+$('[data-toggle="popover"]').popover();
+});
 
 </script>
 EndJS
@@ -70,7 +168,7 @@ EndJS
 
 
 <?php
-Ecl_Helper_Html::form('itemform', $this->request()->uri(), 'post', 'UTF-8', 'enctype="multipart/form-data"');
+Ecl_Helper_Html::form('itemform', $this->request()->uri(), 'post', 'UTF-8', 'enctype="multipart/form-data" class="form-horizontal"');
 Ecl_Helper_Html::formHidden('item_id', $item->id);
 ?>
 
@@ -78,65 +176,97 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 <?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', 'style="position: absolute; left: -100%;"'); ?>
 
 
-<div id="delete_button_container"></div>
+  <div id="delete_button_container"></div>
 
 
-<h1>Editing: <?php $this->out( ($new_item) ? 'New Item' : $item->name ); ?></h1>
+<h2>Editing: <?php $this->out( ($new_item) ? 'New Item' : $item->name ); ?></h2>
+<script type="text/javascript">
+$(function(){
+    new_item = <?php echo ($new_item) ? 'true' : 'false'; ?>;
+    if (new_item){
+        document.title = document.title + " - " + "Adding new item";    
+    } else {
+        document.title = document.title + " - Editing: " + "<?php $this->out( ($new_item) ? 'New Item' : $item->name ); ?>";
+    }
+    
+});
+ </script>
+
 <div style="margin-bottom: 1em;"><a href="<?php echo $this->backlink; ?>">&laquo; Back to Catalogue</a></div>
 
 
 <p class="note">* Denotes a required field.</p>
 
 <fieldset>
-	<legend><?php $this->out($lang['item.formsection.main']); ?></legend>
 
 	<?php
 	if (!empty($item->date_updated)) {
 		?>
-		<div class="itemedit_sidestatus">
+		<div class="alert alert-info" role="alert">
 			<p>Last updated
 				<?php
 				if (!empty($item->last_updated_by)) {
-					?>
-					by <br /><?php $this->out($item->last_updated_by); ?>
+					?> 	by <?php $this->out($item->last_updated_by); ?>
 					<?php
 				}
 				?>
-				<br /><?php echo date($this->model('layout.date_format'), $item->date_updated); ?>.
+				 on <?php echo date($this->model('layout.date_format'), $item->date_updated); ?>.
 		</div>
 		<?php
 	}
 
 	if ($item->visibility == KC__VISIBILITY_PUBLIC) {
 		?>
-		<div class="itemedit_sidestatus" style="background-color: #fdd;">
-			<p>This item is<br /><strong>visible to the public</strong>.</p>
+		<div class="alert alert-danger" role="alert">
+			<p>This item is <strong>visible to the public</strong>.</p>
 		</div>
 		<?php
 	}
 	?>
 
-	<dl class="form">
-		<dt><?php Ecl_Helper_Html::formLabel('title', $lang['item.form.title'].' *'); ?></dt>
-		<dd>
-			<p class="note">General name of the item. Mandatory if <em>Manufacturer</em> is blank.</p>
-			<?php Ecl_Helper_Html::formInput('title', 70, 250, $item->title); ?>
-		</dd>
+	<div class="form">
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('title', $lang['item.form.title'].' *', array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+        
+			<?php Ecl_Helper_Html::formInput('title', 70, 250, $item->title, array('class'=>'form-control')); ?>
+      <p class="help-block">General name of the item. Mandatory if <em>Manufacturer</em> is blank.</p>
+    </div>
+  </div>
+   <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('manufacturer', $lang['item.form.manufacturer'].' *', array('class' => "col-sm-3 control-label")); ?>          
+    <div class="col-sm-9">
+			<?php Ecl_Helper_Html::formInput('manufacturer', 40, 100, $item->manufacturer,array('class'=>'form-control')); ?>
+      <a href="#" data-toggle="popover" data-trigger="hover" title="header" data-content="Some content"> <span class="glyphicon glyphicon-question-sign"></span>    </a>
+      <p class="help-block">Mandatory if <em>Title</em> is blank.</p>
+    </div>
+  </div>                  
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('model', $lang['item.form.model'], array('class' => "col-sm-3 control-label")); ?>          
+    <div class="col-sm-9">
+        
+			<?php Ecl_Helper_Html::formInput('model', 40, 100, $item->model,array('class'=>'form-control')); ?>
+      <p class="help-block">Mandatory if <em>Title</em> is blank.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('access', $lang['access.label'], array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+         <?php
+			$options = (array) $this->model('accesslevelstore')->findAll()->toAssoc('id', 'name');
+			$options = array('0' => '') + $options;
 
-		<dt><?php Ecl_Helper_Html::formLabel('manufacturer', $lang['item.form.manufacturer'].' *'); ?></dt>
-		<dd>
-			<p class="note">Mandatory if <em>Title</em> is blank.</p>
-			<?php Ecl_Helper_Html::formInput('manufacturer', 40, 100, $item->manufacturer); ?>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('model', $lang['item.form.model']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('model', 40, 100, $item->model); ?></dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *'); ?></dt>
-		<dd>
-			<p class="note">Where in the organisational tree does this item reside.</p>
+			Ecl_Helper_Html::formSelect('access', $options, $item->access, array('class'=>'form-control'));
+			?>
+      <p class="help-block">Where in the organisational tree does this item reside.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('ou', $lang['ou.label'].' *', array('class' => "col-sm-3 control-label")); ?>          
+    <div class="col-sm-9">
+         
 			<?php
-			if (!$this->layout()->renderOUSelect('ou', $item->ou)) {
+			if (!$this->layout()->renderOUSelect('ou', $item->ou, array('class'=>'form-control'))) {
 				$ou_name = $this->model('organisationalunitstore')->lookupName($item->ou);
 				?>
 				<strong><?php $this->out($ou_name); ?></strong>
@@ -144,50 +274,14 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 				<?php
 			}
 			?>
-		</dd>
-
-		<dt id="changevis"><?php Ecl_Helper_Html::formLabel('visibility', $lang['item.form.visibility'].' *'); ?></dt>
-		<dd>
-			<p class="note">Is the catalogue entry available for public view or just internally?</p>
-			<?php
-			$options = array(
-				//KC__VISIBILITY_DRAFT  => 'Draft' ,
-				KC__VISIBILITY_INTERNAL  => 'Internal Only' ,
-				KC__VISIBILITY_PUBLIC    => 'Public' ,
-			);
-
-			Ecl_Helper_Html::formSelect('visibility', $options, $item->visibility);
-			?>
-		</dd>
-
-	</dl>
-</fieldset>
-
-
-<div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
-</div>
-
-
-<fieldset>
-	<legend><?php $this->out($lang['item.formsection.contact']); ?></legend>
-
-	<dl class="form">
-		<dt><?php $this->out($lang['item.form.contact_1']); ?> *</dt>
-		<dd>
-			<p class="note">The custodian or primary staff contact.</p>
-			<dl class="form">
-
-				<dt><?php Ecl_Helper_Html::formLabel('contact_1_name', 'Name'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name); ?></dd>
-
-				<dt>Email *</dt>
-				<dd>
-					<table class="layout">
-					<tr>
-						<td>
-							<label style="display: block;" for="contact_1_email">Select an existing email address</label>
-							<select name="contact_1_email" id="contact_1_email">
+      <p class="help-block">Where in the organisational tree does this item reside.</p>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+     	<label class="col-sm-3 control-label" for="contact_1_email">Existing Custodian:</label>   
+    <div class="col-sm-9">
+    <select name="contact_1_email" id="contact_1_email" class="form-control">
 								<?php
 								$options = $this->model('itemstore')->findAllContacts(KC__VISIBILITY_INTERNAL);
 
@@ -200,35 +294,413 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 
 								Ecl_Helper_Html::formOptions($options, strtolower($item->contact_1_email));
 								?>
-							</select>
-						</td>
-						<td id="td_contact1email" style="padding-left: 2em;">
-							<label style="display: block;" for="new_contact_1_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
-							<?php
-							Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'));
-							?>
-						</td>
+							</select> 
+			
+      <p class="help-block">The custodian or primary staff contact.</p>
+    </div>
+  </div>
+	<div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('contact_1_name', 'New Custodian Name', array('class' => "col-sm-3 control-label")); ?>         
+    <div class="col-sm-9" id="name1">
+       <?php Ecl_Helper_Html::formInput('contact_1_name', 40, 250, $item->contact_1_name, array('class'=>'typeahead form-control')); ?> 
+			
+      <p class="help-block">The custodian or primary staff contact.</p>
+    </div>
+  </div>
+  <div class="form-group">
+     <label class="col-sm-3 control-label" for="new_contact_1_email">New Custodian Email</label>         
+    <div class="col-sm-9" id="td_contact1email">
+     <?php
+		 Ecl_Helper_Html::formInput('new_contact_1_email', 40, 250, $this->request()->post('new_contact_1_email'), array('class'=>'typeahead form-control'), 'email');
+		 ?>
+			
+      <p class="help-block">The custodian or primary staff contact.</p>
+    </div>
+  </div>
+   <hr>	
+	<div class="form-group">
+     <?php Ecl_Helper_Html::formLabel('full_description', $lang['item.form.full_description'], array('class' => "col-sm-3 control-label")); ?>         
+    <div class="col-sm-9">
+       <?php Ecl_Helper_Html::formTextarea('full_description', 80, 7, $item->full_description, array('class'=>'form-control')); ?>
+			<p class="help-block">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
+    <p class="help-block">The full description to show on the detail page.</p>
+    </div>
+  </div>	
+  <div class="form-group">
+      <?php Ecl_Helper_Html::formLabel('specification', $lang['item.form.specification'], array('class' => "col-sm-3 control-label")); ?>   
+    <div class="col-sm-9">
+       <?php Ecl_Helper_Html::formTextarea('specification', 80, 3, $item->specification, array('class'=>'form-control')); ?>
+			<p class="help-block">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
+    </div>
+  </div>
+   <div class="form-group">
+      <?php Ecl_Helper_Html::formLabel('technique', $lang['item.form.technique'], array('class' => "col-sm-3 control-label")); ?> 
+    <div class="col-sm-9">
+			<?php Ecl_Helper_Html::formInput('technique', 30, 100, $item->technique, array('class'=>'form-control')); ?>
+      <p class="help-block">What kind of scientific principle, technique or methodology the item uses. (if applicable)</p>
+    </div>
+  </div>
+  <hr>
+   <div class="form-group">
+    <label class="col-sm-3 control-label"> Associated <?php $this->out($lang['cat.label.plural']); ?></label>  
+    <div class="col-sm-9">
+		<?php
+			if ($new_item) {
+				$selected = $this->request()->post('category');
+			} else {
+				$selected = $this->model('categorystore')->findForItem($item->id)->toColumn('id');
+			}
+			Ecl_Helper_Html::formCheckboxGrid('category', $this->model('categorystore')->findAll()->toAssoc('id', 'name'), 3, $selected);
+			?>
+			&nbsp; &nbsp;
+    </div>  
+  </div>
+  <div class="form-group">
+      	<label class="col-sm-3 control-label" for="other_category">&hellip;or use a new <?php $this->out(strtolower($lang['cat.label'])); ?></label>
+    <div class="col-sm-9">
+		     <?php
+			Ecl_Helper_Html::formInput('other_category', 40, 250, $this->request()->post('other_category'), array('class'=>'form-control'));
+			?>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+      	<?php Ecl_Helper_Html::formLabel('site', $lang['site.label'],  array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+		     <?php
+			$options = array('0' => '') + $this->model('sitestore')->findAll()->toAssoc('id', 'name');
+			Ecl_Helper_Html::formSelect('site', $options, $item->site, array('class'=>'form-control'));
+			?>
+    </div>
+  </div>
+   <div class="form-group">
+      <?php Ecl_Helper_Html::formLabel('building', $lang['building.label'], array('class' => "col-sm-3 control-label")); ?> 
+    <div class="col-sm-9">
+			<?php
+			$options = array('0' => '') + $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
+			Ecl_Helper_Html::formSelect('building', $options, $item->building, array('class'=>'form-control'));
+			?>
+    </div>
+  </div>
+  <div class="form-group">
+      <?php Ecl_Helper_Html::formLabel('room', $lang['item.form.room'], array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+				<?php
+			Ecl_Helper_Html::formInput('room', 15, 20, $item->room, array('class'=>'form-control'));
+			?>
+    </div>
+  </div>
+  <hr>
+  <div class="form-group">
+      <?php Ecl_Helper_Html::formLabel('asset_no', $lang['item.form.asset_no'], array('class' => "col-sm-3 control-label")); ?>
+    <div class="col-sm-9">
+			<?php Ecl_Helper_Html::formInput('asset_no', 15, 250, empty($item->asset_no) ? null : $item->asset_no, array('class'=>'form-control')); ?>
+    </div>
+  </div>
+ 
+	</div> <!--DIV id form -->
+</fieldset>
+
+
+<div style="text-align: center;">
+	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
+</div>
+
+
+
+
+
+
+
+
+
+
+<div class="panel-group" style="margin-top: 16px;">
+<?php
+if (!$new_item) {
+	$files = $this->model('itemstore')->findFilesForItem($item);
+
+	$image_files = array();
+	$other_files = array();
+
+	if (!empty($files)) {
+		$image_ext = array ('jpg', 'jpeg', 'gif', 'png');
+		foreach($files as $file) {
+			$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
+			if (in_array($extension, $image_ext)) {
+				$image_files[] = $file;
+			} else {
+				$other_files[] = $file;
+			}
+		}
+	}
+
+	$types = $this->model('itemstore')->findAllFileTypes();
+	?>
+  <div class="panel panel-default">
+     <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse-resources">Resources &ndash; Images and files (Click to expand)</a>
+        </h4>
+      </div>
+        <div id="collapse-resources" class="panel-collapse collapse">
+        <div class="panel-body">
+        <fieldset>
+		<legend><?php $this->out($lang['item.formsection.resources']); ?></legend>
+
+		<?php
+		if (!$this->model('item.allow_embedded_content')) {
+			if (!empty($item->embedded_content)) {
+				?>
+				<div class="section" style="margin-bottom: 2em;">
+					<dl class="form">
+
+						<dt>Embedded HTML Content</dt>
+						<dd>
+							<?php $this->out($item->embedded_content); ?>
+							<p class="note">You are not permitted to edit this field.</p>
+						</dd>
+
+					</dl>
+				</div>
+				<?php
+			}
+		} else {
+			?>
+			<h2><?php $this->out($lang['item.form.embedded_content']); ?></h2>
+			<div class="section" style="margin-bottom: 2em;">
+				<dl class="form">
+
+					<dt>Embedded HTML Content</dt>
+					<dd>
+						<?php Ecl_Helper_Html::formTextarea('embedded_content', 80, 4, $item->embedded_content); ?>
+						<p class="note">Use this field to embed videos and other resources, e.g. YouTube videos, RSS feeds, Twitter updates, etc.</p>
+					</dd>
+
+				</dl>
+			</div>
+			<?php
+		}
+		?>
+
+		<h2><?php $this->out($lang['item.form.links']); ?></h2>
+		<div class="section" style="margin-bottom: 2em;">
+			<?php
+			$links = $this->model('itemlinkstore')->findForItem($item->id);
+
+			if ($links->count() == 0) {
+				echo('<p class="note" style="margin-left: 2em;">No links added.</p>');
+			} else {
+				?>
+				<p class="note">The following links have been attached to this item.</p>
+				<table class="table">
+				<tr>
+					<th>Type   </th>
+					<th>Title  </th>
+					<th>Link   </th>
+					<th>Delete </th>
+				</tr>
+				<?php
+				foreach($links as $i => $link) {
+					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
+					?>
+					<tr class="<?php echo($tr_class); ?>">
+						<td><?php Ecl_Helper_Html::formSelect("link[{$link->id}][type]", $types, $link->type); ?></td>
+						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][name]", 25, 250, $link->name, array('class'=>'form-control')); ?></td>
+						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][url]", 40, 250, $link->url, array('class'=>'form-control')); ?></td>
+						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_link[]', "link_delete_{$i}", $link->id); ?></td>
 					</tr>
-					</table>
+					<?php
+				}
+				?>
+				</table>
+				<?php
+			}
+			?>
+
+			<h3>Add Links</h3>
+			<p class="note">Enter the details for your new link below.</p>
+
+			<dl id="addlink_list" class="form">
+
+				<dt><label>Link 1</label></dt>
+				<dd>
+					<?php Ecl_Helper_Html::formLabel('newlink[1][name]', 'Title'); ?>
+					<br /><?php Ecl_Helper_Html::formInput('newlink[1][name]', 40, 250, '', array('class'=>'form-control'))?>
+					<br /><?php Ecl_Helper_Html::formLabel('newlink[1][url]', 'URL'); ?>
+					<br /><?php Ecl_Helper_Html::formInput('newlink[1][url]', 65, 250, '', array('class'=>'form-control'))?>
 				</dd>
 
 			</dl>
-		</dd>
 
-	</dl>
+			<div id="addlinksmore_button_container"></div>
 
-	<hr />
+		</div>
+
+		<hr />
+
+		<h2>Images</h2>
+		<div class="section" style="margin-bottom: 2em;">
+			<?php
+			if (empty($image_files)) {
+				echo('<p class="note" style="margin-left: 2em;">No images uploaded.</p>');
+			} else {
+				?>
+				<p class="note">The following files have been uploaded and attached to this item.</p>
+				<p class="note">Select which one will be the main image for the item.  The other images will only appear on the item's detail page.</p>
+				<table class="table table-bordered">
+				<tr><b>
+					<th>Image</th>
+					<th>Main Image</th>
+					<th>Delete</th>
+			</b>	</tr>
+				<?php
+				foreach($image_files as $i => $file) {
+					$selected = ($file->filename == $item->image) || (1 == count($image_files));
+					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
+					?>
+					<tr class="<?php echo($tr_class); ?>">
+						<td class="name"><?php $this->out($file->filename); ?></td>
+						<td><?php Ecl_Helper_Html::formRadio('use_image', "use_image_{$i}", $file->filename, $selected); ?></td>
+						<td><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_image_{$i}", $file->filename); ?></td>
+					</tr>
+					<?php
+				}
+				?>
+				</table>
+				<?php
+			}
+			?>
+		</div>
+
+		<hr />
+
+		<h2><?php $this->out($lang['item.form.files']); ?></h2>
+		<div class="section" style="margin-bottom: 2em;">
+
+			<dl class="form">
+
+				<dt><?php Ecl_Helper_Html::formLabel('copyright_notice', 'Copyright Notice (to cover all uploaded files)'); ?></dt>
+				<dd><?php Ecl_Helper_Html::formInput('copyright_notice', 80, 250, $item->copyright_notice, array('class'=>'form-control'))?></dd>
+
+			</dl>
+
+
+			<?php
+			if (empty($other_files)) {
+				echo('<p class="note" style="margin-left: 2em;">No additional files uploaded.</p>');
+			} else {
+				?>
+				<p class="note">The following files have been uploaded and attached to this item.</p>
+				<p class="note">Organise how they will appear on the details page by giving each file a display name and type.</p>
+				<table class="grid striped" style="margin: 0 0 0 1em;">
+				<tr>
+					<th>File</th>
+					<th>Type</th>
+					<th>Display Name</th>
+					<th>Delete</th>
+				</tr>
+				<?php
+				foreach($other_files as $i => $file) {
+					$b64_filename = base64_encode($file->filename);
+					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
+					?>
+					<tr class="<?php echo($tr_class); ?>">
+						<td class="name"><?php $this->out($file->filename); ?></td>
+						<td><?php Ecl_Helper_Html::formSelect("file_type_{$b64_filename}", $types, $file->type); ?></td>
+						<td><?php Ecl_Helper_Html::formInput("file_name_{$b64_filename}", 50, 250, $file->name, array('class'=>'form-control')) ?></td>
+						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_file_{$i}", $file->filename); ?></td>
+					</tr>
+					<?php
+				}
+				?>
+				</table>
+				<?php
+			}
+			?>
+
+		</div>
+
+		<h2>Upload Images &amp; Files</h2>
+		<div class="section">
+			<p class="note">Upload files and images associated with this piece of equipment.</p>
+			<p class="note">If you upload a file with a name that already exists, it will overwrite the existing file.</p>
+
+			<p class="note">Your server limits uploads to a total of <em><?php echo Ecl_Helper_String::formatBytes($this->php_max_upload); ?></em> per "save".</p>
+			<input type="hidden" name="MAX_FILE_SIZE" value="<?php $this->out($this->php_max_upload); ?>" />
+
+
+			<?php
+			if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
+				?>
+				<p class="note">Images are limited to a maximum dimension of
+				<em><?php
+				if (null === $this->model('item.image.max_width')) {
+					echo 'any width';
+				} else {
+					echo $this->model('item.image.max_width') . ' pixels wide';
+				}
+				?></em>
+				by
+				<em><?php
+				if (null === $this->model('item.image.max_height')) {
+					echo 'any height';
+				} else {
+					echo $this->model('item.image.max_height') . ' pixels high';
+				}
+				?></em>
+				<br />Any images exceeding these dimensions will be automatically resized.
+				<?php
+			}
+			?>
+
+			<div id="upload">
+				<dl class="form">
+					<dt><?php Ecl_Helper_Html::formLabel('file_1', 'File 1'); ?></dt>
+					<dd><?php Ecl_Helper_Html::formFile('file_1')?></dd>
+				</dl>
+			</div>
+
+			<div id="uploadmore_button_container"></div>
+
+		</div>
+	</fieldset>
+
+	<div style="text-align: center;">
+		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
+	</div>
+        </div>
+        </div>
+    </div>
+
+	
+
+	<?php
+}// /if(item)
+?>   
+    
+    
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Additional Fields (Click to expand)</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">
+        <!--PANEL  -->
+        <fieldset>
+	<legend><?php $this->out($lang['item.formsection.contact']); ?></legend>
 
 	<dl class="form">
-
 		<dt><?php $this->out($lang['item.form.contact_2']); ?></dt>
 		<dd>
 			<p class="note">The secondary staff contact.</p>
 			<dl class="form">
-
+                <div id="name2">
 				<dt><?php Ecl_Helper_Html::formLabel('contact_2_name', 'Name'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name); ?></dd>
-
+				<dd><?php Ecl_Helper_Html::formInput('contact_2_name', 40, 250, $item->contact_2_name,array('class'=>'typeahead form-control')); ?></dd>
+                </div>
 				<dt>Email</dt>
 				<dd>
 					<table class="layout">
@@ -254,7 +726,7 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 						<td id="td_contact2email" style="padding-left: 2em;">
 							<label style="display: block;" for="new_contact_2_email">&hellip;or use a new email address (The "existing email" drop-down must be set to blank)</label>
 							<?php
-							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'));
+							Ecl_Helper_Html::formInput('new_contact_2_email', 40, 250, $this->request()->post('new_contact_2_email'),array('class'=>'typeahead form-control'));
 							?>
 						</td>
 					</tr>
@@ -263,14 +735,26 @@ Ecl_Helper_Html::formHidden('item_id', $item->id);
 
 			</dl>
 		</dd>
+    <dt id="changevis"><?php Ecl_Helper_Html::formLabel('visibility', $lang['item.form.visibility'].' *'); ?></dt>
+		<dd>
+			<p class="note">Is the catalogue entry available for public view or just internally?</p>
+			<?php
+			$options = array(
+				//KC__VISIBILITY_DRAFT  => 'Draft' ,
+				KC__VISIBILITY_INTERNAL  => 'Internal Only' ,
+				KC__VISIBILITY_PUBLIC    => 'Public' ,
+			);
 
+			Ecl_Helper_Html::formSelect('visibility', $options, $item->visibility, array('class'=>'form-control'));
+			?>
+		</dd>
 	</dl>
 
 </fieldset>
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 </div>
 
 
@@ -354,7 +838,7 @@ if ($this->model('admin.item.editors.enabled')) {
 	</fieldset>
 
 	<div style="text-align: center;">
-		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 	</div>
 	<?php
 }
@@ -365,27 +849,6 @@ if ($this->model('admin.item.editors.enabled')) {
 	<legend><?php $this->out($lang['item.formsection.description']); ?></legend>
 
 	<dl class="form">
-
-		<dt><?php Ecl_Helper_Html::formLabel('short_description', $lang['item.form.short_description']); ?></dt>
-		<dd>
-			<p class="note">A short description to show on listings pages or in search results.</p>
-			<?php Ecl_Helper_Html::formTextarea('short_description', 80, 2, $item->short_description); ?>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('full_description', $lang['item.form.full_description']); ?></dt>
-		<dd>
-			<p class="note">The full description to show on the detail page.</p>
-			<?php Ecl_Helper_Html::formTextarea('full_description', 80, 7, $item->full_description); ?>
-			<p class="note" style="text-align: center;">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('specification', $lang['item.form.specification']); ?></dt>
-		<dd>
-			<p class="note">Description of the technical specification or operational limits of the equipment. (e.g. Operating temperatures or sample-size restrictions)</p>
-			<?php Ecl_Helper_Html::formTextarea('specification', 80, 3, $item->specification); ?>
-			<p class="note" style="text-align: center;">(Use <a target="_blank" href="<?php echo $this->router()->makeAbsoluteUri('/support/help/view/wikitext'); ?>">wiki-text</a> to format your text.)</p>
-		</dd>
-
 		<dt><?php Ecl_Helper_Html::formLabel('upgrades', $lang['item.form.upgrades']); ?></dt>
 		<dd>
 			<p class="note">Any upgrades that are installed.</p>
@@ -401,26 +864,25 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('manufacturer_website', $lang['item.form.manufacturer_website']); ?></dt>
 		<dd>
 			<p class="note">A specific web page containing the of manufacturer's information about this item, or the manufacturer's main website.</p>
-			<?php Ecl_Helper_Html::formInput('manufacturer_website', 80, 250, $item->manufacturer_website); ?>
+			<?php Ecl_Helper_Html::formInput('manufacturer_website', 80, 250, $item->manufacturer_website,array('class'=>'form-control')); ?>
 		</dd>
 
-		<dt><?php Ecl_Helper_Html::formLabel('technique', $lang['item.form.technique']); ?></dt>
+		<dt></dt>
 		<dd>
-			<p class="note">What kind of scientific principle, technique or methodology the item uses. (if applicable)</p>
-			<?php Ecl_Helper_Html::formInput('technique', 30, 100, $item->technique); ?>
+			
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('acronym', $lang['item.form.acronym']); ?></dt>
 		<dd>
 			<p class="note">Any short-hand acronym or abbreviation used to identify the item.</p>
-			<?php Ecl_Helper_Html::formInput('acronym', 10, 15, $item->acronym); ?>
+			<?php Ecl_Helper_Html::formInput('acronym', 10, 15, $item->acronym, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('keywords', $lang['item.form.keywords']); ?></dt>
 		<dd>
 			<p class="note">Any keywords not mentioned in any of the fields above, but which should include this item in search results.</p>
 			<p class="note">This could also include variations in spelling or terminology (e.g. "multiaxis, multi-axis, multi axis")</p>
-			<?php Ecl_Helper_Html::formInput('keywords', 80, 250, $item->keywords); ?>
+			<?php Ecl_Helper_Html::formInput('keywords', 80, 250, $item->keywords, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('tags', $lang['tag.label.plural']); ?></dt>
@@ -443,7 +905,7 @@ if ($this->model('admin.item.editors.enabled')) {
 			} else {
 				$tags = $this->request()->post('tags');
 			}
-			Ecl_Helper_Html::formInput('tags', 80, 2048, $tags);
+			Ecl_Helper_Html::formInput('tags', 80, 2048, $tags, array('class'=>'form-control'));
 			?>
 		</dd>
 
@@ -452,7 +914,7 @@ if ($this->model('admin.item.editors.enabled')) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 </div>
 
 
@@ -552,79 +1014,35 @@ if ($this->model('admin.item.editors.enabled')) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 </div>
-
-
-<fieldset>
-	<legend><?php $this->out($lang['item.formsection.categorisation']); ?></legend>
-
-	<dl class="form">
-
-		<dt>Associated <?php $this->out($lang['cat.label.plural']); ?></dt>
-		<dd>
-			<?php
-			if ($new_item) {
-				$selected = $this->request()->post('category');
-			} else {
-				$selected = $this->model('categorystore')->findForItem($item->id)->toColumn('id');
-			}
-			Ecl_Helper_Html::formCheckboxGrid('category', $this->model('categorystore')->findAll()->toAssoc('id', 'name'), 3, $selected);
-			?>
-			&nbsp; &nbsp;
-			<label style="display: block;" for="other_category">&hellip;or use a new <?php $this->out(strtolower($lang['cat.label'])); ?></label>
-			<?php
-			Ecl_Helper_Html::formInput('other_category', 40, 250, $this->request()->post('other_category'));
-			?>
-		</dd>
-
-	</dl>
-</fieldset>
-
-
-<div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
-</div>
-
-
 <fieldset>
 	<legend><?php $this->out($lang['item.formsection.access']); ?></legend>
 
 	<dl class="form">
 
-		<dt><?php Ecl_Helper_Html::formLabel('access', $lang['access.label']); ?></dt>
-		<dd>
-			<p class="note">What kind of access is usually permitted to this item?</p>
-			<?php
-			$options = (array) $this->model('accesslevelstore')->findAll()->toAssoc('id', 'name');
-			$options = array('0' => '') + $options;
-
-			Ecl_Helper_Html::formSelect('access', $options, $item->access);
-			?>
-		</dd>
-
 		<dt><?php Ecl_Helper_Html::formLabel('usergroup', $lang['item.form.usergroup']); ?></dt>
 		<dd>
 			<p class="note">Short description of the typical user group.  (e.g. "Department" or "Renewable Energy Research Group")</p>
-			<?php Ecl_Helper_Html::formInput('usergroup', 30, 250, $item->usergroup); ?>
+			<?php Ecl_Helper_Html::formInput('usergroup', 30, 250, $item->usergroup, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('availability', $lang['item.form.availability']); ?></dt>
 		<dd>
 			<p class="note">An indication of when this item might be available for use. (e.g. "Wednesday afternoons")</p>
-			<?php Ecl_Helper_Html::formInput('availability', 50, 250, $item->availability); ?>
+			<?php Ecl_Helper_Html::formInput('availability', 50, 250, $item->availability, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('restrictions', $lang['item.form.restrictions']); ?></dt>
 		<dd>
 			<p class="note">Any restrictions on the use of this item, or specific Health &amp; Safety considerations, etc.</p>
-			<?php Ecl_Helper_Html::formInput('restrictions', 50, 250, $item->restrictions); ?>
+			<?php Ecl_Helper_Html::formInput('restrictions', 50, 250, $item->restrictions, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('portability', $lang['item.form.portability']); ?></dt>
 		<dd>
 			<p class="note">For most items the portability will be obvious and need not be entered, but for special cases you can enter portability information here.</p>
-			<?php Ecl_Helper_Html::formInput('portability', 30, 250, $item->portability); ?>
+			<?php Ecl_Helper_Html::formInput('portability', 30, 250, $item->portability, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('training_required', $lang['item.form.trainingrequired']); ?></dt>
@@ -704,11 +1122,11 @@ if ($this->model('admin.item.editors.enabled')) {
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('quantity', $lang['item.form.quantity']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('quantity', 5, 10, $item->quantity); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('quantity', 5, 10, $item->quantity, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('quantity_detail', $lang['item.form.quantity_detail']); ?></dt>
 		<dd><p class="note">If this record describes multiple items, please provide details here.</p>
-			<?php Ecl_Helper_Html::formInput('quantity_detail', 50, 100, $item->quantity_detail); ?>
+			<?php Ecl_Helper_Html::formInput('quantity_detail', 50, 100, $item->quantity_detail, array('class'=>'form-control')); ?>
 		</dd>
 
 	</dl>
@@ -716,46 +1134,11 @@ if ($this->model('admin.item.editors.enabled')) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 </div>
 
 
-<fieldset>
-	<legend><?php $this->out($lang['item.formsection.location']); ?></legend>
 
-	<dl class="form">
-
-		<dt><?php Ecl_Helper_Html::formLabel('site', $lang['site.label']); ?></dt>
-		<dd>
-			<?php
-			$options = array('0' => '') + $this->model('sitestore')->findAll()->toAssoc('id', 'name');
-			Ecl_Helper_Html::formSelect('site', $options, $item->site);
-			?>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('building', $lang['building.label']); ?></dt>
-		<dd>
-			<?php
-			$options = array('0' => '') + $this->model('buildingstore')->findAll()->toAssoc('id', 'name');
-			Ecl_Helper_Html::formSelect('building', $options, $item->building);
-			?>
-		</dd>
-
-		<dt><?php Ecl_Helper_Html::formLabel('room', $lang['item.form.room']); ?></dt>
-		<dd>
-			<?php
-			Ecl_Helper_Html::formInput('room', 15, 20, $item->room);
-			?>
-		</dd>
-
-	</dl>
-
-</fieldset>
-
-
-<div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
-</div>
 
 
 <fieldset><br>
@@ -763,17 +1146,16 @@ if ($this->model('admin.item.editors.enabled')) {
 
 	<dl class="form">
 
-		<dt><?php Ecl_Helper_Html::formLabel('asset_no', $lang['item.form.asset_no']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('asset_no', 15, 250, empty($item->asset_no) ? null : $item->asset_no ); ?></dd>
+		
 
 		<dt><?php Ecl_Helper_Html::formLabel('finance_id', $lang['item.form.finance_id']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('finance_id', 15, 250, empty($item->finance_id) ? null : $item->finance_id ); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('finance_id', 15, 250, empty($item->finance_id) ? null : $item->finance_id, array('class'=>'form-control') ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('serial_no', $lang['item.form.serial_no']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('serial_no', 15, 250, empty($item->serial_no) ? null : $item->serial_no ); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('serial_no', 15, 250, empty($item->serial_no) ? null : $item->serial_no, array('class'=>'form-control') ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('year_of_manufacture', $lang['item.form.year_of_manufacture']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('year_of_manufacture', 10, 4, $item->year_of_manufacture); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('year_of_manufacture', 10, 4, $item->year_of_manufacture, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php $this->out($lang['item.form.supplier']); ?></dt>
 		<dd>
@@ -806,7 +1188,7 @@ if ($this->model('admin.item.editors.enabled')) {
 						<label style="display: block;" for="new_supplier">&hellip;or provide a new <?php $this->out(strtolower($lang['item.form.supplier'])); ?></label>
 						<?php
 					}
-					Ecl_Helper_Html::formInput('new_supplier', 30, 250, $this->request()->post('new_supplier'));
+					Ecl_Helper_Html::formInput('new_supplier', 30, 250, $this->request()->post('new_supplier'), array('class'=>'form-control'));
 					?>
 				</td>
 			</tr>
@@ -818,13 +1200,13 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('PAT', date('Y'), date('Y')+10, empty($item->PAT) ? null : $item->PAT ); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('cost', $lang['item.form.cost']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('cost', 30, 100, $item->cost); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('cost', 30, 100, $item->cost, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('date_of_purchase', $lang['item.form.date_of_purchase']); ?></dt>
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('date_of_purchase', date('Y')-20, date('Y'), empty($item->date_of_purchase) ? null : $item->date_of_purchase); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('replacement_cost', $lang['item.form.replacement_cost']); ?></dt>
-		<dd><?php Ecl_Helper_Html::formInput('replacement_cost', 30, 100, $item->replacement_cost); ?></dd>
+		<dd><?php Ecl_Helper_Html::formInput('replacement_cost', 30, 100, $item->replacement_cost, array('class'=>'form-control')); ?></dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('end_of_life', $lang['item.form.end_of_life']); ?></dt>
 		<dd><?php Ecl_Helper_Html::formSelectsDmyNullable('end_of_life', date('Y')-5, date('Y')+10, empty($item->end_of_life) ? null : $item->end_of_life); ?></dd>
@@ -832,7 +1214,7 @@ if ($this->model('admin.item.editors.enabled')) {
 		<dt><?php Ecl_Helper_Html::formLabel('maintenance', $lang['item.form.maintenance']); ?></dt>
 		<dd>
 			<p class="note">Details of any maintenance agreements, contracts or costs.</p>
-			<?php Ecl_Helper_Html::formInput('maintenance', 100, 250, $item->maintenance); ?>
+			<?php Ecl_Helper_Html::formInput('maintenance', 100, 250, $item->maintenance, array('class'=>'form-control')); ?>
 		</dd>
 
 		<dt><?php Ecl_Helper_Html::formLabel('is_disposed_of', $lang['item.form.is_disposed_of']); ?></dt>
@@ -897,7 +1279,7 @@ if (!empty($fields)) {
 				$value = (isset($item_custom[$field->id])) ? $item_custom[$field->id] : null ;
 				?>
 				<dt><?php Ecl_Helper_Html::formLabel('custom_field_'. $field->id, $field->name); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('custom_field_'. $field->id, 50, 250, $value); ?></dd>
+				<dd><?php Ecl_Helper_Html::formInput('custom_field_'. $field->id, 50, 250, $value, array('class'=>'form-control')); ?></dd>
 				<?php
 			}
 			?>
@@ -910,260 +1292,20 @@ if (!empty($fields)) {
 
 
 <div style="text-align: center;">
-	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
+	<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes', array('class' => "btn btn-success")); ?>
 </div>
 
 
-<?php
-if (!$new_item) {
-	$files = $this->model('itemstore')->findFilesForItem($item);
 
-	$image_files = array();
-	$other_files = array();
-
-	if (!empty($files)) {
-		$image_ext = array ('jpg', 'jpeg', 'gif', 'png');
-		foreach($files as $file) {
-			$extension = strtolower(Ecl_Helper_Filesystem::getFileExtension($file->filename));
-			if (in_array($extension, $image_ext)) {
-				$image_files[] = $file;
-			} else {
-				$other_files[] = $file;
-			}
-		}
-	}
-
-	$types = $this->model('itemstore')->findAllFileTypes();
-	?>
-
-	<fieldset>
-		<legend><?php $this->out($lang['item.formsection.resources']); ?></legend>
-
-		<?php
-		if (!$this->model('item.allow_embedded_content')) {
-			if (!empty($item->embedded_content)) {
-				?>
-				<div class="section" style="margin-bottom: 2em;">
-					<dl class="form">
-
-						<dt>Embedded HTML Content</dt>
-						<dd>
-							<?php $this->out($item->embedded_content); ?>
-							<p class="note">You are not permitted to edit this field.</p>
-						</dd>
-
-					</dl>
-				</div>
-				<?php
-			}
-		} else {
-			?>
-			<h2><?php $this->out($lang['item.form.embedded_content']); ?></h2>
-			<div class="section" style="margin-bottom: 2em;">
-				<dl class="form">
-
-					<dt>Embedded HTML Content</dt>
-					<dd>
-						<?php Ecl_Helper_Html::formTextarea('embedded_content', 80, 4, $item->embedded_content); ?>
-						<p class="note">Use this field to embed videos and other resources, e.g. YouTube videos, RSS feeds, Twitter updates, etc.</p>
-					</dd>
-
-				</dl>
-			</div>
-			<?php
-		}
-		?>
-
-		<h2><?php $this->out($lang['item.form.links']); ?></h2>
-		<div class="section" style="margin-bottom: 2em;">
-			<?php
-			$links = $this->model('itemlinkstore')->findForItem($item->id);
-
-			if ($links->count() == 0) {
-				echo('<p class="note" style="margin-left: 2em;">No links added.</p>');
-			} else {
-				?>
-				<p class="note">The following links have been attached to this item.</p>
-				<table class="grid striped" style="margin: 0 0 0 1em;">
-				<tr>
-					<th>Type</th>
-					<th>Title</th>
-					<th>Link</th>
-					<th>Delete</th>
-				</tr>
-				<?php
-				foreach($links as $i => $link) {
-					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
-					?>
-					<tr class="<?php echo($tr_class); ?>">
-						<td><?php Ecl_Helper_Html::formSelect("link[{$link->id}][type]", $types, $link->type); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][name]", 25, 250, $link->name); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("link[{$link->id}][url]", 40, 250, $link->url); ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_link[]', "link_delete_{$i}", $link->id); ?></td>
-					</tr>
-					<?php
-				}
-				?>
-				</table>
-				<?php
-			}
-			?>
-
-			<h3>Add Links</h3>
-			<p class="note">Enter the details for your new link below.</p>
-
-			<dl id="addlink_list" class="form">
-
-				<dt><label>Link 1</label></dt>
-				<dd>
-					<?php Ecl_Helper_Html::formLabel('newlink[1][name]', 'Title'); ?>
-					<br /><?php Ecl_Helper_Html::formInput('newlink[1][name]', 40, 250, '')?>
-					<br /><?php Ecl_Helper_Html::formLabel('newlink[1][url]', 'URL'); ?>
-					<br /><?php Ecl_Helper_Html::formInput('newlink[1][url]', 65, 250, '')?>
-				</dd>
-
-			</dl>
-
-			<div id="addlinksmore_button_container"></div>
-
-		</div>
-
-		<hr />
-
-		<h2>Images</h2>
-		<div class="section" style="margin-bottom: 2em;">
-			<?php
-			if (empty($image_files)) {
-				echo('<p class="note" style="margin-left: 2em;">No images uploaded.</p>');
-			} else {
-				?>
-				<p class="note">The following files have been uploaded and attached to this item.</p>
-				<p class="note">Select which one will be the main image for the item.  The other images will only appear on the item's detail page.</p>
-				<table class="grid striped" style="margin: 0 0 0 1em;">
-				<tr>
-					<th>Image</th>
-					<th>Main Image</th>
-					<th>Delete</th>
-				</tr>
-				<?php
-				foreach($image_files as $i => $file) {
-					$selected = ($file->filename == $item->image) || (1 == count($image_files));
-					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
-					?>
-					<tr class="<?php echo($tr_class); ?>">
-						<td class="name"><?php $this->out($file->filename); ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formRadio('use_image', "use_image_{$i}", $file->filename, $selected); ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_image_{$i}", $file->filename); ?></td>
-					</tr>
-					<?php
-				}
-				?>
-				</table>
-				<?php
-			}
-			?>
-		</div>
-
-		<hr />
-
-		<h2><?php $this->out($lang['item.form.files']); ?></h2>
-		<div class="section" style="margin-bottom: 2em;">
-
-			<dl class="form">
-
-				<dt><?php Ecl_Helper_Html::formLabel('copyright_notice', 'Copyright Notice (to cover all uploaded files)'); ?></dt>
-				<dd><?php Ecl_Helper_Html::formInput('copyright_notice', 80, 250, $item->copyright_notice)?></dd>
-
-			</dl>
+        
+        </div>
+        <div class="panel-footer">Panel Footer</div>
+      </div>
+    </div>
+  </div>
 
 
-			<?php
-			if (empty($other_files)) {
-				echo('<p class="note" style="margin-left: 2em;">No additional files uploaded.</p>');
-			} else {
-				?>
-				<p class="note">The following files have been uploaded and attached to this item.</p>
-				<p class="note">Organise how they will appear on the details page by giving each file a display name and type.</p>
-				<table class="grid striped" style="margin: 0 0 0 1em;">
-				<tr>
-					<th>File</th>
-					<th>Type</th>
-					<th>Display Name</th>
-					<th>Delete</th>
-				</tr>
-				<?php
-				foreach($other_files as $i => $file) {
-					$b64_filename = base64_encode($file->filename);
-					$tr_class = (($i % 2) == 0) ? 'even' : 'odd' ;
-					?>
-					<tr class="<?php echo($tr_class); ?>">
-						<td class="name"><?php $this->out($file->filename); ?></td>
-						<td><?php Ecl_Helper_Html::formSelect("file_type_{$b64_filename}", $types, $file->type); ?></td>
-						<td><?php Ecl_Helper_Html::formInput("file_name_{$b64_filename}", 50, 250, $file->name) ?></td>
-						<td class="checkbox"><?php Ecl_Helper_Html::formCheckbox('delete_file[]', "delete_file_{$i}", $file->filename); ?></td>
-					</tr>
-					<?php
-				}
-				?>
-				</table>
-				<?php
-			}
-			?>
 
-		</div>
-
-		<h2>Upload Images &amp; Files</h2>
-		<div class="section">
-			<p class="note">Upload files and images associated with this piece of equipment.</p>
-			<p class="note">If you upload a file with a name that already exists, it will overwrite the existing file.</p>
-
-			<p class="note">Your server limits uploads to a total of <em><?php echo Ecl_Helper_String::formatBytes($this->php_max_upload); ?></em> per "save".</p>
-			<input type="hidden" name="MAX_FILE_SIZE" value="<?php $this->out($this->php_max_upload); ?>" />
-
-
-			<?php
-			if ( (null !== $this->model('item.image.max_width')) || (null !== $this->model('item.image.max_height')) ) {
-				?>
-				<p class="note">Images are limited to a maximum dimension of
-				<em><?php
-				if (null === $this->model('item.image.max_width')) {
-					echo 'any width';
-				} else {
-					echo $this->model('item.image.max_width') . ' pixels wide';
-				}
-				?></em>
-				by
-				<em><?php
-				if (null === $this->model('item.image.max_height')) {
-					echo 'any height';
-				} else {
-					echo $this->model('item.image.max_height') . ' pixels high';
-				}
-				?></em>
-				<br />Any images exceeding these dimensions will be automatically resized.
-				<?php
-			}
-			?>
-
-			<div id="upload">
-				<dl class="form">
-					<dt><?php Ecl_Helper_Html::formLabel('file_1', 'File 1'); ?></dt>
-					<dd><?php Ecl_Helper_Html::formFile('file_1')?></dd>
-				</dl>
-			</div>
-
-			<div id="uploadmore_button_container"></div>
-
-		</div>
-	</fieldset>
-
-	<div style="text-align: center;">
-		<?php Ecl_Helper_Html::formSubmitUnique('submitsave', 'Save Changes'); ?>
-	</div>
-
-	<?php
-}// /if(item)
-?>
 
 
 

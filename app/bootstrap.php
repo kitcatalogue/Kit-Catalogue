@@ -26,6 +26,7 @@ setlocale(LC_ALL, 'en_UK.UTF8');
 ini_set('session.gc_maxlifetime', 2400);   // 40 minute session timeout
 ini_set('session.gc_probability', 1);
 ini_set('session.gc_divisor', 100);
+ini_set( 'session.cookie_httponly', 1 ); //HTTP only cookies to prevent some XSS damage
 @session_start();
 
 
@@ -35,11 +36,11 @@ ini_set('session.gc_divisor', 100);
 
 
 // Types of feedback boxes
-define('KC__FEEDBACK_ERROR', 'feedback_error');
-define('KC__FEEDBACK_INFO', 'feedback_info');
+define('KC__FEEDBACK_ERROR', 'alert-danger');
+define('KC__FEEDBACK_INFO', 'alert-info');
 define('KC__FEEDBACK_QUESTION', 'feedback_question');
-define('KC__FEEDBACK_SUCCESS', 'feedback_success');
-define('KC__FEEDBACK_WARNING', 'feedback_warning');
+define('KC__FEEDBACK_SUCCESS', 'alert-success');
+define('KC__FEEDBACK_WARNING', 'alert-warning');
 
 
 // Different user permissions/auths

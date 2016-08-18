@@ -112,12 +112,15 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 		if ($this->request()->post('submitdelete')) {
 			if (!$new_item) {
+        //backup item first, then delete
+        $this->model('itembackupstore')->backup($item->id);
 				$this->model('itemstore')->delete($item->id);
 
 				// Rebuild cached item counts
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('organisationalunitstore')->rebuildItemCounts();
 				$this->model('supplierstore')->rebuildItemCounts();
+				$this->model('buildingstore')->rebuildItemCounts();
 			}
 			$this->layout()->clearBreadcrumbs(2);
 			$this->layout()->addFeedback(KC__FEEDBACK_SUCCESS, 'The item has been deleted');
@@ -605,6 +608,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					$this->model('categorystore')->rebuildItemCounts();
 					$this->model('organisationalunitstore')->rebuildItemCounts();
 					$this->model('supplierstore')->rebuildItemCounts();
+					$this->model('buildingstore')->rebuildItemCounts();
 
 					//Final update of item
 					$this->model('itemstore')->update($item);
@@ -840,7 +844,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 
 					// Process each column in turn
 
-					$item->title = Ecl_Helper_String::parseString($row['item_title'], 250);
+                    $item->title = Ecl_Helper_String::parseString($row['item_title'], 250);
 					$item->manufacturer = Ecl_Helper_String::parseString($row['manufacturer'], 100);
 
 					if ( (empty($item->title)) && (empty($item->manufacturer)) ) {
@@ -1228,6 +1232,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				$this->model('categorystore')->rebuildItemCounts();
 				$this->model('organisationalunitstore')->rebuildItemCounts();
 				$this->model('supplierstore')->rebuildItemCounts();
+				$this->model('buildingstore')->rebuildItemCounts();
 
 
 				if (!$errors) {

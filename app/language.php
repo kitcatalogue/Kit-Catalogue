@@ -23,7 +23,7 @@ $lang['access.label.plural'] = 'Access Levels';
 /*
  * Building
  */
-
+$lang['building.route'] = 'building';
 $lang['building.label'] = 'Building';
 $lang['building.label.plural'] = 'Buildings';
 

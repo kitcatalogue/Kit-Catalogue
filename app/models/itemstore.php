@@ -37,7 +37,6 @@ class Itemstore {
 	 */
 
 
-
 	/**
 	 * Build a query suitable for searching the given parameters, and order the results accordingly.
 	 *
@@ -84,7 +83,10 @@ class Itemstore {
 			unset($params['contact']);
 		}
 
-
+        if (isset($params['building'])){
+            $params['building_id'] = $params['building'];
+            unset($params['building']);
+        }
 		if (isset($params['building_id'])) {
 			$sql_set = $this->_db->prepareSet($params['building_id']);
 			$where_conditions[] = "(i.building_id IN $sql_set)";
@@ -1389,9 +1391,12 @@ class Itemstore {
 	 */
 	public function insert($item) {
 		$binds = $this->convertObjectToRow($item);
-
 		unset($binds['item_id']);   // Don't insert the id, we want a new one
-
+        if ($binds['short_description']==NULL){ // If we have full description, create short from full:
+            if ($binds['full_description']!=null){
+            $binds['short_description'] = substr($binds['full_description'], 0, 245) . '...';
+            }
+        }
 		$binds['date_added'] = $this->_db->formatDate(time());
 		$binds['date_updated'] = $this->_db->formatDate(time());
 
@@ -1492,7 +1497,7 @@ class Itemstore {
 		}
 
 		// Whole term searching on major fields
-		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords');
+		$fields = array('title', 'manufacturer', 'model', 'short_description', 'keywords','asset_no');
 		$conditions = array();
 		foreach($fields as $field) {
 			$conditions[] = $this->_db->prepareFilter($field, "%{$keywords}%", 'OR', 'LIKE');
@@ -2036,8 +2041,19 @@ class Itemstore {
 		$count =  $this->_db->update('item', $binds, "site_id={$source}");
 		return ($count>0);
 	}// /method
-
-
+  
+  /**
+   * Undo Delete Item
+   * @param integer $item_id
+   * 
+   * @return integer new item id.
+   */
+   public function undelete($item_id){
+   // Sanitize input
+   //get object from the backup table
+   // insert object to item table
+   // return new id
+   }
 
 	/**
 	 * Update the existing Item.
@@ -2048,6 +2064,11 @@ class Itemstore {
 	 */
 	public function update($item) {
 		$binds = $this->convertObjectToRow($item);
+        if ($binds['short_description']==NULL){ // If we have full description, create short from full:
+            if ($binds['full_description']!=null){
+                $binds['short_description'] = substr($binds['full_description'], 0, 245) . '...';
+            }
+        }
 
 		$id = $this->_db->prepareValue($item->id);
 

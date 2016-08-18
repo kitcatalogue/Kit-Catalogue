@@ -1,0 +1,11 @@
+<?php
+$lang = $this->model('lang');
+
+$url_category = urlencode(strtolower($this->building->name));
+$this->router()->layout()->addBreadcrumb($this->building->name, $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}"));
+$this->router()->layout()->addBreadcrumb($this->item->name, $this->router()->makeAbsoluteUri("/{$lang['building.route']}/{$this->building->slug}/item/{$this->item->slug}"));
+
+
+$goto_url = '';
+$this->layout()->renderItemInFull($this->item, $goto_url);
+?>

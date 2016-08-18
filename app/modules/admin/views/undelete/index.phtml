@@ -1,0 +1,37 @@
+<div style="margin-bottom: 40px;">
+ <h1> Undelete items</h1>
+</div>
+
+
+<div class="">
+<form method="post" action="<?php echo $this->router()->makeAbsoluteUri('/admin/undelete/undo') ?>" name="undeleteform" id="undeleteform">
+	<?php Ecl_Helper_Html::formHidden('session_key', $this->model('user')->getSessionKey());   ?>
+ <table class="table">
+  <tr>
+  <th><strong>Name</strong></th>
+  <th><strong>Owner (email)</strong></th>
+  <th><strong>Building (room)</strong></th>
+  <th><strong>Undelete</strong></th>
+  </tr>
+  <?php
+  foreach($this->deletedItems as $deletedItem){
+  if ($deletedItem->building!=0){
+  $building = $this->model('buildingstore')->find($deletedItem->building);
+  } else {
+  $building = (object)['name'=>''];
+  }
+  ?>
+  <tr>
+  <td><?php echo $deletedItem->name ?></td>
+  <td><?php echo "{$deletedItem->contact_1_name} ({$deletedItem->contact_1_email})" ?></td>
+  <td><?php echo "{$building->name} ({$deletedItem->room})" ?></td>
+  <td><input type="checkbox" name="ids[]" value="<?php echo $deletedItem->id?>"></td>
+  </tr>
+  <?php } // end foreach loop
+    ?>
+ </table>
+ <div class="pull-right">
+<button type="submit" class="btn btn-lg btn-default">Submit</button>
+ </div>
+ </form>
+</div>

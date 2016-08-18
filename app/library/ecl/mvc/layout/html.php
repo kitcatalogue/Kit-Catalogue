@@ -49,6 +49,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  boolean  The operation was successful.
 	 */
 	public function addBreadcrumb($title, $href = null) {
+        $title = $this->escape($title);
 		$this->_breadcrumbs[] = array (
 			'title'  => $title ,
 			'href'   => $href ,
@@ -221,7 +222,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 		if ($this->hasFeedback()) {
 			foreach($this->_feedback as $i => $feedback) {
 				?>
-				<div class="feedback <?php echo($feedback['type']); ?>">
+				<div class="alert <?php echo($feedback['type']); ?>">
 					<?php
 					if (isset($feedback['title'])) {
 						?>

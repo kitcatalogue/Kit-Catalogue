@@ -322,10 +322,13 @@ class Ecl_Helper_Html {
 	 *
 	 * @return  boolean  The operation was successful.
 	 */
-	public static function formInput($name, $size, $maxlength, $value = null, $attr = null) {
+	public static function formInput($name, $size, $maxlength, $value = null, $attr = null, $type=null) {
+        if ($type==null){
+        $type = 'text';
+        }
 		$value = self::escape($value);
 		$attr = self::convertAttrToHtml($attr);
-		printf('<input type="text" name="%1$s" id="%1$s" size="%2$s" maxlength="%3$s" value="%4$s" %5$s />', $name, $size, $maxlength, $value, $attr);
+		printf('<input type="%6$s" name="%1$s" id="%1$s" size="%2$s" maxlength="%3$s" value="%4$s" %5$s />', $name, $size, $maxlength, $value, $attr, $type);
 		return true;
 	}// /method
 
