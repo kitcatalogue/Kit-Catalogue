@@ -22,8 +22,6 @@ class Controller_Signin extends Ecl_Mvc_Controller {
 
 		// @idea : Include throttling to prevent login spam
 
-		// @idea : Change the built-in authentication options so they are plugins like the local-config ones
-
 		// Call the different authentication options in turn...
 
 		if ($this->model('signin.use_ldap')) {

@@ -139,6 +139,18 @@ $config['ldap.options'] = array (
 	LDAP_OPT_REFERRALS         => 0 ,   // Set this option to 0 to cope with Windows Server 2003 Active Directories
 );
 
+//To make the LDAP attributes variable and fitting to the organisation, we need to use this config
+//how is the userid number attribute on your LDAP-server called?
+//$config['ldap.id_column'] = 'uidNumber';
+//how is the username attribute on your LDAP-server called?
+//$config['ldap.username_column'] = 'uid';
+//how is the forename attribute on your LDAP-server called?
+//$config['ldap.forename_column'] = 'givenname';
+//how is the surname attribute on your LDAP-server called?
+//$config['ldap.surname_column'] = 'sn';
+//how is the mail attribute on your LDAP-server called?
+//$config['ldap.mail_column'] = 'mail';
+
 // Set to true to secure the LDAP connection (using start-TLS).
 // Note, to have secure LDAP work correctly, you will need to configure your server's LDAP extension to either:
 // (a) Use the correct certificate.
