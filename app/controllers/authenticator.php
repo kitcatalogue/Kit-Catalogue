@@ -63,25 +63,29 @@ class Authenticator {
 		$ldap = Ecl::factory('Ecl_Ldap', array (
 			'host'        => $this->_model->get('ldap.host') ,
 			'port'        => $this->_model->get('ldap.port') ,
-			'username'    => $username . $this->_model->get('ldap.username_suffix') ,
+			///maintainance test
+			///'username'    => $username . $this->_model->get('ldap.username_suffix') ,
+			'username'    => $username . $this->_model->get('ldap.dn') ,
 			'password'    => $password ,
 			'options'     => $this->_model->get('ldap.options', array()) ,
 			'use_secure'  => $this->_model->get('ldap.use_secure', false) ,
-			'debug'       => false ,
+			'debug'       => $this->_model->get('ldap.debug', false) ,
 		));
-
+		
 		try {
+
+
 			$ldap->connect();
 
 			$base_dn = $this->_model->get('ldap.dn');
-			$filter = "name={$username}";
-			$attrs = array('employeenumber', 'name', 'givenname', 'sn', 'mail');
+			$filter = "uid={$username}";
+			$attrs = array('uidnumber', 'name', 'givenname', 'sn', 'mail');
 
 			$entry_count = $ldap->search($base_dn, $filter, $attrs);
 
 			if ($entry_count>0) {
 				$ldap_row = $ldap->getRow();
-				$user_row['id'] = (isset($ldap_row['employeenumber'])) ? $ldap_row['employeenumber'] : null ;
+				$user_row['id'] = (isset($ldap_row['uidnumber'])) ? $ldap_row['uidnumber'] : null ;
 				$user_row['username'] = (isset($ldap_row['name'])) ? $ldap_row['name'] : null ;
 				$user_row['forename'] = (isset($ldap_row['givenname'])) ? $ldap_row['givenname'] : null ;
 				$user_row['surname'] = (isset($ldap_row['sn'])) ? $ldap_row['sn'] : null ;
@@ -90,11 +94,11 @@ class Authenticator {
 				return $user_row;
 			}
 		} catch (Ecl_Exception_Ldap_Bind $e) {
-			return null;
+			return 3001;
 		} catch (Ecl_Exception_Ldap $e) {
-			return null;
+			return 3002;
 		}
-		return null;
+		return 3003;
 	}// /method
 
 

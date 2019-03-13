@@ -63,29 +63,42 @@ class Authenticator {
 		$ldap = Ecl::factory('Ecl_Ldap', array (
 			'host'        => $this->_model->get('ldap.host') ,
 			'port'        => $this->_model->get('ldap.port') ,
-			'username'    => $username . $this->_model->get('ldap.username_suffix') ,
+			//maintainance
+			///'username'    => $username . $this->_model->get('ldap.username_suffix') ,
+			'username'    => 'uid='.$username.','. $this->_model->get('ldap.dn') ,
 			'password'    => $password ,
 			'options'     => $this->_model->get('ldap.options', array()) ,
 			'use_secure'  => $this->_model->get('ldap.use_secure', false) ,
-			'debug'       => false ,
+			'debug'       => $this->_model->get('ldap.debug', false),
 		));
+		
+		///new vardump
 
 		try {
 			$ldap->connect();
 
 			$base_dn = $this->_model->get('ldap.dn');
-			$filter = "name={$username}";
-			$attrs = array('employeenumber', 'name', 'givenname', 'sn', 'mail');
-
+			
+			//non flexible, old implementation
+			//$attrs = array('uidNumber', 'uid', 'givenname', 'sn', 'mail');
+			$attrs = array($this->_model->get('ldap.id_column', "employeenumber"),
+					$this->_model->get('ldap.username_column', "name"),
+					$this->_model->get('ldap.forename_column', "givenname"),
+					$this->_model->get('ldap.surname_column', "sn"),
+					$this->_model->get('ldap.mail_column', "mail"),
+					);
+			
+			$filter = $attrs[1]."={$username}";
 			$entry_count = $ldap->search($base_dn, $filter, $attrs);
 
 			if ($entry_count>0) {
 				$ldap_row = $ldap->getRow();
-				$user_row['id'] = (isset($ldap_row['employeenumber'])) ? $ldap_row['employeenumber'] : null ;
-				$user_row['username'] = (isset($ldap_row['name'])) ? $ldap_row['name'] : null ;
-				$user_row['forename'] = (isset($ldap_row['givenname'])) ? $ldap_row['givenname'] : null ;
-				$user_row['surname'] = (isset($ldap_row['sn'])) ? $ldap_row['sn'] : null ;
-				$user_row['email'] = (isset($ldap_row['mail'])) ? $ldap_row['mail'] : null ;
+
+				$user_row['id'] = (isset($ldap_row[$attrs[0]])) ? $ldap_row[$attrs[0]] : null ;
+				$user_row['username'] = (isset($ldap_row[$attrs[1]])) ? $ldap_row[$attrs[1]] : null ;
+				$user_row['forename'] = (isset($ldap_row[$attrs[2]])) ? $ldap_row[$attrs[2]] : null ;
+				$user_row['surname'] = (isset($ldap_row[$attrs[3]])) ? $ldap_row[$attrs[3]] : null ;
+				$user_row['email'] = (isset($ldap_row[$attrs[4]])) ? $ldap_row[$attrs[4]] : null ;
 
 				return $user_row;
 			}
@@ -94,14 +107,14 @@ class Authenticator {
 		} catch (Ecl_Exception_Ldap $e) {
 			return null;
 		}
+
+		///TODO If we reach this we could authenticate with the LDAP server, but when asking for our own information this was not possible. This will most likely be connected to the wrong attributes in the "$attrs" var or when reading the ldap_rows!
 		return null;
 	}// /method
 
-
-
 	/**
 	 * Check if the current session contains Shibboleth authentication information.
-	 *
+	 _Exception_Ldap 
 	 * The 'id' user info (mapped from employeeNumber) is optional.
 	 *
 	 * @return  array  An assoc-array of user info, keys ('id', 'username', 'forename', 'surname', 'email'). On fail, null.
@@ -164,7 +177,15 @@ class Authenticator {
  * Private Methods
  */
 
-
+function p($data)
+{
+	echo "<pre>";
+	print_r($data);
+	echo "</pre>";
+}
 
 }// /class
+
+       
 ?>
+

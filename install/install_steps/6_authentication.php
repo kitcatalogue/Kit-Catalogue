@@ -138,6 +138,10 @@ if ($config['signin.use_ldap']) {
 		<td class="name">ldap.username_suffix</td>
 		<td><?php out($config['ldap.username_suffix']); ?></td>
 	</tr>
+	<tr>
+        	<td class="name">ldap.debug</td>
+        	<td><?php out(boolval($config['ldap.debug'])); ?></td>
+	</tr>
 	</table>
 	<?php
 } else {
