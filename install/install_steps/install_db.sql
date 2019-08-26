@@ -27,7 +27,7 @@ CREATE TABLE `access` (
   `access_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`access_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -58,7 +58,7 @@ CREATE TABLE `building` (
   `longitude` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`building_id`),
   KEY `site` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -78,7 +78,7 @@ CREATE TABLE `category` (
   `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`category_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -96,7 +96,7 @@ CREATE TABLE `category_code` (
   `code` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`category_id`,`vocabulary`,`code`),
   KEY `vocabulary` (`vocabulary`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -132,7 +132,7 @@ CREATE TABLE `custom_field` (
   `name` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`field_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -150,7 +150,7 @@ CREATE TABLE `department` (
   `item_count_internal` int(10) unsigned NOT NULL DEFAULT '0',
   `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`department_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -166,7 +166,7 @@ CREATE TABLE `file_type` (
   `file_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (`file_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -197,7 +197,7 @@ CREATE TABLE `homepageblock` (
   `block_enabled` tinyint(3) unsigned DEFAULT '1',
   `visibility` tinyint(3) unsigned DEFAULT '1',
   PRIMARY KEY (`block_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -241,8 +241,8 @@ CREATE TABLE `item` (
   `image` varchar(250) NOT NULL DEFAULT '',
   `manufacturer_website` varchar(250) DEFAULT '',
   `copyright_notice` varchar(250) DEFAULT '',
-  `date_added` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `date_updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_added` datetime,
+  `date_updated` datetime,
   `last_updated_username` varchar(250) DEFAULT '',
   `last_updated_email` varchar(250) DEFAULT '',
   `training_required` tinyint(3) DEFAULT NULL,
@@ -299,7 +299,7 @@ CREATE TABLE `item_category` (
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `category_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_id`,`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -316,7 +316,7 @@ CREATE TABLE  `item_child` (
   `child_item_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`item_id`,`child_item_id`),
   KEY `child_item_id` (`child_item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -333,7 +333,7 @@ CREATE TABLE `item_custom` (
   `field_id` int(10) unsigned NOT NULL DEFAULT '0',
   `value` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`item_id`,`field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -349,7 +349,7 @@ CREATE TABLE `item_editor` (
   `username` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 
@@ -367,7 +367,7 @@ CREATE TABLE `item_file` (
   `file_type` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_id`,`filename`),
   KEY `item` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -385,7 +385,7 @@ CREATE TABLE `item_link` (
   `file_type` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 
@@ -400,7 +400,7 @@ CREATE TABLE `item_tag` (
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `tag_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`item_id`,`tag_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -412,7 +412,7 @@ CREATE TABLE `item_tag` (
 DROP TABLE IF EXISTS `log_enquiry`;
 CREATE TABLE `log_enquiry` (
   `log_enquiry_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `date_enquiry` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_enquiry` datetime,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   `item_name` varchar(250) NOT NULL DEFAULT '',
   `user_name` varchar(250) NOT NULL DEFAULT '',
@@ -424,7 +424,7 @@ CREATE TABLE `log_enquiry` (
   `enquiry_type` varchar(15) NOT NULL DEFAULT '',
   `enquiry_text` mediumtext,
   PRIMARY KEY (`log_enquiry_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 
@@ -445,7 +445,7 @@ CREATE TABLE `log_item_update` (
   INDEX `item_id`(`item_id`),
   INDEX `date_updated`(`date_updated`),
   INDEX `email`(`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -459,11 +459,11 @@ DROP TABLE IF EXISTS `log_signin`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_signin` (
   `log_signin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `date_signin` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_signin` datetime,
   `user_id` varchar(250) DEFAULT '',
   `username` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`log_signin_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -477,12 +477,12 @@ DROP TABLE IF EXISTS `log_view`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `log_view` (
   `log_view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `date_view` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date_view` datetime,
   `user_id` varchar(250) DEFAULT NULL,
   `username` varchar(250) DEFAULT NULL,
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`log_view_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -499,7 +499,7 @@ CREATE TABLE `organisation` (
   `name` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`organisation_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -516,7 +516,7 @@ CREATE TABLE `ou` (
   `item_count_internal` int(10) unsigned DEFAULT '0',
   `item_count_public` int(10) unsigned DEFAULT '0',
   PRIMARY KEY (`ou_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 --
@@ -545,7 +545,7 @@ CREATE TABLE `ou_tree` (
   KEY `tree_right` (`tree_right`),
   KEY `tree_level` (`tree_level`),
   KEY `ref` (`ref`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
 
 
 
@@ -567,7 +567,7 @@ CREATE TABLE `ou_tree_label` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(250) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 
@@ -584,7 +584,7 @@ CREATE TABLE `site` (
   `url` varchar(250) NOT NULL DEFAULT '',
   PRIMARY KEY (`site_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -603,7 +603,7 @@ CREATE TABLE `supplier` (
   `item_count_public` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`supplier_id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -621,7 +621,7 @@ CREATE TABLE `system_authorisation` (
   `auth` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`agent`,`item`,`auth`),
   KEY `item` (`item`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `system_authorisation` DISABLE KEYS */;
@@ -642,7 +642,7 @@ CREATE TABLE `system_info` (
   `name` varchar(25) NOT NULL DEFAULT '',
   `value` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -664,7 +664,7 @@ CREATE TABLE `tag` (
   `tag` varchar(200) NOT NULL DEFAULT '',
   PRIMARY KEY (`tag_id`),
   UNIQUE KEY `tag` (`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
@@ -686,7 +686,7 @@ CREATE TABLE `user` (
   `password` varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
