@@ -24,7 +24,7 @@ class Ecl_Db_Legacy_Mysql {
         'password'     => null ,
         'database'     => null ,
         'persistent'   => false ,                   // Use persistant connection (default: false)
-        'client_flags' => MYSQL_CLIENT_COMPRESS ,   // Client Flags if any
+        'client_flags' => null ,   // Client Flags if any
     );
 
 	protected $_sql = null;   // Last query run

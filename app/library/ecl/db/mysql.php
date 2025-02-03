@@ -888,13 +888,13 @@ class Ecl_Db_Mysql {
 		// Get full mysql_info (if possible)
 		$str_info = @$this->_mysqli->info();
 		if ($str_info) {
-			ereg("Records: ([0-9]*)", $str_info, $records);
-			ereg("Duplicates: ([0-9]*)", $str_info, $duplicates);
-			ereg("Warnings: ([0-9]*)", $str_info, $warnings);
-			ereg("Deleted: ([0-9]*)", $str_info, $deleted);
-			ereg("Skipped: ([0-9]*)", $str_info, $skipped);
-			ereg("Rows matched: ([0-9]*)", $str_info, $rows_matched);
-			ereg("Changed: ([0-9]*)", $str_info, $changed);
+			preg_match("Records: ([0-9]*)", $str_info, $records);
+			preg_match("Duplicates: ([0-9]*)", $str_info, $duplicates);
+			preg_match("Warnings: ([0-9]*)", $str_info, $warnings);
+			preg_match("Deleted: ([0-9]*)", $str_info, $deleted);
+			preg_match("Skipped: ([0-9]*)", $str_info, $skipped);
+			preg_match("Rows matched: ([0-9]*)", $str_info, $rows_matched);
+			preg_match("Changed: ([0-9]*)", $str_info, $changed);
 
 			$this->_query_info['records'] = (int) $records[1];
 			$this->_query_info['duplicates'] = (int) $duplicates[1];
@@ -1188,7 +1188,7 @@ class Ecl_Db_Mysql {
 				if ($this->_mysqli) {
 					die("<hr />MySQL DB Error ({$this->_config['database']}@{$this->_config['host']})<hr />$err_msg :: ". $this->getError() .'<hr />'. $this->getSql() .'<hr />');
 				} else {
-					die("<hr />MySQL DB Error (no connection)<hr />$err_msg :: ". mysql_error() .'<hr />'. $this->getSql() .'<hr />');
+					die("<hr />MySQL DB Error (no connection)<hr />$err_msg<hr />". $this->getSql() .'<hr />');
 				}
 			}
 		} else {

@@ -51,17 +51,17 @@ class Ecl_Parser_Wikicode {
 
 		// Parse block level wiki-code
 		$this->_lines = explode("\n", $wiki_string);
+		$this->_lines[] = '';
 		$this->_lines_count = count($this->_lines);
 
 		if ($this->_lines_count>0) {
-
 			$i = 0;
 			while($i<$this->_lines_count) {
 				$line = $this->_getLine($i);
 
 				$first_char = substr($line, 0, 1);
 
-				if ($first_char !== false) {
+				if ($first_char) {
 					switch ($first_char) {
 						case '-' :   // Horizontal Line
 							$output .= $this->_parseHorizontalLine($i);
@@ -86,7 +86,9 @@ class Ecl_Parser_Wikicode {
 					}
 				}
 				$i++;
+
 			}// /while(lines to process)
+			//die("$i : $line");
 
 		}// /if(lines);
 
@@ -182,6 +184,7 @@ class Ecl_Parser_Wikicode {
 		$output = null;
 
 		$line = $this->_getLine($line_idx);
+		$line_idx++;
 
 		// Look for the = and capture as well as the heading text
 		preg_match('%^(={1,6}) *(.*?) *=*$%', $line, $matches);
@@ -236,19 +239,19 @@ class Ecl_Parser_Wikicode {
 		$output = $this->_parseInlineImages($output);
 
 		// Bold
-		$output = preg_replace('%\*\*(.*)(?:\*\*|$)%sU', '<strong>$1</strong>', $output);
-		$output = preg_replace('%__(.*)(?:__|$)%sU', '<strong>$1</strong>', $output);
+		$output = preg_replace('%\*\*(.*)(?:\*\*|$)%sU', '<strong>$1</strong>', $output ?? '');
+		$output = preg_replace('%__(.*)(?:__|$)%sU', '<strong>$1</strong>', $output ?? '');
 
 		// Italic
-		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output);
-		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output);
-		$output = preg_replace('%\'\'(.*)(?\'\'|$)%sU', '<em>$1</em>', $output);
+		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?<!http:|https:|ftp:)//%sU', '<em>$1</em>', $output ?? '');
+		$output = preg_replace('%(?<!http:|https:|ftp:)//(.*)(?://|$)%sU', '<em>$1</em>', $output ?? '');
+		$output = preg_replace('%\'\'(.*)(?:\'\'|$)%sU', '<em>$1</em>', $output ?? '');
 
 		// Subscript
-		$output = preg_replace('%,,(.*)(?:,,|$)%sU', '<sub>$1</sub>', $output);
+		$output = preg_replace('%,,(.*)(?:,,|$)%sU', '<sub>$1</sub>', $output ?? '');
 
 		// Superscript
-		$output = preg_replace('%\^\^(.*)(?:\^\^|$)%sU', '<sup>$1</sup>', $output);
+		$output = preg_replace('%\^\^(.*)(?:\^\^|$)%sU', '<sup>$1</sup>', $output ?? '');
 
 		return $output;
 	}// /method
@@ -266,7 +269,6 @@ class Ecl_Parser_Wikicode {
 		// Parse the wiki-code images - {{xxxx}}
 		$count = preg_match_all('%{{((.*))}}%U', $string, $matches);
 		if ($count>0) {
-
 			for($i=0; $i<$count; $i++) {
 				$raw_image = $matches[1][$i];
 				$bits = explode('|', $raw_image, 2);
@@ -439,7 +441,7 @@ class Ecl_Parser_Wikicode {
 			}
 		}
 
-		$output = $this->_parseInline($output);
+		//$output = $this->_parseInline($output);
 		$output = "<p>$output</p>\n\n";
 
 		$line_idx--;   // Put the pointer back to the last line of the paragraph

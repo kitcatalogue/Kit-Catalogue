@@ -125,21 +125,25 @@ Ecl_Helper_Html::form('enquiryform', $this->router()->makeAbsoluteUri("/enquiry/
 </fieldset>
 
 <?php
-if ( $this->model('enquiry.use_recaptcha') && (!Ecl::isEmpty($this->model('recaptcha.public_key'))) && (!Ecl::isEmpty($this->model('recaptcha.private_key'))) ) {
-	$recaptcha_error = $this->recaptcha_error;
+if (
+    $this->model('enquiry.use_recaptcha')
+    && (!Ecl::isEmpty($this->model('recaptcha.public_key')))
+    && (!Ecl::isEmpty($this->model('recaptcha.private_key')))
+) {
 	?>
 	<fieldset>
 
 		<dl class="form">
 
-			<dt>Please enter the two words shown in the image below.</dt>
-			<dd>
-				<?php
-				$use_ssl = (strpos($this->router()->makeAbsoluteUri('/'), 'https')===0);
-				require_once($this->model('app.include_root').'/library/recaptcha/recaptchalib.php');
-				echo recaptcha_get_html($this->model('recaptcha.public_key'), $recaptcha_error, $use_ssl);
-				?>
-			<dd>
+            <?php
+            $pubkey = $this->model('recaptcha.public_key');
+            if ($pubkey == null || $pubkey == '') {
+                die ('To use reCAPTCHA you must get an API key from <a href="https://developers.google.com/recaptcha/">https://developers.google.com/recaptcha/</a>');
+            }
+            $pubkey = htmlentities($pubkey);
+            ?>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <div class="g-recaptcha" data-sitekey="<?php echo $pubkey; ?>"></div>
 
 		</dl>
 	</fieldset>

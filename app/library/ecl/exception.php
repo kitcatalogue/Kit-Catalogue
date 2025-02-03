@@ -21,7 +21,8 @@ class Ecl_Exception extends Exception {
 	/**
 	 * To string
 	 */
-	public function __toString() {
+	public function __toString(): string
+	{
 		$output = '';
 		$output .= "Exception: ". get_class($this) ."\n";
 		$output .= "Text: {$this->message}\n";

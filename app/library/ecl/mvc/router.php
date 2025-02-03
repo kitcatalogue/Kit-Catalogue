@@ -39,6 +39,8 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 
 	protected $_valid_methods = array('delete', 'get', 'head', 'post', 'put');
 
+	protected $_time_started = null;
+
 	protected $_is_dispatched = false;
 
 	protected $_model = null;

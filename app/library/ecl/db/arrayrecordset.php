@@ -49,13 +49,15 @@ class Ecl_Db_Arrayrecordset extends Ecl_Db_Recordset {
 
 
 
-	public function count() {
+	public function count(): int
+	{
 		return count($this->_array);
 	}// /method
 
 
 
-	public function current() {
+	public function current(): mixed
+	{
 		if ($this->_row_function) {
 			$func = $this->_row_function;
 			return call_user_func($func, $this->_row);
@@ -66,19 +68,22 @@ class Ecl_Db_Arrayrecordset extends Ecl_Db_Recordset {
 
 
 
-	public function key() {
+	public function key(): mixed
+	{
 		return key($this->_array);
 	}// /method
 
 
 
-	public function next() {
+	public function next(): void
+	{
 		$this->_row = next($this->_array);
 	}// /method
 
 
 
-	public function offsetGet($offset) {
+	public function offsetGet(mixed $offset): mixed
+	{
 		if ($this->offsetExists($offset)) { return null; }
 
 		$this->_row = $this->_array[$offset];
@@ -93,10 +98,10 @@ class Ecl_Db_Arrayrecordset extends Ecl_Db_Recordset {
 
 
 
-	public function rewind() {
+	public function rewind(): void
+	{
 		reset($this->_array);
 		$this->_row = current($this->_array);
-		return true;
 	}// /method
 
 
@@ -135,7 +140,8 @@ class Ecl_Db_Arrayrecordset extends Ecl_Db_Recordset {
 
 
 
-	public function valid() {
+	public function valid(): bool
+	{
 		return (key($this->_array) !== null);
 	}// /method
 

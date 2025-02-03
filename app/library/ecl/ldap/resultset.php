@@ -81,7 +81,8 @@ class Ecl_Ldap_Resultset implements Iterator {
 
 
 
-	public function current() {
+	public function current(): mixed
+	{
 		$entry_attrs = ldap_get_attributes($this->_connection, $this->_entry);
 		$entry_attrs = array_change_key_case($entry_attrs);
 
@@ -103,20 +104,23 @@ class Ecl_Ldap_Resultset implements Iterator {
 
 
 
-	public function key() {
+	public function key(): mixed
+	{
 		return $this->_position;
 	}// /method
 
 
 
-	public function next() {
+	public function next(): void
+	{
 		$this->_position++;
 		$this->_entry = ldap_next_entry($this->_connection, $this->_entry);
 	}// /method
 
 
 
-	public function rewind() {
+	public function rewind(): void
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		$this->_position = 0;
 		if ($this->_result_set) {
@@ -126,7 +130,8 @@ class Ecl_Ldap_Resultset implements Iterator {
 
 
 
-	public function valid() {
+	public function valid(): bool
+	{
 		return (is_resource($this->_entry));
 	}// /method
 

@@ -100,6 +100,7 @@ class Item {
 	public $comments = '';
 
 	public $archived = false;
+	public $date_archived = null;
 
 
 

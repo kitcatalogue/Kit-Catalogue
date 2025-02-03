@@ -85,25 +85,29 @@ Class Ecl_Dictionary implements ArrayAccess {
 
 
 
-	public function offsetExists($offset) {
+	public function offsetExists(mixed $offset): bool
+	{
 		return $this->exists($offset);
 	}
 
 
 
-	public function offsetGet($offset) {
+	public function offsetGet(mixed $offset): mixed
+	{
 		return $this->get($offset);
 	}
 
 
 
-	public function offsetSet($offset, $value) {
+	public function offsetSet(mixed $offset, mixed $value): void
+	{
 		$this->set($offset, $value);
 	}
 
 
 
-	public function offsetUnset($offset) {
+	public function offsetUnset(mixed $offset): void
+	{
 		remove($offset);
 	}
 

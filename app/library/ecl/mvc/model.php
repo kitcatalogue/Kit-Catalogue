@@ -41,7 +41,7 @@ Class Ecl_Mvc_Model {
 	 * Constructor
 	 */
 	protected function __construct() {
-		spl_autoload_register(array(__CLASS__, '_autoload'), false, true);
+		spl_autoload_register([__CLASS__, '_autoload']);
 	}// /->__construct()
 
 
@@ -54,7 +54,11 @@ Class Ecl_Mvc_Model {
 			return $this->_instance_map[$name];
 		}
 
-		if ( (isset($this->_function_map[$name])) && (is_callable($this->_function_map[$name])) ) {
+		if (
+			(isset($this->_function_map[$name]))
+			&& ('mail' !== $this->_function_map[$name])
+			&& (is_callable($this->_function_map[$name]))
+		) {
 			$result = $this->_function_map[$name]($this);
 			$this->set($name, $result);
 			return $result;

@@ -41,7 +41,7 @@ $model->setFunction('authenticator', function($model) {
 
 $model->setFunction('db', function ($model) {
 
-	$db_class = ($model->get('db.use_mysqli')) ? 'Ecl_Db_Mysql' : 'Ecl_Db_Legacy_Mysql' ;
+	$db_class = 'Ecl_Db_Mysql'; // No longer allow legacy mysql
 
 	$db = Ecl::factory($db_class, array (
 		'host'      => $model->get('db.host') ,

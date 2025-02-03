@@ -18,6 +18,9 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 			$this->router()->action('404', 'error');
 			return;
 		}
+
+		$bits = parse_url($this->model('app.www'));
+		header('Access-Control-Allow-Origin:'. $bits['host']);
 	}// /method
 
 
@@ -85,12 +88,15 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 
 			if ($this->model('enquiry.use_recaptcha')) {
 				require_once($this->model('app.include_root').'/library/recaptcha/recaptchalib.php');
-				$resp = recaptcha_check_answer($this->model('recaptcha.private_key'), $this->model('app.www'), $_POST["recaptcha_challenge_field"], $_POST["recaptcha_response_field"]);
 
-				if (!$resp->is_valid) {
-					$recaptcha_error = $resp->error;
-					$errors[] = 'The anti-spam text you entered was incorrect.';
-				  }
+				$recaptcha = new ReCaptcha($this->model('recaptcha.private_key'));
+				$g_recaptcha_response = $_POST['g-recaptcha-response'];
+				$captcha_validation_response = $recaptcha->verifyResponse('', $this->request()->post('g-recaptcha-response'));
+				$response = $captcha_validation_response->success;
+
+				if (!$response) {
+					$errors[] = 'The anti-spam check could not be verified.';
+				}
 			}
 
 
@@ -152,7 +158,7 @@ class Controller_Enquiry extends Ecl_Mvc_Controller {
 
 				if ($this->model('enquiry.log')) {
 					$binds = array (
-						'date_enquiry'  => date('c') ,
+						'date_enquiry'  => date('Y-m-d H:i:s') ,
 						'item_id'       => $item->id ,
 						'item_name'     => $item->name ,
 						'user_name'     => $form['name'] ,

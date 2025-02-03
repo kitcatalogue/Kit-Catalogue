@@ -518,7 +518,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 						?>
 						<div class="item-description">
 							<?php
-							$text = $wiki_parser->parse($item->full_description);
+							$text = $this->escape($item->full_description);
+							$text = $wiki_parser->parse($text);
 							$text = str_replace(
 								array('<h1>', '</h1>', '<h2>', '</h2>'),
 								array('<h3>', '</h3>', '<h3>', '</h3>'),
@@ -536,7 +537,8 @@ class Kc_Layout extends Ecl_Mvc_Layout_Html {
 							?>
 							<div class="item-specification">
 								<?php
-								$text = $wiki_parser->parse($this->escape($item->specification));
+								$text = $this->escape($item->specification);
+								$text = $wiki_parser->parse($text);
 								$text = str_replace(
 									array('<h1>', '</h1>', '<h2>', '</h2>'),
 									array('<h3>', '</h3>', '<h3>', '</h3>'),

@@ -476,7 +476,7 @@ class Ecl_Helper_Array {
 
 		foreach($array as $k => $v) {
 			if (preg_match($pattern, $v)) {
-				$extracted_assoc[$key] = $v;
+				$extracted_assoc[$k] = $v;
 			}
 		}
 
@@ -502,7 +502,7 @@ class Ecl_Helper_Array {
 		if ($preserve_keys) {
 			foreach($array as $k => $v) {
 				if (preg_match($pattern, $v)) {
-					$extracted_assoc[$key] = $v;
+					$extracted_assoc[$k] = $v;
 				}
 			}
 		} else {
@@ -845,7 +845,6 @@ class Ecl_Helper_Array {
 	 * @return  array  The sorted array of objects.
 	 */
 	public static function sortObjects($array, $property, $ascending = true) {
-
 		if ( (empty($array)) || (!is_array($array)) ) { return array(); }
 
 		// Create an array containing just the values we're sorting on
@@ -864,7 +863,7 @@ class Ecl_Helper_Array {
 		reset($sort_values);
 
 		// Create a new array using the sorted values
-		while (list ($arr_key, $arr_val) = each ($sort_values)) {
+		foreach($sort_values as $arr_key => $arr_val) {
 			$sorted_arr[] = $array[$arr_key];
 		}
 		return $sorted_arr;
@@ -888,7 +887,7 @@ class Ecl_Helper_Array {
 
 		// Create an array containing just the values we're sorting on
 		for ($i=0; $i<sizeof($array); $i++) {
-			$sort_values[$i] = (array_key_exists($key, $array[$i])) ? $array[$i][$key] : null ;
+			$sort_values[$i] = (array_key_exists($key_column, $array[$i])) ? $array[$i][$key_column] : null ;
 		}
 
 		// Sort the values
@@ -897,7 +896,7 @@ class Ecl_Helper_Array {
 
 		$sorted_arr = null;
 		// Create a new array using the sorted values
-		while (list ($arr_key, $arr_val) = each ($sort_values)) {
+		foreach($sort_values as $arr_key => $arr_val) {
 			$sorted_arr[] = $array[$arr_key];
 		}
 		return $sorted_arr;

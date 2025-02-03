@@ -15,6 +15,7 @@ class Customfieldstore {
 
 	// Private Properties
 	protected $_db = null;
+	protected $_model = null;
 
 
 
@@ -161,7 +162,7 @@ class Customfieldstore {
 
 
 		$this->_db->query("
-			SELECT ic.item_id, ic.value, count(ic.item_id) AS count
+			SELECT ic.value, count(ic.item_id) AS count
 			FROM item_custom ic
 				INNER JOIN item i ON ic.item_id=i.item_id
 			$where_clause

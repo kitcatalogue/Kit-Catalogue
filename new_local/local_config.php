@@ -258,7 +258,7 @@ $config['enquiry.log'] = true;
  * If you're using reCAPTCHA with your enquiry forms, you must sign up for a reCAPTCHA API key
  * for your local installation.
  *
- * Visit: http://recaptcha.net to sign up, and for more information.
+ * Visit: http://developers.google.com/recaptcha to sign up, and for more information.
  */
 
 // The public key you were given as part of the reCAPTCHA registration.

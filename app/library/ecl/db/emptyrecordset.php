@@ -39,63 +39,71 @@ class Ecl_Db_Emptyrecordset extends Ecl_Db_Recordset {
 
 
 
-	public function count() {
+	public function count(): int
+	{
 		return 0;
 	}// /method
 
 
 
-	public function current() {
+	public function current(): mixed
+	{
 		return null;
 	}// /method
 
 
 
-	public function key() {
+	public function key(): mixed
+	{
 		return null;
 	}// /method
 
 
 
-	public function next() {
-		return false;
+	public function next(): void
+	{
 	}// /method
 
 
 
-	public function offsetSet($offset, $value) {
-		// Fake implementation to satisy ArrayAccess Interface
+	public function offsetSet(mixed $offset, mixed $value): void
+	{
+		// Fake implementation to satisfy ArrayAccess Interface
 		// Setting recordset entries is a no-no
 	}// /method
 
 
 
-	public function offsetExists($offset) {
+	public function offsetExists(mixed $offset): bool
+	{
 		return false;
 	}// /method
 
 
 
-	public function offsetUnset($offset) {
+	public function offsetUnset(mixed $offset): void
+	{
 		// Fake implementation to satisy ArrayAccess Interface
 		// Unsetting recordset entries is a no-no
 	}// /method
 
 
 
-	public function offsetGet($offset) {
+	public function offsetGet(mixed $offset): mixed
+	{
 		return null;
 	}// /method
 
 
 
-	public function rewind() {
-		return false;
+	public function rewind(): void
+	{
 	}// /method
 
 
 
-	public function valid() {
+	public function valid(): bool
+	{
 		return false;
 	}// /method
 

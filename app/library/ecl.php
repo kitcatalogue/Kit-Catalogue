@@ -220,7 +220,7 @@ class Ecl {
 //		}
 
 		// Register the ECL autoloader
-		spl_autoload_register(array('Ecl', 'load'), false);
+		spl_autoload_register(array('Ecl', 'load'));
 
 		return true;
 	}// /method

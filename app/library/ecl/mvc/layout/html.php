@@ -161,6 +161,7 @@ class Ecl_Mvc_Layout_Html extends Ecl_Mvc_Layout {
 	 * @return  string
 	 */
 	public function escape($string, $charset = 'UTF-8') {
+		if (!$string) { return ''; }
 		return htmlspecialchars($string, ENT_COMPAT | ENT_IGNORE, $charset, false);
 	}// /method
 

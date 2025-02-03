@@ -78,7 +78,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.0.9';
+$config['app.version'] = '2.2.0';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
@@ -557,5 +557,3 @@ $config['data.licence_name'] = 'Open Government Licence';
 $config['data.licence_link'] = 'http://www.nationalarchives.gov.uk/doc/open-government-licence/';
 
 
-
-?>

@@ -340,6 +340,7 @@ class Ecl_Helper_String {
 	 * @return  mixed
 	 */
 	public static function parseBoolean($string, $default = false) {
+		if (empty($string)) { return $default; }
 		$string = strtolower(trim($string));
 		if (in_array($string, array ('1', 'yes', 'y', 'on'))) { return true; }
 		if (in_array($string, array ('0', 'no', 'n', 'off'))) { return false; }
@@ -361,6 +362,7 @@ class Ecl_Helper_String {
 	 * @return  mixed
 	 */
 	public static function parseDate($string, $default, $format_mdy = false) {
+		if (empty($string)) { return $default; }
 		$string = trim($string);
 
 		// strtotime uses the date separator to decide the date format
@@ -404,7 +406,7 @@ class Ecl_Helper_String {
 		$kv_pairs = array();
 
 		$pairs = explode($outer_separator, $querystring);
-		if (!is_array($pairs)) { $pairs = (array) $kv; }
+		if (!is_array($pairs)) { $pairs = (array) $kv_pairs; }
 
 		foreach($pairs as $i => $pair) {
 			$bits = explode($inner_separator, $pair, 2);
@@ -565,7 +567,7 @@ class Ecl_Helper_String {
 	public static function plural($noun) {
 		if ( (is_string($noun)) && (!empty($noun)) ) {
 			$last = strlen($noun)-1;
-			if ($noun{$last}=='y') {
+			if ($noun[$last]=='y') {
 				$sub = substr($noun, 0, -1);
 				return "{$sub}ies";
 			} else {
@@ -592,7 +594,7 @@ class Ecl_Helper_String {
 	public static function possessive($noun) {
 		if ( (is_string($noun)) && (!empty($noun)) ) {
 			$last = strlen($noun)-1;
-			if ($noun{$last}=='s') {
+			if ($noun[$last]=='s') {
 				return "{$noun}'";
 			} else {
 				return "{$noun}'s";
@@ -732,7 +734,7 @@ class Ecl_Helper_String {
 					$c_end = ' ';
 					$str_dummy = '';
 				} else {
-					$str_dummy .= $str[$i];
+					$str_dummy .= $string[$i];
 					++$token_length;
 				}
 			}
@@ -775,7 +777,7 @@ class Ecl_Helper_String {
 
 	    		$url_bits['query'] = implode('&', $qs);
 
-	    		$url = $this->buildUrl($url_bits);
+	    		$url = self::buildUrl($url_bits);
 	    	}
 	    }
 	    return $url;
@@ -858,7 +860,7 @@ class Ecl_Helper_String {
 
 		if (!$valid_chars) { $valid_chars = self::CHARS_COMMON; }
 
-		$str_length = strlen($str_var);
+		$str_length = strlen($string);
 		$str_length--;
 
 		$new_string = '';

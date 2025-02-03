@@ -69,7 +69,8 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 
-	public function count() {
+	public function count(): int
+	{
 		if (!$this->_executed) { $this->_execute(); }
 
 		if (!is_null($this->_count)) {
@@ -86,7 +87,8 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 
-	public function current() {
+	public function current(): mixed
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		if ($this->_row_function) {
 			$func = $this->_row_function;
@@ -98,45 +100,49 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 
-	public function key() {
+	public function key(): mixed
+	{
 		return $this->_position;
 	}// /method
 
 
 
-	public function next() {
+	public function next(): void
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		if ($this->_result_set) {
 			$this->_position++;
 			$this->_row = $this->_result_set->fetch_assoc();
-			return true;
 		}
-		return false;
 	}// /method
 
 
 
-	public function offsetSet($offset, $value) {
+	public function offsetSet(mixed $offset, mixed $value): void
+	{
 		// Fake implementation to satisy ArrayAccess Interface
 		// Setting recordset entries is a no-no
 	}// /method
 
 
 
-	public function offsetExists($offset) {
+	public function offsetExists(mixed $offset): bool
+	{
 		return ($this->count() > $offset);
 	}// /method
 
 
 
-	public function offsetUnset($offset) {
+	public function offsetUnset(mixed $offset): void
+	{
 		// Fake implementation to satisy ArrayAccess Interface
 		// Unsetting recordset entries is a no-no
 	}// /method
 
 
 
-	public function offsetGet($offset) {
+	public function offsetGet(mixed $offset): mixed
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		if (!$this->offsetExists($offset)) { return null; }
 
@@ -153,20 +159,20 @@ class Ecl_Db_Recordset implements ArrayAccess, Countable, Iterator {
 
 
 
-	public function rewind() {
+	public function rewind(): void
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		if ($this->_result_set) {
 			$this->_position = 0;
 			$this->_result_set->data_seek(0);
 			$this->_row = $this->_result_set->fetch_assoc();
-			return true;
 		}
-		return false;
 	}// /method
 
 
 
-	public function valid() {
+	public function valid(): bool
+	{
 		if (!$this->_executed) { $this->_execute(); }
 		return (null !== $this->_row);
 	}// /method

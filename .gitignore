@@ -1,0 +1,60 @@
+
+# Files to always include
+!/.gitattributes
+!/.gitignore
+
+
+# Project files
+/local
+/static
+/writable
+
+
+# Always exclude these files
+z_**/
+z_*
+z_*.*
+
+
+# PHP Storm files
+/.idea
+
+
+# Eclipse files
+/.buildpath
+/.project
+/.settings
+
+
+#Mac and Windows files
+*/.DS_Store
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
+#Ignore files
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.dll
+*.lib
+*.sbr
