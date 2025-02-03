@@ -682,6 +682,8 @@ Class Ecl_Tree_Manager {
 		$node->tree_right = 2;
 		$node->tree_level = 0;
 		$node->ref = null;
+
+		$binds = (array) $node;
 		$this->_db->insert($this->_table, $binds);
 
 		return true;
