@@ -153,9 +153,9 @@ class Ecl_Image {
 	public static function createFromString($string) {
 
 		$img_resource = imagecreatefromstring($string);
-		if (!$img) { return null; }
+		if (!$img_resource) { return null; }
 
-		return self::createFromResource($img_resourcE);
+		return self::createFromResource($img_resource);
 	}// /method
 
 
