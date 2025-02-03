@@ -315,6 +315,10 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 				}
 			}
 
+			if (empty($item->supplier)) {
+				$item->supplier = null;
+			}
+
 			$item->PAT = $this->request()->postDmyt('PAT');
 
 			$item->date_of_purchase = $this->request()->postDmyt('date_of_purchase');

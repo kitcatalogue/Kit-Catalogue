@@ -133,12 +133,11 @@ class Ecl_Image {
 	/**
 	 * Load this image from an existing PHP image resource
 	 *
-	 * @param  resource  $img  The image to load.
+	 * @param  object  $img  The image to load.
 	 *
 	 * @return  object  The image object. On fail, null.
 	 */
 	public static function createFromImage($resource) {
-		if (!is_resource($resource)) { return null; }
 		return new static($resource);
 	}// /method
 

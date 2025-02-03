@@ -86,7 +86,7 @@ class Item {
 	public $finance_id = '';   // e.g. finance system ID / purchase order ID
 	public $serial_no = '';
 	public $year_of_manufacture = null;
-	public $supplier = '';     // Who supplied the item (may not be manufacturer)
+	public $supplier = null;     // Who supplied the item (may not be manufacturer)
 	public $date_of_purchase = null;
 
 	public $cost = '';
