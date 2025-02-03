@@ -1017,7 +1017,7 @@ class Ecl_Helper_Html {
 	 * @return  boolean  The operation was successful.
 	 */
 	public static function link($url, $content = null, $attr = null) {
-		$value = self::escape($value);
+		$content = self::escape($content);
 		$attr = self::convertAttrToHtml($attr);
 		if (empty($content)) { $content = $url; }
 		printf('<a href="%1$s" %3$s>%2$s</a>', $url, $content, $attr);
@@ -1064,13 +1064,8 @@ class Ecl_Helper_Html {
 
 		$attr = self::convertAttrToHtml($attr);
 
-		if ( ($list_id) || ($list_class) ) {
-			$html_list_id = " id=\"$list_id\"";
-			$html_list_class = " class=\"$list_class\"";
-			echo("<dl {$attr}>");
-		} else {
-			echo('<dl>');
-		}
+		echo('<dl>');
+
 		foreach($array as $title => $definition) {
 			$title = self::escape($title);
 			$definition = self::escape($definition);
