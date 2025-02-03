@@ -59,6 +59,7 @@ class Ecl_Helper_Html {
 	 * @return  string
 	 */
 	public static function escape($string, $charset = 'UTF-8') {
+		if (!$string) { return ''; }
 		return htmlspecialchars($string, ENT_COMPAT | ENT_IGNORE, $charset, false);
 	}// /method
 
