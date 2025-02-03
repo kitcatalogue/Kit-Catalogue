@@ -616,7 +616,7 @@ Class Ecl_Tree_Manager {
 		}
 
 		$this->_db->query("
-			SELECT DISTINCT ref
+			SELECT ref
 			FROM `{$this->_table}`
 			$where
 			ORDER BY tree_left
