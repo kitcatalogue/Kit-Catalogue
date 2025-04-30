@@ -9,6 +9,7 @@ class ItemRenderer {
 	protected $_fields = null;
 	protected $_model = null;
 	protected $_router = null;
+	protected $_wikiparser = null;
 
 
 

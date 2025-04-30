@@ -103,7 +103,7 @@ class Controller_Id extends Ecl_Mvc_Controller {
 	public function _getFormat() {
 		$valid_formats = array('csv', 'html', 'json', 'rdf', 'xml');
 
-		$format = strtolower($this->request()->extension());
+		$format = strtolower($this->request()->extension() ?? '');
 		if (!in_array($format, $valid_formats)) { $format = 'html'; }
 
 		return $format;
