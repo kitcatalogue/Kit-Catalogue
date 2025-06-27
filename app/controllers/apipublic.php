@@ -84,9 +84,10 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 		$format = $this->_getFormat();
 
-		$this->view()->item = $this->model('itemstore')->find($this->param('id'));
+		$item = $this->model('itemstore')->find($this->param('id'));
+		if (!$item) { echo '{}'; die(); }
 
-
+		$this->view()->item = $item;
 		$this->view()->render("api_public_item.{$format}");
 	}// /method
 
