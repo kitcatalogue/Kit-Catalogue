@@ -123,6 +123,8 @@ class ItemRenderer {
 
 
 	public function renderAsCsv($item) {
+		if (!$item) { echo ''; }
+
 		$fields = array(
 			'id' => $this->csv($this->getItemUri($item)) ,
 			'name' => $this->csv($item->name) ,
@@ -140,6 +142,7 @@ class ItemRenderer {
 
 
 	public function renderAsHtml($item) {
+		if (!$item) { echo ''; }
 		?>
 		<dl>
 
@@ -176,6 +179,8 @@ class ItemRenderer {
 
 
 	public function renderAsJson($item) {
+		if (!$item) { echo '{}'; }
+
 		$obj = new StdClass();
 
 		$obj->id = $this->getItemUri($item);
@@ -194,6 +199,8 @@ class ItemRenderer {
 
 
 	public function renderAsRdf($item) {
+		if (!$item) { echo ''; }
+
 		$item_uri = $this->getItemUri($item);
 
 		$categories = $this->getItemCategories($item);
@@ -300,6 +307,7 @@ class ItemRenderer {
 
 
 	public function renderAsXml($item) {
+		if (!$item) { echo ''; }
 		?>
 		<item id="<?php echo $this->xml($this->getItemUri($item)); ?>">
 			<name><?php echo $this->xml($item->name); ?></name>
