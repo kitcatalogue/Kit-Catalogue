@@ -145,9 +145,9 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 
 	public function _getFormat() {
-		$format = strtolower($this->request()->extension());
+		$format = $this->request()->extension() ?? $this->_default_format ;
+		$format = strtolower($format);
 		if (!in_array($format, $this->_valid_formats)) { $format = $this->_default_format; }
-
 		return $format;
 	}
 
