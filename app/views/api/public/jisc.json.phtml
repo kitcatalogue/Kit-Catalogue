@@ -1,0 +1,25 @@
+<?php
+$this->router()->layout(null);
+$this->response()->setHeader('Content-Type', 'application/json');
+
+
+$last_index = count($this->items) - 1;
+
+echo '[';
+
+foreach($this->items as $i => $item) {
+	$this->renderer->renderAsJiscJson($item);
+	if ($last_index > $i) {
+		echo(',');
+	}
+
+}
+
+echo ']';
+
+
+
+
+
+
+

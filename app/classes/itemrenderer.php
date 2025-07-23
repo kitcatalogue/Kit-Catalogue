@@ -177,6 +177,96 @@ class ItemRenderer {
 	}
 
 
+	public function renderAsJiscJson($item) {
+		if (!$item) { echo '{}'; }
+
+		$categories_str = '';
+		$categories = $this->getItemCategories($item);
+		$temp = [];
+		foreach($categories as $category) {
+			$temp[] = $category->name;
+		}
+		$categories = null;
+		$categories_str = implode(', ', $temp);
+
+		$site_name = $this->model('sitestore')->lookupName($item->site, '');
+
+		$ou_name = $this->model('organisationalunitstore')->lookupName($item->ou, '');
+
+		$facilities_name = '';
+		$facilities = $this->model('itemstore')->findParents($item->id);
+		if (count($facilities)>0) {
+			$temp = [];
+			foreach($facilities as $i => $facility) {
+				$temp[] = $facility->name;
+			}
+			$facilities_name = implode(', ', $temp);
+		}
+		$facilities = null;
+
+
+		$obj = new StdClass();
+
+		$obj->id = $this->getItemUri($item);
+		$obj->name = $item->name;
+		$obj->manufacturer = $item->manufacturer;
+		$obj->model = $item->model;
+		$obj->description = $this->_wikiparser->parse($item->full_description);
+
+		if ($item->date_of_purchase) {
+			$obj->commissioned_date = date('Y-m-d', $item->date_of_purchase);
+		}
+
+		if ($item->end_of_life) {
+			$obj->decommissioned_date = date('Y-m-d', $item->end_of_life);
+		}
+
+		$obj->measured_variables = $item->technique;
+		$obj->subject = $categories_str;
+
+		$obj->contact_name = $item->contact_1_name;
+		$obj->contact_email = $item->contact_1_email;
+
+		if ($ou_name) {
+			$obj->managing_department = $ou_name;
+			$obj->managing_department_id = $this->_router->makeAbsoluteUri("/browse/ou-{$item->ou}");
+		}
+
+		if ($facilities_name) {
+			$obj->managing_facility = $facilities_name;
+		}
+
+		if ($site_name) {
+			$obj->location = $site_name;
+		}
+
+		$obj->access = $item->availability;
+
+		$obj->photo_link = $this->getItemImage($item);
+		$obj->web_link = $this->getItemLink($item);
+
+		if ($item->manufacturer_website) {
+			$obj->related_link = $item->manufacturer_website;
+		}
+
+		if ($item->cost) {
+			if (is_numeric($item->cost)) {
+				$cost = floatval($item->cost);
+				$obj->ukri_threshold = ($cost> 138000) ? 'y' : 'n' ;
+			} else {
+				$cost = preg_replace('/[^0-9.]/', '', $item->cost);
+					if ($cost) {
+					$cost = floatval($cost);
+					if ($cost) {
+						$obj->ukri_threshold = ($cost> 138000) ? 'y' : 'n' ;
+					}
+				}
+			}
+		}
+
+		echo json_encode($obj, JSON_FORCE_OBJECT);
+	}
+
 
 	public function renderAsJson($item) {
 		if (!$item) { echo '{}'; }

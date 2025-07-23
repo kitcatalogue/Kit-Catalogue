@@ -509,6 +509,11 @@ $config['api.enabled'] = false;
 // The public API is not protected by any API key.
 $config['api.public.enabled'] = true;
 
+// Controls access to the Jisc Equipment Data Model item listing.
+// You must enable this setting to allow the National Equipment Data Service (https://equipment.data.ac.uk) to import your public items.
+// This listing is not protected by any API key.
+$config['api.jisc.enabled'] = false;
+
 // You can override the URI/URLs returned by the API for certain item fields.
 // For example, you could override the item links so that items appear to exist at a different location entirely.
 // e.g.  $config['api.item.link.override'] = 'http://www.example.com/path/to/item?id={id}'

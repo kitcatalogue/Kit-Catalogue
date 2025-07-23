@@ -125,6 +125,33 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 
 
 
+	public function actionJisc()
+	{
+		if (true !== $this->model('api.jisc.enabled')) {
+			$this->abort();
+			?>
+			<pre>
+			Kit-Catalogue Jisc Equipment Data Model API disabled.
+
+			The setting <em>$config['api.jisc.enabled'] = false;</em> in <em>local/local_config.php</em>
+			To enable the API, change the configuration to <em>$config['api.jisc.enabled'] = true;</em>
+
+			For more about the API, see  <em>docs/api.txt</em>
+			</pre>
+			<?php
+		}
+
+		include($this->model('app.include_root').'/classes/itemrenderer.php');
+		$public_fields = array();
+		$this->view()->renderer = new Itemrenderer($public_fields, $this->model());
+
+		$this->view()->items = $this->model('itemstore')->findAll(KC__VISIBILITY_PUBLIC);
+
+		$this->view()->render("api_public_jisc.json");
+	}
+
+
+
 	public function actionCategories() {
 		include($this->model('app.include_root').'/classes/categoryrenderer.php');
 
