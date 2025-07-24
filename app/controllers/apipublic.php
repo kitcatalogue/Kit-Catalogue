@@ -70,6 +70,7 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 			"/items.json?tag=[tag-name]"         => 'Search for items with the given tag. Use the querystring parameter to define the tag to search for.' ,
 			"/item/[id-number]"                  => 'Show an individual item. Use the item ID number path parameter to define which item to return.' ,
 			"/categories.json"                   => 'List all available categories.' ,
+			"/jisc.json"                         => 'Extended information on public items compatible with the 2025 version of the Jisc National Equipment Data Service (https://equipment.data.ac.uk).',
 		);
 
 		$this->view()->render("api_public_index");

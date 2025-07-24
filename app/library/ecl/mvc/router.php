@@ -242,7 +242,6 @@ class Ecl_Mvc_Router extends Ecl_Mvc {
 
 		$this->setDispatched(false);
 
-
 		if (!is_null($uri)) {
 			$this->request()->overrideUri($uri);
 		}

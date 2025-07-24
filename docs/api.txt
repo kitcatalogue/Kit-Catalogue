@@ -4,7 +4,7 @@
 * * * * * * * * * * * * * * * * *
 
 
-The Kit-Catalogue Application Programming Interface (API) allows access to 
+The Kit-Catalogue Application Programming Interface (API) allows access to
 basic information about the items in your catalogue.
 
 The API is split in to two sections, public an private.
@@ -53,7 +53,7 @@ Kit-Catalogue includes settings for the UK's Open Goverment Licence as a useful 
 By default, the Kit-Catalogue software does not show any data licence description or
 link. You can enable it by setting the appropriate local config entry to read:
 
-  $config['data.licence_enabled'] = true;  
+  $config['data.licence_enabled'] = true;
 
 To change which data licence information is shown, alter these settings accordingly:
 
@@ -68,15 +68,31 @@ To change which data licence information is shown, alter these settings accordin
 The Public API itself is enabled by default. You can control the availability
 of the public API using the local config setting:
 
-  $config['api.public.enabled'] = true; 
+  $config['api.public.enabled'] = true;
 
 
 Once enabled, you can access the public API by browsing to:
 
   http://<your-site>/api/public/
 
-There you can read more information on what resources and API calls are available, 
+There you can read more information on what resources and API calls are available,
 and how to use them.
+
+
+
+=== Jisc National Equipment Data Service ===
+
+Kit-Catalogue now also provides an extended data feed with more information on public items:
+
+  http://<your-site>/api/public/jisc.json
+
+This feed is compatible with the 2025 version of the Jisc National Equipment Data Service at https://equipment.data.ac.uk,
+and will allow Jisc to import your items and include them in the national equipment search.
+
+As this API exposes more fields than the usual item listings, it is controlled by an additional configuration option.
+To enable the API, use this local config setting:
+
+  $config['api.jisc.enabled'] = true;
 
 
 
