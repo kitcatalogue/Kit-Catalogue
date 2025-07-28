@@ -140,6 +140,7 @@ class Controller_Apipublic extends Ecl_Mvc_Controller {
 			For more about the API, see  <em>docs/api.txt</em>
 			</pre>
 			<?php
+			return;
 		}
 
 		include($this->model('app.include_root').'/classes/itemrenderer.php');
