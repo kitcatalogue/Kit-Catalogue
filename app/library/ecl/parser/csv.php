@@ -58,7 +58,7 @@ class Ecl_Parser_Csv {
 			foreach($data as $x => $row) {
 				$cols = array();
 				foreach($row as $y => $col) {
-					if (strpos($col, $this->_col_encloser)!==false) {
+					if ($col && strpos($col, $this->_col_encloser)!==false) {
 						$col = str_replace($this->_col_encloser, $col_escape, $col);
 					}
 					$cols[$y] = $this->_col_encloser . $col . $this->_col_encloser;
