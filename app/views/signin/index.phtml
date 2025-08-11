@@ -4,6 +4,7 @@
 
 $www_root = $this->model('app.www');
 
+$msg = $this->request()->get('msg') ?? '' ;
 
 
 $this->layout()->appendSection('layout.head', '
@@ -28,7 +29,7 @@ $this->layout()->addBreadcrumb('Sign In', $this->router()->makeAbsoluteUri('/sig
 
 
 
-switch (strtolower($this->request()->get('msg'))) {
+switch (strtolower($msg)) {
 	case 'failed':
 		$this->layout()->addFeedback(KC__FEEDBACK_ERROR , 'Your username and password were rejected.' ,	'Please check your username and password and try again.');
 		break;
