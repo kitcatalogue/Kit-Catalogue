@@ -283,7 +283,7 @@ class Itemstore {
 		// Excel will screw up the display of fields starting with some characters
 		// so values with non-alphanumeric characters are prefixed with a space.
 		array_walk($row, function(&$v) {
-			if ( (strlen($v)>0) && (!ctype_alnum($v[0])) ) {
+			if ($v && (strlen($v)>0) && (!ctype_alnum($v[0])) ) {
 				$v = ' '. $v;
 			}
 		});
