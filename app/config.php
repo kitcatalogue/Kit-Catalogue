@@ -373,8 +373,8 @@ $config['admin.item.edit.contact_2'] = true;
 
 // Defines where the administration area's user manual link goes.
 // If left blank, no link will be shown.
-// Defaults to the Kit-Catalogue user manual, http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/
-$config['admin.help.manual'] = 'http://kit-catalogue.lboro.ac.uk/project/software/docs/usermanual/';
+// Defaults to the Kit-Catalogue user manual, https://www.kit-catalogue.com/usermanual
+$config['admin.help.manual'] = 'https://www.kit-catalogue.com/usermanual';
 
 // Define the text of the user manual link.
 $config['admin.help.manual_title'] = 'Kit-Catalogue User Manual';
