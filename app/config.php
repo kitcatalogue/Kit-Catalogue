@@ -78,7 +78,7 @@ $config['app.debug'] = false;
 
 // The current Kit-Catalogue software version.
 // Do not override this setting as you could break future updates.
-$config['app.version'] = '2.3.2';
+$config['app.version'] = '2.3.3';
 
 // The Full URL that the catalogue will be served from (i.e. the browsable location of  /index.php)
 // e.g. http://www.example.com/catalogue
