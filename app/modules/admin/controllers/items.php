@@ -689,6 +689,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		$procfilename = null;
 
 		$filename = $this->request()->post('filename');
+
 		if ($filename) {
 			$datafilename = Ecl_Helper_Filesystem::fixPath($upload_path .DIRECTORY_SEPARATOR. $filename);
 			if (!Ecl_Helper_Filesystem::isPathBelowRoot($datafilename, $upload_path)) { $datafilename = null; }
@@ -837,7 +838,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					$temp = array_fill_keys($standard_keys, '');
 					$row = array_merge($temp, $row);
 
-					$item = $this->model('itemstore')->newItem();
+					$item = $this->model('itemstore')->newImportItem();
 
 					$issues = null;
 					$custom_fields = null;
@@ -865,7 +866,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 					// @todo : Import tags
 					$temp = Ecl_Helper_String::parseString($row['tags'], 250);
 					if (empty($temp)) {
-						$item->tags = '';
+						$item->tags = [];
 					} else {
 						$item->tags = explode(',', $row['tags']);
 					}
@@ -1431,7 +1432,7 @@ class Controller_Admin_Items extends Ecl_Mvc_Controller {
 		));
 
 		$data_csv = file_get_contents($filepath);
-		$data_csv = utf8_encode($data_csv);
+		$data_csv = mb_convert_encoding($data_csv, 'UTF-8', 'ISO-8859-1');
 		$data_csv = $csv_parser->parse($data_csv);
 
 		$data_csv = Ecl_Helper_array::removeEmptyRows($data_csv);

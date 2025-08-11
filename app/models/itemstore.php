@@ -1,10 +1,9 @@
 <?php
 
 
-
 include_once('itemfile.php');
 include_once('item.php');
-
+include_once('importitem.php');
 
 
 /**
@@ -325,7 +324,7 @@ class Itemstore {
 			'restrictions' => $object->restrictions ,
 
 			'usergroup'      => $object->usergroup ,
-			'access_id'      => $object->access ,
+			'access_id'      => ($object->access) ?: null ,
 			'portability'    => $object->portability ,
 
 			'department_id'  => $object->department ,   // @todo : Deprecated - remove
@@ -334,8 +333,8 @@ class Itemstore {
 			'ou_id' => $object->ou ,
 
 
-			'site_id'      => $object->site ,
-			'building_id'  => $object->building ,
+			'site_id'      => ($object->site) ?: null ,
+			'building_id'  => ($object->building) ?: null ,
 			'room'         => $object->room ,
 
 			'contact_1_name'  => $object->contact_1_name ,
@@ -355,7 +354,7 @@ class Itemstore {
 			'training_required' => $object->training_required ,
 			'training_provided' => $object->training_provided ,
 
-			'quantity' => $object->quantity ,
+			'quantity' => ($object->quantity) ?: null ,
 			'quantity_detail' => $object->quantity_detail ,
 
 			'PAT' => $this->_db->formatDate($object->PAT, true) ,
@@ -1398,6 +1397,17 @@ class Itemstore {
 		$new_id = $this->_db->insert('item', $binds);
 
 		return ($new_id>0) ? $new_id : null ;
+	}// /method
+
+
+
+	/**
+	 * Get a new instance of an ImportItem object.
+	 *
+	 * @return  object
+	 */
+	public function newImportItem() {
+		return new importitem();
 	}// /method
 
 

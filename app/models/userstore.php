@@ -46,7 +46,6 @@ class Userstore {
 		if (!$this->_db->hasResult()) { return null; }
 
 		$row = $this->_db->getRow();
-
 		if (!is_array($row)) { return null; }
 
 		if (md5("{$row['salt']}:{$password}") != $row['password']) { return null; }
