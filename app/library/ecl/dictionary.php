@@ -108,7 +108,7 @@ Class Ecl_Dictionary implements ArrayAccess {
 
 	public function offsetUnset(mixed $offset): void
 	{
-		remove($offset);
+		$this->remove($offset);
 	}
 
 
